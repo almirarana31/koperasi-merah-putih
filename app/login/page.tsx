@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { Leaf, Lock, Mail, ArrowLeft } from 'lucide-react'
+import { Leaf, Lock, Mail, ArrowLeft, ArrowRight, BarChart3 } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
