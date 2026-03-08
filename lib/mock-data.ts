@@ -772,6 +772,3 @@ export function getStats() {
     }
   }
 }
- }
-  }
-}
