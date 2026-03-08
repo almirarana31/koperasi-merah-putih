@@ -52,14 +52,14 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-sm text-muted-foreground">
           Selamat datang di KOPDES - Koperasi Digital Operating System
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Anggota"
           value={dashboardStats.totalAnggota.toString()}
@@ -88,7 +88,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Secondary Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
         <StatsCard
           title="Order Aktif"
           value={dashboardStats.orderAktif.toString()}
@@ -113,37 +113,38 @@ export default function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-7">
         {/* Revenue Chart */}
         <Card className="lg:col-span-4">
-          <CardHeader>
-            <CardTitle>Pendapatan & Pengeluaran</CardTitle>
-            <CardDescription>
+          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg">Pendapatan & Pengeluaran</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
               Tren pendapatan dan pengeluaran 6 bulan terakhir
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+          <CardContent className="p-2 sm:p-6 pt-0">
+            <div className="h-[250px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthlyRevenue}>
                   <XAxis
                     dataKey="bulan"
                     stroke="var(--muted-foreground)"
-                    fontSize={12}
+                    fontSize={10}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
                     stroke="var(--muted-foreground)"
-                    fontSize={12}
+                    fontSize={10}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(value) => `${value / 1000000}jt`}
+                    width={40}
                   />
                   <Tooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="rounded-lg border bg-background p-3 shadow-sm">
+                          <div className="rounded-lg border bg-background p-2 sm:p-3 shadow-sm text-xs sm:text-sm">
                             <p className="font-medium">{label}</p>
-                            <div className="mt-2 space-y-1 text-sm">
+                            <div className="mt-1 sm:mt-2 space-y-1">
                               <p className="text-chart-1">
                                 Pendapatan: {formatCurrency(payload[0].value as number)}
                               </p>
@@ -175,20 +176,20 @@ export default function DashboardPage() {
 
         {/* Commodity Distribution */}
         <Card className="lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Distribusi Komoditas</CardTitle>
-            <CardDescription>Berdasarkan kategori</CardDescription>
+          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+            <CardTitle className="text-base sm:text-lg">Distribusi Komoditas</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Berdasarkan kategori</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+          <CardContent className="p-2 sm:p-6 pt-0">
+            <div className="h-[250px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={commodityDistribution}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
+                    innerRadius={40}
+                    outerRadius={70}
                     paddingAngle={2}
                     dataKey="nilai"
                     nameKey="nama"

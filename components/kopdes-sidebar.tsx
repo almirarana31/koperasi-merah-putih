@@ -59,6 +59,8 @@ const mainNavItems = [
     items: [
       { title: 'Daftar Anggota', url: '/anggota' },
       { title: 'Tambah Anggota', url: '/anggota/tambah' },
+      { title: 'Onboarding KTP', url: '/anggota/onboarding' },
+      { title: 'Profil & Behavior', url: '/anggota/profil' },
       { title: 'Produsen', url: '/anggota/produsen' },
       { title: 'Kelompok Tani', url: '/anggota/kelompok' },
       { title: 'Verifikasi KYC', url: '/anggota/verifikasi' },
@@ -118,6 +120,8 @@ const mainNavItems = [
     icon: Wallet,
     items: [
       { title: 'Kas & Transaksi', url: '/keuangan' },
+      { title: 'Credit Scoring', url: '/keuangan/credit-scoring' },
+      { title: 'Pengajuan Pinjaman', url: '/keuangan/pinjaman' },
       { title: 'Simpan Pinjam', url: '/keuangan/simpan-pinjam' },
       { title: 'Invoice', url: '/keuangan/invoice' },
       { title: 'Pembayaran', url: '/keuangan/pembayaran' },
