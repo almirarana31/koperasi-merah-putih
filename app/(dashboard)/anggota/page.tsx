@@ -18,6 +18,9 @@ import {
   TrendingUp,
   CreditCard,
 } from 'lucide-react'
+import { MemberDetailDialog } from '@/components/dialogs/member-detail-dialog'
+import { EditMemberDialog } from '@/components/dialogs/edit-member-dialog'
+import { toast } from 'sonner'
 import {
   Card,
   CardContent,
@@ -57,8 +60,12 @@ export default function AnggotaPage() {
   const [search, setSearch] = useState('')
   const [filterRole, setFilterRole] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [selectedMember, setSelectedMember] = useState<any>(null)
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [membersList, setMembersList] = useState(members)
 
-  const filteredMembers = members.filter((member) => {
+  const filteredMembers = membersList.filter((member) => {
     const matchesSearch =
       member.name.toLowerCase().includes(search.toLowerCase()) ||
       member.memberNumber.toLowerCase().includes(search.toLowerCase()) ||
@@ -69,6 +76,26 @@ export default function AnggotaPage() {
     
     return matchesSearch && matchesRole && matchesStatus
   })
+
+  const handleViewMember = (member: any) => {
+    setSelectedMember(member)
+    setDetailDialogOpen(true)
+  }
+
+  const handleEditMember = (member: any) => {
+    setSelectedMember(member)
+    setEditDialogOpen(true)
+  }
+
+  const handleSaveMember = (updatedMember: any) => {
+    setMembersList(membersList.map(m => m.id === updatedMember.id ? updatedMember : m))
+    toast.success('Data anggota berhasil diperbarui')
+  }
+
+  const handleDeleteMember = (memberId: string) => {
+    setMembersList(membersList.filter(m => m.id !== memberId))
+    toast.success('Anggota berhasil dihapus')
+  }
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -295,17 +322,22 @@ export default function AnggotaPage() {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link href={`/anggota/profil/${member.id}`} className="cursor-pointer">
-                            <Eye className="mr-2 h-4 w-4" /> Lihat Profil
-                          </Link>
+                       <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleViewMember(member)} className="cursor-pointer">
+                          <Eye className="mr-2 h-4 w-4" /> Lihat Profil
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
+                        <DropdownMenuItem onClick={() => handleEditMember(member)} className="cursor-pointer">
                           <Pencil className="mr-2 h-4 w-4" /> Edit Data
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive cursor-pointer">
+                        <DropdownMenuItem 
+                          onClick={() => {
+                            if (confirm(`Hapus anggota ${member.name}?`)) {
+                              handleDeleteMember(member.id)
+                            }
+                          }}
+                          className="text-destructive cursor-pointer"
+                        >
                           <Trash2 className="mr-2 h-4 w-4" /> Hapus
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -317,6 +349,25 @@ export default function AnggotaPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Dialogs */}
+      <MemberDetailDialog
+        member={selectedMember}
+        open={detailDialogOpen}
+        onOpenChange={setDetailDialogOpen}
+        onEdit={(member) => {
+          setDetailDialogOpen(false)
+          handleEditMember(member)
+        }}
+        onDelete={handleDeleteMember}
+      />
+
+      <EditMemberDialog
+        member={selectedMember}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSave={handleSaveMember}
+      />
     </div>
   )
 }

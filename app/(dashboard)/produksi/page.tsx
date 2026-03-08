@@ -54,6 +54,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { productions, formatDate, getStatusColor } from '@/lib/data'
+import { HarvestDetailDialog } from '@/components/dialogs/harvest-detail-dialog'
 
 const gradeColors: Record<string, string> = {
   A: 'bg-emerald-500/10 text-emerald-500',
@@ -65,6 +66,8 @@ export default function ProduksiPage() {
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
+  const [selectedHarvest, setSelectedHarvest] = useState(null)
 
   const filteredProductions = productions.filter((prod) => {
     const matchesSearch =
@@ -301,7 +304,10 @@ export default function ProduksiPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setSelectedHarvest(prod)
+                          setDetailDialogOpen(true)
+                        }}>
                           <Eye className="mr-2 h-4 w-4" />
                           Lihat Detail
                         </DropdownMenuItem>
@@ -318,6 +324,12 @@ export default function ProduksiPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <HarvestDetailDialog 
+        open={detailDialogOpen}
+        onOpenChange={setDetailDialogOpen}
+        harvest={selectedHarvest}
+      />
     </div>
   )
 }
