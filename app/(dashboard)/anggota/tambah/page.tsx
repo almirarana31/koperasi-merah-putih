@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Save } from 'lucide-react'
+import { ArrowLeft, Save, Camera, Zap } from 'lucide-react'
 import {
   Card,
   CardContent,
@@ -21,6 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/components/ui/alert'
 
 export default function TambahAnggotaPage() {
   const [formData, setFormData] = useState({
@@ -58,6 +63,21 @@ export default function TambahAnggotaPage() {
           </p>
         </div>
       </div>
+
+      {/* OCR Suggestion */}
+      <Alert className="border-primary/50 bg-primary/5">
+        <Camera className="h-4 w-4 text-primary" />
+        <AlertTitle className="text-primary">Gunakan Onboarding KTP dengan OCR</AlertTitle>
+        <AlertDescription className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <span>Daftarkan anggota lebih cepat dengan scan KTP otomatis dan verifikasi Dukcapil.</span>
+          <Button size="sm" className="w-fit" asChild>
+            <Link href="/anggota/onboarding">
+              <Zap className="mr-2 h-4 w-4" />
+              Gunakan OCR
+            </Link>
+          </Button>
+        </AlertDescription>
+      </Alert>
 
       <form onSubmit={handleSubmit}>
         <div className="grid gap-6 lg:grid-cols-2">

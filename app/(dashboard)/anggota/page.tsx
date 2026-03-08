@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   AlertCircle,
   TrendingUp,
+  CreditCard,
 } from 'lucide-react'
 import {
   Card,
@@ -87,11 +88,23 @@ export default function AnggotaPage() {
             Kelola database anggota produsen dan pembeli Koperasi Merah Putih
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/anggota/onboarding">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Onboarding KTP
+            </Link>
+          </Button>
           <Button variant="outline" asChild>
             <Link href="/anggota/verifikasi">
               <CheckCircle2 className="mr-2 h-4 w-4" />
               Verifikasi KYC
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/anggota/profil">
+              <Users className="mr-2 h-4 w-4" />
+              Profil Member
             </Link>
           </Button>
           <Button className="bg-primary hover:bg-primary/90" asChild>

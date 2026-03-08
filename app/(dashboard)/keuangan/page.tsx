@@ -82,7 +82,19 @@ export default function KeuanganPage() {
             Kelola arus kas koperasi
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/keuangan/credit-scoring">
+              <TrendingUp className="mr-2 h-4 w-4" />
+              Credit Scoring
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link href="/keuangan/pinjaman">
+              <Wallet className="mr-2 h-4 w-4" />
+              Ajukan Pinjaman
+            </Link>
+          </Button>
           <Button variant="outline" asChild>
             <Link href="/keuangan/simpan-pinjam">
               <CreditCard className="mr-2 h-4 w-4" />

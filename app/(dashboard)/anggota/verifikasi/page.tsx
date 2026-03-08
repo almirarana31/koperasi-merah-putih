@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import {
   CheckCircle,
   XCircle,
@@ -15,6 +16,7 @@ import {
   Loader2,
   ShieldCheck,
   AlertTriangle,
+  ArrowLeft,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -181,9 +183,16 @@ export default function VerifikasiPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Verifikasi KYC</h1>
-        <p className="text-sm text-muted-foreground">Verifikasi dokumen dan data anggota baru</p>
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" asChild>
+          <Link href="/anggota">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Verifikasi KYC</h1>
+          <p className="text-sm text-muted-foreground">Verifikasi dokumen dan data anggota baru</p>
+        </div>
       </div>
 
       {/* Success Alert */}

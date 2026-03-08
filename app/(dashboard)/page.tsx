@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import {
   Users,
   Package,
@@ -9,6 +10,10 @@ import {
   Wallet,
   ArrowUpRight,
   ArrowDownRight,
+  CreditCard,
+  UserPlus,
+  ShieldCheck,
+  BarChart3,
 } from 'lucide-react'
 import {
   Card,
@@ -18,6 +23,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { StatsCard } from '@/components/stats-card'
 import {
   dashboardStats,
@@ -108,6 +114,44 @@ export default function DashboardPage() {
           icon={Wallet}
         />
       </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base sm:text-lg">Aksi Cepat</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
+            Akses cepat ke fitur utama koperasi
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Button variant="outline" className="h-auto py-4 flex-col gap-2" asChild>
+              <Link href="/anggota/onboarding">
+                <CreditCard className="h-5 w-5 text-primary" />
+                <span className="text-xs text-center">Onboarding KTP</span>
+              </Link>
+            </Button>
+            <Button variant="outline" className="h-auto py-4 flex-col gap-2" asChild>
+              <Link href="/anggota/verifikasi">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                <span className="text-xs text-center">Verifikasi KYC</span>
+              </Link>
+            </Button>
+            <Button variant="outline" className="h-auto py-4 flex-col gap-2" asChild>
+              <Link href="/keuangan/credit-scoring">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                <span className="text-xs text-center">Credit Scoring</span>
+              </Link>
+            </Button>
+            <Button variant="outline" className="h-auto py-4 flex-col gap-2" asChild>
+              <Link href="/keuangan/pinjaman">
+                <Wallet className="h-5 w-5 text-primary" />
+                <span className="text-xs text-center">Ajukan Pinjaman</span>
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Charts Row */}
       <div className="grid gap-4 lg:grid-cols-7">
