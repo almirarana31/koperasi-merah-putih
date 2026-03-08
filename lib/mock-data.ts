@@ -225,6 +225,48 @@ export interface AIAnalysis {
   createdAt: string
 }
 
+// Stock images from Unsplash for products
+const productImages: Record<string, string> = {
+  // Sayuran
+  "Cabai": "https://images.unsplash.com/photo-1583119022894-919a68a3d0e3?w=400&h=300&fit=crop",
+  "Tomat": "https://images.unsplash.com/photo-1546470427-227c7369a9b5?w=400&h=300&fit=crop",
+  "Terong": "https://images.unsplash.com/photo-1615484477778-ca3b77940c25?w=400&h=300&fit=crop",
+  "Bawang": "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=400&h=300&fit=crop",
+  "Kangkung": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&h=300&fit=crop",
+  "Bayam": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400&h=300&fit=crop",
+  // Buah
+  "Pisang": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=300&fit=crop",
+  "Mangga": "https://images.unsplash.com/photo-1553279768-865429fa0078?w=400&h=300&fit=crop",
+  "Jeruk": "https://images.unsplash.com/photo-1547514701-42782101795e?w=400&h=300&fit=crop",
+  "Pepaya": "https://images.unsplash.com/photo-1526318472351-c75fcf070305?w=400&h=300&fit=crop",
+  "Durian": "https://images.unsplash.com/photo-1588714477688-cf28a50e94f7?w=400&h=300&fit=crop",
+  "Rambutan": "https://images.unsplash.com/photo-1609587312208-cea54be969e7?w=400&h=300&fit=crop",
+  // Biji-bijian
+  "Padi": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop",
+  "Jagung": "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=400&h=300&fit=crop",
+  "Kedelai": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=300&fit=crop",
+  "Kacang Tanah": "https://images.unsplash.com/photo-1567892320421-1c657571ea4a?w=400&h=300&fit=crop",
+  // Ternak
+  "Ayam": "https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=400&h=300&fit=crop",
+  "Bebek": "https://images.unsplash.com/photo-1459682687441-7761439a709d?w=400&h=300&fit=crop",
+  "Kambing": "https://images.unsplash.com/photo-1524024973431-2ad916746881?w=400&h=300&fit=crop",
+  "Sapi": "https://images.unsplash.com/photo-1546445317-29f4545e9d53?w=400&h=300&fit=crop",
+  // Perikanan
+  "Lele": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop",
+  "Nila": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop",
+  "Gurame": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=300&fit=crop",
+  "Udang": "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=400&h=300&fit=crop",
+  // Olahan
+  "Keripik": "https://images.unsplash.com/photo-1621447504864-d8686e12698c?w=400&h=300&fit=crop",
+  "Dodol": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop",
+  "Kopi Bubuk": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&h=300&fit=crop",
+  "Minyak Kelapa": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=300&fit=crop",
+}
+
+function getProductImage(subcategory: string): string {
+  return productImages[subcategory] || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=300&fit=crop"
+}
+
 // Generate 100 members
 export const members: Member[] = [
   {
@@ -358,7 +400,7 @@ export const products: Product[] = [
     price: { farm: 8000, wholesale: 10000, retail: 12000 },
     stock: { available: 5000, reserved: 500, warehouse: "WH-001", location: "Rak A1" },
     harvest: { date: "2026-02-15", nextHarvest: "2026-05-15", season: "musim_hujan" },
-    images: ["/products/beras-ir64.jpg"],
+    images: [getProductImage("Padi")],
     tags: ["premium", "organik", "lokal"],
     status: "available",
     createdAt: "2026-02-20",
@@ -377,7 +419,7 @@ export const products: Product[] = [
     price: { farm: 35000, wholesale: 42000, retail: 50000 },
     stock: { available: 800, reserved: 100, warehouse: "WH-002", location: "Cold Storage B2" },
     harvest: { date: "2026-03-05", nextHarvest: "2026-04-05", season: "sepanjang_tahun" },
-    images: ["/products/cabai-merah.jpg"],
+    images: [getProductImage("Cabai")],
     tags: ["segar", "pedas", "lokal"],
     status: "available",
     createdAt: "2026-03-05",
@@ -396,7 +438,7 @@ export const products: Product[] = [
     price: { farm: 12000, wholesale: 15000, retail: 18000 },
     stock: { available: 1200, reserved: 200, warehouse: "WH-002", location: "Cold Storage B3" },
     harvest: { date: "2026-03-03", nextHarvest: "2026-04-03", season: "sepanjang_tahun" },
-    images: ["/products/tomat-sayur.jpg"],
+    images: [getProductImage("Tomat")],
     tags: ["segar", "organik", "lokal"],
     status: "available",
     createdAt: "2026-03-03",
@@ -728,5 +770,8 @@ export function getStats() {
       delivered: marketOrders.filter(o => o.status === "delivered").length,
       totalValue: marketOrders.reduce((sum, o) => sum + o.total, 0)
     }
+  }
+}
+ }
   }
 }
