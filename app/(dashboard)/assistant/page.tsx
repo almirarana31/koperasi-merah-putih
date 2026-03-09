@@ -92,7 +92,7 @@ export default function AssistantPage() {
             </CardHeader>
             
             <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-              <ScrollArea className="flex-1 p-4">
+              <ScrollArea className="flex-1 min-h-0 p-4">
                 <div className="space-y-4">
                   {messages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -140,6 +140,7 @@ export default function AssistantPage() {
                     {q}
                   </Button>
                 ))}
+              </div>
               </div>
             </CardContent>
           </Card>
