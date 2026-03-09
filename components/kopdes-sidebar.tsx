@@ -49,7 +49,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 const mainNavItems = [
   {
     title: 'Dashboard',
-    url: '/',
+    url: '/dashboard',
     icon: LayoutDashboard,
   },
   {
@@ -164,7 +164,7 @@ export function KopdesSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
+              <Link href="/dashboard">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                   <Leaf className="h-5 w-5" />
                 </div>
