@@ -299,25 +299,6 @@ export default function CommandCenterPage() {
     </div>
   )
 }
-  </CardContent>
-      </Card>
-    </div>
-  )
-}
-ard>
-    </div>
-  )
-}
-)
-}
-rd>
-    </div>
-  )
-}
-)
-}
-
-}
 )
 }
 rd>
