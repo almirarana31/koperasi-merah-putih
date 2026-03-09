@@ -36,7 +36,7 @@ import { getStats, members, products, marketOrders, production, inventory, logis
 // Get comprehensive statistics
 const stats = getStats()
 
-// 8 Monitoring Areas - PowerPoint Slide 11
+// 8 Monitoring Areas
 const monitoringAreas = [
   {
     id: "1",
@@ -158,13 +158,13 @@ export default function CommandCenterPage() {
     <div className="flex-1 space-y-6 p-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Pilar 7: Command Center Dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
         <p className="mt-1 text-muted-foreground">
-          Monitoring terpadu 8 area operasional koperasi secara real-time
+          Overview of your cooperative's key activities and performance
         </p>
       </div>
 
-      {/* 8 Monitoring Areas Grid - PowerPoint Slide 11 */}
+      {/* 8 Monitoring Areas Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {monitoringAreas.map((area) => {
           const Icon = area.icon
@@ -201,8 +201,8 @@ export default function CommandCenterPage() {
         {/* Revenue Trend */}
         <Card className="border-border bg-card">
           <CardHeader>
-            <CardTitle className="text-card-foreground">Trend Revenue & Order</CardTitle>
-            <CardDescription>Perkembangan penjualan 3 bulan terakhir</CardDescription>
+            <CardTitle className="text-card-foreground">Revenue & Orders</CardTitle>
+            <CardDescription>Sales performance over the last 3 months</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -231,8 +231,8 @@ export default function CommandCenterPage() {
         {/* Category Distribution */}
         <Card className="border-border bg-card">
           <CardHeader>
-            <CardTitle className="text-card-foreground">Distribusi Kategori Produk</CardTitle>
-            <CardDescription>Breakdown produk berdasarkan kategori</CardDescription>
+            <CardTitle className="text-card-foreground">Product Categories</CardTitle>
+            <CardDescription>Products by category</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -258,38 +258,38 @@ export default function CommandCenterPage() {
         </Card>
       </div>
 
-      {/* Real-time Alerts */}
+      {/* Alerts */}
       <Card className="border-warning/30 bg-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-card-foreground">
             <AlertTriangle className="h-5 w-5 text-warning" />
-            Alert & Notifikasi Real-time
+            Alerts & Notifications
           </CardTitle>
-          <CardDescription>Peringatan dan notifikasi penting yang memerlukan perhatian</CardDescription>
+          <CardDescription>Important updates that need your attention</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center gap-3 rounded-lg bg-warning/10 p-3">
               <AlertTriangle className="h-5 w-5 text-warning" />
               <div className="flex-1">
-                <p className="font-medium text-card-foreground">Stok Rendah: {stats.products.lowStock} produk</p>
-                <p className="text-sm text-muted-foreground">Segera lakukan restocking</p>
+                <p className="font-medium text-card-foreground">Low Stock: {stats.products.lowStock} products</p>
+                <p className="text-sm text-muted-foreground">Restock needed soon</p>
               </div>
               <Badge variant="outline" className="border-warning text-warning">Urgent</Badge>
             </div>
             <div className="flex items-center gap-3 rounded-lg bg-info/10 p-3">
               <Activity className="h-5 w-5 text-info" />
               <div className="flex-1">
-                <p className="font-medium text-card-foreground">Order Pending: {stats.orders.pending} order</p>
-                <p className="text-sm text-muted-foreground">Menunggu konfirmasi</p>
+                <p className="font-medium text-card-foreground">Pending Orders: {stats.orders.pending} orders</p>
+                <p className="text-sm text-muted-foreground">Waiting for confirmation</p>
               </div>
               <Badge variant="outline" className="border-info text-info">Info</Badge>
             </div>
             <div className="flex items-center gap-3 rounded-lg bg-success/10 p-3">
               <TrendingUp className="h-5 w-5 text-success" />
               <div className="flex-1">
-                <p className="font-medium text-card-foreground">Penjualan Meningkat 25%</p>
-                <p className="text-sm text-muted-foreground">Dibanding bulan lalu</p>
+                <p className="font-medium text-card-foreground">Sales Up 25%</p>
+                <p className="text-sm text-muted-foreground">Compared to last month</p>
               </div>
               <Badge variant="outline" className="border-success text-success">Good</Badge>
             </div>
@@ -298,4 +298,35 @@ export default function CommandCenterPage() {
       </Card>
     </div>
   )
+}
+  </CardContent>
+      </Card>
+    </div>
+  )
+}
+ard>
+    </div>
+  )
+}
+)
+}
+rd>
+    </div>
+  )
+}
+)
+}
+
+}
+)
+}
+rd>
+    </div>
+  )
+}
+)
+}
+ )
+}
+)
 }
