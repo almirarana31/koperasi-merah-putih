@@ -38,6 +38,16 @@ const conversations = [
   },
 ]
 
+function renderMessage(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>
+    }
+    return part
+  })
+}
+
 export default function AssistantPage() {
   const [messages, setMessages] = useState(conversations)
   const [input, setInput] = useState('')
@@ -72,8 +82,8 @@ export default function AssistantPage() {
 
       <div className="grid gap-6 lg:grid-cols-4">
         <div className="lg:col-span-3">
-          <Card className="flex flex-col h-[600px]">
-            <CardHeader className="border-b">
+          <Card className="flex flex-col h-[calc(100vh-220px)] p-0 gap-0 overflow-hidden">
+            <CardHeader className="border-b pt-6">
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-yellow-600" />
                 KOPDES Smart Assistant
@@ -86,7 +96,7 @@ export default function AssistantPage() {
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs rounded-lg p-3 ${msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                      <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                      <p className="text-sm whitespace-pre-wrap">{renderMessage(msg.message)}</p>
                       <p className={`text-xs mt-1 ${msg.type === 'user' ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                         {msg.time}
                       </p>
