@@ -91,7 +91,7 @@ export default function AssistantPage() {
               <CardDescription>Powered by AI Intelligence Engine</CardDescription>
             </CardHeader>
             
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="flex-1 min-h-0 p-4">
               <div className="space-y-4">
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
