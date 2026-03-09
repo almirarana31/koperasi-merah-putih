@@ -1,6 +1,12 @@
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
-import { KopdesSidebar } from '@/components/kopdes-sidebar'
-import { Separator } from '@/components/ui/separator'
+import { KopdesLayout } from '@/components/kopdes-layout'
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return <KopdesLayout>{children}</KopdesLayout>
+}
 import {
   Breadcrumb,
   BreadcrumbItem,

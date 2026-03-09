@@ -82,8 +82,8 @@ export default function AssistantPage() {
 
       <div className="grid gap-6 lg:grid-cols-4">
         <div className="lg:col-span-3">
-          <Card className="flex flex-col h-[calc(100vh-220px)] p-0 gap-0 overflow-hidden">
-            <CardHeader className="border-b pt-6">
+          <Card className="flex flex-col h-[calc(100vh-220px)]">
+            <CardHeader className="border-b shrink-0">
               <CardTitle className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-yellow-600" />
                 KOPDES Smart Assistant
@@ -91,30 +91,31 @@ export default function AssistantPage() {
               <CardDescription>Powered by AI Intelligence Engine</CardDescription>
             </CardHeader>
             
-            <ScrollArea className="flex-1 min-h-0 p-4">
-              <div className="space-y-4">
-                {messages.map((msg, idx) => (
-                  <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-xs rounded-lg p-3 ${msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                      <p className="text-sm whitespace-pre-wrap">{renderMessage(msg.message)}</p>
-                      <p className={`text-xs mt-1 ${msg.type === 'user' ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                        {msg.time}
-                      </p>
+            <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+              <ScrollArea className="flex-1 p-4">
+                <div className="space-y-4">
+                  {messages.map((msg, idx) => (
+                    <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-xs rounded-lg p-3 ${msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>
+                        <div className="text-sm whitespace-pre-wrap">{renderMessage(msg.message)}</div>
+                        <p className={`text-xs mt-1 ${msg.type === 'user' ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                          {msg.time}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                {loading && (
-                  <div className="flex justify-start">
-                    <div className="bg-muted rounded-lg p-3 flex items-center gap-2">
-                      <Loader className="h-4 w-4 animate-spin" />
-                      <span className="text-sm text-muted-foreground">Sedang berpikir...</span>
+                  ))}
+                  {loading && (
+                    <div className="flex justify-start">
+                      <div className="bg-muted rounded-lg p-3 flex items-center gap-2">
+                        <Loader className="h-4 w-4 animate-spin" />
+                        <span className="text-sm text-muted-foreground">Sedang berpikir...</span>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
+                  )}
+                </div>
+              </ScrollArea>
 
-            <div className="border-t p-4 space-y-3">
+              <div className="border-t p-4 space-y-3 shrink-0">
               <div className="flex gap-2">
                 <Input
                   placeholder="Tanya AI Assistant..."
@@ -140,7 +141,7 @@ export default function AssistantPage() {
                   </Button>
                 ))}
               </div>
-            </div>
+            </CardContent>
           </Card>
         </div>
 

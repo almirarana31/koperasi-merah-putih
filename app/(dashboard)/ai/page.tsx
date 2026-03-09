@@ -109,9 +109,9 @@ const usageData = [
 ]
 
 const accuracyDistribution = [
-  { name: 'Sangat Akurat (>90%)', value: 45, fill: 'var(--chart-1)' },
-  { name: 'Akurat (80-90%)', value: 40, fill: 'var(--chart-2)' },
-  { name: 'Perlu Review (<80%)', value: 15, fill: 'var(--chart-3)' },
+  { name: 'Sangat Akurat (>90%)', value: 45, fill: '#10b981' },
+  { name: 'Akurat (80-90%)', value: 40, fill: '#3b82f6' },
+  { name: 'Perlu Review (<80%)', value: 15, fill: '#f59e0b' },
 ]
 
 export default function AIDashboard() {
@@ -210,9 +210,9 @@ export default function AIDashboard() {
                   formatter={(value) => `${value}%`}
                 />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="accuracy" fill="var(--chart-1)" name="Akurasi" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="confidence" fill="var(--chart-2)" name="Confidence" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="impact" fill="var(--chart-3)" name="Impact" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="accuracy" fill="#10b981" name="Akurasi" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="confidence" fill="#3b82f6" name="Confidence" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="impact" fill="#f59e0b" name="Impact" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -274,11 +274,11 @@ export default function AIDashboard() {
               <YAxis fontSize={11} />
               <Tooltip contentStyle={{ fontSize: 12 }} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Line type="monotone" dataKey="harga" stroke="var(--chart-1)" strokeWidth={2} name="Prediksi Harga" />
-              <Line type="monotone" dataKey="demand" stroke="var(--chart-2)" strokeWidth={2} name="Forecast Demand" />
-              <Line type="monotone" dataKey="grading" stroke="var(--chart-3)" strokeWidth={2} name="Grading" />
-              <Line type="monotone" dataKey="rute" stroke="var(--chart-4)" strokeWidth={2} name="Optimasi Rute" />
-              <Line type="monotone" dataKey="pasar" stroke="var(--chart-5)" strokeWidth={2} name="Analisis Pasar" />
+              <Line type="monotone" dataKey="harga" stroke="#10b981" strokeWidth={2} name="Prediksi Harga" />
+              <Line type="monotone" dataKey="demand" stroke="#3b82f6" strokeWidth={2} name="Forecast Demand" />
+              <Line type="monotone" dataKey="grading" stroke="#f59e0b" strokeWidth={2} name="Grading" />
+              <Line type="monotone" dataKey="rute" stroke="#8b5cf6" strokeWidth={2} name="Optimasi Rute" />
+              <Line type="monotone" dataKey="pasar" stroke="#06b6d4" strokeWidth={2} name="Analisis Pasar" />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
@@ -346,6 +346,21 @@ export default function AIDashboard() {
           </CardContent>
         </Card>
       </div>
+    </div>
+  )
+}
+iv>
+    </div>
+  )
+}
+iv>
+    </div>
+  )
+}
+ </div>
+  )
+}
+iv>
     </div>
   )
 }
