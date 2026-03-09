@@ -23,43 +23,43 @@ export default function LandingPage() {
   const features = [
     {
       icon: Users,
-      title: 'Member Management',
-      description: 'Comprehensive member profiles with financial and production tracking',
+      title: 'Manage Members',
+      description: 'Keep track of all your members, their finances, and production activities',
       color: 'text-blue-600',
       bg: 'bg-blue-100 dark:bg-blue-900/30',
     },
     {
       icon: Sprout,
-      title: 'Production Tracking',
-      description: 'Monitor planting plans, harvests, and aggregation from multiple farmers',
+      title: 'Track Production',
+      description: 'Monitor planting schedules, harvests, and collect produce from farmers',
       color: 'text-emerald-600',
       bg: 'bg-emerald-100 dark:bg-emerald-900/30',
     },
     {
       icon: Package,
-      title: 'Smart Warehouse',
-      description: 'AI-powered quality grading and QR code tracking for inventory',
+      title: 'Smart Storage',
+      description: 'Check product quality with AI and track inventory with QR codes',
       color: 'text-purple-600',
       bg: 'bg-purple-100 dark:bg-purple-900/30',
     },
     {
       icon: BarChart3,
-      title: 'B2C Marketplace',
-      description: 'Direct-to-consumer sales platform with search and filtering',
+      title: 'Online Store',
+      description: 'Sell directly to customers with an easy-to-use online marketplace',
       color: 'text-orange-600',
       bg: 'bg-orange-100 dark:bg-orange-900/30',
     },
     {
       icon: Truck,
-      title: 'Logistics Management',
-      description: 'Fleet tracking, route planning, and delivery scheduling',
+      title: 'Delivery Management',
+      description: 'Plan routes, track vehicles, and schedule deliveries efficiently',
       color: 'text-cyan-600',
       bg: 'bg-cyan-100 dark:bg-cyan-900/30',
     },
     {
       icon: DollarSign,
-      title: 'Financial System',
-      description: 'Complete accounting with invoicing, loans, and payment tracking',
+      title: 'Money Management',
+      description: 'Handle invoices, loans, payments, and financial reports in one place',
       color: 'text-green-600',
       bg: 'bg-green-100 dark:bg-green-900/30',
     },
@@ -89,8 +89,8 @@ export default function LandingPage() {
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Empowering rural farmers with AI-driven cooperative management. 
-            From farm to market, all in one integrated platform.
+            Helping rural farmers grow their business with smart technology. 
+            From planting to selling, everything you need in one place.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -127,9 +127,9 @@ export default function LandingPage() {
       <div className="bg-white dark:bg-slate-900 py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Complete Cooperative Management</h2>
+            <h2 className="text-3xl font-bold mb-4">Everything Your Cooperative Needs</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to run a modern agricultural cooperative, powered by AI and designed for rural communities
+              All the tools to run a successful farming cooperative, made simple and easy to use
             </p>
           </div>
 
@@ -160,10 +160,10 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-4">
               {[
-                'AI-powered quality grading for consistent product standards',
-                'Real-time inventory tracking with QR code scanning',
-                'Integrated B2C marketplace for direct consumer sales',
-                'Automated financial reporting and loan management',
+                'Check product quality automatically with smart technology',
+                'Track your inventory instantly with QR code scanning',
+                'Sell directly to customers through your online store',
+                'Generate financial reports and manage loans easily',
               ].map((benefit, index) => (
                 <div key={index} className="flex items-start gap-3">
                   <div className="p-1 bg-emerald-100 dark:bg-emerald-900/30 rounded-full mt-0.5">
@@ -176,10 +176,10 @@ export default function LandingPage() {
 
             <div className="space-y-4">
               {[
-                'Mobile-friendly interface for field operations',
-                'Offline-first architecture for rural connectivity',
-                'Multi-language support (Indonesian & local languages)',
-                'Government compliance and reporting tools',
+                'Works on your phone, perfect for use in the field',
+                'Keep working even without internet connection',
+                'Available in Indonesian and local languages',
+                'Easy government reporting and compliance',
               ].map((benefit, index) => (
                 <div key={index} className="flex items-start gap-3">
                   <div className="p-1 bg-blue-100 dark:bg-blue-900/30 rounded-full mt-0.5">
@@ -218,5 +218,12 @@ export default function LandingPage() {
         </div>
       </div>
     </div>
+  )
+}
+  </div>
+    </div>
+  )
+}
+/div>
   )
 }
