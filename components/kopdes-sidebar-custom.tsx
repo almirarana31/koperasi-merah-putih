@@ -308,9 +308,3 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
     </>
   )
 }
-         </ul>
-        </div>
-      </aside>
-    </>
-  )
-}

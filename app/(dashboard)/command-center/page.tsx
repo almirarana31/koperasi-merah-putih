@@ -581,25 +581,3 @@ export default function ExecutiveCommandCenterPage() {
     </div>
   )
 }
-Info */}
-      <Card className="border-l-4 border-l-blue-500 bg-blue-50">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
-            <div className="flex-1">
-              <h4 className="font-semibold text-card-foreground mb-1">Export Otomatis untuk 3 Audience</h4>
-              <p className="text-sm text-muted-foreground mb-2">
-                Laporan disesuaikan otomatis berdasarkan target audience:
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• <strong>Koperasi:</strong> Detail operasional lengkap, analisis mendalam, rekomendasi aksi</li>
-                <li>• <strong>Pemda:</strong> Ringkasan eksekutif, dampak sosial-ekonomi, compliance reporting</li>
-                <li>• <strong>Bank/Kementerian:</strong> Financial metrics, risk assessment, audit trail</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
