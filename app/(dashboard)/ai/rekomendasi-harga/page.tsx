@@ -135,10 +135,10 @@ export default function HargaRecommendationPage() {
                 <YAxis />
                 <Tooltip formatter={(value) => `Rp ${value.toLocaleString()}`} />
                 <Legend />
-                <Line type="monotone" dataKey="beras" stroke="var(--chart-1)" strokeWidth={2} name="Beras Grade A" />
-                <Line type="monotone" dataKey="cabai" stroke="var(--chart-2)" strokeWidth={2} name="Cabai Merah" />
-                <Line type="monotone" dataKey="wortel" stroke="var(--chart-3)" strokeWidth={2} name="Wortel" />
-                <Line type="monotone" dataKey="tomat" stroke="var(--chart-4)" strokeWidth={2} name="Tomat" />
+                <Line type="monotone" dataKey="beras" stroke="#10b981" strokeWidth={2} name="Beras Grade A" />
+                <Line type="monotone" dataKey="cabai" stroke="#3b82f6" strokeWidth={2} name="Cabai Merah" />
+                <Line type="monotone" dataKey="wortel" stroke="#f59e0b" strokeWidth={2} name="Wortel" />
+                <Line type="monotone" dataKey="tomat" stroke="#8b5cf6" strokeWidth={2} name="Tomat" />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -193,9 +193,9 @@ export default function HargaRecommendationPage() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="demand" fill="var(--chart-1)" name="Demand Index" />
-              <Bar dataKey="supply" fill="var(--chart-2)" name="Supply Index" />
-              <Bar dataKey="optimal" fill="var(--chart-3)" name="Optimal Price Index" />
+              <Bar dataKey="demand" fill="#10b981" name="Demand Index" />
+              <Bar dataKey="supply" fill="#3b82f6" name="Supply Index" />
+              <Bar dataKey="optimal" fill="#f59e0b" name="Optimal Price Index" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

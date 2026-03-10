@@ -227,7 +227,7 @@ export default function GradingPage() {
               <YAxis label={{ value: 'Waktu (menit)', angle: -90, position: 'insideLeft' }} />
               <Tooltip formatter={(value) => `${value} menit`} />
               <Legend />
-              <Bar dataKey="waktu" fill="var(--chart-1)" name="Waktu Pemrosesan" />
+              <Bar dataKey="waktu" fill="#10b981" name="Waktu Pemrosesan" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

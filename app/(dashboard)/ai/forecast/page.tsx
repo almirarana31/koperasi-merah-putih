@@ -125,8 +125,8 @@ export default function ForecastPage() {
             <AreaChart data={forecastData}>
               <defs>
                 <linearGradient id="colorPrediksi" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" />
@@ -134,8 +134,8 @@ export default function ForecastPage() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Area type="monotone" dataKey="aktual" stroke="var(--chart-2)" fill="var(--chart-2)" />
-              <Area type="monotone" dataKey="prediksi" stroke="var(--chart-1)" fillOpacity={1} fill="url(#colorPrediksi)" />
+              <Area type="monotone" dataKey="aktual" stroke="#3b82f6" fill="#3b82f6" />
+              <Area type="monotone" dataKey="prediksi" stroke="#10b981" fillOpacity={1} fill="url(#colorPrediksi)" />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>
@@ -154,8 +154,8 @@ export default function ForecastPage() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="forecast" stroke="var(--chart-1)" strokeWidth={2} name="Forecast (Unit)" />
-              <Line type="monotone" dataKey="confidence" stroke="var(--chart-3)" strokeWidth={2} name="Confidence (%)" />
+              <Line type="monotone" dataKey="forecast" stroke="#10b981" strokeWidth={2} name="Forecast (Unit)" />
+              <Line type="monotone" dataKey="confidence" stroke="#f59e0b" strokeWidth={2} name="Confidence (%)" />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>

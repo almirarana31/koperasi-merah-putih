@@ -189,12 +189,12 @@ export default function LaporanPage() {
                   />
                   <Bar
                     dataKey="pendapatan"
-                    fill="hsl(var(--chart-1))"
+                    fill="#10b981"
                     radius={[4, 4, 0, 0]}
                   />
                   <Bar
                     dataKey="pengeluaran"
-                    fill="hsl(var(--chart-5))"
+                    fill="#06b6d4"
                     radius={[4, 4, 0, 0]}
                   />
                 </BarChart>

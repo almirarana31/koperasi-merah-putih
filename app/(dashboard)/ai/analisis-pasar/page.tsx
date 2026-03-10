@@ -73,9 +73,9 @@ export default function MarketAnalysisPage() {
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="kami" stroke="var(--primary)" strokeWidth={3} name="KOPDES (Kami)" />
-              <Line type="monotone" dataKey="kompA" stroke="var(--chart-2)" strokeWidth={2} name="Kompetitor A" />
-              <Line type="monotone" dataKey="kompB" stroke="var(--chart-3)" strokeWidth={2} name="Kompetitor B" />
-              <Line type="monotone" dataKey="kompC" stroke="var(--chart-4)" strokeWidth={2} name="Kompetitor C" />
+              <Line type="monotone" dataKey="kompA" stroke="#3b82f6" strokeWidth={2} name="Kompetitor A" />
+              <Line type="monotone" dataKey="kompB" stroke="#f59e0b" strokeWidth={2} name="Kompetitor B" />
+              <Line type="monotone" dataKey="kompC" stroke="#8b5cf6" strokeWidth={2} name="Kompetitor C" />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
@@ -94,10 +94,10 @@ export default function MarketAnalysisPage() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="padi" fill="var(--chart-1)" name="Padi/Beras" />
-              <Bar dataKey="daging" fill="var(--chart-2)" name="Daging" />
-              <Bar dataKey="sayur" fill="var(--chart-3)" name="Sayur" />
-              <Bar dataKey="buah" fill="var(--chart-4)" name="Buah" />
+              <Bar dataKey="padi" fill="#10b981" name="Padi/Beras" />
+              <Bar dataKey="daging" fill="#3b82f6" name="Daging" />
+              <Bar dataKey="sayur" fill="#f59e0b" name="Sayur" />
+              <Bar dataKey="buah" fill="#8b5cf6" name="Buah" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

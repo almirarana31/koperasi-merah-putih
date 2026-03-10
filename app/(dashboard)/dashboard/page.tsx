@@ -209,17 +209,17 @@ export default function CommandCenterPage() {
               <AreaChart data={revenueTrend}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="var(--color-primary)" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="month" tick={{ fill: "var(--color-muted-foreground)" }} />
-                <YAxis tick={{ fill: "var(--color-muted-foreground)" }} />
+                <XAxis dataKey="month" tick={{ fill: "#64748b" }} />
+                <YAxis tick={{ fill: "#64748b" }} />
                 <Tooltip />
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="var(--color-primary)"
+                  stroke="#10b981"
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
                 />

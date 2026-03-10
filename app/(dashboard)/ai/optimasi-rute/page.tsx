@@ -169,8 +169,8 @@ export default function OptimationRoutePage() {
               <YAxis />
               <Tooltip formatter={(value) => `Rp ${value.toLocaleString()}`} />
               <Legend />
-              <Bar dataKey="biayaSebelum" fill="var(--chart-2)" name="Biaya Sebelum" />
-              <Bar dataKey="biayaSesudah" fill="var(--chart-1)" name="Biaya Sesudah" />
+              <Bar dataKey="biayaSebelum" fill="#3b82f6" name="Biaya Sebelum" />
+              <Bar dataKey="biayaSesudah" fill="#10b981" name="Biaya Sesudah" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
