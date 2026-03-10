@@ -185,8 +185,8 @@ Silakan tanyakan lebih spesifik! 😊`
   return (
     <div
       className={cn(
-        "fixed bottom-6 right-6 z-50 flex flex-col bg-white rounded-2xl shadow-2xl border border-border transition-all duration-300",
-        isMinimized ? "w-80 h-16" : "w-96 h-[600px]"
+        "fixed bottom-6 right-6 z-50 flex flex-col bg-white rounded-2xl shadow-2xl border border-border transition-all duration-300 overflow-hidden",
+        isMinimized ? "w-80 h-16" : "w-[90vw] sm:w-96 h-[80vh] sm:h-[600px] max-w-[400px]"
       )}
     >
       {/* Header */}
@@ -232,13 +232,13 @@ Silakan tanyakan lebih spesifik! 😊`
       {!isMinimized && (
         <>
           {/* Messages */}
-          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-            <div className="space-y-4">
+          <ScrollArea className="flex-1 p-4 overflow-x-hidden" ref={scrollRef}>
+            <div className="space-y-4 w-full">
               {messages.map((message) => (
                 <div
                   key={message.id}
                   className={cn(
-                    "flex gap-3",
+                    "flex gap-3 w-full",
                     message.role === "user" ? "justify-end" : "justify-start"
                   )}
                 >
@@ -251,13 +251,13 @@ Silakan tanyakan lebih spesifik! 😊`
                   )}
                   <div
                     className={cn(
-                      "rounded-2xl px-4 py-2 max-w-[80%]",
+                      "rounded-2xl px-4 py-2 max-w-[80%] break-words overflow-hidden",
                       message.role === "user"
                         ? "bg-emerald-500 text-white"
                         : "bg-secondary text-foreground"
                     )}
                   >
-                    <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                    <div className="text-sm whitespace-pre-wrap break-words" style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}>{message.content}</div>
                     <div
                       className={cn(
                         "text-xs mt-1",

@@ -132,7 +132,6 @@ const navigation: { section: string; items: NavItem[] }[] = [
         label: "AI Assistant",
         icon: Zap,
         children: [
-          { label: "Chat Assistant", href: "/assistant" },
           { label: "Konsultasi Pertanian", href: "/assistant/konsultasi" },
           { label: "Laporan Otomatis", href: "/assistant/laporan" },
           { label: "Notifikasi Cerdas", href: "/assistant/notifikasi" },
@@ -304,6 +303,12 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
               </li>
             ))}
           </ul>
+        </div>
+      </aside>
+    </>
+  )
+}
+         </ul>
         </div>
       </aside>
     </>
