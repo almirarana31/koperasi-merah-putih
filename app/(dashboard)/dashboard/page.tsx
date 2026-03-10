@@ -32,6 +32,7 @@ import {
   Legend,
 } from "recharts"
 import { getStats, members, products, marketOrders, production, inventory, logistics } from "@/lib/mock-data"
+import { AISmartNotifications } from "@/components/ai-smart-notifications"
 
 // Get comprehensive statistics
 const stats = getStats()
@@ -163,6 +164,9 @@ export default function CommandCenterPage() {
           Overview of your cooperative's key activities and performance
         </p>
       </div>
+
+      {/* AI Smart Notifications - Highlighted */}
+      <AISmartNotifications />
 
       {/* 8 Monitoring Areas Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

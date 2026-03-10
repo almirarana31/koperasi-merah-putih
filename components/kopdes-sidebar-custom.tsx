@@ -17,6 +17,7 @@ import {
   ChevronDown,
   Leaf,
   X,
+  Activity,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -32,6 +33,7 @@ const navigation: { section: string; items: NavItem[] }[] = [
     section: "Overview",
     items: [
       { label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+      { label: "Pusat Kendali Eksekutif", icon: Activity, href: "/command-center" },
     ],
   },
   {
@@ -119,6 +121,7 @@ const navigation: { section: string; items: NavItem[] }[] = [
         children: [
           { label: "Dashboard AI", href: "/ai" },
           { label: "Forecast Permintaan", href: "/ai/forecast" },
+          { label: "Supply & Demand", href: "/ai/supply-demand" },
           { label: "Rekomendasi Harga", href: "/ai/rekomendasi-harga" },
           { label: "Optimasi Rute", href: "/ai/optimasi-rute" },
           { label: "Grading Otomatis", href: "/ai/grading" },

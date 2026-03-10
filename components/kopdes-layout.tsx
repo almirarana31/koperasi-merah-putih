@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { KopdesSidebarCustom } from "./kopdes-sidebar-custom"
 import { KopdesHeader } from "./kopdes-header"
+import { FloatingAIChatbot } from "./floating-ai-chatbot"
 
 interface KopdesLayoutProps {
   children: React.ReactNode
@@ -33,6 +34,9 @@ export function KopdesLayout({ children }: KopdesLayoutProps) {
           </div>
         </footer>
       </div>
+
+      {/* Floating AI Chatbot - Available on all pages */}
+      <FloatingAIChatbot />
     </div>
   )
 }
