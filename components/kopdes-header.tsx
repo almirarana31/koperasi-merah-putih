@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Bell, User, Calendar, Menu, Sparkles, TrendingUp, AlertTriangle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Search, Bell, User, Calendar, Menu, Sparkles, TrendingUp, AlertTriangle, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
@@ -15,18 +16,31 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/lib/auth"
+import { ROLE_CONFIGS } from "@/lib/rbac/roles"
+import { toast } from "sonner"
 
 interface HeaderProps {
   onMenuClick?: () => void
 }
 
 export function KopdesHeader({ onMenuClick }: HeaderProps) {
+  const router = useRouter()
+  const { user, logout } = useAuth()
+  const roleConfig = user ? ROLE_CONFIGS[user.role] : null
+  
   const currentDate = new Date().toLocaleDateString("id-ID", {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   })
+
+  const handleLogout = () => {
+    logout()
+    toast.success('Berhasil keluar')
+    router.push('/login')
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 sm:px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -238,22 +252,42 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-                <User className="h-4 w-4 text-primary-foreground" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-lg">
+                {roleConfig?.icon || <User className="h-4 w-4 text-primary-foreground" />}
               </div>
               <div className="hidden text-left md:block">
-                <p className="text-sm font-medium text-foreground">Admin Koperasi</p>
-                <p className="text-xs text-muted-foreground">Koperasi Merah Putih</p>
+                <p className="text-sm font-medium text-foreground">{user?.name || 'User'}</p>
+                <div className="flex items-center gap-1">
+                  {roleConfig && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded ${roleConfig.color}`}>
+                      {roleConfig.label}
+                    </span>
+                  )}
+                </div>
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium">{user?.name}</p>
+                <p className="text-xs text-muted-foreground">{user?.email}</p>
+                {roleConfig && (
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className="text-base">{roleConfig.icon}</span>
+                    <span className="text-xs font-normal">{roleConfig.label}</span>
+                  </div>
+                )}
+              </div>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Profil</DropdownMenuItem>
             <DropdownMenuItem>Pengaturan</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Keluar</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
+              <LogOut className="mr-2 h-4 w-4" />
+              Keluar
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
