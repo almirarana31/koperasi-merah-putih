@@ -339,6 +339,3 @@ export function getRoleIcon(role: Role): string {
 export function getRoleColor(role: Role): string {
   return ROLE_CONFIGS[role].color
 }
-or(role: Role): string {
-  return ROLE_CONFIGS[role].color
-}
