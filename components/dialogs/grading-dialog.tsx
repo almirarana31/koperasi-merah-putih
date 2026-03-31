@@ -23,10 +23,47 @@ import {
   Ruler,
   Eye
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import type { DialogOpenProps } from '@/components/dialogs/types'
 
-export function GradingDialog({ open, onOpenChange, item, onGrade }) {
+type GradingMetricKey = 'size' | 'color' | 'freshness' | 'defects'
+
+type GradingMetric = {
+  score: number
+  status: string
+  value: string
+}
+
+type GradingResult = {
+  grade: string
+  confidence: number
+  metrics: Record<GradingMetricKey, GradingMetric>
+  recommendations: string[]
+}
+
+type GradingItem = {
+  id?: string
+  name?: string
+  quantity?: string | number
+  batch?: string
+}
+
+type GradePayload = {
+  itemId?: string
+  grade: string
+  confidence: number
+  metrics: Record<GradingMetricKey, GradingMetric>
+  gradedAt: string
+}
+
+type GradingDialogProps = DialogOpenProps & {
+  item?: GradingItem | null
+  onGrade?: (payload: GradePayload) => void
+}
+
+export function GradingDialog({ open, onOpenChange, item, onGrade }: GradingDialogProps) {
   const [isScanning, setIsScanning] = useState(false)
-  const [gradingResult, setGradingResult] = useState(null)
+  const [gradingResult, setGradingResult] = useState<GradingResult | null>(null)
 
   const handleAIGrading = () => {
     setIsScanning(true)
@@ -170,14 +207,14 @@ export function GradingDialog({ open, onOpenChange, item, onGrade }) {
               </Card>
 
               <div className="grid grid-cols-2 gap-3">
-                {Object.entries(gradingResult.metrics).map(([key, metric]: [string, any]) => {
-                  const icons = {
+                {Object.entries(gradingResult.metrics).map(([key, metric]) => {
+                  const icons: Record<GradingMetricKey, LucideIcon> = {
                     size: Ruler,
                     color: Eye,
                     freshness: Droplets,
                     defects: Bug,
                   }
-                  const Icon = icons[key] || TrendingUp
+                  const Icon = icons[key as GradingMetricKey] || TrendingUp
                   
                   return (
                     <Card key={key}>
@@ -208,7 +245,7 @@ export function GradingDialog({ open, onOpenChange, item, onGrade }) {
                     Recommendations
                   </h4>
                   <ul className="space-y-1.5">
-                    {gradingResult.recommendations.map((rec, idx) => (
+                    {gradingResult.recommendations.map((rec: string, idx: number) => (
                       <li key={idx} className="text-sm flex items-start gap-2">
                         <span className="text-blue-600 mt-0.5">•</span>
                         <span>{rec}</span>

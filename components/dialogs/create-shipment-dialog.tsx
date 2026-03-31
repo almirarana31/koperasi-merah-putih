@@ -22,8 +22,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { Truck, Package, MapPin, Calendar, User } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function CreateShipmentDialog({ open, onOpenChange, onSave }) {
+export function CreateShipmentDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [formData, setFormData] = useState({
     orderId: '',
     destination: '',

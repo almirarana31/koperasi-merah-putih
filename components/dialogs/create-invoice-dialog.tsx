@@ -9,8 +9,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { FileText, Plus, Trash2 } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function CreateInvoiceDialog({ open, onOpenChange, onSave }) {
+export function CreateInvoiceDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [formData, setFormData] = useState({
     customer: '',
     dueDate: '',

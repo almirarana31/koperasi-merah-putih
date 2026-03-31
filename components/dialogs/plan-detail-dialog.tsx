@@ -9,6 +9,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { Button } from '@/components/ui/button'
 import { 
   Calendar, 
   MapPin, 
@@ -20,8 +21,22 @@ import {
   CheckCircle2,
   Clock
 } from 'lucide-react'
+import type { DialogOpenProps } from '@/components/dialogs/types'
 
-export function PlanDetailDialog({ open, onOpenChange, plan }) {
+type PlanSummary = {
+  commodity?: string
+  location?: string
+  status?: string
+  startDate?: string
+  expectedHarvest?: string
+  progress?: number
+}
+
+type PlanDetailDialogProps = DialogOpenProps & {
+  plan?: PlanSummary | null
+}
+
+export function PlanDetailDialog({ open, onOpenChange, plan }: PlanDetailDialogProps) {
   if (!plan) return null
 
   // Mock data for the plan if not fully provided

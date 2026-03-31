@@ -20,8 +20,9 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { Calendar, Clock, MapPin, Repeat } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function AddDeliveryScheduleDialog({ open, onOpenChange, onSave }) {
+export function AddDeliveryScheduleDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [formData, setFormData] = useState({
     route: '',
     frequency: 'weekly',

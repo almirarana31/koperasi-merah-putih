@@ -513,14 +513,14 @@ export default function CreditScoringPage() {
                       <TableCell className="text-center">
                         <div className="flex items-center justify-center gap-1">
                           {member.kycVerified ? (
-                            <ShieldCheck className="h-4 w-4 text-emerald-500" title="KYC Verified" />
+                            <ShieldCheck className="h-4 w-4 text-emerald-500" aria-label="KYC Verified" />
                           ) : (
-                            <XCircle className="h-4 w-4 text-red-500" title="KYC Pending" />
+                            <XCircle className="h-4 w-4 text-red-500" aria-label="KYC Pending" />
                           )}
                           {member.dukcapilVerified ? (
-                            <CheckCircle className="h-4 w-4 text-emerald-500" title="Dukcapil Verified" />
+                            <CheckCircle className="h-4 w-4 text-emerald-500" aria-label="Dukcapil Verified" />
                           ) : (
-                            <AlertTriangle className="h-4 w-4 text-amber-500" title="Dukcapil Pending" />
+                            <AlertTriangle className="h-4 w-4 text-amber-500" aria-label="Dukcapil Pending" />
                           )}
                         </div>
                       </TableCell>

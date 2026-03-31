@@ -21,8 +21,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { Truck, Calendar, Wrench, Fuel, Plus } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function AddVehicleDialog({ open, onOpenChange, onSave }) {
+export function AddVehicleDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [formData, setFormData] = useState({
     type: 'truck',
     licensePlate: '',

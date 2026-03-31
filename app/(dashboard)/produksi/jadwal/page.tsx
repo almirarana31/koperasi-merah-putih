@@ -121,7 +121,7 @@ const personalSchedule = [
   },
 ] as const
 
-const today = '2024-02-17'
+const today: string = '2024-02-17'
 
 export default function JadwalPanenPage() {
   const { user } = useAuth()

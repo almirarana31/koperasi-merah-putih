@@ -20,10 +20,29 @@ import {
   User,
   Scan
 } from 'lucide-react'
+import type { DialogOpenProps } from '@/components/dialogs/types'
 
-export function QRScannerDialog({ open, onOpenChange, onScanComplete }) {
+type ScannedData = {
+  id: string
+  commodity: string
+  quantity: string
+  grade: string
+  origin: string
+  farmer: string
+  harvestDate: string
+  expiryDate: string
+  batchNumber: string
+  warehouse: string
+  status: string
+}
+
+type QRScannerDialogProps = DialogOpenProps & {
+  onScanComplete?: (data: ScannedData) => void
+}
+
+export function QRScannerDialog({ open, onOpenChange, onScanComplete }: QRScannerDialogProps) {
   const [isScanning, setIsScanning] = useState(false)
-  const [scannedData, setScannedData] = useState(null)
+  const [scannedData, setScannedData] = useState<ScannedData | null>(null)
 
   const handleStartScan = () => {
     setIsScanning(true)

@@ -31,8 +31,9 @@ import {
   X,
   CheckCircle2
 } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function AggregationDialog({ open, onOpenChange, onSave }) {
+export function AggregationDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [formData, setFormData] = useState({
     commodity: '',
     targetQuantity: '',

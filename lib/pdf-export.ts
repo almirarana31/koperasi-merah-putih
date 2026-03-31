@@ -12,10 +12,14 @@
 export interface PDFExportOptions {
   title: string
   subtitle?: string
-  data: any[]
+  data: Array<Record<string, unknown>>
   columns?: string[]
   filename?: string
   orientation?: 'portrait' | 'landscape'
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Unknown export error'
 }
 
 export async function exportToPDF(options: PDFExportOptions) {
@@ -107,7 +111,7 @@ export async function exportToPDF(options: PDFExportOptions) {
     return { success: true, filename }
   } catch (error) {
     console.error('PDF export error:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: getErrorMessage(error) }
   }
 }
 
@@ -158,6 +162,6 @@ export async function exportChartToPDF(options: {
     return { success: true, filename }
   } catch (error) {
     console.error('Chart export error:', error)
-    return { success: false, error: error.message }
+    return { success: false, error: getErrorMessage(error) }
   }
 }

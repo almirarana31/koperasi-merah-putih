@@ -15,8 +15,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { Banknote, Calculator, TrendingUp } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function LoanApplicationDialog({ open, onOpenChange, onSave }) {
+export function LoanApplicationDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [formData, setFormData] = useState({
     memberId: '',
     amount: '',

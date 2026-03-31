@@ -20,8 +20,9 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { ArrowRightLeft, ArrowDownToLine, ArrowUpFromLine, Package } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function StockMovementDialog({ open, onOpenChange, onSave }) {
+export function StockMovementDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [formData, setFormData] = useState({
     type: 'in',
     commodity: '',

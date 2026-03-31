@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 // Since we are using mock authentication for this demo, we'll check for a cookie.
 // In a real app, you would verify a JWT or session token here.
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   
   // Define protected routes

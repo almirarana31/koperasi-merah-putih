@@ -18,8 +18,9 @@ import {
   Filter,
   Download
 } from 'lucide-react'
+import type { DialogOpenProps } from '@/components/dialogs/types'
 
-export function HarvestScheduleView({ open, onOpenChange }) {
+export function HarvestScheduleView({ open, onOpenChange }: DialogOpenProps) {
   const [view, setView] = useState('Month')
   const [currentDate, setCurrentDate] = useState(new Date(2026, 2, 8)) // March 2026
 

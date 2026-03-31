@@ -15,8 +15,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { MapPin, Navigation, Plus, X, TrendingUp } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function AddRouteDialog({ open, onOpenChange, onSave }) {
+export function AddRouteDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [formData, setFormData] = useState({
     name: '',
     origin: '',

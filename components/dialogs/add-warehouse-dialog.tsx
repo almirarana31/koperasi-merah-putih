@@ -20,8 +20,9 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { Warehouse, MapPin, Thermometer, Droplets, Plus } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function AddWarehouseDialog({ open, onOpenChange, onSave }) {
+export function AddWarehouseDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [formData, setFormData] = useState({
     name: '',
     location: '',

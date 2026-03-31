@@ -22,8 +22,9 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { ShoppingCart, Plus, Minus, Trash2, Package } from 'lucide-react'
+import type { DialogSaveProps } from '@/components/dialogs/types'
 
-export function CreateOrderDialog({ open, onOpenChange, onSave }) {
+export function CreateOrderDialog({ open, onOpenChange, onSave }: DialogSaveProps) {
   const [orderItems, setOrderItems] = useState([
     { id: 1, commodity: '', quantity: '', price: '', subtotal: 0 }
   ])
