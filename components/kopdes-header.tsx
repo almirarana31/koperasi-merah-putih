@@ -1,9 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Search, Bell, User, Calendar, Menu, Sparkles, TrendingUp, AlertTriangle, LogOut, Leaf } from "lucide-react"
+import { Bell, User, Calendar, Menu, Sparkles, TrendingUp, AlertTriangle, LogOut, Leaf } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import {
   DropdownMenu,
@@ -72,15 +71,6 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
             <p className="text-sm font-bold tracking-tight text-primary">KOPDES Workspace</p>
             <p className="text-[11px] text-muted-foreground">Tata letak utility-first ala Stitch</p>
           </div>
-        </div>
-
-        <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Cari anggota, produk, atau transaksi..."
-            className="h-11 w-[min(32rem,42vw)] rounded-full border-transparent bg-secondary/80 pl-9 text-sm shadow-none"
-          />
         </div>
       </div>
 

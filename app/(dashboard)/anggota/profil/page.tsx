@@ -66,6 +66,7 @@ type Preset = {
   scoreLabel: string
   scoreValue: string
   scoreState: string
+  scoreTone: 'emerald' | 'amber' | 'blue'
   metrics: Metric[]
   workstreams: string[]
   activities: Entry[]
@@ -110,6 +111,7 @@ const ACCOUNT_PRESETS: Record<string, Preset> = {
     scoreLabel: 'Credit Score',
     scoreValue: '742',
     scoreState: 'Sangat baik',
+    scoreTone: 'emerald',
     metrics: [
       { label: 'Total Simpanan', value: formatCurrency(8500000), helper: 'Saldo aktif akun ini', icon: Wallet, accent: 'bg-emerald-500/10 text-emerald-600' },
       { label: 'Sisa Pinjaman', value: formatCurrency(4500000), helper: 'Pinjaman produktif berjalan', icon: CreditCard, accent: 'bg-amber-500/10 text-amber-600' },
@@ -139,6 +141,7 @@ const ACCOUNT_PRESETS: Record<string, Preset> = {
     scoreLabel: 'Health Index',
     scoreValue: '91',
     scoreState: 'Stabil',
+    scoreTone: 'blue',
     metrics: [
       { label: 'Anggota Aktif', value: '1.247', helper: 'Dalam pengelolaan harian', icon: Users, accent: 'bg-primary/10 text-primary' },
       { label: 'Laporan Siap', value: '12', helper: 'Dokumen operasional minggu ini', icon: FileText, accent: 'bg-blue-500/10 text-blue-600' },
@@ -168,6 +171,7 @@ const ACCOUNT_PRESETS: Record<string, Preset> = {
     scoreLabel: 'Governance Score',
     scoreValue: '94',
     scoreState: 'Sangat sehat',
+    scoreTone: 'emerald',
     metrics: [
       { label: 'Persetujuan Masuk', value: '7', helper: 'Pinjaman dan kebijakan', icon: ShieldCheck, accent: 'bg-primary/10 text-primary' },
       { label: 'Risiko Fokus', value: '3', helper: 'Butuh keputusan strategis', icon: BarChart3, accent: 'bg-amber-500/10 text-amber-600' },
@@ -197,6 +201,7 @@ const ACCOUNT_PRESETS: Record<string, Preset> = {
     scoreLabel: 'System Health',
     scoreValue: '99.8%',
     scoreState: 'Optimal',
+    scoreTone: 'blue',
     metrics: [
       { label: 'Alert Kritis', value: '0', helper: 'Tidak ada gangguan tinggi', icon: ShieldCheck, accent: 'bg-emerald-500/10 text-emerald-600' },
       { label: 'Audit Log', value: '16', helper: 'Perlu ditinjau hari ini', icon: FileText, accent: 'bg-primary/10 text-primary' },
@@ -230,6 +235,27 @@ function statusClass(status: string) {
   return 'bg-amber-500 text-white'
 }
 
+function scoreToneClass(tone: Preset['scoreTone']) {
+  if (tone === 'emerald') {
+    return {
+      value: 'text-emerald-500',
+      badge: 'bg-emerald-500 text-white',
+    }
+  }
+
+  if (tone === 'amber') {
+    return {
+      value: 'text-amber-500',
+      badge: 'bg-amber-500 text-white',
+    }
+  }
+
+  return {
+    value: 'text-blue-500',
+    badge: 'bg-blue-500 text-white',
+  }
+}
+
 function fallbackPreset(user: NonNullable<ReturnType<typeof useAuth>['user']>): Preset {
   const member = members.find((item) => item.nama === user.name)
   const loan = loans.find((item) => item.memberNama === user.name || item.memberId === member?.id)
@@ -242,6 +268,7 @@ function fallbackPreset(user: NonNullable<ReturnType<typeof useAuth>['user']>): 
     scoreLabel: 'Status Akun',
     scoreValue: 'Aktif',
     scoreState: 'Sinkron',
+    scoreTone: 'blue',
     metrics: [
       { label: 'Role Aktif', value: user.role, helper: 'Role yang sedang digunakan', icon: ShieldCheck, accent: 'bg-primary/10 text-primary' },
       { label: 'Pinjaman Aktif', value: loan ? formatCurrency(loan.sisaPinjaman) : formatCurrency(0), helper: 'Jika ada pembiayaan terkait', icon: Wallet, accent: 'bg-amber-500/10 text-amber-600' },
@@ -264,6 +291,7 @@ export default function MemberProfilPage() {
   const routes = QUICK_ROUTES.filter((route) => canRoute(route.href))
   const backHref = canRoute('/anggota') ? '/anggota' : '/dashboard'
   const title = user.role === 'petani' ? 'Profil Saya' : 'Profil Akun'
+  const scoreTone = scoreToneClass(preset.scoreTone)
 
   return (
     <div className="space-y-6">
@@ -293,81 +321,148 @@ export default function MemberProfilPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[1.28fr_0.82fr]">
-        <Card className="overflow-hidden border-red-200/70 bg-[linear-gradient(135deg,#be0817_0%,#d92827_54%,#aa2d2a_100%)] text-primary-foreground shadow-[0_28px_70px_-30px_rgba(133,18,23,0.55)]">
-          <CardContent className="space-y-5 p-6">
-            <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-              <div className="flex items-start gap-4">
-                <Avatar className="h-20 w-20 border border-white/20">
-                  <AvatarFallback className="bg-white/15 text-xl font-bold text-white">{initials(user.name)}</AvatarFallback>
+      <div className="space-y-4">
+        <Card className="border-border/80 shadow-[0_18px_40px_-30px_rgba(77,39,32,0.25)]">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+              <div className="flex flex-1 flex-col gap-5 sm:flex-row sm:items-start">
+                <Avatar className="h-20 w-20 border border-red-100 shadow-sm sm:h-24 sm:w-24">
+                  <AvatarFallback className="bg-red-50 text-xl font-bold text-primary sm:text-2xl">{initials(user.name)}</AvatarFallback>
                 </Avatar>
-                <div className="space-y-3">
-                  <div>
+
+                <div className="min-w-0 flex-1 space-y-4">
+                  <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-2xl font-bold">{user.name}</h2>
-                      <Badge className="border-none bg-white/15 text-white">{preset.tier}</Badge>
+                      <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{user.name}</h2>
+                      <Badge className="bg-red-50 text-primary">{preset.tier}</Badge>
                     </div>
-                    <p className="mt-1 text-sm text-primary-foreground/80">{preset.accountType}</p>
+                    <p className="text-sm text-muted-foreground">{preset.accountType}</p>
                   </div>
+
                   <div className="flex flex-wrap gap-2">
-                    <Badge className="border-none bg-white/15 text-white">{roleConfig.label}</Badge>
-                    <Badge className="border-none bg-white/15 text-white">{SCOPE_LABELS[dataScope()]}</Badge>
-                    <Badge className="border-none bg-white/15 text-white">Akun aktif</Badge>
+                    <Badge className="bg-primary text-primary-foreground">{roleConfig.label}</Badge>
+                    <Badge variant="secondary">{SCOPE_LABELS[dataScope()]}</Badge>
+                    <Badge variant="outline">Akun aktif</Badge>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border bg-secondary/20 p-4">
+                      <div className="flex items-center gap-2 text-sm text-foreground">
+                        <Mail className="h-4 w-4 text-primary" />
+                        <span className="truncate">{user.email}</span>
+                      </div>
+                      <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                        <Phone className="h-4 w-4 text-primary" />
+                        <span>{preset.phone}</span>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border bg-secondary/20 p-4">
+                      <div className="flex items-center gap-2 text-sm text-foreground">
+                        <MapPin className="h-4 w-4 text-primary" />
+                        <span>{preset.address}</span>
+                      </div>
+                      <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4 text-primary" />
+                        <span>Bergabung {formatDate(preset.joinedAt)}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/72">{preset.scoreLabel}</p>
-                <p className="mt-2 text-3xl font-bold">{preset.scoreValue}</p>
-                <p className="mt-1 text-sm text-primary-foreground/78">{preset.scoreState}</p>
-              </div>
-            </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[1.3rem] border border-white/12 bg-black/10 p-4">
-                <div className="flex items-center gap-2 text-sm text-primary-foreground/78">
-                  <Mail className="h-4 w-4" />
-                  <span>{user.email}</span>
+              <div className="w-full rounded-[1.75rem] border bg-secondary/25 p-5 xl:max-w-[21rem]">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{preset.scoreLabel}</p>
+                <p className={`mt-3 text-4xl font-bold tracking-tight ${scoreTone.value}`}>{preset.scoreValue}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Badge className={scoreTone.badge}>{preset.scoreState}</Badge>
+                  <Badge variant="outline">Dinamis per akun</Badge>
                 </div>
-                <div className="mt-3 flex items-center gap-2 text-sm text-primary-foreground/78">
-                  <Phone className="h-4 w-4" />
-                  <span>{preset.phone}</span>
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Tampilan ini mengikuti role dan akun yang sedang login, bukan profil demo statis.
+                </p>
+                <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center justify-between rounded-2xl bg-background px-3 py-2">
+                    <span>User ID</span>
+                    <span className="font-medium text-foreground">{user.id}</span>
+                  </div>
+                  {member && (
+                    <div className="flex items-center justify-between rounded-2xl bg-background px-3 py-2">
+                      <span>Member ID</span>
+                      <span className="font-medium text-foreground">{member.id}</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="rounded-[1.3rem] border border-white/12 bg-black/10 p-4">
-                <div className="flex items-center gap-2 text-sm text-primary-foreground/78">
-                  <MapPin className="h-4 w-4" />
-                  <span>{preset.address}</span>
-                </div>
-                <div className="mt-3 flex items-center gap-2 text-sm text-primary-foreground/78">
-                  <Calendar className="h-4 w-4" />
-                  <span>Bergabung {formatDate(preset.joinedAt)}</span>
-                </div>
+                {canRoute('/keuangan/credit-scoring') && (
+                  <Button asChild variant="outline" className="mt-4 w-full">
+                    <Link href="/keuangan/credit-scoring">
+                      Lihat detail skor
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Status verifikasi akun</CardTitle>
-            <CardDescription>Data ini sekarang mengikuti user login, bukan member demo statis.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-2xl border bg-secondary/35 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Role aktif</p>
-              <p className="mt-2 text-lg font-semibold">{roleConfig.label}</p>
-              <p className="text-sm text-muted-foreground">{roleConfig.description}</p>
-            </div>
-            <div className="grid gap-3">
-              <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">User ID</span><Badge variant="outline">{user.id}</Badge></div>
-              {member && <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">Member ID</span><Badge variant="outline">{member.id}</Badge></div>}
-              {member && <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">NIK</span><Badge variant="outline">{member.nik}</Badge></div>}
-              <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">Status akun</span><Badge className="bg-emerald-500 text-white">Aktif</Badge></div>
-              <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">Sinkron RBAC</span><Badge className="bg-blue-500 text-white">Ya</Badge></div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+          <Card>
+            <CardHeader>
+              <CardTitle>Status verifikasi akun</CardTitle>
+              <CardDescription>Identitas dan akses di bawah ini ikut berubah saat akun login diganti.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-3 sm:grid-cols-2">
+              <div className="flex items-center justify-between rounded-2xl border p-3">
+                <span className="text-sm font-medium">Status akun</span>
+                <Badge className="bg-emerald-500 text-white">Aktif</Badge>
+              </div>
+              <div className="flex items-center justify-between rounded-2xl border p-3">
+                <span className="text-sm font-medium">Sinkron RBAC</span>
+                <Badge className="bg-blue-500 text-white">Ya</Badge>
+              </div>
+              <div className="flex items-center justify-between rounded-2xl border p-3">
+                <span className="text-sm font-medium">Role aktif</span>
+                <Badge variant="outline">{roleConfig.label}</Badge>
+              </div>
+              <div className="flex items-center justify-between rounded-2xl border p-3">
+                <span className="text-sm font-medium">Scope data</span>
+                <Badge variant="outline">{SCOPE_LABELS[dataScope()]}</Badge>
+              </div>
+              {member && (
+                <div className="flex items-center justify-between rounded-2xl border p-3">
+                  <span className="text-sm font-medium">NIK</span>
+                  <Badge variant="outline">{member.nik}</Badge>
+                </div>
+              )}
+              <div className="flex items-center justify-between rounded-2xl border p-3">
+                <span className="text-sm font-medium">Tier akun</span>
+                <Badge className="bg-red-50 text-primary">{preset.tier}</Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Ringkasan akses</CardTitle>
+              <CardDescription>Peran utama akun ini di dalam koperasi dan platform.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="rounded-2xl border bg-secondary/35 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Deskripsi role</p>
+                <p className="mt-2 text-lg font-semibold">{roleConfig.label}</p>
+                <p className="text-sm text-muted-foreground">{roleConfig.description}</p>
+              </div>
+              <div className="rounded-2xl border bg-secondary/35 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Akun terhubung</p>
+                <p className="mt-2 text-lg font-semibold">{member?.nama ?? user.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  {member ? member.komoditas.join(', ') : 'Profil mengikuti identitas akun login saat ini.'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
