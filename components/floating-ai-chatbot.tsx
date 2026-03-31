@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { MessageBubble } from "./ai/chatbot/message-bubble"
+import { getAIResponse } from "./ai/chatbot/ai-logic"
 
 interface Message {
   id: string
@@ -75,88 +77,6 @@ export function FloatingAIChatbot() {
       setMessages((prev) => [...prev, aiResponse])
       setIsTyping(false)
     }, 1500)
-  }
-
-  const getAIResponse = (query: string): string => {
-    const lowerQuery = query.toLowerCase()
-
-    if (lowerQuery.includes("stok") || lowerQuery.includes("inventory")) {
-      return `📦 **Status Stok Hari Ini:**
-
-• Beras Grade A: 120 ton (Stok Aman ✓)
-• Cabai Merah: 2.5 ton (Stok Menipis ⚠️)
-• Tomat: 1.8 ton (Stok Aman ✓)
-• Wortel: 3.2 ton (Stok Aman ✓)
-
-**Rekomendasi:**
-✓ Order cabai merah 1 ton dalam 2 hari
-✓ Stok lainnya mencukupi untuk 5-7 hari`
-    }
-
-    if (lowerQuery.includes("harga") || lowerQuery.includes("prediksi")) {
-      return `📈 **Prediksi Harga Cabai Merah (7 Hari):**
-
-Harga Saat Ini: Rp 45,000/kg
-Trend: ↗️ Naik 15%
-
-**Prediksi:**
-• 3 hari: Rp 48,000/kg (+7%)
-• 7 hari: Rp 52,000/kg (+15%)
-
-**Rekomendasi:**
-✓ TAHAN stok 5-7 hari
-✓ Potensi profit tambahan: Rp 7,000/kg
-✓ Confidence: 87%`
-    }
-
-    if (lowerQuery.includes("anggota") || lowerQuery.includes("member")) {
-      return `👥 **Top 5 Anggota (Bulan Ini):**
-
-1. **Pak Budi Santoso**
-   - Transaksi: Rp 45.5 juta
-   - Volume: 2.5 ton
-   - Komoditas: Beras, Cabai
-
-2. **Ibu Siti Aminah**
-   - Transaksi: Rp 38.2 juta
-   - Volume: 1.8 ton
-   - Komoditas: Sayuran
-
-3. **Pak Ahmad Dahlan**
-   - Transaksi: Rp 32.7 juta
-   - Volume: 1.5 ton
-   - Komoditas: Buah-buahan`
-    }
-
-    if (lowerQuery.includes("rekomendasi") || lowerQuery.includes("jual")) {
-      return `💡 **Rekomendasi Komoditas Minggu Ini:**
-
-🥇 **Cabai Merah** (Prioritas Tinggi)
-- Demand: Tinggi (↗️ +25%)
-- Margin: 42%
-- Potensi profit: Rp 52.5 juta
-
-🥈 **Beras Grade A** (Stabil)
-- Demand: Sedang (→ Stabil)
-- Margin: 18%
-- Potensi profit: Rp 40.5 juta
-
-🥉 **Tomat** (Perhatian)
-- Demand: Menurun (↘️ -12%)
-- Margin: 35%
-- Rekomendasi: Kurangi stok 20%`
-    }
-
-    return `Terima kasih atas pertanyaan Anda. Saya sedang menganalisis data untuk memberikan jawaban terbaik. 
-
-Beberapa hal yang bisa saya bantu:
-• Cek stok dan inventory
-• Prediksi harga komoditas
-• Analisis performa anggota
-• Rekomendasi penjualan
-• Forecast demand & supply
-
-Silakan tanyakan lebih spesifik! 😊`
   }
 
   const handleQuickAction = (action: string) => {
@@ -235,49 +155,7 @@ Silakan tanyakan lebih spesifik! 😊`
           <ScrollArea className="flex-1 p-4 overflow-x-hidden" ref={scrollRef}>
             <div className="space-y-4 w-full">
               {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={cn(
-                    "flex gap-3 w-full",
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  )}
-                >
-                  {message.role === "assistant" && (
-                    <Avatar className="h-8 w-8 shrink-0">
-                      <AvatarFallback className="bg-emerald-100 text-emerald-600 text-xs font-bold">
-                        AI
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                  <div
-                    className={cn(
-                      "rounded-2xl px-4 py-2 max-w-[80%] break-words overflow-hidden",
-                      message.role === "user"
-                        ? "bg-emerald-500 text-white"
-                        : "bg-secondary text-foreground"
-                    )}
-                  >
-                    <div className="text-sm whitespace-pre-wrap break-words" style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}>{message.content}</div>
-                    <div
-                      className={cn(
-                        "text-xs mt-1",
-                        message.role === "user" ? "text-emerald-100" : "text-muted-foreground"
-                      )}
-                    >
-                      {message.timestamp.toLocaleTimeString("id-ID", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </div>
-                  </div>
-                  {message.role === "user" && (
-                    <Avatar className="h-8 w-8 shrink-0">
-                      <AvatarFallback className="bg-blue-100 text-blue-600 text-xs font-bold">
-                        U
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                </div>
+                <MessageBubble key={message.id} message={message} />
               ))}
 
               {isTyping && (

@@ -1,39 +1,45 @@
-import { openDB, DBSchema, IDBPDatabase } from 'idb'
+import { openDB, DBSchema, IDBPDatabase, IDBPTransaction } from 'idb'
+
+interface Harvest {
+  id: string
+  commodity: string
+  quantity: number
+  unit: string
+  date: string
+  synced: boolean
+  createdAt: string
+}
+
+interface Member {
+  id: string
+  name: string
+  ktp: string
+  phone: string
+  synced: boolean
+  createdAt: string
+}
+
+interface Inventory {
+  id: string
+  commodity: string
+  quantity: number
+  warehouse: string
+  synced: boolean
+  updatedAt: string
+}
 
 interface KopdesDB extends DBSchema {
   harvests: {
     key: string
-    value: {
-      id: string
-      commodity: string
-      quantity: number
-      unit: string
-      date: string
-      synced: boolean
-      createdAt: string
-    }
+    value: Harvest
   }
   members: {
     key: string
-    value: {
-      id: string
-      name: string
-      ktp: string
-      phone: string
-      synced: boolean
-      createdAt: string
-    }
+    value: Member
   }
   inventory: {
     key: string
-    value: {
-      id: string
-      commodity: string
-      quantity: number
-      warehouse: string
-      synced: boolean
-      updatedAt: string
-    }
+    value: Inventory
   }
 }
 
@@ -61,7 +67,7 @@ export async function getDB() {
 }
 
 // Harvest operations
-export async function saveHarvestOffline(harvest: any) {
+export async function saveHarvestOffline(harvest: Omit<Harvest, 'synced' | 'createdAt'>) {
   const db = await getDB()
   await db.add('harvests', {
     ...harvest,
@@ -70,7 +76,7 @@ export async function saveHarvestOffline(harvest: any) {
   })
 }
 
-export async function getUnsyncedHarvests() {
+export async function getUnsyncedHarvests(): Promise<Harvest[]> {
   const db = await getDB()
   const harvests = await db.getAll('harvests')
   return harvests.filter(h => !h.synced)
@@ -86,7 +92,7 @@ export async function markHarvestSynced(id: string) {
 
 // Sync function
 export async function syncOfflineData() {
-  if (!navigator.onLine) {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
     console.log('Offline - skipping sync')
     return
   }

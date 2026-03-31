@@ -34,6 +34,9 @@ export default function LoginPage() {
     setIsLoading(true)
 
     setTimeout(() => {
+      // Set a mock session cookie for middleware
+      document.cookie = `kopdes-session=${selectedRole}; path=/; max-age=86400; samesite=strict`
+      
       loginAs(selectedRole)
       toast.success(`Selamat datang, ${MOCK_USERS[selectedRole].name}!`)
       router.push('/dashboard')
