@@ -1,48 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
-  Calculator,
-  CheckCircle,
-  AlertTriangle,
-  CreditCard,
-  FileText,
-  User,
-  Clock,
+  CheckCircle2,
+  CircleDollarSign,
+  Clock3,
+  FileCheck2,
+  FileWarning,
+  PiggyBank,
+  Sparkles,
+  TrendingUp,
   Wallet,
-  Send,
-  ChevronRight,
-  Loader2,
-  ShieldCheck,
-  XCircle,
-  Info,
 } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useAuth } from '@/lib/auth'
+import { formatCurrency, formatDate, loans, members } from '@/lib/data'
+import type { Role, User } from '@/lib/rbac'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Slider } from '@/components/ui/slider'
-import { Textarea } from '@/components/ui/textarea'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -51,611 +29,639 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from '@/components/ui/alert'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useAuth } from '@/lib/auth'
+import { Textarea } from '@/components/ui/textarea'
 
-// Tujuan pinjaman options
-const tujuanPinjaman = [
-  { value: 'modal-usaha', label: 'Modal Usaha/Pertanian' },
-  { value: 'pembelian-alat', label: 'Pembelian Alat/Mesin' },
-  { value: 'bibit-pupuk', label: 'Bibit & Pupuk' },
-  { value: 'renovasi', label: 'Renovasi Tempat Usaha' },
-  { value: 'darurat', label: 'Kebutuhan Darurat' },
-  { value: 'pendidikan', label: 'Pendidikan' },
-  { value: 'kesehatan', label: 'Kesehatan' },
-  { value: 'lainnya', label: 'Lainnya' },
-]
+type PersonalLoanStatus = 'review' | 'active' | 'repaid'
+type ReviewStatus = 'baru' | 'analisis' | 'komite' | 'disetujui' | 'perlu_dokumen'
 
-// Tenor options (months)
-const tenorOptions = [3, 6, 12, 18, 24, 36]
-
-// Mock member data (would come from auth/session)
-const currentMember = {
-  id: 'M001',
-  nama: 'Pak Slamet Widodo',
-  nik: '3201012345678901',
-  tipe: 'petani',
-  creditScore: 785,
-  kycVerified: true,
-  dukcapilVerified: true,
-  simpanan: 15000000,
-  pinjamanAktif: 3000000,
-  maxPinjaman: 50000000,
-  interestRate: 6,
+type PersonalLoanRecord = {
+  id: string
+  purpose: string
+  amount: number
+  tenor: number
+  submittedAt: string
+  status: PersonalLoanStatus
+  remainingBalance: number
+  note: string
 }
 
-// Pending loan applications
-const pendingApplications = [
-  {
-    id: 'LA001',
-    memberId: 'M002',
-    memberNama: 'Bu Sri Wahyuni',
-    creditScore: 692,
-    jumlah: 15000000,
-    tenor: 12,
-    tujuan: 'Modal Usaha',
-    tanggalAjuan: '2026-03-05',
-    status: 'review',
-  },
-  {
-    id: 'LA002',
-    memberId: 'M003',
-    memberNama: 'Pak Ahmad Sudirman',
-    creditScore: 548,
-    jumlah: 5000000,
-    tenor: 6,
-    tujuan: 'Bibit & Pupuk',
-    tanggalAjuan: '2026-03-06',
-    status: 'pending',
-  },
-]
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(amount)
+type SelfLoanProfile = {
+  memberId: string
+  nik: string
+  village: string
+  commodity: string
+  creditScore: number
+  savingsBalance: number
+  activeLoanBalance: number
+  maxLoanAmount: number
+  interestRate: number
+  recommendedTenor: number
+  history: PersonalLoanRecord[]
 }
 
-const getScoreColor = (score: number) => {
-  if (score >= 750) return 'text-emerald-500'
-  if (score >= 650) return 'text-green-500'
-  if (score >= 550) return 'text-amber-500'
-  return 'text-red-500'
+type ReviewerApplication = {
+  id: string
+  borrowerName: string
+  village: string
+  commodity: string
+  amount: number
+  tenor: number
+  score: number
+  submittedAt: string
+  status: ReviewStatus
+  recommendation: string
+  assignedRoles: Role[]
+}
+
+const tujuanPinjaman = ['Modal tanam', 'Pupuk dan bibit', 'Alat panen', 'Perbaikan irigasi']
+const tenorOptions = [3, 6, 9, 12, 18]
+
+const SELF_SERVICE_PROFILES: Record<string, SelfLoanProfile> = {
+  'USR-001': {
+    memberId: 'M005',
+    nik: '3201234567890005',
+    village: 'Cikupa, Tangerang',
+    commodity: 'Padi dan gabah',
+    creditScore: 742,
+    savingsBalance: 8500000,
+    activeLoanBalance: 4500000,
+    maxLoanAmount: 35000000,
+    interestRate: 6,
+    recommendedTenor: 12,
+    history: [
+      { id: 'APL-2602-014', purpose: 'Modal pupuk musim tanam', amount: 12000000, tenor: 12, submittedAt: '2026-02-10', status: 'active', remainingBalance: 4500000, note: 'Pembayaran lancar dan diprioritaskan untuk panen April.' },
+      { id: 'APL-2508-003', purpose: 'Perbaikan pompa air', amount: 7000000, tenor: 6, submittedAt: '2025-08-05', status: 'repaid', remainingBalance: 0, note: 'Lunas tepat waktu pada Januari 2026.' },
+    ],
+  },
+}
+
+const REVIEWER_APPLICATIONS: ReviewerApplication[] = [
+  { id: 'APL-2603-031', borrowerName: 'Pak Budi Santoso', village: 'Cikupa', commodity: 'Padi', amount: 18000000, tenor: 12, score: 742, submittedAt: '2026-03-28', status: 'analisis', recommendation: 'Riwayat pembayaran baik. Siap final approval.', assignedRoles: ['bank', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { id: 'APL-2603-028', borrowerName: 'Bu Sri Wahyuni', village: 'Sukamaju', commodity: 'Cabai', amount: 9000000, tenor: 9, score: 701, submittedAt: '2026-03-25', status: 'baru', recommendation: 'Dokumen lengkap, perlu scoring awal.', assignedRoles: ['bank', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { id: 'APL-2603-025', borrowerName: 'Pak Hendra Wijaya', village: 'Cibodas', commodity: 'Kentang', amount: 14000000, tenor: 12, score: 733, submittedAt: '2026-03-21', status: 'komite', recommendation: 'Menunggu persetujuan komite.', assignedRoles: ['bank', 'ketua', 'sysadmin'] },
+]
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
+}
+
+function createFallbackProfile(user: User): SelfLoanProfile {
+  const member = members.find((item) => item.nama === user.name)
+  const loan = loans.find((item) => item.memberNama === user.name || item.memberId === member?.id)
+  const savings = (member?.simpananPokok ?? 500000) + (member?.simpananWajib ?? 1500000)
+  return {
+    memberId: member?.id ?? user.id,
+    nik: member?.nik ?? '-',
+    village: [member?.desa, member?.kecamatan].filter(Boolean).join(', ') || 'Wilayah koperasi',
+    commodity: member?.komoditas?.join(', ') || 'Usaha anggota',
+    creditScore: loan ? 710 : 690,
+    savingsBalance: savings,
+    activeLoanBalance: loan?.sisaPinjaman ?? 0,
+    maxLoanAmount: Math.max(savings * 4, 10000000),
+    interestRate: 6.5,
+    recommendedTenor: 12,
+    history: loan
+      ? [{ id: loan.id, purpose: 'Pinjaman produktif anggota', amount: loan.jumlahPinjaman, tenor: loan.tenor, submittedAt: loan.tanggalPinjam, status: loan.status === 'lunas' ? 'repaid' : 'active', remainingBalance: loan.sisaPinjaman, note: loan.status === 'lunas' ? 'Pinjaman telah selesai dibayarkan.' : `Jatuh tempo ${formatDate(loan.tanggalJatuhTempo)}.` }]
+      : [],
+  }
+}
+
+function personalStatusMeta(status: PersonalLoanStatus) {
+  const map = {
+    review: { label: 'Dalam review', className: 'border-amber-200 bg-amber-50 text-amber-700' },
+    active: { label: 'Berjalan', className: 'border-blue-200 bg-blue-50 text-blue-700' },
+    repaid: { label: 'Lunas', className: 'border-emerald-200 bg-emerald-50 text-emerald-700' },
+  }
+  return map[status]
+}
+
+function reviewStatusMeta(status: ReviewStatus) {
+  const map = {
+    baru: { label: 'Baru masuk', className: 'border-slate-200 bg-slate-50 text-slate-700' },
+    analisis: { label: 'Analisis', className: 'border-blue-200 bg-blue-50 text-blue-700' },
+    komite: { label: 'Komite', className: 'border-violet-200 bg-violet-50 text-violet-700' },
+    disetujui: { label: 'Disetujui', className: 'border-emerald-200 bg-emerald-50 text-emerald-700' },
+    perlu_dokumen: { label: 'Butuh dokumen', className: 'border-red-200 bg-red-50 text-red-700' },
+  }
+  return map[status]
 }
 
 export default function PinjamanPage() {
   const { user, canRoute } = useAuth()
-  const [activeTab, setActiveTab] = useState('ajukan')
-  const [step, setStep] = useState(1)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
-  
-  // Form state
-  const [jumlahPinjaman, setJumlahPinjaman] = useState(5000000)
-  const [tenor, setTenor] = useState(12)
-  const [tujuan, setTujuan] = useState('')
-  const [deskripsi, setDeskripsi] = useState('')
-  const [agunan, setAgunan] = useState('')
-
-  // Calculate loan details
-  const monthlyInterestRate = currentMember.interestRate / 100 / 12
-  const totalInterest = jumlahPinjaman * monthlyInterestRate * tenor
-  const totalPembayaran = jumlahPinjaman + totalInterest
-  const angsuranBulanan = totalPembayaran / tenor
-  const adminFee = jumlahPinjaman * 0.01 // 1% admin fee
-  const totalDiterima = jumlahPinjaman - adminFee
-
-  // Check eligibility
-  const isEligible = currentMember.creditScore >= 550 && 
-                     currentMember.kycVerified && 
-                     currentMember.dukcapilVerified
-  const availableCredit = currentMember.maxPinjaman - currentMember.pinjamanAktif
-  const backHref = canRoute('/keuangan') ? '/keuangan' : '/dashboard'
-  const canSeeCreditScoring = canRoute('/keuangan/credit-scoring')
   const isPetaniView = user?.role === 'petani'
+  const canSeeCreditScoring = canRoute('/keuangan/credit-scoring')
+  const backHref = canRoute('/keuangan') ? '/keuangan' : '/dashboard'
+  const profile = useMemo(() => (user ? SELF_SERVICE_PROFILES[user.id] ?? createFallbackProfile(user) : null), [user])
+  const initialQueue = useMemo(
+    () => (user && !isPetaniView ? REVIEWER_APPLICATIONS.filter((item) => item.assignedRoles.includes(user.role)) : []),
+    [isPetaniView, user],
+  )
+  const [requestedAmount, setRequestedAmount] = useState(5000000)
+  const [selectedPurpose, setSelectedPurpose] = useState(tujuanPinjaman[0])
+  const [selectedTenor, setSelectedTenor] = useState('12')
+  const [notes, setNotes] = useState('')
+  const [loanHistory, setLoanHistory] = useState<PersonalLoanRecord[]>([])
+  const [reviewerQueue, setReviewerQueue] = useState<ReviewerApplication[]>([])
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsSubmitting(false)
+  useEffect(() => {
+    if (!profile) return
+    setRequestedAmount(clamp(Math.min(profile.maxLoanAmount, 8000000), 1000000, profile.maxLoanAmount))
+    setSelectedPurpose(tujuanPinjaman[0])
+    setSelectedTenor(String(profile.recommendedTenor))
+    setNotes('')
+    setLoanHistory(profile.history)
+  }, [profile])
+
+  useEffect(() => {
+    setReviewerQueue(initialQueue)
+  }, [initialQueue])
+
+  const monthlyInstallment = useMemo(() => {
+    if (!profile) return 0
+    const tenor = Number(selectedTenor)
+    const interest = requestedAmount * (profile.interestRate / 100) * (tenor / 12)
+    return Math.round((requestedAmount + interest) / tenor)
+  }, [profile, requestedAmount, selectedTenor])
+
+  const approvalChance = useMemo(() => {
+    if (!profile) return 0
+    const scoreWeight = profile.creditScore * 0.08
+    const limitWeight = 35 - (requestedAmount / profile.maxLoanAmount) * 20
+    return clamp(Math.round(scoreWeight + limitWeight), 45, 95)
+  }, [profile, requestedAmount])
+
+  const processedQueue = useMemo(
+    () => reviewerQueue.filter((item) => item.status === 'disetujui' || item.status === 'perlu_dokumen'),
+    [reviewerQueue],
+  )
+
+  const queueTotal = useMemo(() => reviewerQueue.reduce((sum, item) => sum + item.amount, 0), [reviewerQueue])
+
+  const handleAmountInput = (value: string) => {
+    if (!profile) return
+    const numericValue = Number(value.replace(/[^\d]/g, ''))
+    setRequestedAmount(clamp(Number.isNaN(numericValue) ? 0 : numericValue, 1000000, profile.maxLoanAmount))
+  }
+
+  const handleSubmit = () => {
+    if (!profile || !user) return
+    setLoanHistory((current) => [
+      {
+        id: `APL-${Date.now().toString().slice(-6)}`,
+        purpose: selectedPurpose,
+        amount: requestedAmount,
+        tenor: Number(selectedTenor),
+        submittedAt: new Date().toISOString().slice(0, 10),
+        status: 'review',
+        remainingBalance: requestedAmount,
+        note: `Ajuan baru oleh ${user.name}. Menunggu verifikasi koperasi.`,
+      },
+      ...current,
+    ])
+    setNotes('')
     setShowSuccessDialog(true)
   }
 
-  const resetForm = () => {
-    setStep(1)
-    setJumlahPinjaman(5000000)
-    setTenor(12)
-    setTujuan('')
-    setDeskripsi('')
-    setAgunan('')
-    setShowSuccessDialog(false)
+  const updateApplicationStatus = (id: string, status: ReviewStatus) => {
+    setReviewerQueue((current) =>
+      current.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              status,
+              recommendation:
+                status === 'disetujui'
+                  ? `Disetujui oleh ${user?.name}. Siap ke tahap pencairan.`
+                  : `Dokumen tambahan diminta oleh ${user?.name}.`,
+            }
+          : item,
+      ),
+    )
+  }
+
+  if (!user) {
+    return (
+      <Alert>
+        <FileWarning className="h-4 w-4" />
+        <AlertTitle>Sesi tidak ditemukan</AlertTitle>
+        <AlertDescription>Silakan kembali ke login untuk memilih role dan akun.</AlertDescription>
+      </Alert>
+    )
+  }
+
+  if (isPetaniView && !profile) {
+    return (
+      <Alert>
+        <FileWarning className="h-4 w-4" />
+        <AlertTitle>Profil pinjaman belum tersedia</AlertTitle>
+        <AlertDescription>Data untuk akun ini belum siap. Coba pilih akun lain atau kembali ke dashboard.</AlertDescription>
+      </Alert>
+    )
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild className="shrink-0">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="space-y-3">
+          <Button variant="ghost" size="sm" asChild className="w-fit px-0 hover:bg-transparent">
             <Link href={backHref}>
               <ArrowLeft className="h-4 w-4" />
+              Kembali
             </Link>
           </Button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Pengajuan Pinjaman</h1>
-            <p className="text-sm text-muted-foreground">
-              {isPetaniView ? 'Ajukan pinjaman pribadi Anda berdasarkan skor kredit' : 'Ajukan dan review pinjaman berdasarkan credit score'}
+            <h1 className="text-2xl font-bold tracking-tight">
+              {isPetaniView ? 'Pinjaman Saya' : 'Review Pengajuan Pinjaman'}
+            </h1>
+            <p className="text-muted-foreground">
+              {isPetaniView
+                ? `Semua data di halaman ini mengikuti akun ${user.name}.`
+                : `Halaman ini berubah ke mode reviewer untuk role ${user.role}.`}
             </p>
           </div>
         </div>
-        {canSeeCreditScoring && (
-          <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link href="/keuangan/credit-scoring">
-              <CreditCard className="mr-2 h-4 w-4" />
-              Lihat Credit Score
+        <div className="flex flex-wrap gap-2">
+          {canSeeCreditScoring && (
+            <Button variant="outline" asChild>
+              <Link href="/keuangan/credit-scoring">
+                <TrendingUp className="h-4 w-4" />
+                Credit Scoring
+              </Link>
+            </Button>
+          )}
+          {canRoute('/keuangan/shu') && (
+            <Button variant="outline" asChild>
+              <Link href="/keuangan/shu">
+                <PiggyBank className="h-4 w-4" />
+                Lihat SHU
+              </Link>
+            </Button>
+          )}
+          <Button asChild>
+            <Link href="/assistant">
+              <Sparkles className="h-4 w-4" />
+              Tanya Assistant
             </Link>
           </Button>
-        )}
+        </div>
       </div>
 
-      {/* Member Credit Info */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-12 w-12">
-                <AvatarFallback className="bg-primary/10 text-primary">
-                  {currentMember.nama.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-semibold">{currentMember.nama}</p>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Badge variant="outline" className="text-xs capitalize">{currentMember.tipe}</Badge>
-                  <span>NIK: {currentMember.nik}</span>
+      {isPetaniView && profile ? (
+        <>
+          <div className="grid gap-4 xl:grid-cols-[1.3fr_1fr]">
+            <Card className="border-red-200/70 bg-gradient-to-br from-red-600 via-red-500 to-red-700 text-white shadow-lg shadow-red-200/60">
+              <CardContent className="space-y-4 p-6">
+                <Badge className="border-white/20 bg-white/15 text-white hover:bg-white/15">Akun aktif: {user.name}</Badge>
+                <div>
+                  <p className="text-sm text-red-50/80">Limit pinjaman untuk akun ini</p>
+                  <h2 className="mt-2 text-3xl font-bold">{formatCurrency(profile.maxLoanAmount)}</h2>
+                  <p className="mt-2 text-sm text-red-50/90">
+                    Profil usaha {profile.commodity.toLowerCase()} di {profile.village} dengan skor {profile.creditScore}.
+                  </p>
                 </div>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground">Credit Score</p>
-                <p className={`text-2xl font-bold ${getScoreColor(currentMember.creditScore)}`}>
-                  {currentMember.creditScore}
-                </p>
-              </div>
-              <Separator orientation="vertical" className="h-10 hidden sm:block" />
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground">Limit Tersedia</p>
-                <p className="text-lg font-bold text-emerald-600">{formatCurrency(availableCredit)}</p>
-              </div>
-              <Separator orientation="vertical" className="h-10 hidden sm:block" />
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground">Bunga</p>
-                <p className="text-lg font-bold">{currentMember.interestRate}%/thn</p>
-              </div>
-              <div className="flex items-center gap-1">
-                {currentMember.kycVerified && <ShieldCheck className="h-5 w-5 text-emerald-500" title="KYC Verified" />}
-                {currentMember.dukcapilVerified && <CheckCircle className="h-5 w-5 text-emerald-500" title="Dukcapil Verified" />}
-              </div>
-            </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
+                    <p className="text-xs uppercase tracking-[0.24em] text-red-50/75">Simpanan</p>
+                    <p className="mt-2 font-semibold">{formatCurrency(profile.savingsBalance)}</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
+                    <p className="text-xs uppercase tracking-[0.24em] text-red-50/75">Pinjaman aktif</p>
+                    <p className="mt-2 font-semibold">{formatCurrency(profile.activeLoanBalance)}</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
+                    <p className="text-xs uppercase tracking-[0.24em] text-red-50/75">Bunga</p>
+                    <p className="mt-2 font-semibold">{profile.interestRate}% per tahun</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Ringkasan akun</CardTitle>
+                <CardDescription>Data ini tidak lagi memakai anggota demo umum.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border bg-secondary/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">ID anggota</p>
+                  <p className="mt-2 font-semibold">{profile.memberId}</p>
+                </div>
+                <div className="rounded-2xl border bg-secondary/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">NIK</p>
+                  <p className="mt-2 font-semibold">{profile.nik}</p>
+                </div>
+                <div className="rounded-2xl border bg-secondary/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Komoditas</p>
+                  <p className="mt-2 font-semibold">{profile.commodity}</p>
+                </div>
+                <div className="rounded-2xl border bg-secondary/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Tenor saran</p>
+                  <p className="mt-2 font-semibold">{profile.recommendedTenor} bulan</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="ajukan" className="gap-2">
-            <FileText className="h-4 w-4" />
-            <span className="hidden sm:inline">Ajukan Pinjaman</span>
-            <span className="sm:hidden">Ajukan</span>
-          </TabsTrigger>
-          <TabsTrigger value="riwayat" className="gap-2">
-            <Clock className="h-4 w-4" />
-            <span className="hidden sm:inline">Riwayat Pengajuan</span>
-            <span className="sm:hidden">Riwayat</span>
-          </TabsTrigger>
-        </TabsList>
+          <Tabs defaultValue="ajukan" className="space-y-4">
+            <TabsList className="grid h-auto w-full grid-cols-2 rounded-2xl bg-secondary/50 p-1">
+              <TabsTrigger value="ajukan" className="rounded-xl py-2">Ajukan pinjaman</TabsTrigger>
+              <TabsTrigger value="riwayat" className="rounded-xl py-2">Riwayat akun ini</TabsTrigger>
+            </TabsList>
 
-        <TabsContent value="ajukan" className="space-y-4 mt-4">
-          {!isEligible ? (
-            <Alert variant="destructive">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Tidak Memenuhi Syarat</AlertTitle>
-              <AlertDescription>
-                Anda belum memenuhi syarat untuk mengajukan pinjaman. Pastikan:
-                <ul className="list-disc list-inside mt-2 space-y-1">
-                  <li>Credit Score minimal 550</li>
-                  <li>Verifikasi KYC sudah selesai</li>
-                  <li>Verifikasi Dukcapil sudah selesai</li>
-                </ul>
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <>
-              {/* Progress Steps */}
-              <div className="flex items-center justify-between px-2">
-                {[1, 2, 3].map((s) => (
-                  <div key={s} className="flex items-center">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
-                      step >= s ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                    }`}>
-                      {step > s ? <CheckCircle className="h-4 w-4" /> : s}
-                    </div>
-                    {s < 3 && (
-                      <div className={`h-1 w-16 sm:w-24 mx-2 ${step > s ? 'bg-primary' : 'bg-muted'}`} />
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-between text-xs text-muted-foreground px-0 sm:px-2">
-                <span>Jumlah & Tenor</span>
-                <span>Detail</span>
-                <span>Konfirmasi</span>
-              </div>
-
-              {/* Step 1: Amount & Tenor */}
-              {step === 1 && (
+            <TabsContent value="ajukan" className="space-y-4">
+              <div className="grid gap-4 xl:grid-cols-[1.3fr_0.9fr]">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Jumlah & Tenor Pinjaman</CardTitle>
-                    <CardDescription>Pilih jumlah dan jangka waktu pinjaman</CardDescription>
+                    <CardTitle>Form pembiayaan usaha</CardTitle>
+                    <CardDescription>Pengajuan akan tercatat atas akun {user.name}.</CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    {/* Loan Amount */}
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <Label>Jumlah Pinjaman</Label>
-                        <span className="text-xl font-bold text-primary">{formatCurrency(jumlahPinjaman)}</span>
+                  <CardContent className="space-y-5">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="tujuan">Tujuan pinjaman</Label>
+                        <Select value={selectedPurpose} onValueChange={setSelectedPurpose}>
+                          <SelectTrigger id="tujuan" className="w-full"><SelectValue placeholder="Pilih tujuan" /></SelectTrigger>
+                          <SelectContent>
+                            {tujuanPinjaman.map((purpose) => <SelectItem key={purpose} value={purpose}>{purpose}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <Slider
-                        value={[jumlahPinjaman]}
-                        onValueChange={(value) => setJumlahPinjaman(value[0])}
-                        min={1000000}
-                        max={Math.min(availableCredit, 50000000)}
-                        step={500000}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Rp 1 Juta</span>
-                        <span>{formatCurrency(Math.min(availableCredit, 50000000))}</span>
+                      <div className="space-y-2">
+                        <Label htmlFor="tenor">Tenor</Label>
+                        <Select value={selectedTenor} onValueChange={setSelectedTenor}>
+                          <SelectTrigger id="tenor" className="w-full"><SelectValue placeholder="Pilih tenor" /></SelectTrigger>
+                          <SelectContent>
+                            {tenorOptions.map((tenor) => <SelectItem key={tenor} value={String(tenor)}>{tenor} bulan</SelectItem>)}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 
-                    {/* Tenor */}
                     <div className="space-y-3">
-                      <Label>Tenor (Jangka Waktu)</Label>
-                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                        {tenorOptions.map((t) => (
-                          <Button
-                            key={t}
-                            variant={tenor === t ? 'default' : 'outline'}
-                            onClick={() => setTenor(t)}
-                            className="w-full"
-                          >
-                            {t} bln
-                          </Button>
-                        ))}
+                      <div className="flex items-center justify-between gap-3">
+                        <Label htmlFor="nominal">Nominal pinjaman</Label>
+                        <span className="text-sm font-medium text-primary">{formatCurrency(requestedAmount)}</span>
                       </div>
-                    </div>
-
-                    {/* Quick Calculation Preview */}
-                    <div className="rounded-lg bg-muted/50 p-4 space-y-2">
-                      <h4 className="font-medium flex items-center gap-2">
-                        <Calculator className="h-4 w-4" />
-                        Estimasi Perhitungan
-                      </h4>
-                      <div className="grid gap-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Angsuran/Bulan</span>
-                          <span className="font-semibold text-primary">{formatCurrency(angsuranBulanan)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Total Bunga</span>
-                          <span>{formatCurrency(totalInterest)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Total Pembayaran</span>
-                          <span className="font-semibold">{formatCurrency(totalPembayaran)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button className="w-full" onClick={() => setStep(2)}>
-                      Lanjutkan
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardFooter>
-                </Card>
-              )}
-
-              {/* Step 2: Details */}
-              {step === 2 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Detail Pinjaman</CardTitle>
-                    <CardDescription>Lengkapi informasi pengajuan pinjaman</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="tujuan">Tujuan Pinjaman *</Label>
-                      <Select value={tujuan} onValueChange={setTujuan}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Pilih tujuan pinjaman" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {tujuanPinjaman.map((t) => (
-                            <SelectItem key={t.value} value={t.value}>
-                              {t.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Slider value={[requestedAmount]} min={1000000} max={profile.maxLoanAmount} step={500000} onValueChange={(value) => setRequestedAmount(value[0] ?? requestedAmount)} />
+                      <Input id="nominal" inputMode="numeric" value={requestedAmount.toString()} onChange={(event) => handleAmountInput(event.target.value)} />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="deskripsi">Deskripsi Kebutuhan</Label>
-                      <Textarea
-                        id="deskripsi"
-                        placeholder="Jelaskan secara detail kebutuhan pinjaman Anda..."
-                        value={deskripsi}
-                        onChange={(e) => setDeskripsi(e.target.value)}
-                        rows={4}
-                      />
+                      <Label htmlFor="catatan">Catatan usaha</Label>
+                      <Textarea id="catatan" value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Ceritakan kebutuhan modal Anda." className="min-h-28" />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="agunan">Agunan/Jaminan (Opsional)</Label>
-                      <Input
-                        id="agunan"
-                        placeholder="Contoh: Sertifikat tanah, BPKB, dll"
-                        value={agunan}
-                        onChange={(e) => setAgunan(e.target.value)}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Agunan dapat mempercepat proses persetujuan dan meningkatkan limit pinjaman
-                      </p>
+                    <div className="flex flex-wrap gap-2">
+                      <Button onClick={handleSubmit}>
+                        <Wallet className="h-4 w-4" />
+                        Kirim pengajuan
+                      </Button>
+                      <Button variant="outline" asChild>
+                        <Link href="/dashboard">Kembali ke dashboard</Link>
+                      </Button>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex gap-2">
-                    <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
-                      Kembali
-                    </Button>
-                    <Button 
-                      onClick={() => setStep(3)} 
-                      className="flex-1"
-                      disabled={!tujuan}
-                    >
-                      Lanjutkan
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardFooter>
                 </Card>
-              )}
 
-              {/* Step 3: Confirmation */}
-              {step === 3 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Konfirmasi Pengajuan</CardTitle>
-                    <CardDescription>Periksa kembali detail pinjaman Anda</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="rounded-lg border p-4 space-y-3">
-                      <h4 className="font-semibold text-sm text-muted-foreground">RINGKASAN PINJAMAN</h4>
-                      <Separator />
-                      <div className="grid gap-2">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Jumlah Pinjaman</span>
-                          <span className="font-semibold">{formatCurrency(jumlahPinjaman)}</span>
+                <div className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <CircleDollarSign className="h-5 w-5 text-primary" />
+                        Simulasi otomatis
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="rounded-2xl border bg-secondary/35 p-4">
+                        <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Estimasi cicilan</p>
+                        <p className="mt-2 text-3xl font-bold">{formatCurrency(monthlyInstallment)}</p>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="rounded-2xl border p-4">
+                          <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Peluang lolos</p>
+                          <p className="mt-2 text-2xl font-semibold">{approvalChance}%</p>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Biaya Admin (1%)</span>
-                          <span className="text-destructive">-{formatCurrency(adminFee)}</span>
-                        </div>
-                        <Separator />
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Dana Diterima</span>
-                          <span className="font-bold text-emerald-600">{formatCurrency(totalDiterima)}</span>
+                        <div className="rounded-2xl border p-4">
+                          <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Sisa limit</p>
+                          <p className="mt-2 text-2xl font-semibold">{formatCurrency(Math.max(profile.maxLoanAmount - requestedAmount, 0))}</p>
                         </div>
                       </div>
-                    </div>
+                    </CardContent>
+                  </Card>
 
-                    <div className="rounded-lg border p-4 space-y-3">
-                      <h4 className="font-semibold text-sm text-muted-foreground">DETAIL ANGSURAN</h4>
-                      <Separator />
-                      <div className="grid gap-2">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Tenor</span>
-                          <span>{tenor} Bulan</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Bunga per Tahun</span>
-                          <span>{currentMember.interestRate}%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Total Bunga</span>
-                          <span>{formatCurrency(totalInterest)}</span>
-                        </div>
-                        <Separator />
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Angsuran/Bulan</span>
-                          <span className="font-bold text-primary text-lg">{formatCurrency(angsuranBulanan)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Total Pembayaran</span>
-                          <span className="font-semibold">{formatCurrency(totalPembayaran)}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="rounded-lg border p-4 space-y-2">
-                      <h4 className="font-semibold text-sm text-muted-foreground">TUJUAN</h4>
-                      <p className="font-medium">{tujuanPinjaman.find(t => t.value === tujuan)?.label}</p>
-                      {deskripsi && <p className="text-sm text-muted-foreground">{deskripsi}</p>}
-                      {agunan && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <Badge variant="outline">Agunan</Badge>
-                          <span>{agunan}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <Alert>
-                      <Info className="h-4 w-4" />
-                      <AlertTitle>Informasi</AlertTitle>
-                      <AlertDescription>
-                        Dengan mengajukan pinjaman, Anda menyetujui syarat dan ketentuan yang berlaku.
-                        Pengajuan akan diproses dalam 1-3 hari kerja.
-                      </AlertDescription>
-                    </Alert>
-                  </CardContent>
-                  <CardFooter className="flex gap-2">
-                    <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
-                      Kembali
-                    </Button>
-                    <Button 
-                      onClick={handleSubmit} 
-                      className="flex-1"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Memproses...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="mr-2 h-4 w-4" />
-                          Ajukan Pinjaman
-                        </>
-                      )}
-                    </Button>
-                  </CardFooter>
-                </Card>
-              )}
-            </>
-          )}
-        </TabsContent>
-
-        <TabsContent value="riwayat" className="space-y-4 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Riwayat Pengajuan</CardTitle>
-              <CardDescription>Daftar pengajuan pinjaman Anda</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* Mobile View */}
-              <div className="sm:hidden space-y-3">
-                {pendingApplications.map((app) => (
-                  <div key={app.id} className="rounded-lg border p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs text-muted-foreground">{app.id}</span>
-                      <Badge variant={app.status === 'review' ? 'secondary' : 'outline'}>
-                        {app.status === 'review' ? 'Dalam Review' : 'Pending'}
-                      </Badge>
-                    </div>
-                    <div>
-                      <p className="font-semibold">{formatCurrency(app.jumlah)}</p>
-                      <p className="text-sm text-muted-foreground">{app.tenor} bulan • {app.tujuan}</p>
-                    </div>
-                    <p className="text-xs text-muted-foreground">Diajukan: {app.tanggalAjuan}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Desktop View */}
-              <div className="hidden sm:block">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Jumlah</TableHead>
-                      <TableHead>Tenor</TableHead>
-                      <TableHead>Tujuan</TableHead>
-                      <TableHead>Tanggal</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pendingApplications.map((app) => (
-                      <TableRow key={app.id}>
-                        <TableCell className="font-mono text-xs">{app.id}</TableCell>
-                        <TableCell className="font-semibold">{formatCurrency(app.jumlah)}</TableCell>
-                        <TableCell>{app.tenor} bulan</TableCell>
-                        <TableCell>{app.tujuan}</TableCell>
-                        <TableCell>{app.tanggalAjuan}</TableCell>
-                        <TableCell>
-                          <Badge variant={app.status === 'review' ? 'secondary' : 'outline'}>
-                            {app.status === 'review' ? 'Dalam Review' : 'Pending'}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {pendingApplications.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="mx-auto h-12 w-12 mb-3 opacity-50" />
-                  <p>Belum ada riwayat pengajuan</p>
+                  <Alert className="border-red-200 bg-red-50/80">
+                    <CheckCircle2 className="h-4 w-4 text-red-600" />
+                    <AlertTitle className="text-red-900">Sudah sinkron ke akun aktif</AlertTitle>
+                    <AlertDescription className="text-red-900/80">
+                      Data anggota, limit, dan riwayat di halaman ini mengikuti akun {user.name}.
+                    </AlertDescription>
+                  </Alert>
                 </div>
-              )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="riwayat">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Riwayat pinjaman akun {user.name}</CardTitle>
+                  <CardDescription>Setiap pengajuan baru langsung muncul untuk akun yang sedang login.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {loanHistory.length === 0 ? (
+                    <Alert>
+                      <Clock3 className="h-4 w-4" />
+                      <AlertTitle>Belum ada riwayat pinjaman</AlertTitle>
+                      <AlertDescription>Mulai dari form pengajuan untuk membuat riwayat pertama pada akun ini.</AlertDescription>
+                    </Alert>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Tujuan</TableHead>
+                            <TableHead>Tanggal</TableHead>
+                            <TableHead className="text-right">Nominal</TableHead>
+                            <TableHead className="text-right">Tenor</TableHead>
+                            <TableHead className="text-right">Sisa</TableHead>
+                            <TableHead>Status</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {loanHistory.map((item) => {
+                            const status = personalStatusMeta(item.status)
+                            return (
+                              <TableRow key={item.id}>
+                                <TableCell className="font-medium">{item.id}</TableCell>
+                                <TableCell>{item.purpose}</TableCell>
+                                <TableCell>{formatDate(item.submittedAt)}</TableCell>
+                                <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>
+                                <TableCell className="text-right">{item.tenor} bulan</TableCell>
+                                <TableCell className="text-right">{formatCurrency(item.remainingBalance)}</TableCell>
+                                <TableCell><Badge className={status.className}>{status.label}</Badge></TableCell>
+                              </TableRow>
+                            )
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </>
+      ) : (
+        <>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card><CardContent className="p-5"><p className="text-sm text-muted-foreground">Antrian role</p><p className="mt-2 text-3xl font-bold">{reviewerQueue.length}</p></CardContent></Card>
+            <Card><CardContent className="p-5"><p className="text-sm text-muted-foreground">Nominal ditinjau</p><p className="mt-2 text-3xl font-bold">{formatCurrency(queueTotal)}</p></CardContent></Card>
+            <Card><CardContent className="p-5"><p className="text-sm text-muted-foreground">Keputusan selesai</p><p className="mt-2 text-3xl font-bold">{processedQueue.length}</p></CardContent></Card>
+          </div>
+
+          <Card className="border-red-200/70 bg-gradient-to-br from-red-600 via-red-500 to-red-700 text-white shadow-lg shadow-red-200/60">
+            <CardContent className="space-y-3 p-6">
+              <Badge className="border-white/20 bg-white/15 text-white hover:bg-white/15">Workflow {user.role.replace('_', ' ')}</Badge>
+              <h2 className="text-3xl font-bold">Mode reviewer aktif untuk {user.name}</h2>
+              <p className="max-w-2xl text-sm text-red-50/90">
+                Role reviewer melihat antrian verifikasi dan aksi keputusan, bukan data pribadi anggota.
+              </p>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
 
-      {/* Success Dialog */}
+          <Tabs defaultValue="antrian" className="space-y-4">
+            <TabsList className="grid h-auto w-full grid-cols-2 rounded-2xl bg-secondary/50 p-1">
+              <TabsTrigger value="antrian" className="rounded-xl py-2">Antrian review</TabsTrigger>
+              <TabsTrigger value="riwayat" className="rounded-xl py-2">Riwayat keputusan</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="antrian">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Antrian pengajuan sesuai role</CardTitle>
+                  <CardDescription>Aksi di bawah langsung mengubah status antrian untuk role {user.role}.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {reviewerQueue.length === 0 ? (
+                    <Alert>
+                      <Clock3 className="h-4 w-4" />
+                      <AlertTitle>Tidak ada antrian</AlertTitle>
+                      <AlertDescription>Belum ada pengajuan yang masuk ke role ini.</AlertDescription>
+                    </Alert>
+                  ) : (
+                    reviewerQueue.map((item) => {
+                      const status = reviewStatusMeta(item.status)
+                      const isFinal = item.status === 'disetujui' || item.status === 'perlu_dokumen'
+                      return (
+                        <Card key={item.id} className="border-dashed">
+                          <CardContent className="space-y-4 p-5">
+                            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                              <div>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="text-lg font-semibold">{item.borrowerName}</p>
+                                  <Badge className={status.className}>{status.label}</Badge>
+                                  <Badge variant="outline">{item.id}</Badge>
+                                </div>
+                                <p className="mt-2 text-sm text-muted-foreground">{item.village} | {item.commodity} | Diajukan {formatDate(item.submittedAt)}</p>
+                              </div>
+                              <div className="grid gap-2 sm:grid-cols-3">
+                                <div className="rounded-2xl border bg-secondary/35 p-3"><p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Nominal</p><p className="mt-2 font-semibold">{formatCurrency(item.amount)}</p></div>
+                                <div className="rounded-2xl border bg-secondary/35 p-3"><p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Tenor</p><p className="mt-2 font-semibold">{item.tenor} bulan</p></div>
+                                <div className="rounded-2xl border bg-secondary/35 p-3"><p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Skor</p><p className="mt-2 font-semibold">{item.score}</p></div>
+                              </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{item.recommendation}</p>
+                            {!isFinal && (
+                              <div className="flex flex-wrap gap-2">
+                                <Button onClick={() => updateApplicationStatus(item.id, 'disetujui')}>
+                                  <FileCheck2 className="h-4 w-4" />
+                                  Setujui
+                                </Button>
+                                <Button variant="outline" onClick={() => updateApplicationStatus(item.id, 'perlu_dokumen')}>
+                                  <FileWarning className="h-4 w-4" />
+                                  Minta dokumen
+                                </Button>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      )
+                    })
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="riwayat">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Riwayat keputusan role {user.role}</CardTitle>
+                  <CardDescription>Daftar ini ikut berubah setelah Anda menekan aksi pada antrian review.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {processedQueue.length === 0 ? (
+                    <Alert>
+                      <Clock3 className="h-4 w-4" />
+                      <AlertTitle>Belum ada keputusan final</AlertTitle>
+                      <AlertDescription>Aplikasi yang disetujui atau diminta revisi akan muncul di sini.</AlertDescription>
+                    </Alert>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Pemohon</TableHead>
+                            <TableHead>Tanggal</TableHead>
+                            <TableHead className="text-right">Nominal</TableHead>
+                            <TableHead className="text-right">Skor</TableHead>
+                            <TableHead>Status</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {processedQueue.map((item) => {
+                            const status = reviewStatusMeta(item.status)
+                            return (
+                              <TableRow key={item.id}>
+                                <TableCell><div><p className="font-medium">{item.borrowerName}</p><p className="text-xs text-muted-foreground">{item.id}</p></div></TableCell>
+                                <TableCell>{formatDate(item.submittedAt)}</TableCell>
+                                <TableCell className="text-right">{formatCurrency(item.amount)}</TableCell>
+                                <TableCell className="text-right">{item.score}</TableCell>
+                                <TableCell><Badge className={status.className}>{status.label}</Badge></TableCell>
+                              </TableRow>
+                            )
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </>
+      )}
+
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-emerald-600">
-              <CheckCircle className="h-5 w-5" />
-              Pengajuan Berhasil
-            </DialogTitle>
-            <DialogDescription>
-              Pengajuan pinjaman Anda telah dikirim dan sedang dalam proses review.
-            </DialogDescription>
+            <DialogTitle>Pengajuan berhasil dibuat</DialogTitle>
+            <DialogDescription>Ajuan baru sudah tersimpan ke riwayat akun {user.name} dan siap diproses reviewer.</DialogDescription>
           </DialogHeader>
-          <div className="rounded-lg bg-muted/50 p-4 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Nomor Pengajuan</span>
-              <span className="font-mono font-semibold">LA{Date.now().toString().slice(-6)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Jumlah</span>
-              <span className="font-semibold">{formatCurrency(jumlahPinjaman)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Estimasi Waktu Review</span>
-              <span>1-3 hari kerja</span>
-            </div>
+          <div className="rounded-2xl border bg-secondary/35 p-4">
+            <p className="text-sm font-medium">Ringkasan pengajuan</p>
+            <p className="mt-2 text-2xl font-bold">{formatCurrency(requestedAmount)}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{selectedPurpose} | {selectedTenor} bulan</p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={resetForm} className="w-full sm:w-auto">
-              Ajukan Lagi
-            </Button>
-            <Button asChild className="w-full sm:w-auto">
-              <Link href="/keuangan/simpan-pinjam">Lihat Status Pinjaman</Link>
-            </Button>
+            <Button variant="outline" onClick={() => setShowSuccessDialog(false)}>Tutup</Button>
+            <Button onClick={() => setShowSuccessDialog(false)}>Lanjut</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
