@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { KopdesSidebarCustom } from "./kopdes-sidebar-custom"
+import { KopdesBottomNav } from "./kopdes-bottom-nav"
 import { KopdesHeader } from "./kopdes-header"
+import { KopdesSidebarCustom } from "./kopdes-sidebar-custom"
 import { FloatingAIChatbot } from "./floating-ai-chatbot"
 
 interface KopdesLayoutProps {
@@ -14,28 +15,18 @@ export function KopdesLayout({ children }: KopdesLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_top_left,rgba(190,8,23,0.08),transparent_52%),radial-gradient(circle_at_top_right,rgba(255,255,255,0.95),transparent_40%)]" />
       <KopdesSidebarCustom open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      
-      <div className="lg:ml-64">
+
+      <div className="relative lg:ml-64">
         <KopdesHeader onMenuClick={() => setSidebarOpen(true)} />
-        
-        <main className="p-4 sm:p-6">
+
+        <main className="px-4 pb-28 pt-5 sm:px-6 sm:pb-32 lg:px-8 lg:pb-8">
           {children}
         </main>
-
-        <footer className="border-t border-border px-4 sm:px-6 py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground">
-            <p>© 2026 Koperasi Merah Putih. All rights reserved.</p>
-            <div className="flex gap-4">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-              <a href="#" className="hover:text-foreground transition-colors">Support</a>
-            </div>
-          </div>
-        </footer>
       </div>
 
-      {/* Floating AI Chatbot - Available on all pages */}
+      <KopdesBottomNav />
       <FloatingAIChatbot />
     </div>
   )

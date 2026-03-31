@@ -1,8 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Search, Bell, User, Calendar, Menu, Sparkles, TrendingUp, AlertTriangle, LogOut } from "lucide-react"
+import { Search, Bell, User, Calendar, Menu, Sparkles, TrendingUp, AlertTriangle, LogOut, Leaf } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
@@ -43,33 +42,50 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 sm:px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      {/* Left side: hamburger + search */}
-      <div className="flex items-center gap-3">
-        {/* Mobile menu button */}
+    <div className="sticky top-0 z-30 px-4 pt-4 sm:px-6 lg:px-8">
+      <header className="flex min-h-[4.5rem] items-center justify-between gap-3 rounded-[1.7rem] border border-white/70 bg-white/88 px-4 py-3 shadow-[0_12px_40px_-24px_rgba(92,64,61,0.22)] backdrop-blur-xl">
+      <div className="flex min-w-0 items-center gap-3">
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden"
+          className="h-10 w-10 rounded-full bg-secondary/75 lg:hidden"
           onClick={onMenuClick}
         >
           <Menu className="h-5 w-5" />
         </Button>
 
-        <div className="relative hidden sm:block">
+        <Link href="/dashboard" className="flex min-w-0 items-center gap-3 lg:hidden">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+            <Leaf className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-bold tracking-tight text-primary">KOPDES</p>
+            <p className="truncate text-[11px] text-muted-foreground">Digital Workspace</p>
+          </div>
+        </Link>
+
+        <div className="hidden items-center gap-3 lg:flex">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
+            <Leaf className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-sm font-bold tracking-tight text-primary">KOPDES Workspace</p>
+            <p className="text-[11px] text-muted-foreground">Tata letak utility-first ala Stitch</p>
+          </div>
+        </div>
+
+        <div className="relative hidden md:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Cari anggota, produk, atau transaksi..."
-            className="h-9 w-48 sm:w-64 md:w-80 bg-secondary pl-9 text-sm"
+            className="h-11 w-[min(32rem,42vw)] rounded-full border-transparent bg-secondary/80 pl-9 text-sm shadow-none"
           />
         </div>
       </div>
 
-      {/* Right Side */}
       <div className="flex items-center gap-2 sm:gap-4">
-        {/* Date */}
-        <div className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex">
+        <div className="hidden items-center gap-2 rounded-full bg-secondary/65 px-4 py-2 text-sm text-muted-foreground xl:flex">
           <Calendar className="h-4 w-4" />
           <span>{currentDate}</span>
         </div>
@@ -77,7 +93,7 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
+            <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full bg-secondary/75 hover:bg-secondary">
               <Bell className="h-5 w-5 text-muted-foreground" />
               <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
                 8
@@ -251,7 +267,7 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="gap-2">
+            <Button variant="ghost" className="h-11 rounded-full bg-secondary/65 px-1.5 hover:bg-secondary">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-lg">
                 {roleConfig?.icon || <User className="h-4 w-4 text-primary-foreground" />}
               </div>
@@ -291,6 +307,7 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </header>
+      </header>
+    </div>
   )
 }

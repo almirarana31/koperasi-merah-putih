@@ -168,7 +168,7 @@ Silakan tanyakan lebih spesifik! 😊`
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 z-50"
+        className="fixed bottom-24 right-4 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl md:bottom-6 md:right-6"
         size="icon"
       >
         <MessageCircle className="h-6 w-6 text-white" />
@@ -185,7 +185,7 @@ Silakan tanyakan lebih spesifik! 😊`
   return (
     <div
       className={cn(
-        "fixed bottom-6 right-6 z-50 flex flex-col bg-white rounded-2xl shadow-2xl border border-border transition-all duration-300 overflow-hidden",
+        "fixed bottom-24 right-4 z-50 flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-2xl transition-all duration-300 md:bottom-6 md:right-6",
         isMinimized ? "w-80 h-16" : "w-[90vw] sm:w-96 h-[80vh] sm:h-[600px] max-w-[400px]"
       )}
     >

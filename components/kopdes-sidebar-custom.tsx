@@ -247,13 +247,13 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-border bg-sidebar transition-transform duration-200 ease-in-out",
+          "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-[linear-gradient(180deg,color-mix(in_oklab,var(--sidebar)_96%,black)_0%,color-mix(in_oklab,var(--sidebar)_90%,var(--primary))_100%)] shadow-[20px_0_48px_-32px_rgba(65,0,2,0.55)] transition-transform duration-200 ease-in-out",
           "lg:translate-x-0 lg:z-40",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Logo */}
-        <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-6">
+        <div className="flex h-20 items-center justify-between px-6">
           <Link href="/login" className="flex items-center gap-3" onClick={handleLinkClick}>
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
               <Leaf className="h-5 w-5 text-primary-foreground" />
@@ -275,7 +275,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {visibleNavigation.map((group) => (
             <div key={group.section} className="mb-6">
-              <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-sidebar-foreground/50">
+              <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-sidebar-foreground/45">
                 {group.section}
               </p>
               <ul className="space-y-1">
@@ -286,7 +286,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                         <button
                           onClick={() => toggleExpand(item.label)}
                           className={cn(
-                            "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors",
+                            "flex w-full items-center justify-between rounded-full px-3 py-2.5 text-sm transition-colors",
                             "text-sidebar-foreground hover:bg-sidebar-accent"
                           )}
                         >
@@ -302,16 +302,16 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                           />
                         </button>
                         {expandedItems.includes(item.label) && (
-                          <ul className="ml-6 mt-1 space-y-1 border-l border-sidebar-border pl-3">
+                          <ul className="ml-3 mt-2 space-y-1 pl-3">
                             {item.children.map((child) => (
                               <li key={child.label}>
                                 <Link
                                   href={child.href}
                                   onClick={handleLinkClick}
                                   className={cn(
-                                    "block w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors",
+                                    "block w-full rounded-full px-3 py-2 text-left text-sm transition-colors",
                                     isActive(child.href)
-                                      ? "bg-sidebar-accent text-sidebar-primary"
+                                      ? "bg-white/14 text-white"
                                       : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
                                   )}
                                 >
@@ -327,16 +327,16 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                         href={item.href || "#"}
                         onClick={handleLinkClick}
                         className={cn(
-                          "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                          "flex w-full items-center gap-3 rounded-full px-3 py-2.5 text-sm transition-colors",
                           isActive(item.href)
-                            ? "bg-sidebar-accent text-sidebar-primary"
+                            ? "bg-white/14 text-white"
                             : "text-sidebar-foreground hover:bg-sidebar-accent"
                         )}
                       >
                         <item.icon
                           className={cn(
                             "h-4 w-4",
-                            isActive(item.href) ? "text-sidebar-primary" : "text-sidebar-foreground/70"
+                            isActive(item.href) ? "text-white" : "text-sidebar-foreground/70"
                           )}
                         />
                         {item.label}
@@ -350,7 +350,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
         </nav>
 
         {/* Bottom Navigation */}
-        <div className="border-t border-sidebar-border px-3 py-4">
+        <div className="px-3 py-4">
           <ul className="space-y-1">
             {visibleBottomNav.map((item) => (
               <li key={item.label}>
@@ -358,7 +358,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                   href={item.href || "#"}
                   onClick={handleLinkClick}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                    "flex w-full items-center gap-3 rounded-full px-3 py-2.5 text-sm transition-colors",
                     "text-sidebar-foreground hover:bg-sidebar-accent"
                   )}
                 >

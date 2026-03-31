@@ -1,12 +1,19 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/lib/auth'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-plus-jakarta',
+})
 
 export const metadata: Metadata = {
   title: 'KOPDES - Koperasi Digital Operating System',
@@ -38,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className="font-sans antialiased">
+      <body className={`${inter.variable} ${plusJakartaSans.variable} font-sans antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>
