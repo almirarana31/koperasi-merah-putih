@@ -56,7 +56,7 @@ type RoleArtwork = {
   secondaryValue: string
   tertiaryLabel: string
   tertiaryValue: string
-  chips: [string, string, string]
+  featuredActionIndexes: [number, number, number]
 }
 
 const SCOPE_LABELS: Record<DataScope, string> = {
@@ -128,7 +128,7 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryValue: 'Rp14.5k',
     tertiaryLabel: 'AI jual',
     tertiaryValue: 'Naik 6%',
-    chips: ['Panen', 'Harga', 'AI'],
+    featuredActionIndexes: [0, 3, 4],
   },
   kasir: {
     primaryIcon: Wallet,
@@ -142,7 +142,7 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryValue: '18 PO',
     tertiaryLabel: 'Kas masuk',
     tertiaryValue: 'Rp52jt',
-    chips: ['Pembayaran', 'Order', 'Stok'],
+    featuredActionIndexes: [2, 0, 1],
   },
   logistik_manager: {
     primaryIcon: Truck,
@@ -156,7 +156,7 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryValue: '82%',
     tertiaryLabel: 'Pending',
     tertiaryValue: '9 kirim',
-    chips: ['Armada', 'Pickup', 'Trace'],
+    featuredActionIndexes: [0, 1, 2],
   },
   koperasi_manager: {
     primaryIcon: Users,
@@ -170,7 +170,7 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryValue: '1,247',
     tertiaryLabel: 'Laporan',
     tertiaryValue: '12 siap',
-    chips: ['Anggota', 'Produksi', 'Laporan'],
+    featuredActionIndexes: [0, 1, 4],
   },
   ketua: {
     primaryIcon: BarChart3,
@@ -184,7 +184,7 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryValue: '3 fokus',
     tertiaryLabel: 'Persetujuan',
     tertiaryValue: '7 masuk',
-    chips: ['Risiko', 'Laporan', 'Arah'],
+    featuredActionIndexes: [0, 2, 3],
   },
   pemda: {
     primaryIcon: BarChart3,
@@ -198,7 +198,7 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryValue: '24 area',
     tertiaryLabel: 'Distribusi',
     tertiaryValue: 'Stabil',
-    chips: ['Wilayah', 'Logistik', 'Harga'],
+    featuredActionIndexes: [0, 1, 2],
   },
   bank: {
     primaryIcon: ShieldCheck,
@@ -212,7 +212,7 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryValue: '16 berkas',
     tertiaryLabel: 'Risk',
     tertiaryValue: 'A-',
-    chips: ['Loan', 'Risk', 'Report'],
+    featuredActionIndexes: [0, 1, 2],
   },
   kementerian: {
     primaryIcon: BarChart3,
@@ -226,7 +226,7 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryValue: '92%',
     tertiaryLabel: 'Forecast',
     tertiaryValue: '+14%',
-    chips: ['Forecast', 'Komoditas', 'Nasional'],
+    featuredActionIndexes: [0, 1, 2],
   },
   sysadmin: {
     primaryIcon: Brain,
@@ -240,7 +240,7 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryValue: '42ms',
     tertiaryLabel: 'Alert',
     tertiaryValue: '0 kritis',
-    chips: ['Access', 'Audit', 'AI'],
+    featuredActionIndexes: [0, 2, 3],
   },
 }
 
@@ -384,11 +384,46 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
   },
 }
 
-function RoleHeroArtwork({ role }: { role: Role }) {
+function getActionByPriority(actions: DashboardAction[], preferredIndex: number, usedIndexes: number[]) {
+  const preferred = actions[preferredIndex]
+  if (preferred && !usedIndexes.includes(preferredIndex)) {
+    return { action: preferred, index: preferredIndex }
+  }
+
+  const fallbackIndex = actions.findIndex((_, index) => !usedIndexes.includes(index))
+  if (fallbackIndex >= 0) {
+    return { action: actions[fallbackIndex], index: fallbackIndex }
+  }
+
+  return null
+}
+
+function RoleHeroArtwork({
+  role,
+  actions,
+}: {
+  role: Role
+  actions: DashboardAction[]
+}) {
   const artwork = HERO_ARTWORKS[role]
   const PrimaryIcon = artwork.primaryIcon
-  const SecondaryIcon = artwork.secondaryIcon
-  const TertiaryIcon = artwork.tertiaryIcon
+  const usedIndexes: number[] = []
+  const featuredActions = artwork.featuredActionIndexes
+    .map((preferredIndex) => {
+      const picked = getActionByPriority(actions, preferredIndex, usedIndexes)
+      if (!picked) return null
+      usedIndexes.push(picked.index)
+      return picked.action
+    })
+    .filter((action): action is DashboardAction => Boolean(action))
+
+  const mainAction = featuredActions[0]
+  const secondaryAction = featuredActions[1] ?? mainAction
+  const tertiaryAction = featuredActions[2] ?? secondaryAction ?? mainAction
+
+  if (!mainAction) {
+    return null
+  }
 
   return (
     <div className="relative min-h-[250px] overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(145deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))] p-4 backdrop-blur-sm">
@@ -407,10 +442,13 @@ function RoleHeroArtwork({ role }: { role: Role }) {
         </div>
 
         <div className="grid flex-1 grid-cols-[1.15fr_0.85fr] gap-3">
-          <div className="flex flex-col justify-between rounded-[1.9rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.16),rgba(255,255,255,0.08))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]">
+          <Link
+            href={mainAction.href}
+            className="group flex flex-col justify-between rounded-[1.9rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.16),rgba(255,255,255,0.08))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] transition-transform hover:-translate-y-0.5"
+          >
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/74">{artwork.panelLabel}</p>
-              <SecondaryIcon className="h-4 w-4 text-primary-foreground/78" />
+              <mainAction.icon className="h-4 w-4 text-primary-foreground/78" />
             </div>
             <div className="space-y-2">
               <p className="text-3xl font-bold tracking-tight text-primary-foreground">{artwork.stat}</p>
@@ -419,42 +457,67 @@ function RoleHeroArtwork({ role }: { role: Role }) {
             <div className="mt-4 rounded-2xl border border-white/12 bg-black/8 px-3 py-3">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-foreground/62">Status panel</p>
               <div className="mt-2 flex items-center justify-between">
-                <span className="text-sm font-medium text-primary-foreground">{artwork.chips[0]}</span>
-                <span className="rounded-full bg-white/12 px-2 py-1 text-[10px] font-semibold text-primary-foreground/80">
-                  Live
-                </span>
+                <span className="line-clamp-1 text-sm font-medium text-primary-foreground">{mainAction.title}</span>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-white/12 px-2 py-1 text-[10px] font-semibold text-primary-foreground/80">
+                    Live
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5 text-primary-foreground/75 transition-transform group-hover:translate-x-0.5" />
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
 
           <div className="flex flex-col gap-3">
-            <div className="rounded-[1.6rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.15),rgba(255,255,255,0.08))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+            {secondaryAction && (
+              <Link
+                href={secondaryAction.href}
+                className="group rounded-[1.6rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.15),rgba(255,255,255,0.08))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-transform hover:-translate-y-0.5"
+              >
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-foreground/66">{artwork.secondaryLabel}</p>
-                <SecondaryIcon className="h-4 w-4 text-primary-foreground/74" />
+                <secondaryAction.icon className="h-4 w-4 text-primary-foreground/74" />
               </div>
               <p className="mt-4 text-2xl font-bold tracking-tight text-primary-foreground">{artwork.secondaryValue}</p>
-            </div>
-            <div className="flex flex-1 flex-col justify-between rounded-[1.6rem] border border-white/10 bg-black/8 p-4">
+              <div className="mt-3 flex items-center justify-between">
+                <span className="line-clamp-1 text-sm font-medium text-primary-foreground/82">{secondaryAction.title}</span>
+                <ArrowRight className="h-3.5 w-3.5 text-primary-foreground/75 transition-transform group-hover:translate-x-0.5" />
+              </div>
+              </Link>
+            )}
+            {tertiaryAction && (
+              <Link
+                href={tertiaryAction.href}
+                className="group flex flex-1 flex-col justify-between rounded-[1.6rem] border border-white/10 bg-black/8 p-4 transition-transform hover:-translate-y-0.5"
+              >
               <div className="flex items-center justify-between">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-foreground/66">{artwork.tertiaryLabel}</p>
-                <TertiaryIcon className="h-4 w-4 text-primary-foreground/72" />
+                <tertiaryAction.icon className="h-4 w-4 text-primary-foreground/72" />
               </div>
               <div>
                 <p className="text-2xl font-bold tracking-tight text-primary-foreground">{artwork.tertiaryValue}</p>
                 <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
                   <div className="h-full w-[68%] rounded-full bg-white/70" />
                 </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className="line-clamp-1 text-sm font-medium text-primary-foreground/82">{tertiaryAction.title}</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-primary-foreground/75 transition-transform group-hover:translate-x-0.5" />
+                </div>
               </div>
-            </div>
+              </Link>
+            )}
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
-          {artwork.chips.map((chip) => (
-            <div key={chip} className="rounded-2xl border border-white/8 bg-white/10 px-3 py-2 text-center text-xs font-medium text-primary-foreground/84">
-              {chip}
-            </div>
+          {featuredActions.map((action) => (
+            <Link
+              key={action.href}
+              href={action.href}
+              className="rounded-2xl border border-white/8 bg-white/10 px-3 py-2 text-center text-xs font-medium text-primary-foreground/84 transition-colors hover:bg-white/18"
+            >
+              <span className="line-clamp-1">{action.title}</span>
+            </Link>
           ))}
         </div>
       </div>
@@ -532,7 +595,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <RoleHeroArtwork role={user.role} />
+              <RoleHeroArtwork role={user.role} actions={visibleActions} />
             </div>
           </CardContent>
         </Card>
