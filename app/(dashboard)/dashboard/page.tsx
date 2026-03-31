@@ -38,12 +38,66 @@ type RoleExperience = {
   actions: DashboardAction[]
 }
 
+type HeroInsight = {
+  label: string
+  value: string
+  note: string
+}
+
 const SCOPE_LABELS: Record<DataScope, string> = {
   own: 'Data pribadi',
   koperasi: 'Level koperasi',
   district_aggregate: 'Agregat kabupaten',
   national_aggregate: 'Agregat nasional',
   all_koperasi: 'Seluruh koperasi',
+}
+
+const HERO_INSIGHTS: Record<Role, HeroInsight> = {
+  petani: {
+    label: 'Akses aktif',
+    value: '6 fitur',
+    note: 'Panen, harga pasar, pinjaman, dan pendampingan AI pribadi.',
+  },
+  kasir: {
+    label: 'Fokus harian',
+    value: 'Operasional',
+    note: 'Transaksi, pembayaran, order, dan stok berjalan cepat dari satu tempat.',
+  },
+  logistik_manager: {
+    label: 'Kontrol utama',
+    value: 'Distribusi',
+    note: 'Pengiriman, rute, armada, dan traceability siap dipantau.',
+  },
+  koperasi_manager: {
+    label: 'Area kerja',
+    value: '5 modul',
+    note: 'Anggota, produksi, keuangan, laporan, dan AI operasional.',
+  },
+  ketua: {
+    label: 'Ringkasan',
+    value: 'Strategis',
+    note: 'Pantauan lintas unit untuk keputusan koperasi tingkat pimpinan.',
+  },
+  pemda: {
+    label: 'Mode akses',
+    value: 'Agregat',
+    note: 'Pemantauan wilayah tanpa membuka data anggota individual.',
+  },
+  bank: {
+    label: 'Fokus utama',
+    value: 'Pembiayaan',
+    note: 'Credit scoring, pinjaman, dan laporan untuk analisis risiko.',
+  },
+  kementerian: {
+    label: 'Tampilan',
+    value: 'Nasional',
+    note: 'Produksi, forecast, dan laporan agregat untuk kebijakan.',
+  },
+  sysadmin: {
+    label: 'Kontrol',
+    value: 'Lintas sistem',
+    note: 'Pemantauan platform dan validasi akses seluruh modul.',
+  },
 }
 
 const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
@@ -56,12 +110,12 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
       'Ajukan pinjaman dan lihat harga pasar terbaru.',
     ],
     actions: [
-      { title: 'Catatan Panen Saya', description: 'Masuk ke pencatatan produksi dan panen pribadi.', href: '/produksi', icon: Sprout },
-      { title: 'Profil Saya', description: 'Lihat profil anggota, aktivitas, dan ringkasan performa pribadi.', href: '/anggota/profil', icon: UserRound },
-      { title: 'Ajukan Pinjaman', description: 'Akses pengajuan pinjaman anggota berdasarkan skor kredit.', href: '/keuangan/pinjaman', icon: Wallet },
-      { title: 'Harga Pasar', description: 'Pantau perubahan harga komoditas sebelum menjual hasil panen.', href: '/pasar/harga', icon: ShoppingCart },
-      { title: 'Rekomendasi Harga AI', description: 'Gunakan insight AI untuk menentukan strategi jual.', href: '/ai/rekomendasi-harga', icon: Brain },
-      { title: 'Notifikasi Cerdas', description: 'Terima pengingat panen, harga, dan alert penting.', href: '/assistant/notifikasi', icon: Bell },
+      { title: 'Panen Saya', description: 'Catat panen, cek verifikasi, dan siapkan hasil jual.', href: '/produksi', icon: Sprout },
+      { title: 'Profil Saya', description: 'Lihat profil anggota dan ringkasan aktivitas pribadi.', href: '/anggota/profil', icon: UserRound },
+      { title: 'Pinjaman', description: 'Ajukan pembiayaan dan pantau status pinjaman.', href: '/keuangan/pinjaman', icon: Wallet },
+      { title: 'Harga Pasar', description: 'Bandingkan harga komoditas sebelum menjual.', href: '/pasar/harga', icon: ShoppingCart },
+      { title: 'AI Harga', description: 'Gunakan rekomendasi AI untuk strategi jual.', href: '/ai/rekomendasi-harga', icon: Brain },
+      { title: 'Notifikasi', description: 'Terima pengingat panen, cuaca, dan harga.', href: '/assistant/notifikasi', icon: Bell },
     ],
   },
   kasir: {
@@ -73,10 +127,10 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
       'Gunakan AI untuk membaca permintaan dan harga pasar.',
     ],
     actions: [
-      { title: 'Pasar & Order', description: 'Kelola order masuk, buyer, dan proses penjualan harian.', href: '/pasar', icon: ShoppingCart },
-      { title: 'Gudang', description: 'Cek stok barang sebelum transaksi dan fulfillment.', href: '/gudang', icon: Warehouse },
-      { title: 'Pembayaran', description: 'Proses pembayaran dan pencatatan invoice.', href: '/keuangan/pembayaran', icon: Wallet },
-      { title: 'Supply & Demand AI', description: 'Lihat perkiraan permintaan untuk keputusan operasional.', href: '/ai/supply-demand', icon: Brain },
+      { title: 'Pasar', description: 'Kelola order masuk dan penjualan harian.', href: '/pasar', icon: ShoppingCart },
+      { title: 'Gudang', description: 'Cek stok sebelum fulfillment dan transaksi.', href: '/gudang', icon: Warehouse },
+      { title: 'Pembayaran', description: 'Proses pembayaran dan invoice koperasi.', href: '/keuangan/pembayaran', icon: Wallet },
+      { title: 'AI Demand', description: 'Lihat prediksi permintaan untuk operasional.', href: '/ai/supply-demand', icon: Brain },
     ],
   },
   logistik_manager: {
@@ -88,10 +142,10 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
       'Pantau stok dan grading yang berkaitan dengan distribusi.',
     ],
     actions: [
-      { title: 'Pengiriman', description: 'Masuk ke pengelolaan pengiriman dan tracking logistik.', href: '/logistik', icon: Truck },
-      { title: 'Rute Distribusi', description: 'Optimalkan jalur antar gudang dan titik serah.', href: '/logistik/rute', icon: Truck },
-      { title: 'Gudang', description: 'Cek stok, grading, dan traceability untuk distribusi.', href: '/gudang', icon: Warehouse },
-      { title: 'Optimasi Rute AI', description: 'Gunakan AI untuk menyusun rute yang lebih efisien.', href: '/ai/optimasi-rute', icon: Brain },
+      { title: 'Pengiriman', description: 'Kelola pengiriman dan tracking logistik.', href: '/logistik', icon: Truck },
+      { title: 'Rute', description: 'Optimalkan jalur antar gudang dan titik serah.', href: '/logistik/rute', icon: Truck },
+      { title: 'Gudang', description: 'Pantau stok, grading, dan traceability.', href: '/gudang', icon: Warehouse },
+      { title: 'AI Rute', description: 'Gunakan AI untuk menyusun rute lebih efisien.', href: '/ai/optimasi-rute', icon: Brain },
     ],
   },
   koperasi_manager: {
@@ -103,11 +157,11 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
       'Gunakan laporan dan AI untuk keputusan operasional.',
     ],
     actions: [
-      { title: 'Manajemen Anggota', description: 'Kelola daftar anggota, onboarding, dan verifikasi KYC.', href: '/anggota', icon: Users },
-      { title: 'Operasional Produksi', description: 'Pantau produksi, jadwal panen, dan agregasi komoditas.', href: '/produksi', icon: Sprout },
-      { title: 'Keuangan Koperasi', description: 'Buka transaksi, laporan, dan pembiayaan koperasi.', href: '/keuangan', icon: Wallet },
-      { title: 'Forecast AI', description: 'Gunakan prediksi untuk produksi dan penjualan berikutnya.', href: '/ai/forecast', icon: Brain },
-      { title: 'Laporan', description: 'Buat dan bagikan laporan operasional koperasi.', href: '/keuangan/laporan', icon: FileText },
+      { title: 'Anggota', description: 'Kelola daftar anggota, onboarding, dan verifikasi.', href: '/anggota', icon: Users },
+      { title: 'Produksi', description: 'Pantau panen, jadwal, dan agregasi komoditas.', href: '/produksi', icon: Sprout },
+      { title: 'Keuangan', description: 'Buka transaksi, laporan, dan pembiayaan koperasi.', href: '/keuangan', icon: Wallet },
+      { title: 'Forecast', description: 'Gunakan prediksi untuk produksi berikutnya.', href: '/ai/forecast', icon: Brain },
+      { title: 'Laporan', description: 'Buat dan bagikan laporan operasional.', href: '/keuangan/laporan', icon: FileText },
     ],
   },
   ketua: {
@@ -119,10 +173,10 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
       'Gunakan command center untuk keputusan strategis.',
     ],
     actions: [
-      { title: 'Pusat Kendali', description: 'Masuk ke dashboard eksekutif untuk pemantauan menyeluruh.', href: '/command-center', icon: BarChart3 },
-      { title: 'Anggota & Verifikasi', description: 'Awasi onboarding, verifikasi, dan kualitas anggota.', href: '/anggota', icon: Users },
-      { title: 'Laporan Koperasi', description: 'Tinjau laporan dan pembagian hasil usaha.', href: '/keuangan/laporan', icon: FileText },
-      { title: 'Analisis Pasar AI', description: 'Gunakan insight strategis untuk arah bisnis koperasi.', href: '/ai/analisis-pasar', icon: Brain },
+      { title: 'Pusat Kendali', description: 'Pantau kondisi koperasi dari dashboard eksekutif.', href: '/command-center', icon: BarChart3 },
+      { title: 'Anggota', description: 'Awasi onboarding dan kualitas anggota.', href: '/anggota', icon: Users },
+      { title: 'Laporan', description: 'Tinjau laporan dan pembagian hasil usaha.', href: '/keuangan/laporan', icon: FileText },
+      { title: 'Analisis Pasar', description: 'Gunakan insight AI untuk arah bisnis koperasi.', href: '/ai/analisis-pasar', icon: Brain },
     ],
   },
   pemda: {
@@ -134,10 +188,10 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
       'Gunakan laporan agregat untuk keputusan daerah.',
     ],
     actions: [
-      { title: 'Agregasi Produksi', description: 'Lihat ringkasan produksi tingkat daerah.', href: '/produksi/agregasi', icon: Sprout },
-      { title: 'Logistik Daerah', description: 'Pantau distribusi dan hambatan logistik wilayah.', href: '/logistik', icon: Truck },
+      { title: 'Produksi Wilayah', description: 'Lihat ringkasan produksi tingkat daerah.', href: '/produksi/agregasi', icon: Sprout },
+      { title: 'Logistik', description: 'Pantau distribusi dan hambatan logistik.', href: '/logistik', icon: Truck },
       { title: 'Harga Pasar', description: 'Amati pergerakan harga komoditas di lapangan.', href: '/pasar/harga', icon: ShoppingCart },
-      { title: 'Laporan Daerah', description: 'Akses laporan agregat untuk evaluasi program.', href: '/keuangan/laporan', icon: FileText },
+      { title: 'Laporan', description: 'Akses laporan agregat untuk evaluasi program.', href: '/keuangan/laporan', icon: FileText },
     ],
   },
   bank: {
@@ -149,9 +203,9 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
       'Gunakan laporan untuk penilaian pembiayaan.',
     ],
     actions: [
-      { title: 'Credit Scoring', description: 'Evaluasi kelayakan kredit dan profil pembiayaan anggota.', href: '/keuangan/credit-scoring', icon: ShieldCheck },
-      { title: 'Pengajuan Pinjaman', description: 'Lihat detail pengajuan pinjaman yang perlu diproses.', href: '/keuangan/pinjaman', icon: Wallet },
-      { title: 'Laporan Pembiayaan', description: 'Buka laporan untuk analisis risiko dan performa.', href: '/keuangan/laporan', icon: FileText },
+      { title: 'Credit Scoring', description: 'Evaluasi kelayakan kredit anggota.', href: '/keuangan/credit-scoring', icon: ShieldCheck },
+      { title: 'Pinjaman', description: 'Lihat detail pengajuan pembiayaan.', href: '/keuangan/pinjaman', icon: Wallet },
+      { title: 'Laporan', description: 'Buka laporan untuk analisis risiko.', href: '/keuangan/laporan', icon: FileText },
     ],
   },
   kementerian: {
@@ -163,9 +217,9 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
       'Gunakan laporan untuk kebijakan nasional.',
     ],
     actions: [
-      { title: 'Agregasi Produksi', description: 'Lihat rangkuman produksi nasional dan lintas wilayah.', href: '/produksi/agregasi', icon: Sprout },
-      { title: 'Forecast Nasional', description: 'Gunakan prediksi untuk perencanaan lintas wilayah.', href: '/ai/forecast', icon: Brain },
-      { title: 'Logistik', description: 'Tinjau distribusi dan hambatan pasok tingkat luas.', href: '/logistik', icon: Truck },
+      { title: 'Produksi Nasional', description: 'Lihat rangkuman produksi lintas wilayah.', href: '/produksi/agregasi', icon: Sprout },
+      { title: 'Forecast', description: 'Gunakan prediksi untuk perencanaan nasional.', href: '/ai/forecast', icon: Brain },
+      { title: 'Logistik', description: 'Tinjau distribusi dan hambatan pasok.', href: '/logistik', icon: Truck },
       { title: 'Laporan', description: 'Akses laporan ringkas untuk kebutuhan kebijakan.', href: '/keuangan/laporan', icon: FileText },
     ],
   },
@@ -179,9 +233,9 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
     ],
     actions: [
       { title: 'Pusat Kendali', description: 'Pantau seluruh area operasional dari satu tempat.', href: '/command-center', icon: BarChart3 },
-      { title: 'Manajemen Anggota', description: 'Validasi alur anggota dan akses lintas modul.', href: '/anggota', icon: Users },
-      { title: 'Operasional Koperasi', description: 'Masuk ke transaksi dan laporan untuk verifikasi sistem.', href: '/keuangan', icon: Wallet },
-      { title: 'AI Monitoring', description: 'Tinjau modul AI dan dukungan assistant.', href: '/ai', icon: Brain },
+      { title: 'Anggota', description: 'Validasi alur anggota dan akses lintas modul.', href: '/anggota', icon: Users },
+      { title: 'Keuangan', description: 'Masuk ke transaksi dan laporan untuk verifikasi sistem.', href: '/keuangan', icon: Wallet },
+      { title: 'AI', description: 'Tinjau modul AI dan dukungan assistant.', href: '/ai', icon: Brain },
     ],
   },
 }
@@ -194,115 +248,184 @@ export default function DashboardPage() {
   const experience = ROLE_EXPERIENCES[user.role]
   const scope = SCOPE_LABELS[dataScope()]
   const visibleActions = experience.actions.filter((action) => canRoute(action.href))
+  const primaryActions = visibleActions.slice(0, 4)
+  const secondaryActions = visibleActions.slice(4)
+  const hero = HERO_INSIGHTS[user.role]
 
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden border-primary/15 shadow-sm">
-        <CardContent className="relative p-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(180,39,45,0.12),transparent_40%),linear-gradient(135deg,rgba(248,243,237,0.98),rgba(255,255,255,0.92))]" />
-          <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.45fr_0.95fr]">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-                  <span className="text-2xl leading-none">{roleConfig.icon}</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-primary">{experience.heading}</p>
-                  <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{roleConfig.label}</h1>
-                </div>
-              </div>
-
-              <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
-                {experience.summary}
-              </p>
-
-              <div className="flex flex-wrap gap-2">
-                <Badge className="border border-primary/20 bg-primary/10 px-3 py-1 text-primary">
-                  {scope}
-                </Badge>
-                <Badge variant="outline" className="px-3 py-1">
-                  {visibleActions.length} area kerja
-                </Badge>
-              </div>
-            </div>
-
-            <Card className="border-primary/10 bg-background/90 shadow-none">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Fokus Utama</CardTitle>
-                <CardDescription>Ringkasan tanggung jawab untuk role ini.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {experience.priorities.map((priority) => (
-                  <div key={priority} className="flex items-start gap-3 rounded-xl bg-secondary/45 p-3">
-                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <p className="text-sm text-foreground">{priority}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
-
-      <section className="space-y-3">
-        <div>
-          <h2 className="text-lg font-semibold sm:text-xl">Aksi yang Relevan untuk Anda</h2>
-          <p className="text-sm text-muted-foreground">
-            Hanya fitur yang sesuai dengan tugas role Anda yang ditampilkan di sini.
-          </p>
+      <section className="space-y-4">
+        <div className="px-1">
+          <p className="text-sm font-medium text-muted-foreground">Selamat datang kembali,</p>
+          <h1 className="mt-1 text-[2rem] font-bold leading-tight tracking-tight sm:text-[2.3rem]">
+            {user.name.split(' ')[0]}!
+          </h1>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {visibleActions.map((action) => {
+        <Card className="overflow-hidden border-none bg-primary text-primary-foreground shadow-[0_28px_70px_-30px_rgba(133,18,23,0.55)]">
+          <CardContent className="relative p-0">
+            <div className="absolute -right-10 -top-12 h-36 w-36 rounded-full bg-white/12 blur-3xl" />
+            <div className="absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-black/10 blur-2xl" />
+            <div className="relative space-y-5 p-5 sm:p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-primary-foreground/80">{hero.label}</p>
+                  <p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">{hero.value}</p>
+                  <p className="mt-2 max-w-xl text-sm text-primary-foreground/80">{hero.note}</p>
+                </div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-2xl backdrop-blur-sm">
+                  {roleConfig.icon}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
+                  {roleConfig.label}
+                </Badge>
+                <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
+                  {scope}
+                </Badge>
+              </div>
+
+              <div className="flex flex-col gap-2 sm:flex-row">
+                {primaryActions.slice(0, 2).map((action) => (
+                  <Button
+                    key={action.href}
+                    asChild
+                    className="h-11 flex-1 rounded-xl bg-white/16 text-primary-foreground backdrop-blur-sm hover:bg-white/22"
+                  >
+                    <Link href={action.href}>
+                      <action.icon className="mr-2 h-4 w-4" />
+                      {action.title}
+                    </Link>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="space-y-4">
+        <div className="px-1">
+          <h2 className="text-xl font-bold tracking-tight">Quick Actions</h2>
+          <p className="text-sm text-muted-foreground">Shortcut ke fitur yang paling relevan untuk role Anda.</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {primaryActions.map((action) => {
             const Icon = action.icon
 
             return (
-              <Card key={action.href} className="border-border/80 shadow-sm">
-                <CardHeader className="space-y-3 p-5">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base sm:text-lg">{action.title}</CardTitle>
-                    <CardDescription className="mt-1 text-sm">{action.description}</CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-5 pt-0">
-                  <Button asChild className="w-full justify-between">
-                    <Link href={action.href}>
-                      Buka fitur
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+              <Link key={action.href} href={action.href} className="group">
+                <Card className="border-white/80 bg-white shadow-sm transition-transform hover:-translate-y-0.5">
+                  <CardContent className="flex flex-col items-center gap-3 p-4 text-center">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/60 bg-background text-primary shadow-sm">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{action.title}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{action.description}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             )
           })}
         </div>
       </section>
 
-      <Card className="shadow-sm">
-        <CardHeader>
+      <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+        <Card className="border-white/80 bg-white shadow-sm">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <CardTitle className="text-lg">Fokus Utama</CardTitle>
+                <CardDescription>Ringkasan tugas yang paling penting untuk role ini.</CardDescription>
+              </div>
+              <Badge variant="outline" className="text-xs">
+                {experience.heading}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {experience.priorities.map((priority, index) => (
+              <div key={priority} className="flex items-start gap-3 rounded-2xl border border-border/60 bg-background p-4">
+                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  {index === 0 ? <ShieldCheck className="h-4 w-4" /> : index === 1 ? <ClipboardCheck className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">{priority}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{experience.summary}</p>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="border-white/80 bg-white shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Lanjutan Aksi</CardTitle>
+            <CardDescription>Fitur tambahan yang tetap tersedia untuk Anda.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {secondaryActions.length > 0 ? (
+              secondaryActions.map((action) => (
+                <Link
+                  key={action.href}
+                  href={action.href}
+                  className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/[0.03]"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <action.icon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-foreground">{action.title}</p>
+                    <p className="text-sm text-muted-foreground">{action.description}</p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed bg-background p-4">
+                <p className="font-medium text-foreground">Semua fitur utama sudah tampil di atas</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Role ini memang didesain dengan alur yang lebih ringkas agar fokus kerja tetap jelas.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </section>
+
+      <Card className="border-white/80 bg-white shadow-sm">
+        <CardHeader className="pb-3">
           <CardTitle className="text-lg">Akses Dilindungi</CardTitle>
           <CardDescription>
             Fitur di luar tanggung jawab role Anda otomatis disembunyikan dari dashboard, sidebar, dan akses URL langsung.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-dashed bg-secondary/35 p-4">
+        <CardContent className="grid gap-3 md:grid-cols-3">
+          <div className="rounded-2xl border border-dashed bg-background p-4">
             <Users className="mb-3 h-5 w-5 text-primary" />
             <p className="font-medium">Manajemen anggota sensitif</p>
-            <p className="mt-1 text-sm text-muted-foreground">Hanya role pengelola koperasi yang dapat menambah dan memverifikasi anggota.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Penambahan, onboarding, dan verifikasi anggota hanya muncul untuk role pengelola.
+            </p>
           </div>
-          <div className="rounded-2xl border border-dashed bg-secondary/35 p-4">
+          <div className="rounded-2xl border border-dashed bg-background p-4">
             <Warehouse className="mb-3 h-5 w-5 text-primary" />
-            <p className="font-medium">Operasional khusus unit</p>
-            <p className="mt-1 text-sm text-muted-foreground">Gudang, logistik, dan transaksi tampil sesuai fungsi kerja masing-masing.</p>
+            <p className="font-medium">Operasional sesuai fungsi</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Gudang, logistik, pasar, dan keuangan dibatasi berdasarkan use case tiap peran.
+            </p>
           </div>
-          <div className="rounded-2xl border border-dashed bg-secondary/35 p-4">
+          <div className="rounded-2xl border border-dashed bg-background p-4">
             <ClipboardCheck className="mb-3 h-5 w-5 text-primary" />
-            <p className="font-medium">Akses langsung tetap dijaga</p>
-            <p className="mt-1 text-sm text-muted-foreground">Walau URL diketik manual, halaman yang tidak sesuai tetap akan ditolak.</p>
+            <p className="font-medium">URL manual tetap ditolak</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Walau alamat halaman diketik langsung, halaman yang tidak sesuai tetap tidak bisa dibuka.
+            </p>
           </div>
         </CardContent>
       </Card>
