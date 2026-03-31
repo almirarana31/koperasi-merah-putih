@@ -254,7 +254,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
       >
         {/* Logo */}
         <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-6">
-          <Link href="/dashboard" className="flex items-center gap-3" onClick={handleLinkClick}>
+          <Link href="/login" className="flex items-center gap-3" onClick={handleLinkClick}>
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
               <Leaf className="h-5 w-5 text-primary-foreground" />
             </div>
