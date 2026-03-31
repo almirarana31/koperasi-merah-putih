@@ -2,9 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { toast } from 'sonner'
-import { ArrowLeft, ArrowRight, Check, Leaf, ShieldCheck, User } from 'lucide-react'
+import { ArrowRight, Check, Leaf, ShieldCheck, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -51,9 +50,9 @@ export default function LoginPage() {
       <div className="mx-auto w-full max-w-[460px]">
         <Card className="overflow-hidden border-white/80 bg-white shadow-[0_28px_70px_-30px_rgba(133,18,23,0.35)]">
           <div className="flex items-center justify-between border-b border-border/70 px-4 py-4">
-            <Link href="/landing" className="flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors hover:bg-secondary">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Leaf className="h-5 w-5" />
+            </div>
             <h1 className="text-center text-lg font-bold tracking-tight">Koperasi Merah Putih</h1>
             <div className="w-10" />
           </div>
