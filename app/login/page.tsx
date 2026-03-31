@@ -147,7 +147,8 @@ export default function LoginPage() {
                     <p className="font-semibold text-foreground">{selectedUser.name}</p>
                     <Badge className="bg-primary/10 text-primary">{selectedConfig.label}</Badge>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">{selectedUser.email}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{selectedUser.email}</p>
+                  <p className="mt-2 text-sm text-muted-foreground">{selectedConfig.description}</p>
                   <div className="mt-3 flex flex-wrap gap-2 text-xs">
                     <span className="rounded-full bg-secondary px-3 py-1 text-secondary-foreground">
                       {getScopeLabel(selectedRole)}
