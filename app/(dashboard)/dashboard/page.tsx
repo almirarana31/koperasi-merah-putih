@@ -555,28 +555,33 @@ export default function DashboardPage() {
             <div className="relative grid gap-5 p-5 sm:p-6 xl:grid-cols-[1.02fr_0.98fr] xl:items-stretch">
               <div className="space-y-5">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/72">{hero.label}</p>
-                  <p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">{hero.value}</p>
-                  <p className="mt-3 max-w-xl text-sm leading-6 text-primary-foreground/80">{hero.note}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/72">Overview role</p>
+                  <p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">{experience.heading}</p>
+                  <p className="mt-3 max-w-xl text-sm leading-6 text-primary-foreground/80">{experience.summary}</p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-[0.9fr_1.1fr]">
+                  <div className="rounded-[1.4rem] border border-white/12 bg-white/12 p-4 backdrop-blur-sm">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/64">{hero.label}</p>
+                    <p className="mt-2 text-xl font-bold tracking-tight text-primary-foreground">{hero.value}</p>
+                  </div>
+                  <div className="rounded-[1.4rem] border border-white/10 bg-black/8 p-4">
+                    <p className="text-sm leading-6 text-primary-foreground/78">{hero.note}</p>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-2xl backdrop-blur-sm">
                     {roleConfig.icon}
                   </div>
-                  <div className="text-sm text-primary-foreground/84">
-                    <p className="font-semibold">{experience.heading}</p>
-                    <p className="max-w-md text-primary-foreground/74">{experience.summary}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
+                      {roleConfig.label}
+                    </Badge>
+                    <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
+                      {scope}
+                    </Badge>
                   </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
-                    {roleConfig.label}
-                  </Badge>
-                  <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
-                    {scope}
-                  </Badge>
                 </div>
 
                 <div className="flex flex-col gap-2 sm:flex-row">

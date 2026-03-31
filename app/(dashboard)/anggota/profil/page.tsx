@@ -1,43 +1,37 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
-  User,
-  ShoppingCart,
-  TrendingUp,
-  TrendingDown,
-  CreditCard,
-  Wallet,
+  ArrowRight,
+  BadgeCheck,
+  BarChart3,
+  Brain,
   Calendar,
+  CheckCircle2,
+  CreditCard,
+  FileText,
+  LayoutDashboard,
+  Mail,
   MapPin,
   Phone,
-  Mail,
-  BarChart3,
-  PieChart,
-  Activity,
-  Package,
-  Clock,
-  ChevronRight,
-  Download,
-  FileText,
-  Award,
+  ShieldCheck,
+  ShoppingCart,
+  Sprout,
+  Truck,
+  UserRound,
+  Users,
+  Wallet,
 } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import type { LucideIcon } from 'lucide-react'
+import { useAuth } from '@/lib/auth'
+import { members, loans, formatCurrency, formatDate } from '@/lib/data'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useAuth } from '@/lib/auth'
 import {
   Table,
   TableBody,
@@ -47,116 +41,233 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-// Mock member profile data
-const memberProfile = {
-  id: 'M001',
-  nama: 'Pak Slamet Widodo',
-  nik: '3201012345678901',
-  email: 'slamet.widodo@email.com',
-  telepon: '081234567890',
-  tipe: 'petani',
-  alamat: 'Jl. Merdeka No. 45, Sukamaju, Bandung',
-  tanggalDaftar: '2022-03-15',
-  status: 'aktif',
-  kycVerified: true,
-  dukcapilVerified: true,
-  creditScore: 785,
-  tier: 'gold', // bronze, silver, gold, platinum
-  avatar: '/images/members/slamet.jpg',
+type Metric = {
+  label: string
+  value: string
+  helper: string
+  icon: LucideIcon
+  accent: string
 }
 
-// Financial summary
-const financialSummary = {
-  totalSimpanan: 15000000,
-  simpananPokok: 5000000,
-  simpananWajib: 10000000,
-  totalPinjaman: 10000000,
-  sisaPinjaman: 3000000,
-  shuDiterima: 2500000,
+type Entry = {
+  id: string
+  title: string
+  detail: string
+  date: string
+  status: string
 }
 
-// Purchase behavior data
-const purchaseBehavior = {
-  totalTransaksi: 156,
-  totalPembelian: 45000000,
-  avgPerTransaksi: 288461,
-  avgPerBulan: 2500000,
-  frekuensiPerBulan: 8.7,
-  lastPurchase: '2026-03-05',
-  memberSince: '2022-03-15',
-  loyaltyPoints: 4500,
+type Preset = {
+  phone: string
+  address: string
+  joinedAt: string
+  accountType: string
+  tier: string
+  scoreLabel: string
+  scoreValue: string
+  scoreState: string
+  metrics: Metric[]
+  workstreams: string[]
+  activities: Entry[]
+  history: Entry[]
 }
 
-// Purchase categories breakdown
-const categoryBreakdown = [
-  { category: 'Pupuk', amount: 18000000, percentage: 40, transactions: 62 },
-  { category: 'Bibit', amount: 11250000, percentage: 25, transactions: 35 },
-  { category: 'Peralatan', amount: 9000000, percentage: 20, transactions: 28 },
-  { category: 'Pestisida', amount: 4500000, percentage: 10, transactions: 21 },
-  { category: 'Lainnya', amount: 2250000, percentage: 5, transactions: 10 },
-]
-
-// Monthly purchase trend (last 6 months)
-const monthlyTrend = [
-  { month: 'Okt 2025', amount: 2100000, transactions: 7 },
-  { month: 'Nov 2025', amount: 2800000, transactions: 9 },
-  { month: 'Des 2025', amount: 3200000, transactions: 11 },
-  { month: 'Jan 2026', amount: 2400000, transactions: 8 },
-  { month: 'Feb 2026', amount: 2900000, transactions: 10 },
-  { month: 'Mar 2026', amount: 1800000, transactions: 6 },
-]
-
-// Recent transactions
-const recentTransactions = [
-  { id: 'TRX001', date: '2026-03-05', items: ['Pupuk NPK 50kg x2', 'Bibit Padi 10kg'], total: 850000, status: 'selesai' },
-  { id: 'TRX002', date: '2026-03-01', items: ['Cangkul', 'Sarung Tangan'], total: 275000, status: 'selesai' },
-  { id: 'TRX003', date: '2026-02-25', items: ['Pupuk Organik 25kg x4'], total: 600000, status: 'selesai' },
-  { id: 'TRX004', date: '2026-02-20', items: ['Pestisida 1L x3'], total: 450000, status: 'selesai' },
-  { id: 'TRX005', date: '2026-02-15', items: ['Bibit Jagung 5kg', 'Pupuk Urea 50kg'], total: 525000, status: 'selesai' },
-]
-
-// Loan history
-const loanHistory = [
-  { id: 'L001', tanggal: '2024-01-15', jumlah: 5000000, tenor: 12, angsuran: 458333, sisaCicilan: 0, status: 'lunas' },
-  { id: 'L002', tanggal: '2025-06-01', jumlah: 10000000, tenor: 24, angsuran: 458333, sisaCicilan: 3, status: 'aktif' },
-]
-
-// Payment history for credit score
-const paymentHistory = [
-  { bulan: 'Mar 2026', status: 'tepat-waktu', tanggal: '2026-03-05' },
-  { bulan: 'Feb 2026', status: 'tepat-waktu', tanggal: '2026-02-03' },
-  { bulan: 'Jan 2026', status: 'tepat-waktu', tanggal: '2026-01-05' },
-  { bulan: 'Des 2025', status: 'tepat-waktu', tanggal: '2025-12-04' },
-  { bulan: 'Nov 2025', status: 'terlambat', tanggal: '2025-11-12' },
-  { bulan: 'Okt 2025', status: 'tepat-waktu', tanggal: '2025-10-05' },
-]
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(amount)
+type QuickRoute = {
+  label: string
+  href: string
+  icon: LucideIcon
 }
 
-const getTierColor = (tier: string) => {
-  switch (tier) {
-    case 'platinum': return 'bg-gradient-to-r from-gray-400 to-gray-600 text-white'
-    case 'gold': return 'bg-gradient-to-r from-amber-400 to-amber-600 text-white'
-    case 'silver': return 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800'
-    default: return 'bg-gradient-to-r from-orange-300 to-orange-500 text-white'
+const SCOPE_LABELS = {
+  own: 'Data pribadi',
+  koperasi: 'Level koperasi',
+  district_aggregate: 'Agregat kabupaten',
+  national_aggregate: 'Agregat nasional',
+  all_koperasi: 'Seluruh koperasi',
+} as const
+
+const QUICK_ROUTES: QuickRoute[] = [
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Profil', href: '/anggota/profil', icon: UserRound },
+  { label: 'Produksi', href: '/produksi', icon: Sprout },
+  { label: 'Anggota', href: '/anggota', icon: Users },
+  { label: 'Harga Pasar', href: '/pasar/harga', icon: ShoppingCart },
+  { label: 'Pinjaman', href: '/keuangan/pinjaman', icon: Wallet },
+  { label: 'Keuangan', href: '/keuangan', icon: CreditCard },
+  { label: 'Laporan', href: '/keuangan/laporan', icon: FileText },
+  { label: 'Command Center', href: '/command-center', icon: BarChart3 },
+  { label: 'Logistik', href: '/logistik', icon: Truck },
+  { label: 'AI', href: '/ai', icon: Brain },
+]
+
+const ACCOUNT_PRESETS: Record<string, Preset> = {
+  'USR-001': {
+    phone: '081234567894',
+    address: 'Jl. Gudang No. 1, Cikupa, Tangerang',
+    joinedAt: '2023-05-12',
+    accountType: 'Anggota usaha tani dan pemasok gabah',
+    tier: 'Gold',
+    scoreLabel: 'Credit Score',
+    scoreValue: '742',
+    scoreState: 'Sangat baik',
+    metrics: [
+      { label: 'Total Simpanan', value: formatCurrency(8500000), helper: 'Saldo aktif akun ini', icon: Wallet, accent: 'bg-emerald-500/10 text-emerald-600' },
+      { label: 'Sisa Pinjaman', value: formatCurrency(4500000), helper: 'Pinjaman produktif berjalan', icon: CreditCard, accent: 'bg-amber-500/10 text-amber-600' },
+      { label: 'Belanja Musim Ini', value: formatCurrency(18600000), helper: 'Pupuk, benih, dan panen', icon: ShoppingCart, accent: 'bg-primary/10 text-primary' },
+      { label: 'Loyalty Points', value: '4.500', helper: 'Aktivitas koperasi', icon: BadgeCheck, accent: 'bg-blue-500/10 text-blue-600' },
+    ],
+    workstreams: [
+      'Catat panen dan rencana tanam milik sendiri.',
+      'Pantau pinjaman serta simpanan pribadi.',
+      'Bandingkan harga pasar sebelum menjual hasil panen.',
+    ],
+    activities: [
+      { id: 'A1', title: 'Pengajuan pinjaman disetujui', detail: 'Pembiayaan pupuk masuk tahap pencairan.', date: '2026-03-28', status: 'Aktif' },
+      { id: 'A2', title: 'Harga gabah naik', detail: 'Saran AI merekomendasikan menahan stok 3 hari.', date: '2026-03-24', status: 'Info' },
+    ],
+    history: [
+      { id: 'H1', title: 'Pembayaran cicilan', detail: 'Cicilan Maret dibayar tepat waktu.', date: '2026-03-05', status: 'Tepat waktu' },
+      { id: 'H2', title: 'Pencatatan panen', detail: 'Panen gabah 2.9 ton masuk ke akun pribadi.', date: '2026-02-10', status: 'Terverifikasi' },
+    ],
+  },
+  'USR-004': {
+    phone: '081223344501',
+    address: 'Kantor Koperasi Merah Putih Sukamaju, Cianjur',
+    joinedAt: '2022-01-10',
+    accountType: 'Manajer operasional koperasi',
+    tier: 'Executive',
+    scoreLabel: 'Health Index',
+    scoreValue: '91',
+    scoreState: 'Stabil',
+    metrics: [
+      { label: 'Anggota Aktif', value: '1.247', helper: 'Dalam pengelolaan harian', icon: Users, accent: 'bg-primary/10 text-primary' },
+      { label: 'Laporan Siap', value: '12', helper: 'Dokumen operasional minggu ini', icon: FileText, accent: 'bg-blue-500/10 text-blue-600' },
+      { label: 'Review Pinjaman', value: '4', helper: 'Menunggu tindak lanjut', icon: Wallet, accent: 'bg-amber-500/10 text-amber-600' },
+      { label: 'Modul Utama', value: '5', helper: 'Area kerja inti', icon: BarChart3, accent: 'bg-emerald-500/10 text-emerald-600' },
+    ],
+    workstreams: [
+      'Kelola onboarding dan verifikasi anggota.',
+      'Pantau produksi, pembiayaan, dan laporan operasional.',
+      'Dorong tindak lanjut lintas tim berdasarkan insight AI.',
+    ],
+    activities: [
+      { id: 'A1', title: 'Verifikasi anggota baru', detail: '3 anggota siap ke onboarding akhir.', date: '2026-03-29', status: 'Aktif' },
+      { id: 'A2', title: 'Laporan cashflow selesai', detail: 'Dokumen siap dibagikan ke ketua.', date: '2026-03-27', status: 'Selesai' },
+    ],
+    history: [
+      { id: 'H1', title: 'Onboarding anggota', detail: 'Batch onboarding KTP selesai diverifikasi.', date: '2026-03-29', status: 'Selesai' },
+      { id: 'H2', title: 'Rapat operasional', detail: 'Prioritas distribusi dan stok diperbarui.', date: '2026-03-20', status: 'Tercatat' },
+    ],
+  },
+  'USR-005': {
+    phone: '081223344502',
+    address: 'Sekretariat Ketua Koperasi, Sukamaju',
+    joinedAt: '2021-07-01',
+    accountType: 'Ketua koperasi dan pengambil keputusan strategis',
+    tier: 'Executive',
+    scoreLabel: 'Governance Score',
+    scoreValue: '94',
+    scoreState: 'Sangat sehat',
+    metrics: [
+      { label: 'Persetujuan Masuk', value: '7', helper: 'Pinjaman dan kebijakan', icon: ShieldCheck, accent: 'bg-primary/10 text-primary' },
+      { label: 'Risiko Fokus', value: '3', helper: 'Butuh keputusan strategis', icon: BarChart3, accent: 'bg-amber-500/10 text-amber-600' },
+      { label: 'Laporan Penting', value: '5', helper: 'Siap ditinjau hari ini', icon: FileText, accent: 'bg-blue-500/10 text-blue-600' },
+      { label: 'Health Score', value: '94/100', helper: 'Kesehatan koperasi', icon: BadgeCheck, accent: 'bg-emerald-500/10 text-emerald-600' },
+    ],
+    workstreams: [
+      'Gunakan command center untuk membaca kondisi koperasi.',
+      'Tinjau laporan, pembiayaan, dan risiko yang perlu keputusan.',
+      'Arahkan strategi lintas unit berdasarkan insight pasar.',
+    ],
+    activities: [
+      { id: 'A1', title: 'Tinjau laporan stakeholder', detail: 'Audit internal dan laporan dampak siap dibaca.', date: '2026-03-30', status: 'Baru' },
+      { id: 'A2', title: 'Persetujuan pembiayaan prioritas', detail: '7 pengajuan menunggu keputusan akhir.', date: '2026-03-28', status: 'Aktif' },
+    ],
+    history: [
+      { id: 'H1', title: 'Keputusan komite', detail: 'Persetujuan pembiayaan anggota diproses.', date: '2026-03-30', status: 'Disetujui' },
+      { id: 'H2', title: 'Rapat strategi', detail: 'Arah kebijakan pasar Q2 diperbarui.', date: '2026-03-19', status: 'Tercatat' },
+    ],
+  },
+  'USR-009': {
+    phone: '081223344599',
+    address: 'Pusat Operasi Platform DNA Desa, Jakarta',
+    joinedAt: '2020-11-18',
+    accountType: 'Administrator sistem lintas koperasi',
+    tier: 'Root Access',
+    scoreLabel: 'System Health',
+    scoreValue: '99.8%',
+    scoreState: 'Optimal',
+    metrics: [
+      { label: 'Alert Kritis', value: '0', helper: 'Tidak ada gangguan tinggi', icon: ShieldCheck, accent: 'bg-emerald-500/10 text-emerald-600' },
+      { label: 'Audit Log', value: '16', helper: 'Perlu ditinjau hari ini', icon: FileText, accent: 'bg-primary/10 text-primary' },
+      { label: 'Latency', value: '42ms', helper: 'Stabil lintas modul', icon: BarChart3, accent: 'bg-blue-500/10 text-blue-600' },
+      { label: 'Modul Aktif', value: '9', helper: 'Lintas sistem', icon: Brain, accent: 'bg-amber-500/10 text-amber-600' },
+    ],
+    workstreams: [
+      'Pantau kesehatan sistem, latensi, dan alert lintas modul.',
+      'Audit akses dan hak role di seluruh platform.',
+      'Validasi alur anggota, keuangan, dan AI untuk troubleshooting cepat.',
+    ],
+    activities: [
+      { id: 'A1', title: 'Audit role access', detail: 'Capability role selesai diverifikasi.', date: '2026-03-31', status: 'Selesai' },
+      { id: 'A2', title: 'Pemantauan health platform', detail: 'Semua layanan utama normal tanpa alert kritis.', date: '2026-03-30', status: 'Normal' },
+    ],
+    history: [
+      { id: 'H1', title: 'Role audit', detail: 'Hak akses lintas modul direview.', date: '2026-03-31', status: 'Selesai' },
+      { id: 'H2', title: 'Validasi route guard', detail: 'Akses URL langsung diuji lintas role.', date: '2026-03-27', status: 'Terverifikasi' },
+    ],
+  },
+}
+
+function initials(name: string) {
+  return name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()
+}
+
+function statusClass(status: string) {
+  const value = status.toLowerCase()
+  if (value.includes('setuju') || value.includes('normal') || value.includes('selesai') || value.includes('verifikasi') || value.includes('tepat')) return 'bg-emerald-500 text-white'
+  if (value.includes('catat') || value.includes('info')) return 'bg-blue-500 text-white'
+  return 'bg-amber-500 text-white'
+}
+
+function fallbackPreset(user: NonNullable<ReturnType<typeof useAuth>['user']>): Preset {
+  const member = members.find((item) => item.nama === user.name)
+  const loan = loans.find((item) => item.memberNama === user.name || item.memberId === member?.id)
+  return {
+    phone: member?.noHp ?? 'Belum diatur',
+    address: member ? `${member.alamat}, ${member.desa}, ${member.kecamatan}` : user.koperasiName ?? user.districtName ?? user.provinceName ?? 'Wilayah kerja belum diatur',
+    joinedAt: member?.tanggalDaftar ?? '2023-01-01',
+    accountType: 'Akun operasional koperasi',
+    tier: 'Active',
+    scoreLabel: 'Status Akun',
+    scoreValue: 'Aktif',
+    scoreState: 'Sinkron',
+    metrics: [
+      { label: 'Role Aktif', value: user.role, helper: 'Role yang sedang digunakan', icon: ShieldCheck, accent: 'bg-primary/10 text-primary' },
+      { label: 'Pinjaman Aktif', value: loan ? formatCurrency(loan.sisaPinjaman) : formatCurrency(0), helper: 'Jika ada pembiayaan terkait', icon: Wallet, accent: 'bg-amber-500/10 text-amber-600' },
+      { label: 'Data Scope', value: 'RBAC', helper: 'Mengikuti aturan akses', icon: Users, accent: 'bg-blue-500/10 text-blue-600' },
+      { label: 'Status Sinkron', value: 'Ya', helper: 'User login terbaca', icon: CheckCircle2, accent: 'bg-emerald-500/10 text-emerald-600' },
+    ],
+    workstreams: ['Pantau akun yang sedang login.', 'Gunakan modul sesuai role dan scope akses.', 'Buka dashboard untuk tindakan prioritas.'],
+    activities: [{ id: 'A1', title: 'Akun aktif terdeteksi', detail: 'Profil dibuat dari user yang sedang login.', date: '2026-03-31', status: 'Aktif' }],
+    history: [{ id: 'H1', title: 'Login akun', detail: 'Akun dipilih dari halaman role selector.', date: '2026-03-31', status: 'Aktif' }],
   }
 }
 
 export default function MemberProfilPage() {
-  const { user, canRoute } = useAuth()
-  const isPetaniView = user?.role === 'petani'
+  const { user, roleConfig, canRoute, dataScope } = useAuth()
+  if (!user || !roleConfig) return null
+
+  const member = members.find((item) => item.nama === user.name)
+  const linkedLoans = loans.filter((item) => item.memberNama === user.name || item.memberId === member?.id)
+  const preset = ACCOUNT_PRESETS[user.id] ?? fallbackPreset(user)
+  const routes = QUICK_ROUTES.filter((route) => canRoute(route.href))
   const backHref = canRoute('/anggota') ? '/anggota' : '/dashboard'
+  const title = user.role === 'petani' ? 'Profil Saya' : 'Profil Akun'
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild className="shrink-0">
             <Link href={backHref}>
@@ -164,442 +275,272 @@ export default function MemberProfilPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
-              {isPetaniView ? 'Profil Saya' : 'Profil Anggota'}
-            </h1>
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
             <p className="text-sm text-muted-foreground">
-              {isPetaniView ? 'Ringkasan data anggota dan aktivitas pribadi Anda' : 'Detail dan perilaku pembelian anggota'}
+              Ringkasan akun login untuk role <span className="font-medium text-foreground">{roleConfig.label}</span>.
             </p>
           </div>
         </div>
-        {!isPetaniView && (
-          <Button variant="outline" className="w-full sm:w-auto">
-            <Download className="mr-2 h-4 w-4" />
-            Export Data
-          </Button>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {routes.slice(0, 2).map((route) => (
+            <Button key={route.href} variant="outline" asChild className="w-full sm:w-auto">
+              <Link href={route.href}>
+                <route.icon className="mr-2 h-4 w-4" />
+                {route.label}
+              </Link>
+            </Button>
+          ))}
+        </div>
       </div>
 
-      {/* Member Header Card */}
-      <Card>
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-            <Avatar className="h-20 w-20 mx-auto sm:mx-0">
-              <AvatarImage src={memberProfile.avatar} />
-              <AvatarFallback className="bg-primary/10 text-primary text-2xl">
-                {memberProfile.nama.split(' ').map(n => n[0]).join('').slice(0, 2)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 text-center sm:text-left">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 justify-center sm:justify-start">
-                <h2 className="text-xl font-bold">{memberProfile.nama}</h2>
-                <Badge className={`${getTierColor(memberProfile.tier)} w-fit mx-auto sm:mx-0`}>
-                  <Award className="mr-1 h-3 w-3" />
-                  {memberProfile.tier.toUpperCase()}
-                </Badge>
-              </div>
-              <div className="mt-2 space-y-1 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2 justify-center sm:justify-start">
-                  <CreditCard className="h-4 w-4" />
-                  <span>NIK: {memberProfile.nik}</span>
+      <div className="grid gap-4 xl:grid-cols-[1.28fr_0.82fr]">
+        <Card className="overflow-hidden border-red-200/70 bg-[linear-gradient(135deg,#be0817_0%,#d92827_54%,#aa2d2a_100%)] text-primary-foreground shadow-[0_28px_70px_-30px_rgba(133,18,23,0.55)]">
+          <CardContent className="space-y-5 p-6">
+            <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+              <div className="flex items-start gap-4">
+                <Avatar className="h-20 w-20 border border-white/20">
+                  <AvatarFallback className="bg-white/15 text-xl font-bold text-white">{initials(user.name)}</AvatarFallback>
+                </Avatar>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-2xl font-bold">{user.name}</h2>
+                      <Badge className="border-none bg-white/15 text-white">{preset.tier}</Badge>
+                    </div>
+                    <p className="mt-1 text-sm text-primary-foreground/80">{preset.accountType}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge className="border-none bg-white/15 text-white">{roleConfig.label}</Badge>
+                    <Badge className="border-none bg-white/15 text-white">{SCOPE_LABELS[dataScope()]}</Badge>
+                    <Badge className="border-none bg-white/15 text-white">Akun aktif</Badge>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 justify-center sm:justify-start">
+              </div>
+              <div className="rounded-[1.5rem] border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/72">{preset.scoreLabel}</p>
+                <p className="mt-2 text-3xl font-bold">{preset.scoreValue}</p>
+                <p className="mt-1 text-sm text-primary-foreground/78">{preset.scoreState}</p>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-[1.3rem] border border-white/12 bg-black/10 p-4">
+                <div className="flex items-center gap-2 text-sm text-primary-foreground/78">
+                  <Mail className="h-4 w-4" />
+                  <span>{user.email}</span>
+                </div>
+                <div className="mt-3 flex items-center gap-2 text-sm text-primary-foreground/78">
+                  <Phone className="h-4 w-4" />
+                  <span>{preset.phone}</span>
+                </div>
+              </div>
+              <div className="rounded-[1.3rem] border border-white/12 bg-black/10 p-4">
+                <div className="flex items-center gap-2 text-sm text-primary-foreground/78">
                   <MapPin className="h-4 w-4" />
-                  <span>{memberProfile.alamat}</span>
+                  <span>{preset.address}</span>
                 </div>
-                <div className="flex flex-wrap items-center gap-4 justify-center sm:justify-start">
-                  <div className="flex items-center gap-1">
-                    <Phone className="h-4 w-4" />
-                    <span>{memberProfile.telepon}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Mail className="h-4 w-4" />
-                    <span>{memberProfile.email}</span>
-                  </div>
+                <div className="mt-3 flex items-center gap-2 text-sm text-primary-foreground/78">
+                  <Calendar className="h-4 w-4" />
+                  <span>Bergabung {formatDate(preset.joinedAt)}</span>
                 </div>
               </div>
             </div>
-            <div className="flex flex-col items-center gap-2 border-t sm:border-t-0 sm:border-l pt-4 sm:pt-0 sm:pl-6">
-              <p className="text-xs text-muted-foreground">Credit Score</p>
-              <p className="text-4xl font-bold text-emerald-500">{memberProfile.creditScore}</p>
-              <Badge className="bg-emerald-500">Sangat Baik</Badge>
-              {canRoute('/keuangan/credit-scoring') && (
-                <Button size="sm" variant="outline" asChild>
-                  <Link href="/keuangan/credit-scoring">Detail</Link>
-                </Button>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Key Metrics */}
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
-                <Wallet className="h-5 w-5 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Total Simpanan</p>
-                <p className="text-lg font-bold text-emerald-600">{formatCurrency(financialSummary.totalSimpanan)}</p>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-                <CreditCard className="h-5 w-5 text-amber-500" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Sisa Pinjaman</p>
-                <p className="text-lg font-bold text-amber-600">{formatCurrency(financialSummary.sisaPinjaman)}</p>
-              </div>
+          <CardHeader>
+            <CardTitle>Status verifikasi akun</CardTitle>
+            <CardDescription>Data ini sekarang mengikuti user login, bukan member demo statis.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-2xl border bg-secondary/35 p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Role aktif</p>
+              <p className="mt-2 text-lg font-semibold">{roleConfig.label}</p>
+              <p className="text-sm text-muted-foreground">{roleConfig.description}</p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <ShoppingCart className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Total Pembelian</p>
-                <p className="text-lg font-bold">{formatCurrency(purchaseBehavior.totalPembelian)}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
-                <Award className="h-5 w-5 text-blue-500" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Loyalty Points</p>
-                <p className="text-lg font-bold text-blue-600">{purchaseBehavior.loyaltyPoints.toLocaleString()}</p>
-              </div>
+            <div className="grid gap-3">
+              <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">User ID</span><Badge variant="outline">{user.id}</Badge></div>
+              {member && <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">Member ID</span><Badge variant="outline">{member.id}</Badge></div>}
+              {member && <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">NIK</span><Badge variant="outline">{member.nik}</Badge></div>}
+              <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">Status akun</span><Badge className="bg-emerald-500 text-white">Aktif</Badge></div>
+              <div className="flex items-center justify-between rounded-2xl border p-3"><span className="text-sm font-medium">Sinkron RBAC</span><Badge className="bg-blue-500 text-white">Ya</Badge></div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="behavior" className="w-full">
+      <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
+        {preset.metrics.map((metric) => (
+          <Card key={metric.label}>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${metric.accent}`}>
+                  <metric.icon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs text-muted-foreground">{metric.label}</p>
+                  <p className="truncate text-lg font-bold">{metric.value}</p>
+                  <p className="text-xs text-muted-foreground">{metric.helper}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Tabs defaultValue="ringkasan" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="behavior" className="text-xs sm:text-sm">Pembelian</TabsTrigger>
-          <TabsTrigger value="financial" className="text-xs sm:text-sm">Keuangan</TabsTrigger>
-          <TabsTrigger value="loans" className="text-xs sm:text-sm">Pinjaman</TabsTrigger>
-          <TabsTrigger value="history" className="text-xs sm:text-sm">Riwayat</TabsTrigger>
+          <TabsTrigger value="ringkasan" className="text-xs sm:text-sm">Ringkasan</TabsTrigger>
+          <TabsTrigger value="akses" className="text-xs sm:text-sm">Akses</TabsTrigger>
+          <TabsTrigger value="aktivitas" className="text-xs sm:text-sm">Aktivitas</TabsTrigger>
+          <TabsTrigger value="riwayat" className="text-xs sm:text-sm">Riwayat</TabsTrigger>
         </TabsList>
 
-        {/* Purchase Behavior Tab */}
-        <TabsContent value="behavior" className="space-y-4 mt-4">
-          {/* Purchase Stats */}
-          <div className="grid gap-4 sm:grid-cols-3">
+        <TabsContent value="ringkasan" className="mt-4 space-y-4">
+          <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
             <Card>
-              <CardContent className="p-4 text-center">
-                <ShoppingCart className="h-8 w-8 mx-auto text-primary mb-2" />
-                <p className="text-2xl font-bold">{purchaseBehavior.totalTransaksi}</p>
-                <p className="text-xs text-muted-foreground">Total Transaksi</p>
+              <CardHeader>
+                <CardTitle>Fokus kerja akun ini</CardTitle>
+                <CardDescription>Prioritas berikut menyesuaikan role dan akun yang sedang dipakai.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {preset.workstreams.map((item) => (
+                  <div key={item} className="flex items-start gap-3 rounded-2xl border bg-background p-4">
+                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <CheckCircle2 className="h-4 w-4" />
+                    </div>
+                    <p className="text-sm text-foreground">{item}</p>
+                  </div>
+                ))}
               </CardContent>
             </Card>
+
             <Card>
-              <CardContent className="p-4 text-center">
-                <TrendingUp className="h-8 w-8 mx-auto text-emerald-500 mb-2" />
-                <p className="text-2xl font-bold">{formatCurrency(purchaseBehavior.avgPerBulan)}</p>
-                <p className="text-xs text-muted-foreground">Rata-rata/Bulan</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 text-center">
-                <Activity className="h-8 w-8 mx-auto text-blue-500 mb-2" />
-                <p className="text-2xl font-bold">{purchaseBehavior.frekuensiPerBulan}x</p>
-                <p className="text-xs text-muted-foreground">Frekuensi/Bulan</p>
+              <CardHeader>
+                <CardTitle>Identitas terhubung</CardTitle>
+                <CardDescription>Header profil dan data pendukung ikut berubah saat role/account diganti.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="rounded-2xl border bg-secondary/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Nama akun</p>
+                  <p className="mt-2 text-lg font-semibold">{user.name}</p>
+                </div>
+                <div className="rounded-2xl border bg-secondary/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Scope akses</p>
+                  <p className="mt-2 text-lg font-semibold">{SCOPE_LABELS[dataScope()]}</p>
+                </div>
+                <div className="rounded-2xl border bg-secondary/35 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Data anggota terkait</p>
+                  <p className="mt-2 text-lg font-semibold">{member?.nama ?? 'Tidak ada member link langsung'}</p>
+                  {member && <p className="text-sm text-muted-foreground">{member.komoditas.join(', ')}</p>}
+                </div>
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
 
-          {/* Category Breakdown */}
+        <TabsContent value="akses" className="mt-4">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <PieChart className="h-4 w-4" />
-                Kategori Pembelian
-              </CardTitle>
-              <CardDescription>Breakdown pembelian berdasarkan kategori</CardDescription>
+            <CardHeader>
+              <CardTitle>Modul yang bisa dibuka akun ini</CardTitle>
+              <CardDescription>Daftar berikut difilter langsung dari RBAC untuk role yang sedang login.</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {categoryBreakdown.map((cat) => (
-                  <div key={cat.category} className="space-y-1">
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{cat.category}</span>
-                        <Badge variant="outline" className="text-xs">{cat.transactions} transaksi</Badge>
-                      </div>
-                      <span className="font-semibold">{formatCurrency(cat.amount)}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Progress value={cat.percentage} className="flex-1 h-2" />
-                      <span className="text-xs text-muted-foreground w-10">{cat.percentage}%</span>
-                    </div>
+            <CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              {routes.map((route) => (
+                <Link key={route.href} href={route.href} className="flex items-center gap-3 rounded-2xl border bg-background p-4 transition-colors hover:border-primary/35 hover:bg-primary/[0.03]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <route.icon className="h-4 w-4" />
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Monthly Trend */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Tren Pembelian Bulanan
-              </CardTitle>
-              <CardDescription>6 bulan terakhir</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {monthlyTrend.map((month) => (
-                  <div key={month.month} className="flex items-center gap-4">
-                    <span className="w-20 text-sm text-muted-foreground">{month.month}</span>
-                    <div className="flex-1">
-                      <Progress value={(month.amount / 3500000) * 100} className="h-3" />
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold">{formatCurrency(month.amount)}</p>
-                      <p className="text-xs text-muted-foreground">{month.transactions} transaksi</p>
-                    </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-foreground">{route.label}</p>
+                    <p className="text-xs text-muted-foreground">{route.href}</p>
                   </div>
-                ))}
-              </div>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
+              ))}
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Financial Tab */}
-        <TabsContent value="financial" className="space-y-4 mt-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Wallet className="h-4 w-4 text-emerald-500" />
-                  Simpanan
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Simpanan Pokok</span>
-                  <span className="font-semibold">{formatCurrency(financialSummary.simpananPokok)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Simpanan Wajib</span>
-                  <span className="font-semibold">{formatCurrency(financialSummary.simpananWajib)}</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="font-medium">Total Simpanan</span>
-                  <span className="font-bold text-emerald-600">{formatCurrency(financialSummary.totalSimpanan)}</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <CreditCard className="h-4 w-4 text-amber-500" />
-                  Pinjaman
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Pinjaman</span>
-                  <span className="font-semibold">{formatCurrency(financialSummary.totalPinjaman)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Sudah Dibayar</span>
-                  <span className="font-semibold text-emerald-600">
-                    {formatCurrency(financialSummary.totalPinjaman - financialSummary.sisaPinjaman)}
-                  </span>
-                </div>
-                <Separator />
-                <div className="flex justify-between">
-                  <span className="font-medium">Sisa Pinjaman</span>
-                  <span className="font-bold text-amber-600">{formatCurrency(financialSummary.sisaPinjaman)}</span>
-                </div>
-                <Progress 
-                  value={((financialSummary.totalPinjaman - financialSummary.sisaPinjaman) / financialSummary.totalPinjaman) * 100} 
-                  className="h-2" 
-                />
-                <p className="text-xs text-muted-foreground text-center">
-                  {Math.round(((financialSummary.totalPinjaman - financialSummary.sisaPinjaman) / financialSummary.totalPinjaman) * 100)}% terbayar
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
+        <TabsContent value="aktivitas" className="mt-4 space-y-4">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Award className="h-4 w-4 text-primary" />
-                SHU (Sisa Hasil Usaha)
-              </CardTitle>
+            <CardHeader>
+              <CardTitle>Aktivitas terkini akun</CardTitle>
+              <CardDescription>Feed ini menyesuaikan konteks kerja dari role dan user yang sedang aktif.</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="text-center py-4">
-                <p className="text-3xl font-bold text-primary">{formatCurrency(financialSummary.shuDiterima)}</p>
-                <p className="text-sm text-muted-foreground mt-1">Total SHU yang diterima</p>
-              </div>
+            <CardContent className="space-y-4">
+              {preset.activities.map((item) => (
+                <div key={item.id} className="rounded-2xl border p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-semibold text-foreground">{item.title}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{item.detail}</p>
+                    </div>
+                    <Badge variant="outline">{formatDate(item.date)}</Badge>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
-        </TabsContent>
 
-        {/* Loans Tab */}
-        <TabsContent value="loans" className="space-y-4 mt-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">Riwayat Pinjaman</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {loanHistory.map((loan) => (
-                  <div key={loan.id} className="rounded-lg border p-4 space-y-3">
-                    <div className="flex items-center justify-between">
+          {linkedLoans.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Pembiayaan terhubung</CardTitle>
+                <CardDescription>Pinjaman yang cocok dengan akun/member login saat ini.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {linkedLoans.map((loan) => (
+                  <div key={loan.id} className="rounded-2xl border p-4">
+                    <div className="flex items-center justify-between gap-4">
                       <div>
-                        <p className="font-mono text-xs text-muted-foreground">{loan.id}</p>
-                        <p className="font-semibold">{formatCurrency(loan.jumlah)}</p>
+                        <p className="font-semibold">{loan.id}</p>
+                        <p className="text-sm text-muted-foreground">{formatCurrency(loan.jumlahPinjaman)} • tenor {loan.tenor} bulan</p>
                       </div>
-                      <Badge className={loan.status === 'lunas' ? 'bg-emerald-500' : 'bg-amber-500'}>
+                      <Badge className={loan.status === 'lunas' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}>
                         {loan.status === 'lunas' ? 'Lunas' : 'Aktif'}
                       </Badge>
                     </div>
-                    <div className="grid grid-cols-3 gap-2 text-sm">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Tanggal</p>
-                        <p>{loan.tanggal}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Tenor</p>
-                        <p>{loan.tenor} bulan</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Angsuran</p>
-                        <p>{formatCurrency(loan.angsuran)}</p>
-                      </div>
+                    <Separator className="my-3" />
+                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                      <span>Mulai: {formatDate(loan.tanggalPinjam)}</span>
+                      <span>Jatuh tempo: {formatDate(loan.tanggalJatuhTempo)}</span>
+                      <span>Sisa: {formatCurrency(loan.sisaPinjaman)}</span>
                     </div>
-                    {loan.status === 'aktif' && (
-                      <>
-                        <Progress value={((loan.tenor - loan.sisaCicilan) / loan.tenor) * 100} className="h-2" />
-                        <p className="text-xs text-muted-foreground text-center">
-                          {loan.tenor - loan.sisaCicilan} dari {loan.tenor} cicilan terbayar ({loan.sisaCicilan} tersisa)
-                        </p>
-                      </>
-                    )}
                   </div>
                 ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">Riwayat Pembayaran</CardTitle>
-              <CardDescription>Ketepatan pembayaran cicilan</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {paymentHistory.map((payment, idx) => (
-                  <div key={idx} className="flex items-center justify-between py-2 border-b last:border-0">
-                    <div className="flex items-center gap-3">
-                      {payment.status === 'tepat-waktu' ? (
-                        <div className="h-8 w-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                          <Clock className="h-4 w-4 text-emerald-500" />
-                        </div>
-                      ) : (
-                        <div className="h-8 w-8 rounded-full bg-amber-500/10 flex items-center justify-center">
-                          <Clock className="h-4 w-4 text-amber-500" />
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium text-sm">{payment.bulan}</p>
-                        <p className="text-xs text-muted-foreground">Dibayar: {payment.tanggal}</p>
-                      </div>
-                    </div>
-                    <Badge variant={payment.status === 'tepat-waktu' ? 'default' : 'secondary'} 
-                           className={payment.status === 'tepat-waktu' ? 'bg-emerald-500' : 'bg-amber-500'}>
-                      {payment.status === 'tepat-waktu' ? 'Tepat Waktu' : 'Terlambat'}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
-        {/* Transaction History Tab */}
-        <TabsContent value="history" className="space-y-4 mt-4">
+        <TabsContent value="riwayat" className="mt-4">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">Transaksi Terakhir</CardTitle>
+            <CardHeader>
+              <CardTitle>Riwayat akun</CardTitle>
+              <CardDescription>Riwayat berikut ikut berubah sesuai akun yang sedang login.</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
-              {/* Mobile View */}
-              <div className="sm:hidden divide-y">
-                {recentTransactions.map((trx) => (
-                  <div key={trx.id} className="p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs text-muted-foreground">{trx.id}</span>
-                      <Badge variant="outline" className="text-xs">{trx.date}</Badge>
-                    </div>
-                    <div className="space-y-1">
-                      {trx.items.map((item, idx) => (
-                        <p key={idx} className="text-sm">{item}</p>
-                      ))}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Badge className="bg-emerald-500">{trx.status}</Badge>
-                      <span className="font-semibold">{formatCurrency(trx.total)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Desktop View */}
-              <div className="hidden sm:block overflow-x-auto">
+              <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>ID</TableHead>
+                      <TableHead>Aktivitas</TableHead>
+                      <TableHead>Detail</TableHead>
                       <TableHead>Tanggal</TableHead>
-                      <TableHead>Items</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
                       <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {recentTransactions.map((trx) => (
-                      <TableRow key={trx.id}>
-                        <TableCell className="font-mono text-xs">{trx.id}</TableCell>
-                        <TableCell>{trx.date}</TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
-                            {trx.items.map((item, idx) => (
-                              <p key={idx} className="text-sm">{item}</p>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">{formatCurrency(trx.total)}</TableCell>
-                        <TableCell>
-                          <Badge className="bg-emerald-500">{trx.status}</Badge>
-                        </TableCell>
+                    {preset.history.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell className="font-mono text-xs">{item.id}</TableCell>
+                        <TableCell className="font-medium">{item.title}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{item.detail}</TableCell>
+                        <TableCell>{formatDate(item.date)}</TableCell>
+                        <TableCell><Badge className={statusClass(item.status)}>{item.status}</Badge></TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
