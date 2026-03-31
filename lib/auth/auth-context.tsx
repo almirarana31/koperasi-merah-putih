@@ -11,6 +11,8 @@ import { getMockUser } from './mock-users'
 export interface AuthContextValue {
   /** Current authenticated user, or null if not logged in */
   user: User | null
+  /** Whether auth state is still resolving */
+  isLoading: boolean
   /** Whether the user is authenticated */
   isAuthenticated: boolean
   /** Login as a specific role (uses mock user data) */
@@ -23,6 +25,7 @@ export interface AuthContextValue {
 
 export const AuthContext = createContext<AuthContextValue>({
   user: null,
+  isLoading: false,
   isAuthenticated: false,
   loginAs: () => {},
   loginWithUser: () => {},
@@ -53,6 +56,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     <AuthContext.Provider
       value={{
         user,
+        isLoading: false,
         isAuthenticated: user !== null,
         loginAs,
         loginWithUser,

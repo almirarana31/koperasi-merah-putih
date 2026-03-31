@@ -20,6 +20,8 @@ import {
   Activity,
 } from "lucide-react"
 import { useState } from "react"
+import { useAuth } from "@/lib/auth"
+import { canAccessRoute } from "@/lib/rbac"
 
 interface NavItem {
   label: string
@@ -153,6 +155,31 @@ interface SidebarProps {
 export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
   const [expandedItems, setExpandedItems] = useState<string[]>(["Anggota", "Produksi"])
   const pathname = usePathname()
+  const { user } = useAuth()
+
+  const visibleNavigation = user
+    ? navigation
+        .map((group) => ({
+          ...group,
+          items: group.items
+            .map((item) => {
+              if (item.children) {
+                const visibleChildren = item.children.filter((child) => canAccessRoute(user.role, child.href))
+                if (visibleChildren.length === 0) return null
+                return { ...item, children: visibleChildren }
+              }
+
+              if (item.href && !canAccessRoute(user.role, item.href)) return null
+              return item
+            })
+            .filter(Boolean) as NavItem[],
+        }))
+        .filter((group) => group.items.length > 0)
+    : []
+
+  const visibleBottomNav = user
+    ? bottomNav.filter((item) => !item.href || canAccessRoute(user.role, item.href))
+    : []
 
   const toggleExpand = (label: string) => {
     setExpandedItems((prev) =>
@@ -208,7 +235,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-4">
-          {navigation.map((group) => (
+          {visibleNavigation.map((group) => (
             <div key={group.section} className="mb-6">
               <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wider text-sidebar-foreground/50">
                 {group.section}
@@ -287,7 +314,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
         {/* Bottom Navigation */}
         <div className="border-t border-sidebar-border px-3 py-4">
           <ul className="space-y-1">
-            {bottomNav.map((item) => (
+            {visibleBottomNav.map((item) => (
               <li key={item.label}>
                 <Link
                   href={item.href || "#"}

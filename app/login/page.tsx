@@ -44,7 +44,7 @@ export default function LoginPage() {
   const selectedUser = selectedRole ? MOCK_USERS[selectedRole] : null
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[linear-gradient(135deg,rgba(248,243,237,0.96),rgba(255,255,255,0.96)),radial-gradient(circle_at_top,rgba(180,39,45,0.14),transparent_40%)] flex items-center justify-center p-4">
       <div className="w-full max-w-6xl space-y-6">
         {/* Back to Landing */}
         <Link href="/landing">
@@ -56,7 +56,7 @@ export default function LoginPage() {
 
         {/* Logo & Title */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 mb-4">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80">
             <Leaf className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold">Koperasi Merah Putih</h1>
@@ -74,7 +74,7 @@ export default function LoginPage() {
                 key={role}
                 className={`cursor-pointer transition-all hover:shadow-lg ${
                   isSelected
-                    ? 'ring-2 ring-emerald-500 shadow-lg scale-105'
+                    ? 'ring-2 ring-primary shadow-lg scale-105'
                     : 'hover:scale-102'
                 }`}
                 onClick={() => handleRoleSelect(role)}
@@ -91,7 +91,7 @@ export default function LoginPage() {
                       </div>
                     </div>
                     {isSelected && (
-                      <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary">
                         <svg
                           className="w-4 h-4 text-white"
                           fill="none"
@@ -128,11 +128,11 @@ export default function LoginPage() {
 
         {/* Selected User Preview & Login Button */}
         {selectedRole && selectedConfig && selectedUser && (
-          <Card className="border-2 border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/20">
+          <Card className="border-2 border-primary/20 bg-primary/5">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-blue-500 flex items-center justify-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80">
                     <User className="h-6 w-6 text-white" />
                   </div>
                   <div>
@@ -148,7 +148,7 @@ export default function LoginPage() {
                   onClick={handleLogin}
                   disabled={isLoading}
                   size="lg"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
                 >
                   {isLoading ? 'Masuk...' : `Masuk sebagai ${selectedConfig.label}`}
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -159,10 +159,10 @@ export default function LoginPage() {
         )}
 
         {/* Info Card */}
-        <Card className="border-2 border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/20">
+        <Card className="border-2 border-primary/15 bg-background/90">
           <CardContent className="p-4">
             <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
-              <Leaf className="h-4 w-4 text-blue-600" />
+              <Leaf className="h-4 w-4 text-primary" />
               Mode Demo - Role-Based Access Control
             </h3>
             <p className="text-xs text-muted-foreground">

@@ -88,7 +88,7 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
               </span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-96 p-0">
+          <DropdownMenuContent align="end" className="w-[min(24rem,calc(100vw-1rem))] p-0">
             <Tabs defaultValue="regular" className="w-full">
               <div className="px-4 pt-4 pb-2">
                 <TabsList className="grid w-full grid-cols-2">
