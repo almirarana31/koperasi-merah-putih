@@ -291,6 +291,9 @@ export default function MemberProfilPage() {
   const routes = QUICK_ROUTES.filter((route) => canRoute(route.href))
   const backHref = canRoute('/anggota') ? '/anggota' : '/dashboard'
   const title = user.role === 'petani' ? 'Profil Saya' : 'Profil Akun'
+  const subtitle = user.role === 'petani'
+    ? 'Informasi keanggotaan, pembiayaan, dan aktivitas akun Anda.'
+    : 'Informasi akun, peran kerja, dan status akses saat ini.'
   const scoreTone = scoreToneClass(preset.scoreTone)
 
   return (
@@ -304,9 +307,7 @@ export default function MemberProfilPage() {
           </Button>
           <div>
             <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
-            <p className="text-sm text-muted-foreground">
-              Ringkasan akun login untuk role <span className="font-medium text-foreground">{roleConfig.label}</span>.
-            </p>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -376,11 +377,7 @@ export default function MemberProfilPage() {
                 <p className={`mt-3 text-4xl font-bold tracking-tight ${scoreTone.value}`}>{preset.scoreValue}</p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <Badge className={scoreTone.badge}>{preset.scoreState}</Badge>
-                  <Badge variant="outline">Dinamis per akun</Badge>
                 </div>
-                <p className="mt-4 text-sm text-muted-foreground">
-                  Tampilan ini mengikuti role dan akun yang sedang login, bukan profil demo statis.
-                </p>
                 <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
                   <div className="flex items-center justify-between rounded-2xl bg-background px-3 py-2">
                     <span>User ID</span>
@@ -410,7 +407,7 @@ export default function MemberProfilPage() {
           <Card>
             <CardHeader>
               <CardTitle>Status verifikasi akun</CardTitle>
-              <CardDescription>Identitas dan akses di bawah ini ikut berubah saat akun login diganti.</CardDescription>
+              <CardDescription>Status keanggotaan dan identitas utama akun.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 sm:grid-cols-2">
               <div className="flex items-center justify-between rounded-2xl border p-3">
@@ -418,7 +415,7 @@ export default function MemberProfilPage() {
                 <Badge className="bg-emerald-500 text-white">Aktif</Badge>
               </div>
               <div className="flex items-center justify-between rounded-2xl border p-3">
-                <span className="text-sm font-medium">Sinkron RBAC</span>
+                <span className="text-sm font-medium">Hak akses</span>
                 <Badge className="bg-blue-500 text-white">Ya</Badge>
               </div>
               <div className="flex items-center justify-between rounded-2xl border p-3">
@@ -445,7 +442,7 @@ export default function MemberProfilPage() {
           <Card>
             <CardHeader>
               <CardTitle>Ringkasan akses</CardTitle>
-              <CardDescription>Peran utama akun ini di dalam koperasi dan platform.</CardDescription>
+              <CardDescription>Peran utama akun ini di dalam koperasi.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-2xl border bg-secondary/35 p-4">
@@ -454,10 +451,10 @@ export default function MemberProfilPage() {
                 <p className="text-sm text-muted-foreground">{roleConfig.description}</p>
               </div>
               <div className="rounded-2xl border bg-secondary/35 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Akun terhubung</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Komoditas utama</p>
                 <p className="mt-2 text-lg font-semibold">{member?.nama ?? user.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {member ? member.komoditas.join(', ') : 'Profil mengikuti identitas akun login saat ini.'}
+                  {member ? member.komoditas.join(', ') : 'Akun operasional koperasi'}
                 </p>
               </div>
             </CardContent>
@@ -497,7 +494,7 @@ export default function MemberProfilPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Fokus kerja akun ini</CardTitle>
-                <CardDescription>Prioritas berikut menyesuaikan role dan akun yang sedang dipakai.</CardDescription>
+                <CardDescription>Prioritas utama yang perlu diperhatikan saat ini.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {preset.workstreams.map((item) => (
@@ -514,7 +511,7 @@ export default function MemberProfilPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Identitas terhubung</CardTitle>
-                <CardDescription>Header profil dan data pendukung ikut berubah saat role/account diganti.</CardDescription>
+                <CardDescription>Ringkasan identitas dan cakupan kerja akun.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="rounded-2xl border bg-secondary/35 p-4">
@@ -539,7 +536,7 @@ export default function MemberProfilPage() {
           <Card>
             <CardHeader>
               <CardTitle>Modul yang bisa dibuka akun ini</CardTitle>
-              <CardDescription>Daftar berikut difilter langsung dari RBAC untuk role yang sedang login.</CardDescription>
+              <CardDescription>Menu kerja yang tersedia untuk akun ini.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {routes.map((route) => (
@@ -562,7 +559,7 @@ export default function MemberProfilPage() {
           <Card>
             <CardHeader>
               <CardTitle>Aktivitas terkini akun</CardTitle>
-              <CardDescription>Feed ini menyesuaikan konteks kerja dari role dan user yang sedang aktif.</CardDescription>
+              <CardDescription>Aktivitas terbaru yang perlu dipantau.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {preset.activities.map((item) => (
@@ -583,7 +580,7 @@ export default function MemberProfilPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Pembiayaan terhubung</CardTitle>
-                <CardDescription>Pinjaman yang cocok dengan akun/member login saat ini.</CardDescription>
+                <CardDescription>Daftar pinjaman dan status pembiayaan aktif.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {linkedLoans.map((loan) => (
@@ -614,7 +611,7 @@ export default function MemberProfilPage() {
           <Card>
             <CardHeader>
               <CardTitle>Riwayat akun</CardTitle>
-              <CardDescription>Riwayat berikut ikut berubah sesuai akun yang sedang login.</CardDescription>
+              <CardDescription>Catatan aktivitas dan histori penting akun.</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
