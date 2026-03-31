@@ -51,6 +51,11 @@ type RoleArtwork = {
   eyebrow: string
   panelLabel: string
   stat: string
+  statNote: string
+  secondaryLabel: string
+  secondaryValue: string
+  tertiaryLabel: string
+  tertiaryValue: string
   chips: [string, string, string]
 }
 
@@ -116,8 +121,13 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryIcon: ShoppingCart,
     tertiaryIcon: Brain,
     eyebrow: 'Aktivitas petani',
-    panelLabel: 'Panen & Harga',
+    panelLabel: 'Lumbung pribadi',
     stat: '2.9 ton',
+    statNote: 'Panen siap verifikasi minggu ini',
+    secondaryLabel: 'Harga acuan',
+    secondaryValue: 'Rp14.5k',
+    tertiaryLabel: 'AI jual',
+    tertiaryValue: 'Naik 6%',
     chips: ['Panen', 'Harga', 'AI'],
   },
   kasir: {
@@ -125,8 +135,13 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryIcon: ShoppingCart,
     tertiaryIcon: Warehouse,
     eyebrow: 'Operasional harian',
-    panelLabel: 'Kas & Order',
+    panelLabel: 'Kas & order',
     stat: '24 jam',
+    statNote: 'Aliran transaksi dan stok berjalan cepat',
+    secondaryLabel: 'Order aktif',
+    secondaryValue: '18 PO',
+    tertiaryLabel: 'Kas masuk',
+    tertiaryValue: 'Rp52jt',
     chips: ['Pembayaran', 'Order', 'Stok'],
   },
   logistik_manager: {
@@ -134,8 +149,13 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryIcon: Warehouse,
     tertiaryIcon: ClipboardCheck,
     eyebrow: 'Distribusi',
-    panelLabel: 'Rute & Gudang',
+    panelLabel: 'Rute & gudang',
     stat: '12 rute',
+    statNote: 'Distribusi aktif lintas gudang dan titik pickup',
+    secondaryLabel: 'Utilisasi',
+    secondaryValue: '82%',
+    tertiaryLabel: 'Pending',
+    tertiaryValue: '9 kirim',
     chips: ['Armada', 'Pickup', 'Trace'],
   },
   koperasi_manager: {
@@ -143,8 +163,13 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryIcon: Wallet,
     tertiaryIcon: FileText,
     eyebrow: 'Koperasi',
-    panelLabel: 'Anggota & Cashflow',
+    panelLabel: 'Anggota & cashflow',
     stat: '5 modul',
+    statNote: 'Kontrol utama untuk operasional koperasi hari ini',
+    secondaryLabel: 'Anggota aktif',
+    secondaryValue: '1,247',
+    tertiaryLabel: 'Laporan',
+    tertiaryValue: '12 siap',
     chips: ['Anggota', 'Produksi', 'Laporan'],
   },
   ketua: {
@@ -154,6 +179,11 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     eyebrow: 'Strategis',
     panelLabel: 'Kinerja lintas unit',
     stat: 'Ringkas',
+    statNote: 'Arah kebijakan, risiko, dan evaluasi koperasi',
+    secondaryLabel: 'Risiko',
+    secondaryValue: '3 fokus',
+    tertiaryLabel: 'Persetujuan',
+    tertiaryValue: '7 masuk',
     chips: ['Risiko', 'Laporan', 'Arah'],
   },
   pemda: {
@@ -163,6 +193,11 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     eyebrow: 'Pemantauan daerah',
     panelLabel: 'Produksi agregat',
     stat: 'Kabupaten',
+    statNote: 'Akses wilayah untuk melihat tren tanpa data individual',
+    secondaryLabel: 'Kecamatan',
+    secondaryValue: '24 area',
+    tertiaryLabel: 'Distribusi',
+    tertiaryValue: 'Stabil',
     chips: ['Wilayah', 'Logistik', 'Harga'],
   },
   bank: {
@@ -170,8 +205,13 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryIcon: Wallet,
     tertiaryIcon: FileText,
     eyebrow: 'Pembiayaan',
-    panelLabel: 'Risk & Loan',
+    panelLabel: 'Risk & loan',
     stat: 'Skor kredit',
+    statNote: 'Pengajuan pembiayaan dan risiko ada dalam satu pandangan',
+    secondaryLabel: 'Loan review',
+    secondaryValue: '16 berkas',
+    tertiaryLabel: 'Risk',
+    tertiaryValue: 'A-',
     chips: ['Loan', 'Risk', 'Report'],
   },
   kementerian: {
@@ -179,8 +219,13 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     secondaryIcon: Brain,
     tertiaryIcon: FileText,
     eyebrow: 'Nasional',
-    panelLabel: 'Forecast & Kebijakan',
+    panelLabel: 'Forecast & kebijakan',
     stat: 'Agregat',
+    statNote: 'Tren nasional untuk kebijakan dan evaluasi program',
+    secondaryLabel: 'Program',
+    secondaryValue: '92%',
+    tertiaryLabel: 'Forecast',
+    tertiaryValue: '+14%',
     chips: ['Forecast', 'Komoditas', 'Nasional'],
   },
   sysadmin: {
@@ -190,6 +235,11 @@ const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
     eyebrow: 'Platform',
     panelLabel: 'Kontrol sistem',
     stat: 'All systems',
+    statNote: 'Akses, audit, dan stabilitas platform dipantau serentak',
+    secondaryLabel: 'Latency',
+    secondaryValue: '42ms',
+    tertiaryLabel: 'Alert',
+    tertiaryValue: '0 kritis',
     chips: ['Access', 'Audit', 'AI'],
   },
 }
@@ -341,48 +391,68 @@ function RoleHeroArtwork({ role }: { role: Role }) {
   const TertiaryIcon = artwork.tertiaryIcon
 
   return (
-    <div className="relative min-h-[220px] rounded-[2rem] border border-white/15 bg-white/8 p-4 backdrop-blur-sm">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_38%),linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]" />
-      <div className="absolute right-5 top-5 h-16 w-16 rounded-3xl bg-white/10 blur-xl" />
-      <div className="relative flex h-full flex-col justify-between gap-4">
+    <div className="relative min-h-[250px] overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(145deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))] p-4 backdrop-blur-sm">
+      <div className="absolute -right-10 -top-8 h-32 w-32 rounded-full bg-white/12 blur-2xl" />
+      <div className="absolute -left-8 bottom-10 h-24 w-24 rounded-full bg-black/10 blur-2xl" />
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_48%)]" />
+      <div className="relative flex h-full flex-col gap-4">
         <div className="flex items-start justify-between gap-3">
-          <div className="rounded-2xl bg-white/12 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/80">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/14 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.22em] text-primary-foreground/82">
+            <span className="h-2 w-2 rounded-full bg-green-300" />
             {artwork.eyebrow}
           </div>
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/14">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/16 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
             <PrimaryIcon className="h-5 w-5 text-primary-foreground" />
           </div>
         </div>
 
-        <div className="grid grid-cols-[1.15fr_0.85fr] gap-3">
-          <div className="rounded-[1.6rem] bg-white/14 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+        <div className="grid flex-1 grid-cols-[1.15fr_0.85fr] gap-3">
+          <div className="flex flex-col justify-between rounded-[1.9rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.16),rgba(255,255,255,0.08))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-primary-foreground/78">{artwork.panelLabel}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/74">{artwork.panelLabel}</p>
               <SecondaryIcon className="h-4 w-4 text-primary-foreground/78" />
             </div>
-            <p className="mt-5 text-2xl font-bold tracking-tight text-primary-foreground">{artwork.stat}</p>
-            <div className="mt-4 flex gap-2">
-              {artwork.chips.slice(0, 2).map((chip) => (
-                <span key={chip} className="rounded-full bg-white/12 px-2.5 py-1 text-[11px] font-medium text-primary-foreground/80">
-                  {chip}
+            <div className="space-y-2">
+              <p className="text-3xl font-bold tracking-tight text-primary-foreground">{artwork.stat}</p>
+              <p className="max-w-[14rem] text-sm text-primary-foreground/74">{artwork.statNote}</p>
+            </div>
+            <div className="mt-4 rounded-2xl border border-white/12 bg-black/8 px-3 py-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-foreground/62">Status panel</p>
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-sm font-medium text-primary-foreground">{artwork.chips[0]}</span>
+                <span className="rounded-full bg-white/12 px-2 py-1 text-[10px] font-semibold text-primary-foreground/80">
+                  Live
                 </span>
-              ))}
+              </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-3">
-            <div className="flex flex-1 items-center justify-center rounded-[1.5rem] border border-white/12 bg-white/10">
-              <TertiaryIcon className="h-7 w-7 text-primary-foreground" />
+            <div className="rounded-[1.6rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.15),rgba(255,255,255,0.08))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-foreground/66">{artwork.secondaryLabel}</p>
+                <SecondaryIcon className="h-4 w-4 text-primary-foreground/74" />
+              </div>
+              <p className="mt-4 text-2xl font-bold tracking-tight text-primary-foreground">{artwork.secondaryValue}</p>
             </div>
-            <div className="rounded-[1.4rem] bg-white/12 p-3 text-center">
-              <span className="text-xs font-medium text-primary-foreground/80">{artwork.chips[2]}</span>
+            <div className="flex flex-1 flex-col justify-between rounded-[1.6rem] border border-white/10 bg-black/8 p-4">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-foreground/66">{artwork.tertiaryLabel}</p>
+                <TertiaryIcon className="h-4 w-4 text-primary-foreground/72" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold tracking-tight text-primary-foreground">{artwork.tertiaryValue}</p>
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full w-[68%] rounded-full bg-white/70" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
           {artwork.chips.map((chip) => (
-            <div key={chip} className="rounded-2xl bg-black/8 px-3 py-2 text-center text-xs font-medium text-primary-foreground/84">
+            <div key={chip} className="rounded-2xl border border-white/8 bg-white/10 px-3 py-2 text-center text-xs font-medium text-primary-foreground/84">
               {chip}
             </div>
           ))}
@@ -414,16 +484,17 @@ export default function DashboardPage() {
           </h1>
         </div>
 
-        <Card className="overflow-hidden border-none bg-primary text-primary-foreground shadow-[0_28px_70px_-30px_rgba(133,18,23,0.55)]">
+        <Card className="overflow-hidden border-none bg-[linear-gradient(135deg,#be0817_0%,#d92827_54%,#aa2d2a_100%)] text-primary-foreground shadow-[0_28px_70px_-30px_rgba(133,18,23,0.55)]">
           <CardContent className="relative p-0">
-            <div className="absolute -right-10 -top-12 h-36 w-36 rounded-full bg-white/12 blur-3xl" />
-            <div className="absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-black/10 blur-2xl" />
-            <div className="relative grid gap-5 p-5 sm:p-6 xl:grid-cols-[1.1fr_0.9fr] xl:items-stretch">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.12),transparent_28%)]" />
+            <div className="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/12 blur-3xl" />
+            <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-black/10 blur-2xl" />
+            <div className="relative grid gap-5 p-5 sm:p-6 xl:grid-cols-[1.02fr_0.98fr] xl:items-stretch">
               <div className="space-y-5">
                 <div>
-                  <p className="text-sm font-medium text-primary-foreground/80">{hero.label}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/72">{hero.label}</p>
                   <p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">{hero.value}</p>
-                  <p className="mt-2 max-w-xl text-sm text-primary-foreground/80">{hero.note}</p>
+                  <p className="mt-3 max-w-xl text-sm leading-6 text-primary-foreground/80">{hero.note}</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -432,7 +503,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="text-sm text-primary-foreground/84">
                     <p className="font-semibold">{experience.heading}</p>
-                    <p className="text-primary-foreground/74">{experience.summary}</p>
+                    <p className="max-w-md text-primary-foreground/74">{experience.summary}</p>
                   </div>
                 </div>
 
