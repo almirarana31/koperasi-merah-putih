@@ -44,6 +44,16 @@ type HeroInsight = {
   note: string
 }
 
+type RoleArtwork = {
+  primaryIcon: LucideIcon
+  secondaryIcon: LucideIcon
+  tertiaryIcon: LucideIcon
+  eyebrow: string
+  panelLabel: string
+  stat: string
+  chips: [string, string, string]
+}
+
 const SCOPE_LABELS: Record<DataScope, string> = {
   own: 'Data pribadi',
   koperasi: 'Level koperasi',
@@ -97,6 +107,90 @@ const HERO_INSIGHTS: Record<Role, HeroInsight> = {
     label: 'Kontrol',
     value: 'Lintas sistem',
     note: 'Pemantauan platform dan validasi akses seluruh modul.',
+  },
+}
+
+const HERO_ARTWORKS: Record<Role, RoleArtwork> = {
+  petani: {
+    primaryIcon: Sprout,
+    secondaryIcon: ShoppingCart,
+    tertiaryIcon: Brain,
+    eyebrow: 'Aktivitas petani',
+    panelLabel: 'Panen & Harga',
+    stat: '2.9 ton',
+    chips: ['Panen', 'Harga', 'AI'],
+  },
+  kasir: {
+    primaryIcon: Wallet,
+    secondaryIcon: ShoppingCart,
+    tertiaryIcon: Warehouse,
+    eyebrow: 'Operasional harian',
+    panelLabel: 'Kas & Order',
+    stat: '24 jam',
+    chips: ['Pembayaran', 'Order', 'Stok'],
+  },
+  logistik_manager: {
+    primaryIcon: Truck,
+    secondaryIcon: Warehouse,
+    tertiaryIcon: ClipboardCheck,
+    eyebrow: 'Distribusi',
+    panelLabel: 'Rute & Gudang',
+    stat: '12 rute',
+    chips: ['Armada', 'Pickup', 'Trace'],
+  },
+  koperasi_manager: {
+    primaryIcon: Users,
+    secondaryIcon: Wallet,
+    tertiaryIcon: FileText,
+    eyebrow: 'Koperasi',
+    panelLabel: 'Anggota & Cashflow',
+    stat: '5 modul',
+    chips: ['Anggota', 'Produksi', 'Laporan'],
+  },
+  ketua: {
+    primaryIcon: BarChart3,
+    secondaryIcon: ShieldCheck,
+    tertiaryIcon: FileText,
+    eyebrow: 'Strategis',
+    panelLabel: 'Kinerja lintas unit',
+    stat: 'Ringkas',
+    chips: ['Risiko', 'Laporan', 'Arah'],
+  },
+  pemda: {
+    primaryIcon: BarChart3,
+    secondaryIcon: Sprout,
+    tertiaryIcon: Truck,
+    eyebrow: 'Pemantauan daerah',
+    panelLabel: 'Produksi agregat',
+    stat: 'Kabupaten',
+    chips: ['Wilayah', 'Logistik', 'Harga'],
+  },
+  bank: {
+    primaryIcon: ShieldCheck,
+    secondaryIcon: Wallet,
+    tertiaryIcon: FileText,
+    eyebrow: 'Pembiayaan',
+    panelLabel: 'Risk & Loan',
+    stat: 'Skor kredit',
+    chips: ['Loan', 'Risk', 'Report'],
+  },
+  kementerian: {
+    primaryIcon: BarChart3,
+    secondaryIcon: Brain,
+    tertiaryIcon: FileText,
+    eyebrow: 'Nasional',
+    panelLabel: 'Forecast & Kebijakan',
+    stat: 'Agregat',
+    chips: ['Forecast', 'Komoditas', 'Nasional'],
+  },
+  sysadmin: {
+    primaryIcon: Brain,
+    secondaryIcon: ShieldCheck,
+    tertiaryIcon: ClipboardCheck,
+    eyebrow: 'Platform',
+    panelLabel: 'Kontrol sistem',
+    stat: 'All systems',
+    chips: ['Access', 'Audit', 'AI'],
   },
 }
 
@@ -240,6 +334,64 @@ const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
   },
 }
 
+function RoleHeroArtwork({ role }: { role: Role }) {
+  const artwork = HERO_ARTWORKS[role]
+  const PrimaryIcon = artwork.primaryIcon
+  const SecondaryIcon = artwork.secondaryIcon
+  const TertiaryIcon = artwork.tertiaryIcon
+
+  return (
+    <div className="relative min-h-[220px] rounded-[2rem] border border-white/15 bg-white/8 p-4 backdrop-blur-sm">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.18),transparent_38%),linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]" />
+      <div className="absolute right-5 top-5 h-16 w-16 rounded-3xl bg-white/10 blur-xl" />
+      <div className="relative flex h-full flex-col justify-between gap-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="rounded-2xl bg-white/12 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary-foreground/80">
+            {artwork.eyebrow}
+          </div>
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/14">
+            <PrimaryIcon className="h-5 w-5 text-primary-foreground" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-[1.15fr_0.85fr] gap-3">
+          <div className="rounded-[1.6rem] bg-white/14 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-primary-foreground/78">{artwork.panelLabel}</p>
+              <SecondaryIcon className="h-4 w-4 text-primary-foreground/78" />
+            </div>
+            <p className="mt-5 text-2xl font-bold tracking-tight text-primary-foreground">{artwork.stat}</p>
+            <div className="mt-4 flex gap-2">
+              {artwork.chips.slice(0, 2).map((chip) => (
+                <span key={chip} className="rounded-full bg-white/12 px-2.5 py-1 text-[11px] font-medium text-primary-foreground/80">
+                  {chip}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-1 items-center justify-center rounded-[1.5rem] border border-white/12 bg-white/10">
+              <TertiaryIcon className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <div className="rounded-[1.4rem] bg-white/12 p-3 text-center">
+              <span className="text-xs font-medium text-primary-foreground/80">{artwork.chips[2]}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          {artwork.chips.map((chip) => (
+            <div key={chip} className="rounded-2xl bg-black/8 px-3 py-2 text-center text-xs font-medium text-primary-foreground/84">
+              {chip}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function DashboardPage() {
   const { user, roleConfig, canRoute, dataScope } = useAuth()
 
@@ -266,41 +418,50 @@ export default function DashboardPage() {
           <CardContent className="relative p-0">
             <div className="absolute -right-10 -top-12 h-36 w-36 rounded-full bg-white/12 blur-3xl" />
             <div className="absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-black/10 blur-2xl" />
-            <div className="relative space-y-5 p-5 sm:p-6">
-              <div className="flex items-start justify-between gap-4">
+            <div className="relative grid gap-5 p-5 sm:p-6 xl:grid-cols-[1.1fr_0.9fr] xl:items-stretch">
+              <div className="space-y-5">
                 <div>
                   <p className="text-sm font-medium text-primary-foreground/80">{hero.label}</p>
                   <p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">{hero.value}</p>
                   <p className="mt-2 max-w-xl text-sm text-primary-foreground/80">{hero.note}</p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-2xl backdrop-blur-sm">
-                  {roleConfig.icon}
+
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-2xl backdrop-blur-sm">
+                    {roleConfig.icon}
+                  </div>
+                  <div className="text-sm text-primary-foreground/84">
+                    <p className="font-semibold">{experience.heading}</p>
+                    <p className="text-primary-foreground/74">{experience.summary}</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
+                    {roleConfig.label}
+                  </Badge>
+                  <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
+                    {scope}
+                  </Badge>
+                </div>
+
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  {primaryActions.slice(0, 2).map((action) => (
+                    <Button
+                      key={action.href}
+                      asChild
+                      className="h-11 flex-1 rounded-xl bg-white/16 text-primary-foreground backdrop-blur-sm hover:bg-white/22"
+                    >
+                      <Link href={action.href}>
+                        <action.icon className="mr-2 h-4 w-4" />
+                        {action.title}
+                      </Link>
+                    </Button>
+                  ))}
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
-                  {roleConfig.label}
-                </Badge>
-                <Badge className="border-none bg-white/15 px-3 py-1 text-primary-foreground backdrop-blur-sm">
-                  {scope}
-                </Badge>
-              </div>
-
-              <div className="flex flex-col gap-2 sm:flex-row">
-                {primaryActions.slice(0, 2).map((action) => (
-                  <Button
-                    key={action.href}
-                    asChild
-                    className="h-11 flex-1 rounded-xl bg-white/16 text-primary-foreground backdrop-blur-sm hover:bg-white/22"
-                  >
-                    <Link href={action.href}>
-                      <action.icon className="mr-2 h-4 w-4" />
-                      {action.title}
-                    </Link>
-                  </Button>
-                ))}
-              </div>
+              <RoleHeroArtwork role={user.role} />
             </div>
           </CardContent>
         </Card>
