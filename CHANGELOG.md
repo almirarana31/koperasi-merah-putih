@@ -1,6 +1,6 @@
 # Changelog
 
-## 2026-03-31
+## 31-03-2026
 
 ### RBAC and Route Security
 - Reworked role-based access control in `lib/rbac/access-control.ts` to use the app's real routes instead of placeholder mappings.
