@@ -1,16 +1,21 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 import {
-  Search,
-  Plus,
+  ArrowRight,
+  BarChart3,
+  Calendar,
+  CheckCircle,
+  ClipboardList,
+  Eye,
   Filter,
   MoreHorizontal,
-  Eye,
-  CheckCircle,
-  Calendar,
-  User,
   Package,
+  Plus,
+  Search,
+  TrendingUp,
+  User,
 } from 'lucide-react'
 import {
   Card,
@@ -53,21 +58,79 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { productions, formatDate, getStatusColor } from '@/lib/data'
 import { HarvestDetailDialog } from '@/components/dialogs/harvest-detail-dialog'
+import { useAuth } from '@/lib/auth'
+import { productions, formatDate, getStatusColor } from '@/lib/data'
 
 const gradeColors: Record<string, string> = {
-  A: 'bg-emerald-500/10 text-emerald-500',
-  B: 'bg-amber-500/10 text-amber-500',
-  C: 'bg-red-500/10 text-red-500',
+  A: 'bg-primary/10 text-primary',
+  B: 'bg-amber-500/10 text-amber-600',
+  C: 'bg-destructive/10 text-destructive',
 }
 
+const personalHarvests = [
+  {
+    id: 'PH-001',
+    commodity: 'Padi Premium',
+    volume: '1.2 ton',
+    schedule: '12 Apr 2026',
+    status: 'Siap dicatat',
+    note: 'Cuaca cerah, kadar air diperkirakan stabil.',
+    grade: 'A',
+  },
+  {
+    id: 'PH-002',
+    commodity: 'Jagung Pipil',
+    volume: '850 kg',
+    schedule: '28 Mar 2026',
+    status: 'Menunggu verifikasi',
+    note: 'Petugas koperasi akan meninjau kualitas besok pagi.',
+    grade: 'B',
+  },
+  {
+    id: 'PH-003',
+    commodity: 'Gabah Kering',
+    volume: '900 kg',
+    schedule: '16 Mar 2026',
+    status: 'Sudah masuk gudang',
+    note: 'Sudah diterima di gudang utama dan siap penawaran.',
+    grade: 'A',
+  },
+] as const
+
+const regionalSummaries = [
+  {
+    area: 'Kecamatan Sukamaju',
+    commodity: 'Padi',
+    volume: '124 ton',
+    change: '+8.4%',
+    insight: 'Peningkatan dipicu musim panen yang serempak di tiga desa.',
+  },
+  {
+    area: 'Kecamatan Cibodas',
+    commodity: 'Hortikultura',
+    volume: '46 ton',
+    change: '+3.1%',
+    insight: 'Kentang dan wortel mendominasi pasokan minggu ini.',
+  },
+  {
+    area: 'Kecamatan Pantai Indah',
+    commodity: 'Perikanan',
+    volume: '18 ton',
+    change: '-2.2%',
+    insight: 'Gelombang tinggi menekan hasil tangkap pada awal pekan.',
+  },
+] as const
+
 export default function ProduksiPage() {
+  const { user, canRoute } = useAuth()
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
-  const [selectedHarvest, setSelectedHarvest] = useState(null)
+  const [selectedHarvest, setSelectedHarvest] = useState<(typeof productions)[number] | null>(null)
+
+  if (!user) return null
 
   const filteredProductions = productions.filter((prod) => {
     const matchesSearch =
@@ -77,15 +140,289 @@ export default function ProduksiPage() {
     return matchesSearch && matchesStatus
   })
 
+  const totalHarvestVolume = productions.reduce((sum, prod) => sum + prod.jumlah, 0)
+  const isAggregateViewer = user.role === 'pemda' || user.role === 'kementerian'
+
+  if (user.role === 'petani') {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Panen Saya</h1>
+            <p className="text-muted-foreground">
+              Catat hasil panen pribadi, lihat status verifikasi, dan siapkan hasil terbaik untuk dijual lewat koperasi.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {canRoute('/produksi/rencana') && (
+              <Button variant="outline" asChild>
+                <Link href="/produksi/rencana">
+                  <ClipboardList className="mr-2 h-4 w-4" />
+                  Rencana Tanam
+                </Link>
+              </Button>
+            )}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Catat Panen Saya
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Catat Panen Baru</DialogTitle>
+                  <DialogDescription>
+                    Isi hasil panen Anda untuk diproses koperasi dan diverifikasi petugas.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="komoditas">Komoditas</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Pilih komoditas" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="padi">Padi Premium</SelectItem>
+                        <SelectItem value="jagung">Jagung Pipil</SelectItem>
+                        <SelectItem value="gabah">Gabah Kering</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="jumlah">Jumlah</Label>
+                      <Input id="jumlah" type="number" placeholder="0" />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="grade">Grade</Label>
+                      <Select>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pilih" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="A">Grade A</SelectItem>
+                          <SelectItem value="B">Grade B</SelectItem>
+                          <SelectItem value="C">Grade C</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="tanggal">Tanggal Panen</Label>
+                    <Input id="tanggal" type="date" />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Batal
+                  </Button>
+                  <Button onClick={() => setIsDialogOpen(false)}>Simpan</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Catatan panen aktif</p>
+              <p className="mt-2 text-3xl font-bold">{personalHarvests.length}</p>
+              <p className="mt-1 text-xs text-muted-foreground">Hanya panen milik Anda</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Estimasi total hasil</p>
+              <p className="mt-2 text-3xl font-bold">2.9 ton</p>
+              <p className="mt-1 text-xs text-primary">Siap dipasarkan lewat koperasi</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Panen siap verifikasi</p>
+              <p className="mt-2 text-3xl font-bold">1</p>
+              <p className="mt-1 text-xs text-muted-foreground">Petugas dijadwalkan datang besok</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Aksi berikutnya</p>
+              <p className="mt-2 text-base font-semibold">Lengkapi data padi premium</p>
+              <p className="mt-1 text-xs text-muted-foreground">Supaya koperasi bisa menyiapkan penawaran harga</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="border-primary/15">
+          <CardHeader>
+            <CardTitle>Agenda Panen Pribadi</CardTitle>
+            <CardDescription>
+              Tampilan ini khusus anggota. Anda tidak dapat melihat atau mencatat panen milik anggota lain.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 lg:grid-cols-[1.35fr_0.95fr]">
+            <div className="space-y-3">
+              {personalHarvests.map((item) => (
+                <div key={item.id} className="rounded-2xl border bg-card p-4 shadow-sm">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-lg font-semibold">{item.commodity}</h3>
+                        <Badge className={gradeColors[item.grade]}>Grade {item.grade}</Badge>
+                      </div>
+                      <p className="mt-1 text-sm text-muted-foreground">{item.note}</p>
+                    </div>
+                    <Badge variant="outline">{item.status}</Badge>
+                  </div>
+
+                  <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+                    <div className="rounded-xl bg-secondary/35 p-3">
+                      <p className="text-muted-foreground">Volume</p>
+                      <p className="mt-1 font-semibold">{item.volume}</p>
+                    </div>
+                    <div className="rounded-xl bg-secondary/35 p-3">
+                      <p className="text-muted-foreground">Jadwal</p>
+                      <p className="mt-1 font-semibold">{item.schedule}</p>
+                    </div>
+                    <div className="rounded-xl bg-secondary/35 p-3">
+                      <p className="text-muted-foreground">ID Catatan</p>
+                      <p className="mt-1 font-semibold">{item.id}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Card className="h-fit border-dashed">
+              <CardHeader>
+                <CardTitle className="text-base">Langkah yang Disarankan</CardTitle>
+                <CardDescription>Supaya panen Anda cepat diproses koperasi.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div className="rounded-xl bg-secondary/35 p-3">
+                  <p className="font-medium">1. Catat panen segera setelah panen selesai</p>
+                  <p className="mt-1 text-muted-foreground">Data awal membantu koperasi menyiapkan gudang dan pembeli.</p>
+                </div>
+                <div className="rounded-xl bg-secondary/35 p-3">
+                  <p className="font-medium">2. Pastikan grade dan berat sudah benar</p>
+                  <p className="mt-1 text-muted-foreground">Data yang lengkap mempercepat verifikasi dan pembayaran.</p>
+                </div>
+                <div className="rounded-xl bg-secondary/35 p-3">
+                  <p className="font-medium">3. Pantau harga pasar sebelum menjual</p>
+                  <p className="mt-1 text-muted-foreground">Gunakan fitur harga dan rekomendasi AI untuk memilih waktu jual.</p>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {canRoute('/pasar/harga') && (
+                    <Button variant="outline" asChild className="w-full sm:w-auto">
+                      <Link href="/pasar/harga">
+                        Lihat Harga Pasar
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
+                  {canRoute('/ai/rekomendasi-harga') && (
+                    <Button asChild className="w-full sm:w-auto">
+                      <Link href="/ai/rekomendasi-harga">
+                        Buka AI Harga
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (isAggregateViewer) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Ringkasan Produksi Wilayah</h1>
+            <p className="text-muted-foreground">
+              Tampilan agregat untuk pemantauan wilayah. Detail individu anggota tidak ditampilkan pada role ini.
+            </p>
+          </div>
+          {canRoute('/produksi/agregasi') && (
+            <Button variant="outline" asChild>
+              <Link href="/produksi/agregasi">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Buka Agregasi Detail
+              </Link>
+            </Button>
+          )}
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Wilayah dipantau</p>
+              <p className="mt-2 text-3xl font-bold">{regionalSummaries.length}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Produksi tercatat</p>
+              <p className="mt-2 text-3xl font-bold">188 ton</p>
+              <p className="mt-1 text-xs text-primary">Akumulasi pekan ini</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Komoditas dominan</p>
+              <p className="mt-2 text-3xl font-bold">Padi</p>
+              <p className="mt-1 text-xs text-muted-foreground">Kontributor volume terbesar</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Arah tren</p>
+              <p className="mt-2 flex items-center gap-2 text-3xl font-bold text-primary">
+                <TrendingUp className="h-6 w-6" />
+                Positif
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          {regionalSummaries.map((item) => (
+            <Card key={item.area} className="border-border/80 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg">{item.area}</CardTitle>
+                <CardDescription>{item.commodity}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="rounded-xl bg-secondary/35 p-3">
+                  <p className="text-sm text-muted-foreground">Volume agregat</p>
+                  <p className="mt-1 text-2xl font-bold">{item.volume}</p>
+                </div>
+                <div className="rounded-xl bg-secondary/35 p-3">
+                  <p className="text-sm text-muted-foreground">Perubahan</p>
+                  <p className="mt-1 text-lg font-semibold text-primary">{item.change}</p>
+                </div>
+                <p className="text-sm text-muted-foreground">{item.insight}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Catatan Panen</h1>
-          <p className="text-muted-foreground">
-            Kelola data produksi dan panen anggota
-          </p>
+          <p className="text-muted-foreground">Kelola data produksi dan panen anggota koperasi</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -97,9 +434,7 @@ export default function ProduksiPage() {
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Catat Panen Baru</DialogTitle>
-              <DialogDescription>
-                Input data hasil panen dari anggota
-              </DialogDescription>
+              <DialogDescription>Input data hasil panen dari anggota</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
@@ -162,7 +497,6 @@ export default function ProduksiPage() {
         </Dialog>
       </div>
 
-      {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4">
@@ -180,8 +514,8 @@ export default function ProduksiPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
-                <CheckCircle className="h-5 w-5 text-emerald-500" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <CheckCircle className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
@@ -210,8 +544,8 @@ export default function ProduksiPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
-                <User className="h-5 w-5 text-blue-500" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
+                <User className="h-5 w-5 text-foreground" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
@@ -224,7 +558,6 @@ export default function ProduksiPage() {
         </Card>
       </div>
 
-      {/* Filters */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -233,12 +566,12 @@ export default function ProduksiPage() {
               <Input
                 placeholder="Cari anggota atau komoditas..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(event) => setSearch(event.target.value)}
                 className="pl-9"
               />
             </div>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <Filter className="mr-2 h-4 w-4" />
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -254,78 +587,77 @@ export default function ProduksiPage() {
         </CardContent>
       </Card>
 
-      {/* Table */}
       <Card>
         <CardHeader>
           <CardTitle>Daftar Produksi</CardTitle>
           <CardDescription>
-            {filteredProductions.length} catatan panen
+            {filteredProductions.length} catatan panen dengan total {totalHarvestVolume.toLocaleString()} kg hasil produksi.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Anggota</TableHead>
-                <TableHead>Komoditas</TableHead>
-                <TableHead>Jumlah</TableHead>
-                <TableHead>Grade</TableHead>
-                <TableHead>Tanggal Panen</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredProductions.map((prod) => (
-                <TableRow key={prod.id}>
-                  <TableCell className="font-mono text-sm">{prod.id}</TableCell>
-                  <TableCell className="font-medium">{prod.memberNama}</TableCell>
-                  <TableCell>{prod.komoditasNama}</TableCell>
-                  <TableCell>
-                    {prod.jumlah} {prod.satuan}
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={gradeColors[prod.grade]}>
-                      Grade {prod.grade}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{formatDate(prod.tanggalPanen)}</TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(prod.status)}>
-                      {prod.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => {
-                          setSelectedHarvest(prod)
-                          setDetailDialogOpen(true)
-                        }}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          Lihat Detail
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <CheckCircle className="mr-2 h-4 w-4" />
-                          Verifikasi
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Anggota</TableHead>
+                  <TableHead>Komoditas</TableHead>
+                  <TableHead>Jumlah</TableHead>
+                  <TableHead>Grade</TableHead>
+                  <TableHead>Tanggal Panen</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="w-[50px]" />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredProductions.map((prod) => (
+                  <TableRow key={prod.id}>
+                    <TableCell className="font-mono text-sm">{prod.id}</TableCell>
+                    <TableCell className="font-medium">{prod.memberNama}</TableCell>
+                    <TableCell>{prod.komoditasNama}</TableCell>
+                    <TableCell>
+                      {prod.jumlah} {prod.satuan}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={gradeColors[prod.grade]}>Grade {prod.grade}</Badge>
+                    </TableCell>
+                    <TableCell>{formatDate(prod.tanggalPanen)}</TableCell>
+                    <TableCell>
+                      <Badge className={getStatusColor(prod.status)}>{prod.status}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedHarvest(prod)
+                              setDetailDialogOpen(true)
+                            }}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            Lihat Detail
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <CheckCircle className="mr-2 h-4 w-4" />
+                            Verifikasi
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
-      <HarvestDetailDialog 
+      <HarvestDetailDialog
         open={detailDialogOpen}
         onOpenChange={setDetailDialogOpen}
         harvest={selectedHarvest}

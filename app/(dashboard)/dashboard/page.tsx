@@ -3,40 +3,39 @@
 import Link from 'next/link'
 import {
   ArrowRight,
+  BarChart3,
   Bell,
   Brain,
-  FileOutput,
-  Lock,
-  MapPinned,
+  ClipboardCheck,
+  FileText,
   ShieldCheck,
+  ShoppingCart,
   Sprout,
   Truck,
+  UserRound,
   Users,
   Wallet,
   Warehouse,
-  ShoppingCart,
-  Activity,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth'
-import type { AccessLevel, DataScope, PanelKey } from '@/lib/rbac'
+import type { DataScope, Role } from '@/lib/rbac'
 
-type ModuleDefinition = {
-  key: PanelKey
+type DashboardAction = {
   title: string
   description: string
   href: string
   icon: LucideIcon
 }
 
-type ShortcutDefinition = {
-  title: string
-  description: string
-  href: string
-  icon: LucideIcon
+type RoleExperience = {
+  heading: string
+  summary: string
+  priorities: string[]
+  actions: DashboardAction[]
 }
 
 const SCOPE_LABELS: Record<DataScope, string> = {
@@ -47,225 +46,231 @@ const SCOPE_LABELS: Record<DataScope, string> = {
   all_koperasi: 'Seluruh koperasi',
 }
 
-const ACCESS_LABELS: Record<AccessLevel, string> = {
-  full: 'Penuh',
-  view_only: 'Lihat',
-  aggregate: 'Agregat',
-  own_only: 'Pribadi',
-  today_only: 'Hari ini',
-  consent_required: 'Perlu izin',
-  none: 'Tidak ada',
+const ROLE_EXPERIENCES: Record<Role, RoleExperience> = {
+  petani: {
+    heading: 'Pusat kerja petani',
+    summary: 'Fokus pada aktivitas usaha tani pribadi, akses harga komoditas, dan layanan pembiayaan untuk anggota.',
+    priorities: [
+      'Catat hasil panen dan rencana tanam milik sendiri.',
+      'Pantau profil anggota Anda sendiri tanpa akses manajemen desa.',
+      'Ajukan pinjaman dan lihat harga pasar terbaru.',
+    ],
+    actions: [
+      { title: 'Catatan Panen Saya', description: 'Masuk ke pencatatan produksi dan panen pribadi.', href: '/produksi', icon: Sprout },
+      { title: 'Profil Saya', description: 'Lihat profil anggota, aktivitas, dan ringkasan performa pribadi.', href: '/anggota/profil', icon: UserRound },
+      { title: 'Ajukan Pinjaman', description: 'Akses pengajuan pinjaman anggota berdasarkan skor kredit.', href: '/keuangan/pinjaman', icon: Wallet },
+      { title: 'Harga Pasar', description: 'Pantau perubahan harga komoditas sebelum menjual hasil panen.', href: '/pasar/harga', icon: ShoppingCart },
+      { title: 'Rekomendasi Harga AI', description: 'Gunakan insight AI untuk menentukan strategi jual.', href: '/ai/rekomendasi-harga', icon: Brain },
+      { title: 'Notifikasi Cerdas', description: 'Terima pengingat panen, harga, dan alert penting.', href: '/assistant/notifikasi', icon: Bell },
+    ],
+  },
+  kasir: {
+    heading: 'Operasional kasir harian',
+    summary: 'Fokus pada transaksi koperasi, stok, pembayaran, dan aliran order harian.',
+    priorities: [
+      'Proses penjualan dan pembayaran tanpa membuka area manajemen anggota.',
+      'Pantau stok gudang untuk transaksi hari ini.',
+      'Gunakan AI untuk membaca permintaan dan harga pasar.',
+    ],
+    actions: [
+      { title: 'Pasar & Order', description: 'Kelola order masuk, buyer, dan proses penjualan harian.', href: '/pasar', icon: ShoppingCart },
+      { title: 'Gudang', description: 'Cek stok barang sebelum transaksi dan fulfillment.', href: '/gudang', icon: Warehouse },
+      { title: 'Pembayaran', description: 'Proses pembayaran dan pencatatan invoice.', href: '/keuangan/pembayaran', icon: Wallet },
+      { title: 'Supply & Demand AI', description: 'Lihat perkiraan permintaan untuk keputusan operasional.', href: '/ai/supply-demand', icon: Brain },
+    ],
+  },
+  logistik_manager: {
+    heading: 'Koordinasi logistik',
+    summary: 'Fokus pada distribusi, armada, rute, dan kualitas stok yang siap dikirim.',
+    priorities: [
+      'Pastikan pengiriman dan pickup berjalan tepat waktu.',
+      'Optimalkan rute dan pemanfaatan armada.',
+      'Pantau stok dan grading yang berkaitan dengan distribusi.',
+    ],
+    actions: [
+      { title: 'Pengiriman', description: 'Masuk ke pengelolaan pengiriman dan tracking logistik.', href: '/logistik', icon: Truck },
+      { title: 'Rute Distribusi', description: 'Optimalkan jalur antar gudang dan titik serah.', href: '/logistik/rute', icon: Truck },
+      { title: 'Gudang', description: 'Cek stok, grading, dan traceability untuk distribusi.', href: '/gudang', icon: Warehouse },
+      { title: 'Optimasi Rute AI', description: 'Gunakan AI untuk menyusun rute yang lebih efisien.', href: '/ai/optimasi-rute', icon: Brain },
+    ],
+  },
+  koperasi_manager: {
+    heading: 'Kendali operasional koperasi',
+    summary: 'Fokus pada pengelolaan anggota, produksi, pasar, dan laporan untuk operasional koperasi sehari-hari.',
+    priorities: [
+      'Kelola onboarding, verifikasi, dan struktur anggota koperasi.',
+      'Pantau produksi, penjualan, dan cashflow lintas unit.',
+      'Gunakan laporan dan AI untuk keputusan operasional.',
+    ],
+    actions: [
+      { title: 'Manajemen Anggota', description: 'Kelola daftar anggota, onboarding, dan verifikasi KYC.', href: '/anggota', icon: Users },
+      { title: 'Operasional Produksi', description: 'Pantau produksi, jadwal panen, dan agregasi komoditas.', href: '/produksi', icon: Sprout },
+      { title: 'Keuangan Koperasi', description: 'Buka transaksi, laporan, dan pembiayaan koperasi.', href: '/keuangan', icon: Wallet },
+      { title: 'Forecast AI', description: 'Gunakan prediksi untuk produksi dan penjualan berikutnya.', href: '/ai/forecast', icon: Brain },
+      { title: 'Laporan', description: 'Buat dan bagikan laporan operasional koperasi.', href: '/keuangan/laporan', icon: FileText },
+    ],
+  },
+  ketua: {
+    heading: 'Pengawasan ketua koperasi',
+    summary: 'Fokus pada keputusan strategis, persetujuan, evaluasi kinerja, dan pemantauan lintas unit.',
+    priorities: [
+      'Lihat ringkasan operasional lintas fungsi.',
+      'Arahkan kebijakan anggota, keuangan, dan risiko.',
+      'Gunakan command center untuk keputusan strategis.',
+    ],
+    actions: [
+      { title: 'Pusat Kendali', description: 'Masuk ke dashboard eksekutif untuk pemantauan menyeluruh.', href: '/command-center', icon: BarChart3 },
+      { title: 'Anggota & Verifikasi', description: 'Awasi onboarding, verifikasi, dan kualitas anggota.', href: '/anggota', icon: Users },
+      { title: 'Laporan Koperasi', description: 'Tinjau laporan dan pembagian hasil usaha.', href: '/keuangan/laporan', icon: FileText },
+      { title: 'Analisis Pasar AI', description: 'Gunakan insight strategis untuk arah bisnis koperasi.', href: '/ai/analisis-pasar', icon: Brain },
+    ],
+  },
+  pemda: {
+    heading: 'Monitoring tingkat daerah',
+    summary: 'Fokus pada data agregat kabupaten untuk produksi, logistik, dan perkembangan komoditas.',
+    priorities: [
+      'Pantau produksi agregat per wilayah.',
+      'Lihat distribusi dan logistik antar area.',
+      'Gunakan laporan agregat untuk keputusan daerah.',
+    ],
+    actions: [
+      { title: 'Agregasi Produksi', description: 'Lihat ringkasan produksi tingkat daerah.', href: '/produksi/agregasi', icon: Sprout },
+      { title: 'Logistik Daerah', description: 'Pantau distribusi dan hambatan logistik wilayah.', href: '/logistik', icon: Truck },
+      { title: 'Harga Pasar', description: 'Amati pergerakan harga komoditas di lapangan.', href: '/pasar/harga', icon: ShoppingCart },
+      { title: 'Laporan Daerah', description: 'Akses laporan agregat untuk evaluasi program.', href: '/keuangan/laporan', icon: FileText },
+    ],
+  },
+  bank: {
+    heading: 'Analisis pembiayaan',
+    summary: 'Fokus pada kelayakan kredit, pengajuan pembiayaan, dan evaluasi performa anggota yang relevan.',
+    priorities: [
+      'Tinjau skor kredit dan risiko pembiayaan.',
+      'Pantau pengajuan pinjaman yang masuk.',
+      'Gunakan laporan untuk penilaian pembiayaan.',
+    ],
+    actions: [
+      { title: 'Credit Scoring', description: 'Evaluasi kelayakan kredit dan profil pembiayaan anggota.', href: '/keuangan/credit-scoring', icon: ShieldCheck },
+      { title: 'Pengajuan Pinjaman', description: 'Lihat detail pengajuan pinjaman yang perlu diproses.', href: '/keuangan/pinjaman', icon: Wallet },
+      { title: 'Laporan Pembiayaan', description: 'Buka laporan untuk analisis risiko dan performa.', href: '/keuangan/laporan', icon: FileText },
+    ],
+  },
+  kementerian: {
+    heading: 'Monitoring nasional',
+    summary: 'Fokus pada data agregat nasional untuk kebijakan, evaluasi program, dan tren komoditas.',
+    priorities: [
+      'Pantau produksi dan komoditas secara agregat.',
+      'Lihat pergerakan distribusi dan harga secara luas.',
+      'Gunakan laporan untuk kebijakan nasional.',
+    ],
+    actions: [
+      { title: 'Agregasi Produksi', description: 'Lihat rangkuman produksi nasional dan lintas wilayah.', href: '/produksi/agregasi', icon: Sprout },
+      { title: 'Forecast Nasional', description: 'Gunakan prediksi untuk perencanaan lintas wilayah.', href: '/ai/forecast', icon: Brain },
+      { title: 'Logistik', description: 'Tinjau distribusi dan hambatan pasok tingkat luas.', href: '/logistik', icon: Truck },
+      { title: 'Laporan', description: 'Akses laporan ringkas untuk kebutuhan kebijakan.', href: '/keuangan/laporan', icon: FileText },
+    ],
+  },
+  sysadmin: {
+    heading: 'Kontrol sistem',
+    summary: 'Fokus pada kontrol platform, stabilitas operasional, dan pengawasan lintas modul.',
+    priorities: [
+      'Pastikan seluruh modul berjalan konsisten.',
+      'Pantau area operasional yang kritikal.',
+      'Bantu troubleshooting lintas peran dan lingkungan.',
+    ],
+    actions: [
+      { title: 'Pusat Kendali', description: 'Pantau seluruh area operasional dari satu tempat.', href: '/command-center', icon: BarChart3 },
+      { title: 'Manajemen Anggota', description: 'Validasi alur anggota dan akses lintas modul.', href: '/anggota', icon: Users },
+      { title: 'Operasional Koperasi', description: 'Masuk ke transaksi dan laporan untuk verifikasi sistem.', href: '/keuangan', icon: Wallet },
+      { title: 'AI Monitoring', description: 'Tinjau modul AI dan dukungan assistant.', href: '/ai', icon: Brain },
+    ],
+  },
 }
-
-const ACCESS_BADGES: Record<Exclude<AccessLevel, 'none'>, string> = {
-  full: 'bg-primary/15 text-primary border-primary/20',
-  view_only: 'bg-secondary text-secondary-foreground border-border',
-  aggregate: 'bg-[color:var(--color-info)]/12 text-[color:var(--color-info)] border-[color:var(--color-info)]/20',
-  own_only: 'bg-[color:var(--color-success)]/12 text-[color:var(--color-success)] border-[color:var(--color-success)]/20',
-  today_only: 'bg-[color:var(--color-warning)]/14 text-[color:var(--color-warning-foreground)] border-[color:var(--color-warning)]/30',
-  consent_required: 'bg-destructive/10 text-destructive border-destructive/20',
-}
-
-const MODULES: ModuleDefinition[] = [
-  {
-    key: 'produksi',
-    title: 'Produksi',
-    description: 'Pantau panen, rencana tanam, dan progres komoditas.',
-    href: '/produksi',
-    icon: Sprout,
-  },
-  {
-    key: 'stok',
-    title: 'Gudang',
-    description: 'Kelola stok, grading, cold storage, dan traceability.',
-    href: '/gudang',
-    icon: Warehouse,
-  },
-  {
-    key: 'penjualan',
-    title: 'Pasar',
-    description: 'Akses order, buyer, kontrak, dan harga pasar.',
-    href: '/pasar',
-    icon: ShoppingCart,
-  },
-  {
-    key: 'logistik',
-    title: 'Logistik',
-    description: 'Lihat pengiriman, tracking, pickup, dan rute.',
-    href: '/logistik',
-    icon: Truck,
-  },
-  {
-    key: 'cashflow',
-    title: 'Keuangan',
-    description: 'Tinjau transaksi, pinjaman, laporan, dan pembayaran.',
-    href: '/keuangan',
-    icon: Wallet,
-  },
-  {
-    key: 'performa_anggota',
-    title: 'Anggota',
-    description: 'Lihat anggota, profil, verifikasi, dan onboarding.',
-    href: '/anggota',
-    icon: Users,
-  },
-  {
-    key: 'performa_komoditas',
-    title: 'AI & Komoditas',
-    description: 'Gunakan forecast, grading, dan rekomendasi harga.',
-    href: '/ai',
-    icon: Brain,
-  },
-  {
-    key: 'risiko',
-    title: 'Pusat Kendali',
-    description: 'Masuk ke ringkasan eksekutif dan pemantauan risiko.',
-    href: '/command-center',
-    icon: Activity,
-  },
-]
-
-const SHORTCUTS: ShortcutDefinition[] = [
-  {
-    title: 'Notifikasi',
-    description: 'Cek alert, approval, dan update terbaru.',
-    href: '/assistant/notifikasi',
-    icon: Bell,
-  },
-  {
-    title: 'AI Assistant',
-    description: 'Dapatkan bantuan operasional berbasis AI.',
-    href: '/assistant',
-    icon: Brain,
-  },
-  {
-    title: 'Laporan Otomatis',
-    description: 'Buka laporan yang tersedia untuk role Anda.',
-    href: '/assistant/laporan',
-    icon: FileOutput,
-  },
-]
 
 export default function DashboardPage() {
-  const { roleConfig, canRoute, canSeePanel, panelAccess, canExportAs, dataScope } = useAuth()
+  const { user, roleConfig, canRoute, dataScope } = useAuth()
 
-  if (!roleConfig) return null
+  if (!user || !roleConfig) return null
 
-  const scope = dataScope()
-  const visibleModules = MODULES.filter((module) => canSeePanel(module.key) && canRoute(module.href)).map((module) => ({
-    ...module,
-    access: panelAccess(module.key),
-  }))
-
-  const visibleShortcuts = SHORTCUTS.filter((shortcut) => canRoute(shortcut.href))
-  const hiddenModules = MODULES.filter((module) => !visibleModules.some((item) => item.key === module.key))
-  const exportFormats = [canExportAs('pdf') ? 'PDF' : null, canExportAs('excel') ? 'Excel' : null].filter(Boolean)
+  const experience = ROLE_EXPERIENCES[user.role]
+  const scope = SCOPE_LABELS[dataScope()]
+  const visibleActions = experience.actions.filter((action) => canRoute(action.href))
 
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden border-primary/15 bg-card shadow-sm">
+      <Card className="overflow-hidden border-primary/15 shadow-sm">
         <CardContent className="relative p-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(180,39,45,0.14),transparent_40%),linear-gradient(135deg,rgba(248,243,237,0.95),rgba(255,255,255,0.9))]" />
-          <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.5fr_1fr] lg:items-start">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(180,39,45,0.12),transparent_40%),linear-gradient(135deg,rgba(248,243,237,0.98),rgba(255,255,255,0.92))]" />
+          <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.45fr_0.95fr]">
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
                   <span className="text-2xl leading-none">{roleConfig.icon}</span>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-primary">Dashboard Role-Based</p>
+                  <p className="text-sm font-medium text-primary">{experience.heading}</p>
                   <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{roleConfig.label}</h1>
                 </div>
               </div>
 
               <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
-                {roleConfig.description}
+                {experience.summary}
               </p>
 
               <div className="flex flex-wrap gap-2">
                 <Badge className="border border-primary/20 bg-primary/10 px-3 py-1 text-primary">
-                  {SCOPE_LABELS[scope]}
+                  {scope}
                 </Badge>
                 <Badge variant="outline" className="px-3 py-1">
-                  {visibleModules.length} modul aktif
-                </Badge>
-                <Badge variant="outline" className="px-3 py-1">
-                  Ekspor: {exportFormats.length > 0 ? exportFormats.join(', ') : 'Tidak tersedia'}
+                  {visibleActions.length} area kerja
                 </Badge>
               </div>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-              <Card className="border-primary/10 bg-background/85 shadow-none">
-                <CardContent className="p-4">
-                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Jangkauan Data</p>
-                  <p className="mt-2 text-lg font-semibold">{SCOPE_LABELS[scope]}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Akses yang terlihat di UI sekarang mengikuti scope role Anda.</p>
-                </CardContent>
-              </Card>
-              <Card className="border-primary/10 bg-background/85 shadow-none">
-                <CardContent className="p-4">
-                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Fitur Tersedia</p>
-                  <p className="mt-2 text-lg font-semibold">{visibleModules.length + visibleShortcuts.length}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Menu dan shortcut yang tidak relevan otomatis disembunyikan.</p>
-                </CardContent>
-              </Card>
-              <Card className="border-primary/10 bg-background/85 shadow-none">
-                <CardContent className="p-4">
-                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">Status Akses</p>
-                  <div className="mt-2 flex items-center gap-2 text-lg font-semibold">
-                    <ShieldCheck className="h-5 w-5 text-primary" />
-                    Terproteksi
+            <Card className="border-primary/10 bg-background/90 shadow-none">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Fokus Utama</CardTitle>
+                <CardDescription>Ringkasan tanggung jawab untuk role ini.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {experience.priorities.map((priority) => (
+                  <div key={priority} className="flex items-start gap-3 rounded-xl bg-secondary/45 p-3">
+                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <p className="text-sm text-foreground">{priority}</p>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">Halaman tanpa izin akan hilang dari menu dan ditolak saat diakses langsung.</p>
-                </CardContent>
-              </Card>
-            </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       </Card>
 
       <section className="space-y-3">
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold sm:text-xl">Modul yang Bisa Anda Gunakan</h2>
-            <p className="text-sm text-muted-foreground">Tampilan ini menyesuaikan route dan level akses role Anda.</p>
-          </div>
+        <div>
+          <h2 className="text-lg font-semibold sm:text-xl">Aksi yang Relevan untuk Anda</h2>
+          <p className="text-sm text-muted-foreground">
+            Hanya fitur yang sesuai dengan tugas role Anda yang ditampilkan di sini.
+          </p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {visibleModules.map((module) => {
-            const Icon = module.icon
+          {visibleActions.map((action) => {
+            const Icon = action.icon
 
             return (
-              <Card key={module.key} className="border-border/80 shadow-sm">
-                <CardHeader className="space-y-4 p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <div className="min-w-0">
-                        <CardTitle className="text-base sm:text-lg">{module.title}</CardTitle>
-                        <CardDescription className="mt-1 text-sm">{module.description}</CardDescription>
-                      </div>
-                    </div>
-                    <Badge
-                      variant="outline"
-                      className={ACCESS_BADGES[module.access as Exclude<AccessLevel, 'none'>]}
-                    >
-                      {ACCESS_LABELS[module.access]}
-                    </Badge>
+              <Card key={action.href} className="border-border/80 shadow-sm">
+                <CardHeader className="space-y-3 p-5">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-base sm:text-lg">{action.title}</CardTitle>
+                    <CardDescription className="mt-1 text-sm">{action.description}</CardDescription>
                   </div>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-4 p-5 pt-0">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPinned className="h-4 w-4 text-primary" />
-                    {module.href}
-                  </div>
+                <CardContent className="p-5 pt-0">
                   <Button asChild className="w-full justify-between">
-                    <Link href={module.href}>
-                      Buka modul
+                    <Link href={action.href}>
+                      Buka fitur
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -276,65 +281,31 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg">Shortcut yang Relevan</CardTitle>
-            <CardDescription>Hanya aksi yang masih bisa diakses oleh role Anda yang ditampilkan di sini.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-3 sm:grid-cols-2">
-            {visibleShortcuts.map((shortcut) => {
-              const Icon = shortcut.icon
-
-              return (
-                <Link
-                  key={shortcut.href}
-                  href={shortcut.href}
-                  className="group rounded-2xl border border-border bg-secondary/35 p-4 transition-colors hover:border-primary/25 hover:bg-primary/5"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-medium">{shortcut.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{shortcut.description}</p>
-                      <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                        Buka
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg">Yang Tidak Ditampilkan</CardTitle>
-            <CardDescription>UI menyembunyikan area yang bukan bagian dari tanggung jawab role Anda.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start gap-3 rounded-2xl border border-dashed border-border bg-secondary/35 p-4">
-              <Lock className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-              <div>
-                <p className="font-medium">{hiddenModules.length} modul dibatasi</p>
-                <p className="text-sm text-muted-foreground">Halaman admin dan fitur lintas peran tidak lagi tampil di navigasi Anda.</p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {hiddenModules.map((module) => (
-                <Badge key={module.key} variant="outline" className="bg-background">
-                  {module.title}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-lg">Akses Dilindungi</CardTitle>
+          <CardDescription>
+            Fitur di luar tanggung jawab role Anda otomatis disembunyikan dari dashboard, sidebar, dan akses URL langsung.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-dashed bg-secondary/35 p-4">
+            <Users className="mb-3 h-5 w-5 text-primary" />
+            <p className="font-medium">Manajemen anggota sensitif</p>
+            <p className="mt-1 text-sm text-muted-foreground">Hanya role pengelola koperasi yang dapat menambah dan memverifikasi anggota.</p>
+          </div>
+          <div className="rounded-2xl border border-dashed bg-secondary/35 p-4">
+            <Warehouse className="mb-3 h-5 w-5 text-primary" />
+            <p className="font-medium">Operasional khusus unit</p>
+            <p className="mt-1 text-sm text-muted-foreground">Gudang, logistik, dan transaksi tampil sesuai fungsi kerja masing-masing.</p>
+          </div>
+          <div className="rounded-2xl border border-dashed bg-secondary/35 p-4">
+            <ClipboardCheck className="mb-3 h-5 w-5 text-primary" />
+            <p className="font-medium">Akses langsung tetap dijaga</p>
+            <p className="mt-1 text-sm text-muted-foreground">Walau URL diketik manual, halaman yang tidak sesuai tetap akan ditolak.</p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

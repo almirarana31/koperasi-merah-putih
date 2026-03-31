@@ -22,12 +22,32 @@ import {
 import { useState } from "react"
 import { useAuth } from "@/lib/auth"
 import { canAccessRoute } from "@/lib/rbac"
+import type { Role } from "@/lib/rbac"
 
 interface NavItem {
   label: string
   icon: React.ElementType
   href?: string
   children?: { label: string; href: string }[]
+}
+
+function getRoleAwareNavLabel(role: Role, href: string, fallback: string): string {
+  if (role !== "petani") return fallback
+
+  const overrides: Record<string, string> = {
+    "/anggota/profil": "Profil Saya",
+    "/produksi": "Panen Saya",
+    "/produksi/rencana": "Rencana Tanam",
+    "/produksi/jadwal": "Jadwal Panen",
+    "/keuangan/pinjaman": "Pinjaman Saya",
+    "/keuangan/shu": "SHU Saya",
+    "/pasar/harga": "Harga Pasar",
+    "/ai/rekomendasi-harga": "Saran Harga AI",
+    "/assistant/konsultasi": "Konsultasi Tani",
+    "/assistant/notifikasi": "Notifikasi Saya",
+  }
+
+  return overrides[href] ?? fallback
 }
 
 const navigation: { section: string; items: NavItem[] }[] = [
@@ -166,11 +186,29 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
               if (item.children) {
                 const visibleChildren = item.children.filter((child) => canAccessRoute(user.role, child.href))
                 if (visibleChildren.length === 0) return null
-                return { ...item, children: visibleChildren }
+                const label =
+                  user.role === "petani" && item.label === "Anggota"
+                    ? "Akun Saya"
+                    : user.role === "petani" && item.label === "Keuangan"
+                    ? "Pembiayaan"
+                    : user.role === "petani" && item.label === "AI Intelligence"
+                    ? "AI Tani"
+                    : item.label
+
+                return {
+                  ...item,
+                  label,
+                  children: visibleChildren.map((child) => ({
+                    ...child,
+                    label: getRoleAwareNavLabel(user.role, child.href, child.label),
+                  })),
+                }
               }
 
               if (item.href && !canAccessRoute(user.role, item.href)) return null
-              return item
+              return item.href
+                ? { ...item, label: getRoleAwareNavLabel(user.role, item.href, item.label) }
+                : item
             })
             .filter(Boolean) as NavItem[],
         }))

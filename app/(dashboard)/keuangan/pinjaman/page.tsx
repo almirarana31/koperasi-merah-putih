@@ -65,6 +65,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useAuth } from '@/lib/auth'
 
 // Tujuan pinjaman options
 const tujuanPinjaman = [
@@ -138,6 +139,7 @@ const getScoreColor = (score: number) => {
 }
 
 export default function PinjamanPage() {
+  const { user, canRoute } = useAuth()
   const [activeTab, setActiveTab] = useState('ajukan')
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -163,6 +165,9 @@ export default function PinjamanPage() {
                      currentMember.kycVerified && 
                      currentMember.dukcapilVerified
   const availableCredit = currentMember.maxPinjaman - currentMember.pinjamanAktif
+  const backHref = canRoute('/keuangan') ? '/keuangan' : '/dashboard'
+  const canSeeCreditScoring = canRoute('/keuangan/credit-scoring')
+  const isPetaniView = user?.role === 'petani'
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
@@ -188,23 +193,25 @@ export default function PinjamanPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild className="shrink-0">
-            <Link href="/keuangan">
+            <Link href={backHref}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Pengajuan Pinjaman</h1>
             <p className="text-sm text-muted-foreground">
-              Ajukan pinjaman berdasarkan credit score
+              {isPetaniView ? 'Ajukan pinjaman pribadi Anda berdasarkan skor kredit' : 'Ajukan dan review pinjaman berdasarkan credit score'}
             </p>
           </div>
         </div>
-        <Button variant="outline" asChild className="w-full sm:w-auto">
-          <Link href="/keuangan/credit-scoring">
-            <CreditCard className="mr-2 h-4 w-4" />
-            Lihat Credit Score
-          </Link>
-        </Button>
+        {canSeeCreditScoring && (
+          <Button variant="outline" asChild className="w-full sm:w-auto">
+            <Link href="/keuangan/credit-scoring">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Lihat Credit Score
+            </Link>
+          </Button>
+        )}
       </div>
 
       {/* Member Credit Info */}

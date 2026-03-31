@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Bell, AlertTriangle, TrendingUp, AlertCircle } from 'lucide-react'
+import { useAuth } from '@/lib/auth'
 
 const notifications = [
   {
@@ -110,11 +111,18 @@ function getColor(tipe: string) {
 }
 
 export default function NotifikasiPage() {
+  const { user } = useAuth()
+  const canManageRules = user?.role !== 'petani'
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Notifikasi Cerdas</h1>
-        <p className="text-muted-foreground mt-2">Sistem alert otomatis berdasarkan business rules dan AI triggers</p>
+        <p className="text-muted-foreground mt-2">
+          {canManageRules
+            ? 'Sistem alert otomatis berdasarkan business rules dan AI triggers'
+            : 'Ringkasan notifikasi penting untuk aktivitas dan keputusan Anda'}
+        </p>
       </div>
 
       <div className="space-y-3">
@@ -145,78 +153,82 @@ export default function NotifikasiPage() {
         ))}
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Notifikasi Rules</h2>
-        <div className="grid gap-4">
-          {notificationRules.map((rule) => (
-            <Card key={rule.nama}>
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <CardTitle className="text-base">{rule.nama}</CardTitle>
-                  <Badge>{rule.status}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground font-medium">Kondisi Trigger</p>
-                    <p className="mt-1">{rule.kondisi}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground font-medium">Aksi</p>
-                    <p className="mt-1">{rule.aksi}</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 pt-2 border-t">
-                  <Button size="sm" variant="outline">Edit</Button>
-                  <Button size="sm" variant="outline">Hapus</Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+      {canManageRules && (
+        <>
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Notifikasi Rules</h2>
+            <div className="grid gap-4">
+              {notificationRules.map((rule) => (
+                <Card key={rule.nama}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <CardTitle className="text-base">{rule.nama}</CardTitle>
+                      <Badge>{rule.status}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid gap-4 text-sm md:grid-cols-2">
+                      <div>
+                        <p className="font-medium text-muted-foreground">Kondisi Trigger</p>
+                        <p className="mt-1">{rule.kondisi}</p>
+                      </div>
+                      <div>
+                        <p className="font-medium text-muted-foreground">Aksi</p>
+                        <p className="mt-1">{rule.aksi}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 border-t pt-2">
+                      <Button size="sm" variant="outline">Edit</Button>
+                      <Button size="sm" variant="outline">Hapus</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Buat Rule Notifikasi Baru</CardTitle>
-          <CardDescription>Setup alert otomatis sesuai kebutuhan bisnis</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium">Nama Rule</label>
-              <input type="text" placeholder="Contoh: High Order Alert" className="w-full border rounded-md px-3 py-2 mt-1" />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Trigger Parameter</label>
-              <select className="w-full border rounded-md px-3 py-2 mt-1">
-                <option>Harga</option>
-                <option>Stok</option>
-                <option>Order</option>
-                <option>Pengiriman</option>
-                <option>Demand</option>
-              </select>
-            </div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium">Kondisi</label>
-              <input type="text" placeholder="Contoh: > 80" className="w-full border rounded-md px-3 py-2 mt-1" />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Notifikasi Ke</label>
-              <select className="w-full border rounded-md px-3 py-2 mt-1">
-                <option>Dashboard + Email</option>
-                <option>Dashboard Only</option>
-                <option>Email Only</option>
-                <option>SMS + Email</option>
-              </select>
-            </div>
-          </div>
-          <Button className="w-full">Buat Rule</Button>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Buat Rule Notifikasi Baru</CardTitle>
+              <CardDescription>Setup alert otomatis sesuai kebutuhan bisnis</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="text-sm font-medium">Nama Rule</label>
+                  <input type="text" placeholder="Contoh: High Order Alert" className="mt-1 w-full rounded-md border px-3 py-2" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Trigger Parameter</label>
+                  <select className="mt-1 w-full rounded-md border px-3 py-2">
+                    <option>Harga</option>
+                    <option>Stok</option>
+                    <option>Order</option>
+                    <option>Pengiriman</option>
+                    <option>Demand</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="text-sm font-medium">Kondisi</label>
+                  <input type="text" placeholder="Contoh: > 80" className="mt-1 w-full rounded-md border px-3 py-2" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Notifikasi Ke</label>
+                  <select className="mt-1 w-full rounded-md border px-3 py-2">
+                    <option>Dashboard + Email</option>
+                    <option>Dashboard Only</option>
+                    <option>Email Only</option>
+                    <option>SMS + Email</option>
+                  </select>
+                </div>
+              </div>
+              <Button className="w-full">Buat Rule</Button>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   )
 }

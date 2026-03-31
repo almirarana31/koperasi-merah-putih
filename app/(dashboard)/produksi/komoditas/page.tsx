@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Plus, Package, TrendingUp } from 'lucide-react'
+import { Package, Plus, Search, Sprout, TrendingUp } from 'lucide-react'
 import {
   Card,
   CardContent,
@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useAuth } from '@/lib/auth'
 import { commodities, formatCurrency } from '@/lib/data'
 
 const categoryLabels: Record<string, string> = {
@@ -38,49 +39,161 @@ const categoryLabels: Record<string, string> = {
 }
 
 const categoryColors: Record<string, string> = {
-  pangan: 'bg-emerald-500/10 text-emerald-500',
-  hortikultura: 'bg-amber-500/10 text-amber-500',
-  perkebunan: 'bg-violet-500/10 text-violet-500',
-  peternakan: 'bg-blue-500/10 text-blue-500',
-  perikanan: 'bg-cyan-500/10 text-cyan-500',
+  pangan: 'bg-primary/10 text-primary',
+  hortikultura: 'bg-amber-500/10 text-amber-600',
+  perkebunan: 'bg-stone-200 text-stone-700',
+  peternakan: 'bg-secondary text-secondary-foreground',
+  perikanan: 'bg-sky-100 text-sky-700',
 }
 
+const personalCommodityWatch = [
+  {
+    nama: 'Padi Premium',
+    fokus: 'Komoditas utama Anda',
+    harga: 'Rp14.500/kg',
+    insight: 'Permintaan stabil, cocok untuk penjualan bertahap minggu ini.',
+  },
+  {
+    nama: 'Jagung Pipil',
+    fokus: 'Cadangan panen berikutnya',
+    harga: 'Rp5.900/kg',
+    insight: 'Tren naik tipis, pantau lagi 2-3 hari sebelum lepas stok.',
+  },
+  {
+    nama: 'Gabah Kering',
+    fokus: 'Alternatif penjualan cepat',
+    harga: 'Rp6.700/kg',
+    insight: 'Harga aman untuk cashflow cepat bila perlu modal musim berikutnya.',
+  },
+] as const
+
 export default function KomoditasPage() {
+  const { user } = useAuth()
   const [search, setSearch] = useState('')
   const [filterCategory, setFilterCategory] = useState<string>('all')
 
+  if (!user) return null
+
   const filteredCommodities = commodities.filter((commodity) => {
-    const matchesSearch = commodity.nama
-      .toLowerCase()
-      .includes(search.toLowerCase())
+    const matchesSearch = commodity.nama.toLowerCase().includes(search.toLowerCase())
     const matchesCategory =
       filterCategory === 'all' || commodity.kategori === filterCategory
     return matchesSearch && matchesCategory
   })
 
-  const totalStock = commodities.reduce((sum, c) => sum + c.stokTotal, 0)
+  const totalStock = commodities.reduce((sum, item) => sum + item.stokTotal, 0)
   const totalValue = commodities.reduce(
-    (sum, c) => sum + c.stokTotal * c.hargaAcuan,
+    (sum, item) => sum + item.stokTotal * item.hargaAcuan,
     0
   )
+  const isAggregateViewer = user.role === 'pemda' || user.role === 'kementerian'
+
+  if (user.role === 'petani') {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Komoditas Saya</h1>
+          <p className="text-muted-foreground">
+            Fokus pada komoditas yang relevan dengan usaha tani Anda, lengkap dengan harga acuan dan arahan penjualan.
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Komoditas dipantau</p>
+              <p className="mt-2 text-3xl font-bold">{personalCommodityWatch.length}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Harga terbaik hari ini</p>
+              <p className="mt-2 text-2xl font-bold">Rp14.500/kg</p>
+              <p className="mt-1 text-xs text-primary">Padi premium</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Komoditas prioritas</p>
+              <p className="mt-2 text-2xl font-bold">Jagung Pipil</p>
+              <p className="mt-1 text-xs text-muted-foreground">Naik tipis dan stabil</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-sm text-muted-foreground">Saran minggu ini</p>
+              <p className="mt-2 text-base font-semibold">Tahan gabah 2 hari</p>
+              <p className="mt-1 text-xs text-muted-foreground">Menunggu harga lebih baik</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-[1.35fr_0.95fr]">
+          <div className="space-y-4">
+            {personalCommodityWatch.map((item) => (
+              <Card key={item.nama}>
+                <CardHeader className="pb-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <CardTitle className="text-lg">{item.nama}</CardTitle>
+                      <CardDescription>{item.fokus}</CardDescription>
+                    </div>
+                    <Badge className="bg-primary/10 text-primary">{item.harga}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{item.insight}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card className="h-fit border-dashed">
+            <CardHeader>
+              <CardTitle className="text-base">Cara Memakai Data Komoditas</CardTitle>
+              <CardDescription>Ringkas dan langsung relevan untuk petani anggota.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div className="rounded-xl bg-secondary/35 p-3">
+                <p className="font-medium">Bandingkan harga sebelum melepas hasil panen</p>
+                <p className="mt-1 text-muted-foreground">Harga acuan membantu menentukan kapan jual lewat koperasi.</p>
+              </div>
+              <div className="rounded-xl bg-secondary/35 p-3">
+                <p className="font-medium">Pantau komoditas pengganti untuk musim berikutnya</p>
+                <p className="mt-1 text-muted-foreground">Berguna jika satu komoditas sedang lesu tetapi alternatif naik.</p>
+              </div>
+              <div className="rounded-xl bg-secondary/35 p-3">
+                <p className="font-medium">Gabungkan dengan rekomendasi AI harga</p>
+                <p className="mt-1 text-muted-foreground">Supaya keputusan jual tidak hanya berdasarkan feeling.</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Daftar Komoditas</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {isAggregateViewer ? 'Ringkasan Komoditas' : 'Daftar Komoditas'}
+          </h1>
           <p className="text-muted-foreground">
-            Kelola master data komoditas
+            {isAggregateViewer
+              ? 'Tampilan baca-saja untuk memantau komoditas lintas koperasi tanpa mengubah master data.'
+              : 'Kelola master data komoditas dan stok acuan koperasi.'}
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Tambah Komoditas
-        </Button>
+        {!isAggregateViewer && (
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Tambah Komoditas
+          </Button>
+        )}
       </div>
 
-      {/* Stats */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="p-4">
@@ -98,13 +211,11 @@ export default function KomoditasPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
-                <TrendingUp className="h-5 w-5 text-emerald-500" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <TrendingUp className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold">
-                  {(totalStock / 1000).toFixed(1)} ton
-                </p>
+                <p className="text-2xl font-bold">{(totalStock / 1000).toFixed(1)} ton</p>
                 <p className="text-xs text-muted-foreground">Total Stok</p>
               </div>
             </div>
@@ -113,8 +224,8 @@ export default function KomoditasPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-                <TrendingUp className="h-5 w-5 text-amber-500" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
+                <Sprout className="h-5 w-5 text-foreground" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{formatCurrency(totalValue)}</p>
@@ -125,7 +236,6 @@ export default function KomoditasPage() {
         </Card>
       </div>
 
-      {/* Filters */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -134,12 +244,12 @@ export default function KomoditasPage() {
               <Input
                 placeholder="Cari komoditas..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(event) => setSearch(event.target.value)}
                 className="pl-9"
               />
             </div>
             <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger className="w-[160px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Kategori" />
               </SelectTrigger>
               <SelectContent>
@@ -155,51 +265,50 @@ export default function KomoditasPage() {
         </CardContent>
       </Card>
 
-      {/* Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Master Komoditas</CardTitle>
+          <CardTitle>{isAggregateViewer ? 'Monitoring Komoditas' : 'Master Komoditas'}</CardTitle>
           <CardDescription>
-            {filteredCommodities.length} komoditas terdaftar
+            {filteredCommodities.length} komoditas tersedia dalam tampilan ini.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Nama Komoditas</TableHead>
-                <TableHead>Kategori</TableHead>
-                <TableHead>Satuan</TableHead>
-                <TableHead>Harga Acuan</TableHead>
-                <TableHead>Stok Total</TableHead>
-                <TableHead>Nilai Stok</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredCommodities.map((commodity) => (
-                <TableRow key={commodity.id}>
-                  <TableCell className="font-mono text-sm">
-                    {commodity.id}
-                  </TableCell>
-                  <TableCell className="font-medium">{commodity.nama}</TableCell>
-                  <TableCell>
-                    <Badge className={categoryColors[commodity.kategori]}>
-                      {categoryLabels[commodity.kategori]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{commodity.satuan}</TableCell>
-                  <TableCell>{formatCurrency(commodity.hargaAcuan)}</TableCell>
-                  <TableCell>
-                    {commodity.stokTotal.toLocaleString()} {commodity.satuan}
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {formatCurrency(commodity.stokTotal * commodity.hargaAcuan)}
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Nama Komoditas</TableHead>
+                  <TableHead>Kategori</TableHead>
+                  <TableHead>Satuan</TableHead>
+                  <TableHead>Harga Acuan</TableHead>
+                  <TableHead>Stok Total</TableHead>
+                  <TableHead>Nilai Stok</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filteredCommodities.map((commodity) => (
+                  <TableRow key={commodity.id}>
+                    <TableCell className="font-mono text-sm">{commodity.id}</TableCell>
+                    <TableCell className="font-medium">{commodity.nama}</TableCell>
+                    <TableCell>
+                      <Badge className={categoryColors[commodity.kategori]}>
+                        {categoryLabels[commodity.kategori]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{commodity.satuan}</TableCell>
+                    <TableCell>{formatCurrency(commodity.hargaAcuan)}</TableCell>
+                    <TableCell>
+                      {commodity.stokTotal.toLocaleString()} {commodity.satuan}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {formatCurrency(commodity.stokTotal * commodity.hargaAcuan)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

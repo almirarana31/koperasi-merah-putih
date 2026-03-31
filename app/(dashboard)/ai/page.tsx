@@ -35,6 +35,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { aiAnalyses } from '@/lib/mock-data'
+import { useAuth } from '@/lib/auth'
 
 const aiModels = [
   {
@@ -115,10 +116,17 @@ const accuracyDistribution = [
 ]
 
 export default function AIDashboard() {
+  const { user, canRoute } = useAuth()
   const [selectedModel, setSelectedModel] = useState<string | null>(null)
 
   // Get recent analyses
   const recentAnalyses = aiAnalyses.slice(0, 5)
+  const visibleModels = aiModels.filter((model) => canRoute(model.href))
+  const isPetaniView = user?.role === 'petani'
+  const title = isPetaniView ? 'AI untuk Keputusan Tani' : 'AI Intelligence Hub'
+  const subtitle = isPetaniView
+    ? 'Gunakan rekomendasi harga, insight komoditas, dan bantuan AI untuk keputusan usaha tani pribadi.'
+    : 'Sistem rekomendasi cerdas untuk optimasi operasional koperasi'
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -132,20 +140,39 @@ export default function AIDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-primary">AI Intelligence Hub</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-primary">{title}</h1>
           <p className="text-muted-foreground mt-1">
-            Sistem rekomendasi cerdas untuk optimasi operasional koperasi
+            {subtitle}
           </p>
         </div>
         <Badge variant="outline" className="gap-2">
           <Brain className="h-3.5 w-3.5" />
-          {aiAnalyses.length} Analisis Aktif
+          {visibleModels.length} fitur AI aktif
         </Badge>
       </div>
 
+      {isPetaniView && (
+        <Card className="border-primary/15 bg-primary/5">
+          <CardContent className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-medium">Fokus Anda hari ini</p>
+              <p className="text-sm text-muted-foreground">
+                AI hanya menampilkan fitur yang relevan untuk petani: harga, komoditas, dan dukungan keputusan pribadi.
+              </p>
+            </div>
+            <Button asChild className="w-full sm:w-auto">
+              <Link href="/ai/rekomendasi-harga">
+                Buka rekomendasi harga
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* AI Models Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {aiModels.map((model) => (
+        {visibleModels.map((model) => (
           <Card
             key={model.id}
             className={`cursor-pointer transition-all hover:shadow-md hover:border-primary/50 ${
@@ -179,9 +206,9 @@ export default function AIDashboard() {
                     {model.accuracy}
                   </Badge>
                 </div>
-                <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
-                  <Link href={model.href}>
-                    Lihat <ArrowRight className="ml-1 h-3 w-3" />
+                  <Button variant="ghost" size="sm" className="h-7 text-xs" asChild>
+                    <Link href={model.href}>
+                      Lihat <ArrowRight className="ml-1 h-3 w-3" />
                   </Link>
                 </Button>
               </div>
@@ -194,9 +221,9 @@ export default function AIDashboard() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">Performa Model AI</CardTitle>
+            <CardTitle className="text-base">{isPetaniView ? 'Ringkasan Performa AI' : 'Performa Model AI'}</CardTitle>
             <CardDescription className="text-xs">
-              Akurasi, Confidence, dan Impact setiap model
+              {isPetaniView ? 'Akurasi model yang mempengaruhi rekomendasi untuk Anda' : 'Akurasi, Confidence, dan Impact setiap model'}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -261,9 +288,9 @@ export default function AIDashboard() {
       {/* Usage Trend */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Tren Penggunaan AI</CardTitle>
+          <CardTitle className="text-base">{isPetaniView ? 'Tren Insight AI' : 'Tren Penggunaan AI'}</CardTitle>
           <CardDescription className="text-xs">
-            Jumlah analisis yang dijalankan per bulan
+            {isPetaniView ? 'Frekuensi insight yang dihasilkan untuk pengambilan keputusan' : 'Jumlah analisis yang dijalankan per bulan'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -290,10 +317,10 @@ export default function AIDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <CheckCircle className="h-4 w-4 text-emerald-600" />
-              Analisis Terbaru
+              {isPetaniView ? 'Insight Terbaru' : 'Analisis Terbaru'}
             </CardTitle>
             <CardDescription className="text-xs">
-              {recentAnalyses.length} analisis terbaru dari AI
+              {recentAnalyses.length} hasil terbaru dari AI
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -318,10 +345,10 @@ export default function AIDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <AlertCircle className="h-4 w-4 text-amber-600" />
-              Rekomendasi Prioritas
+              {isPetaniView ? 'Saran Prioritas Hari Ini' : 'Rekomendasi Prioritas'}
             </CardTitle>
             <CardDescription className="text-xs">
-              Action items berdasarkan analisis AI
+              {isPetaniView ? 'Tindakan yang paling relevan untuk keputusan usaha tani Anda' : 'Action items berdasarkan analisis AI'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">

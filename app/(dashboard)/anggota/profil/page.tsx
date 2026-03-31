@@ -37,6 +37,7 @@ import { Progress } from '@/components/ui/progress'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useAuth } from '@/lib/auth'
 import {
   Table,
   TableBody,
@@ -148,27 +149,35 @@ const getTierColor = (tier: string) => {
 }
 
 export default function MemberProfilPage() {
+  const { user, canRoute } = useAuth()
+  const isPetaniView = user?.role === 'petani'
+  const backHref = canRoute('/anggota') ? '/anggota' : '/dashboard'
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild className="shrink-0">
-            <Link href="/anggota">
+            <Link href={backHref}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Profil Anggota</h1>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+              {isPetaniView ? 'Profil Saya' : 'Profil Anggota'}
+            </h1>
             <p className="text-sm text-muted-foreground">
-              Detail dan perilaku pembelian anggota
+              {isPetaniView ? 'Ringkasan data anggota dan aktivitas pribadi Anda' : 'Detail dan perilaku pembelian anggota'}
             </p>
           </div>
         </div>
-        <Button variant="outline" className="w-full sm:w-auto">
-          <Download className="mr-2 h-4 w-4" />
-          Export Data
-        </Button>
+        {!isPetaniView && (
+          <Button variant="outline" className="w-full sm:w-auto">
+            <Download className="mr-2 h-4 w-4" />
+            Export Data
+          </Button>
+        )}
       </div>
 
       {/* Member Header Card */}
@@ -214,9 +223,11 @@ export default function MemberProfilPage() {
               <p className="text-xs text-muted-foreground">Credit Score</p>
               <p className="text-4xl font-bold text-emerald-500">{memberProfile.creditScore}</p>
               <Badge className="bg-emerald-500">Sangat Baik</Badge>
-              <Button size="sm" variant="outline" asChild>
-                <Link href="/keuangan/credit-scoring">Detail</Link>
-              </Button>
+              {canRoute('/keuangan/credit-scoring') && (
+                <Button size="sm" variant="outline" asChild>
+                  <Link href="/keuangan/credit-scoring">Detail</Link>
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>

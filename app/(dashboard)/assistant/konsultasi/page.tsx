@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, AlertCircle, Lightbulb } from 'lucide-react'
+import { useAuth } from '@/lib/auth'
 
 const konsultasiTopics = [
   {
@@ -64,11 +65,20 @@ const recentConsultations = [
 ]
 
 export default function KonsultasiPage() {
+  const { user } = useAuth()
+  const isPetaniView = user?.role === 'petani'
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Konsultasi AI Pertanian & Bisnis</h1>
-        <p className="text-muted-foreground mt-2">Tanya jawab dengan AI expert di berbagai topik pertanian dan bisnis</p>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {isPetaniView ? 'Konsultasi Tani AI' : 'Konsultasi AI Pertanian & Bisnis'}
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          {isPetaniView
+            ? 'Tanya jawab dengan AI untuk keputusan usaha tani, harga, dan pembiayaan pribadi.'
+            : 'Tanya jawab dengan AI expert di berbagai topik pertanian dan bisnis'}
+        </p>
       </div>
 
       <div className="grid gap-4">

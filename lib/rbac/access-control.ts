@@ -7,6 +7,7 @@ import { ROLE_CONFIGS } from './roles'
 
 interface RouteAccessRule {
   route: string
+  roles?: Role[]
   permissions?: Permission[]
   match?: 'any' | 'all'
 }
@@ -87,6 +88,7 @@ const ROUTE_ACCESS_RULES = [
   { route: '/dashboard', permissions: [] },
   {
     route: '/command-center',
+    roles: ['koperasi_manager', 'ketua', 'sysadmin'],
     permissions: [
       'panel:produksi',
       'panel:stok',
@@ -99,52 +101,56 @@ const ROUTE_ACCESS_RULES = [
     ],
     match: 'all',
   },
-  { route: '/anggota/tambah', permissions: ['view:individual_members'] },
-  { route: '/anggota/verifikasi', permissions: ['view:individual_members'] },
+  { route: '/anggota/tambah', roles: ['koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/anggota/onboarding', roles: ['koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/anggota/verifikasi', roles: ['koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/anggota/profil', roles: ['petani', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/anggota/produsen', roles: ['koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/anggota/kelompok', roles: ['koperasi_manager', 'ketua', 'sysadmin'] },
   {
     route: '/anggota',
-    permissions: [
-      'panel:performa_anggota',
-      'view:individual_members',
-      'view:aggregate_members',
-      'view:credit_scoring',
-    ],
+    roles: ['koperasi_manager', 'ketua', 'sysadmin'],
   },
-  { route: '/produksi', permissions: ['panel:produksi'] },
-  { route: '/gudang', permissions: ['panel:stok'] },
-  { route: '/pasar/harga', permissions: ['panel:penjualan', 'view:commodity_prices'] },
-  { route: '/pasar/marketplace', permissions: ['panel:penjualan'] },
-  { route: '/pasar', permissions: ['panel:penjualan'] },
-  { route: '/marketplace', permissions: ['panel:penjualan'] },
-  { route: '/logistik', permissions: ['panel:logistik'] },
+  { route: '/produksi/agregasi', roles: ['koperasi_manager', 'ketua', 'pemda', 'kementerian', 'sysadmin'] },
+  { route: '/produksi/rencana', roles: ['petani', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/produksi/jadwal', roles: ['petani', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/produksi/komoditas', roles: ['petani', 'logistik_manager', 'koperasi_manager', 'ketua', 'pemda', 'kementerian', 'sysadmin'] },
+  { route: '/produksi', roles: ['petani', 'koperasi_manager', 'ketua', 'pemda', 'kementerian', 'sysadmin'] },
+  { route: '/gudang', roles: ['kasir', 'logistik_manager', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/pasar/harga', roles: ['petani', 'kasir', 'koperasi_manager', 'ketua', 'pemda', 'kementerian', 'sysadmin'] },
+  { route: '/pasar/marketplace', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/pasar/buyer', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/pasar/katalog', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/pasar/kontrak', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/pasar', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/marketplace', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/logistik', roles: ['logistik_manager', 'koperasi_manager', 'ketua', 'pemda', 'kementerian', 'sysadmin'] },
   {
     route: '/keuangan/credit-scoring',
-    permissions: ['view:credit_scoring', 'view:individual_members', 'panel:cashflow'],
+    roles: ['bank', 'koperasi_manager', 'ketua', 'sysadmin'],
   },
-  { route: '/keuangan/laporan', permissions: ['export:pdf', 'panel:cashflow'] },
-  { route: '/keuangan', permissions: ['panel:cashflow'] },
-  { route: '/ai/optimasi-rute', permissions: ['panel:logistik'] },
-  { route: '/ai/grading', permissions: ['panel:stok', 'panel:performa_komoditas'] },
-  { route: '/ai/rekomendasi-harga', permissions: ['panel:performa_komoditas', 'view:commodity_prices'] },
+  { route: '/keuangan/pinjaman', roles: ['petani', 'bank', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/keuangan/simpan-pinjam', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/keuangan/invoice', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/keuangan/pembayaran', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/keuangan/shu', roles: ['petani', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/keuangan/laporan', roles: ['koperasi_manager', 'ketua', 'pemda', 'bank', 'kementerian', 'sysadmin'] },
+  { route: '/keuangan', roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/ai/optimasi-rute', roles: ['logistik_manager', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/ai/grading', roles: ['kasir', 'logistik_manager', 'koperasi_manager', 'ketua', 'sysadmin'] },
+  { route: '/ai/rekomendasi-harga', roles: ['petani', 'kasir', 'koperasi_manager', 'ketua', 'pemda', 'kementerian', 'sysadmin'] },
   {
     route: '/ai/analisis-pasar',
-    permissions: ['panel:penjualan', 'panel:performa_komoditas', 'view:commodity_prices'],
+    roles: ['koperasi_manager', 'ketua', 'pemda', 'kementerian', 'sysadmin'],
   },
-  { route: '/ai/forecast', permissions: ['panel:produksi', 'panel:penjualan', 'panel:performa_komoditas'] },
+  { route: '/ai/forecast', roles: ['koperasi_manager', 'ketua', 'pemda', 'kementerian', 'sysadmin'] },
   {
     route: '/ai/supply-demand',
-    permissions: ['panel:produksi', 'panel:penjualan', 'panel:performa_komoditas'],
+    roles: ['kasir', 'koperasi_manager', 'ketua', 'sysadmin'],
   },
   {
     route: '/ai',
-    permissions: [
-      'panel:produksi',
-      'panel:logistik',
-      'panel:stok',
-      'panel:penjualan',
-      'panel:performa_komoditas',
-      'view:commodity_prices',
-    ],
+    roles: ['petani', 'kasir', 'logistik_manager', 'koperasi_manager', 'ketua', 'pemda', 'kementerian', 'sysadmin'],
   },
   { route: '/assistant', permissions: [] },
   { route: '/notifications', permissions: [] },
@@ -165,6 +171,7 @@ function matchesRoute(route: string, pattern: string): boolean {
 }
 
 function canAccessByRule(role: Role, rule: RouteAccessRule): boolean {
+  if (rule.roles && !rule.roles.includes(role)) return false
   if (!rule.permissions || rule.permissions.length === 0) return true
   if (rule.match === 'all') return hasAllPermissions(role, rule.permissions)
   return hasAnyPermission(role, rule.permissions)

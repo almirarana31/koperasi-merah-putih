@@ -22,17 +22,18 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { formatCurrency } from '@/lib/data'
+import { useAuth } from '@/lib/auth'
 
 const shuData = {
   tahun: 2023,
   totalPendapatan: 850000000,
   totalBiaya: 680000000,
   labaKotor: 170000000,
-  cadanganKoperasi: 25500000, // 15%
-  danaKaryawan: 17000000, // 10%
-  danaPendidikan: 8500000, // 5%
-  danaSosial: 8500000, // 5%
-  shuAnggota: 110500000, // 65%
+  cadanganKoperasi: 25500000,
+  danaKaryawan: 17000000,
+  danaPendidikan: 8500000,
+  danaSosial: 8500000,
+  shuAnggota: 110500000,
 }
 
 const pembagianSHU = [
@@ -52,152 +53,227 @@ const alokasi = [
 ]
 
 export default function SHUPage() {
+  const { user } = useAuth()
+  const isPetaniView = user?.role === 'petani'
+  const myShu = pembagianSHU[0]
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Sisa Hasil Usaha (SHU)</h1>
-          <p className="text-muted-foreground">Perhitungan dan pembagian SHU anggota</p>
+          <p className="text-muted-foreground">
+            {isPetaniView ? 'Ringkasan SHU dan kontribusi usaha Anda' : 'Perhitungan dan pembagian SHU anggota'}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="gap-1">
             <Calendar className="h-3 w-3" />
             Tahun {shuData.tahun}
           </Badge>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
+          {!isPetaniView && (
+            <Button variant="outline">
+              <Download className="mr-2 h-4 w-4" />
+              Export
+            </Button>
+          )}
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Pendapatan</CardDescription>
-            <CardTitle className="text-3xl">{formatCurrency(shuData.totalPendapatan)}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs text-emerald-500">
-              <TrendingUp className="h-3 w-3" />
-              +18% dari tahun lalu
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Biaya</CardDescription>
-            <CardTitle className="text-3xl">{formatCurrency(shuData.totalBiaya)}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">80% dari pendapatan</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Laba Kotor (SHU)</CardDescription>
-            <CardTitle className="text-3xl text-primary">{formatCurrency(shuData.labaKotor)}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">20% margin</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>SHU per Anggota (Avg)</CardDescription>
-            <CardTitle className="text-3xl text-emerald-500">
-              {formatCurrency(Math.round(shuData.shuAnggota / pembagianSHU.length))}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Users className="h-3 w-3" />
-              {pembagianSHU.length} anggota
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <PieChart className="h-5 w-5" />
-              Alokasi SHU
-            </CardTitle>
-            <CardDescription>Pembagian sesuai AD/ART</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {alokasi.map((item) => (
-              <div key={item.nama} className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className={`h-3 w-3 rounded-full ${item.color}`} />
-                    <span>{item.nama}</span>
-                  </div>
-                  <span className="font-medium">{item.persentase}%</span>
+      {isPetaniView ? (
+        <>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>SHU Saya</CardDescription>
+                <CardTitle className="text-3xl text-primary">{formatCurrency(myShu.totalSHU)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-1 text-xs text-emerald-500">
+                  <TrendingUp className="h-3 w-3" />
+                  +12% dari tahun lalu
                 </div>
-                <Progress value={item.persentase} className="h-2" />
-                <p className="text-xs text-muted-foreground text-right">{formatCurrency(item.nilai)}</p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Kontribusi Simpanan</CardDescription>
+                <CardTitle className="text-3xl">{formatCurrency(myShu.shuSimpanan)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">Dihitung dari partisipasi simpanan Anda</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Kontribusi Transaksi</CardDescription>
+                <CardTitle className="text-3xl">{formatCurrency(myShu.shuTransaksi)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">Dihitung dari aktivitas transaksi usaha Anda</p>
+              </CardContent>
+            </Card>
+          </div>
 
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calculator className="h-5 w-5" />
-              Pembagian SHU Anggota
-            </CardTitle>
-            <CardDescription>Berdasarkan simpanan dan partisipasi transaksi</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nama Anggota</TableHead>
-                  <TableHead className="text-right">Simpanan</TableHead>
-                  <TableHead className="text-right">Transaksi</TableHead>
-                  <TableHead className="text-right">SHU Simpanan</TableHead>
-                  <TableHead className="text-right">SHU Transaksi</TableHead>
-                  <TableHead className="text-right">Total SHU</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pembagianSHU.map((anggota) => (
-                  <TableRow key={anggota.nama}>
-                    <TableCell className="font-medium">{anggota.nama}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(anggota.simpanan)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(anggota.transaksi)}</TableCell>
-                    <TableCell className="text-right text-blue-500">{formatCurrency(anggota.shuSimpanan)}</TableCell>
-                    <TableCell className="text-right text-amber-500">{formatCurrency(anggota.shuTransaksi)}</TableCell>
-                    <TableCell className="text-right font-bold text-emerald-500">{formatCurrency(anggota.totalSHU)}</TableCell>
-                  </TableRow>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calculator className="h-5 w-5" />
+                Cara SHU Anda Dihitung
+              </CardTitle>
+              <CardDescription>Penjelasan sederhana atas pembagian SHU pribadi Anda</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-2xl border bg-secondary/35 p-4">
+                <p className="text-sm font-medium">Simpanan Anda</p>
+                <p className="mt-2 text-2xl font-bold">{formatCurrency(myShu.simpanan)}</p>
+                <p className="mt-2 text-sm text-muted-foreground">Semakin aktif menyimpan, semakin besar porsi SHU dari kontribusi simpanan.</p>
+              </div>
+              <div className="rounded-2xl border bg-secondary/35 p-4">
+                <p className="text-sm font-medium">Transaksi Anda</p>
+                <p className="mt-2 text-2xl font-bold">{formatCurrency(myShu.transaksi)}</p>
+                <p className="mt-2 text-sm text-muted-foreground">Aktivitas usaha dan transaksi koperasi Anda ikut menentukan porsi SHU transaksi.</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PieChart className="h-5 w-5" />
+                Alokasi SHU Koperasi
+              </CardTitle>
+              <CardDescription>Agar Anda bisa memahami porsi pembagian SHU koperasi secara umum.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {alokasi.map((item) => (
+                <div key={item.nama} className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className={`h-3 w-3 rounded-full ${item.color}`} />
+                      <span>{item.nama}</span>
+                    </div>
+                    <span className="font-medium">{item.persentase}%</span>
+                  </div>
+                  <Progress value={item.persentase} className="h-2" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </>
+      ) : (
+        <>
+          <div className="grid gap-4 md:grid-cols-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Total Pendapatan</CardDescription>
+                <CardTitle className="text-3xl">{formatCurrency(shuData.totalPendapatan)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-1 text-xs text-emerald-500">
+                  <TrendingUp className="h-3 w-3" />
+                  +18% dari tahun lalu
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Total Biaya</CardDescription>
+                <CardTitle className="text-3xl">{formatCurrency(shuData.totalBiaya)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">80% dari pendapatan</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Laba Kotor (SHU)</CardDescription>
+                <CardTitle className="text-3xl text-primary">{formatCurrency(shuData.labaKotor)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">20% margin</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>SHU per Anggota (Avg)</CardDescription>
+                <CardTitle className="text-3xl text-emerald-500">
+                  {formatCurrency(Math.round(shuData.shuAnggota / pembagianSHU.length))}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Users className="h-3 w-3" />
+                  {pembagianSHU.length} anggota
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <Card className="lg:col-span-1">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <PieChart className="h-5 w-5" />
+                  Alokasi SHU
+                </CardTitle>
+                <CardDescription>Pembagian sesuai AD/ART</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {alokasi.map((item) => (
+                  <div key={item.nama} className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className={`h-3 w-3 rounded-full ${item.color}`} />
+                        <span>{item.nama}</span>
+                      </div>
+                      <span className="font-medium">{item.persentase}%</span>
+                    </div>
+                    <Progress value={item.persentase} className="h-2" />
+                    <p className="text-right text-xs text-muted-foreground">{formatCurrency(item.nilai)}</p>
+                  </div>
                 ))}
-                <TableRow className="bg-muted/50">
-                  <TableCell className="font-bold">Total</TableCell>
-                  <TableCell className="text-right font-bold">
-                    {formatCurrency(pembagianSHU.reduce((acc, a) => acc + a.simpanan, 0))}
-                  </TableCell>
-                  <TableCell className="text-right font-bold">
-                    {formatCurrency(pembagianSHU.reduce((acc, a) => acc + a.transaksi, 0))}
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-blue-500">
-                    {formatCurrency(pembagianSHU.reduce((acc, a) => acc + a.shuSimpanan, 0))}
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-amber-500">
-                    {formatCurrency(pembagianSHU.reduce((acc, a) => acc + a.shuTransaksi, 0))}
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-emerald-500">
-                    {formatCurrency(pembagianSHU.reduce((acc, a) => acc + a.totalSHU, 0))}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+              </CardContent>
+            </Card>
+
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calculator className="h-5 w-5" />
+                  Pembagian SHU Anggota
+                </CardTitle>
+                <CardDescription>Berdasarkan simpanan dan partisipasi transaksi</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nama Anggota</TableHead>
+                      <TableHead className="text-right">Simpanan</TableHead>
+                      <TableHead className="text-right">Transaksi</TableHead>
+                      <TableHead className="text-right">SHU Simpanan</TableHead>
+                      <TableHead className="text-right">SHU Transaksi</TableHead>
+                      <TableHead className="text-right">Total SHU</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pembagianSHU.map((anggota) => (
+                      <TableRow key={anggota.nama}>
+                        <TableCell className="font-medium">{anggota.nama}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(anggota.simpanan)}</TableCell>
+                        <TableCell className="text-right">{formatCurrency(anggota.transaksi)}</TableCell>
+                        <TableCell className="text-right text-blue-500">{formatCurrency(anggota.shuSimpanan)}</TableCell>
+                        <TableCell className="text-right text-amber-500">{formatCurrency(anggota.shuTransaksi)}</TableCell>
+                        <TableCell className="text-right font-bold text-emerald-500">{formatCurrency(anggota.totalSHU)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
     </div>
   )
 }

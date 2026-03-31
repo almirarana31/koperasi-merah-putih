@@ -9,6 +9,55 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
+import type { Role } from '@/lib/rbac'
+
+const RECOVERY_LINKS: Record<Role, { href: string; label: string }[]> = {
+  petani: [
+    { href: '/dashboard', label: 'Dashboard Saya' },
+    { href: '/produksi', label: 'Panen Saya' },
+    { href: '/anggota/profil', label: 'Profil Saya' },
+  ],
+  kasir: [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/pasar', label: 'Order & Pasar' },
+    { href: '/keuangan/pembayaran', label: 'Pembayaran' },
+  ],
+  logistik_manager: [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/logistik', label: 'Logistik' },
+    { href: '/gudang', label: 'Gudang' },
+  ],
+  koperasi_manager: [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/anggota', label: 'Anggota' },
+    { href: '/keuangan', label: 'Keuangan' },
+  ],
+  ketua: [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/command-center', label: 'Pusat Kendali' },
+    { href: '/keuangan/laporan', label: 'Laporan' },
+  ],
+  pemda: [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/produksi/agregasi', label: 'Produksi Wilayah' },
+    { href: '/keuangan/laporan', label: 'Laporan Daerah' },
+  ],
+  bank: [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/keuangan/credit-scoring', label: 'Credit Scoring' },
+    { href: '/keuangan/pinjaman', label: 'Pinjaman' },
+  ],
+  kementerian: [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/produksi/agregasi', label: 'Produksi Nasional' },
+    { href: '/ai/forecast', label: 'Forecast' },
+  ],
+  sysadmin: [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/command-center', label: 'Pusat Kendali' },
+    { href: '/ai', label: 'AI Monitoring' },
+  ],
+}
 
 interface AccessDeniedProps {
   /** Custom title */
@@ -35,6 +84,7 @@ export function AccessDenied({
   const defaultMessage = user
     ? `Role "${roleConfig?.label ?? user.role}" tidak memiliki izin untuk mengakses fitur ini.`
     : 'Anda harus login terlebih dahulu untuk mengakses fitur ini.'
+  const recoveryLinks = user ? RECOVERY_LINKS[user.role] : []
 
   if (compact) {
     return (
@@ -71,6 +121,20 @@ export function AccessDenied({
               <div className="text-left">
                 <p className="text-xs font-medium text-foreground">{user.name}</p>
                 <p className="text-xs text-muted-foreground">{roleConfig.label}</p>
+              </div>
+            </div>
+          )}
+          {recoveryLinks.length > 0 && (
+            <div className="w-full rounded-xl border border-dashed bg-secondary/35 p-4 text-left">
+              <p className="text-sm font-medium text-foreground">Fitur yang bisa Anda buka sekarang</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {recoveryLinks.map((item) => (
+                  <Link key={item.href} href={item.href}>
+                    <Button variant="outline" size="sm">
+                      {item.label}
+                    </Button>
+                  </Link>
+                ))}
               </div>
             </div>
           )}
