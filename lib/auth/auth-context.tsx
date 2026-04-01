@@ -4,7 +4,7 @@
 // Auth Context — Provides current user + role throughout the app
 // ============================================================================
 
-import { createContext, useCallback, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useState, useEffect, type ReactNode } from 'react'
 import type { User, Role } from '@/lib/rbac'
 import { getMockUser } from './mock-users'
 
@@ -25,7 +25,7 @@ export interface AuthContextValue {
 
 export const AuthContext = createContext<AuthContextValue>({
   user: null,
-  isLoading: false,
+  isLoading: true,
   isAuthenticated: false,
   loginAs: () => {},
   loginWithUser: () => {},
@@ -38,6 +38,24 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Check for cookie session on initialization
+    const cookies = typeof document !== 'undefined' ? document.cookie.split('; ') : []
+    const sessionCookie = cookies.find(c => c.startsWith('kopdes-session='))
+    
+    if (sessionCookie) {
+      try {
+        const role = sessionCookie.split('=')[1] as Role
+        const mockUser = getMockUser(role)
+        setUser(mockUser)
+      } catch (e) {
+        console.error("Failed to restore session", e)
+      }
+    }
+    setIsLoading(false)
+  }, [])
 
   const loginAs = useCallback((role: Role) => {
     const mockUser = getMockUser(role)
@@ -56,7 +74,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     <AuthContext.Provider
       value={{
         user,
-        isLoading: false,
+        isLoading,
         isAuthenticated: user !== null,
         loginAs,
         loginWithUser,
