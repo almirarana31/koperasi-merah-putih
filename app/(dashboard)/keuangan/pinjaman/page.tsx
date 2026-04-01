@@ -346,7 +346,7 @@ export default function PinjamanPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Ringkasan akun</CardTitle>
-                <CardDescription>Data ini tidak lagi memakai anggota demo umum.</CardDescription>
+                <CardDescription>Data anggota ditampilkan sesuai profil akun yang aktif.</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border bg-secondary/35 p-4">

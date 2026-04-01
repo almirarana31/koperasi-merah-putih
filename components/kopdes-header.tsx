@@ -60,20 +60,14 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
             <Leaf className="h-5 w-5" />
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-bold tracking-tight text-primary">KOPDES</p>
-            <p className="truncate text-[11px] text-muted-foreground">Digital Workspace</p>
-          </div>
+          <p className="truncate text-sm font-bold tracking-tight text-primary">KOPDES</p>
         </Link>
 
         <div className="hidden items-center gap-3 lg:flex">
           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
             <Leaf className="h-5 w-5" />
           </div>
-          <div>
-            <p className="text-sm font-bold tracking-tight text-primary">KOPDES Workspace</p>
-            <p className="text-[11px] text-muted-foreground">Tata letak utility-first ala Stitch</p>
-          </div>
+          <p className="text-sm font-bold tracking-tight text-primary">Koperasi Merah Putih</p>
         </div>
       </div>
 

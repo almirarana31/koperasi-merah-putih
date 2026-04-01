@@ -79,7 +79,7 @@ export default function LoginPage() {
             <div className="text-center">
               <h2 className="text-[2rem] font-bold tracking-tight text-foreground">Welcome Back</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Masuk ke akun koperasi demo sesuai peran yang ingin Anda lihat.
+                Masuk ke akun koperasi sesuai peran Anda.
               </p>
             </div>
 
@@ -179,9 +179,9 @@ export default function LoginPage() {
                   <ShieldCheck className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Mode Demo RBAC</p>
+                  <p className="text-sm font-semibold text-foreground">Akses Berbasis Peran</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Setiap pilihan peran akan membuka tampilan, menu, dan akses halaman yang berbeda sesuai use case masing-masing.
+                    Setiap pilihan peran akan membuka tampilan, menu, dan akses halaman yang berbeda sesuai kewenangannya.
                   </p>
                 </div>
               </div>
@@ -198,7 +198,7 @@ export default function LoginPage() {
 
         <div className="mt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground">
           <Leaf className="h-3.5 w-3.5 text-primary" />
-          <span>Koperasi Merah Putih Digital Workspace</span>
+          <span>Koperasi Merah Putih</span>
         </div>
       </div>
     </div>

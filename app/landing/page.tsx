@@ -25,7 +25,7 @@ export default function LandingPage() {
           </nav>
           <div className="flex items-center gap-4">
             <Button variant="ghost" className="hidden sm:inline-flex" asChild>
-              <Link href="/login">Demo</Link>
+              <Link href="/login">Masuk</Link>
             </Button>
             <Button className="rounded-full px-6" asChild>
               <Link href="/login">
@@ -181,7 +181,7 @@ export default function LandingPage() {
                       {feature.desc}
                     </p>
                     <Link href="/login" className="inline-flex items-center text-sm font-bold text-primary hover:underline">
-                      Coba demo <ChevronRight className="ml-1 h-4 w-4" />
+                      Akses fitur <ChevronRight className="ml-1 h-4 w-4" />
                     </Link>
                   </CardContent>
                 </Card>
@@ -204,7 +204,7 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button size="lg" variant="secondary" className="h-14 rounded-2xl px-10 text-lg font-bold" asChild>
-                <Link href="/login">Mulai Uji Coba</Link>
+                <Link href="/login">Mulai Sekarang</Link>
               </Button>
               <Button size="lg" variant="outline" className="h-14 rounded-2xl px-10 text-lg font-bold border-white/20 text-white hover:bg-white/10" asChild>
                 <Link href="#">Hubungi Sales</Link>
