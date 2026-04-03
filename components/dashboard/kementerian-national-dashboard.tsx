@@ -253,19 +253,19 @@ export function KementerianNationalDashboard() {
           <div className="relative grid gap-5 p-5 lg:grid-cols-[1.12fr_0.88fr] lg:p-6">
             <div className="space-y-5">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge className="border-none bg-white/14 text-primary-foreground hover:bg-white/14">
+                <Badge className="border-none bg-white/18 text-white hover:bg-white/18">
                   Kementerian
                 </Badge>
-                <Badge className="border-none bg-white/14 text-primary-foreground hover:bg-white/14">
+                <Badge className="border-none bg-white/18 text-white hover:bg-white/18">
                   Seluruh koperasi nasional
                 </Badge>
-                <Badge className="border-none bg-white/14 text-primary-foreground hover:bg-white/14">
+                <Badge className="border-none bg-white/18 text-white hover:bg-white/18">
                   {toRelativeUpdateLabel(KEMENTERIAN_DASHBOARD_DATA.lastUpdated, clock)}
                 </Badge>
               </div>
 
               <div className="space-y-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/70">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/88">
                   Dashboard Pengawasan Nasional
                 </p>
                 <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
@@ -273,7 +273,7 @@ export function KementerianNationalDashboard() {
                     <h1 className="text-[2rem] font-bold leading-tight tracking-tight sm:text-[2.5rem]">
                       Monitoring koperasi nasional dengan early warning dan insight AI
                     </h1>
-                    <p className="mt-3 max-w-3xl text-sm leading-6 text-primary-foreground/82">
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/92">
                       {snapshot.aiSummary}
                     </p>
                   </div>
@@ -281,20 +281,20 @@ export function KementerianNationalDashboard() {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-3xl border border-white/12 bg-white/12 p-4 backdrop-blur-sm">
-                  <p className="text-xs uppercase tracking-[0.18em] text-primary-foreground/68">Cakupan aktif</p>
+                <div className="rounded-3xl border border-white/16 bg-white/14 p-4 backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-[0.18em] text-white/84">Cakupan aktif</p>
                   <p className="mt-3 text-3xl font-bold">{snapshot.scopeLabel}</p>
-                  <p className="mt-1 text-sm text-primary-foreground/76">{snapshot.contextLabel}</p>
+                  <p className="mt-1 text-sm text-white/90">{snapshot.contextLabel}</p>
                 </div>
-                <div className="rounded-3xl border border-white/12 bg-black/10 p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-primary-foreground/68">Alert kritis</p>
+                <div className="rounded-3xl border border-white/16 bg-black/14 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-white/84">Alert kritis</p>
                   <p className="mt-3 text-3xl font-bold">{snapshot.summary.criticalCount}</p>
-                  <p className="mt-1 text-sm text-primary-foreground/76">Prioritas nasional untuk intervensi cepat</p>
+                  <p className="mt-1 text-sm text-white/90">Prioritas nasional untuk intervensi cepat</p>
                 </div>
-                <div className="rounded-3xl border border-white/12 bg-white/10 p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-primary-foreground/68">Skor kesehatan</p>
+                <div className="rounded-3xl border border-white/16 bg-white/14 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-white/84">Skor kesehatan</p>
                   <p className="mt-3 text-3xl font-bold">{Math.round(snapshot.summary.overallScore)}/100</p>
-                  <p className="mt-1 text-sm text-primary-foreground/76">Status {snapshot.summary.overallHealth}</p>
+                  <p className="mt-1 text-sm text-white/90">Status {snapshot.summary.overallHealth}</p>
                 </div>
               </div>
 
@@ -333,12 +333,12 @@ export function KementerianNationalDashboard() {
               </div>
             </div>
 
-            <Card className="border-white/14 bg-white/10 text-primary-foreground shadow-none backdrop-blur-sm">
+              <Card className="border-white/16 bg-white/12 text-white shadow-none backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <CardTitle className="text-lg text-primary-foreground">AI Intelligence Layer</CardTitle>
-                    <CardDescription className="text-primary-foreground/74">
+                    <CardTitle className="text-lg text-white">AI Intelligence Layer</CardTitle>
+                    <CardDescription className="text-white/88">
                       Ringkasan anomali, risiko, dan rekomendasi tindakan.
                     </CardDescription>
                   </div>
@@ -349,13 +349,13 @@ export function KementerianNationalDashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {snapshot.aiInsights.slice(0, 3).map((insight) => (
-                  <div key={insight.id} className="rounded-2xl border border-white/12 bg-black/10 p-4">
+                  <div key={insight.id} className="rounded-2xl border border-white/16 bg-black/14 p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-semibold">{insight.title}</p>
-                        <p className="mt-1 text-sm leading-6 text-primary-foreground/78">{insight.description}</p>
+                        <p className="mt-1 text-sm leading-6 text-white/90">{insight.description}</p>
                       </div>
-                      <Badge className="border-none bg-white/14 text-primary-foreground hover:bg-white/14">
+                      <Badge className="border-none bg-white/18 text-white hover:bg-white/18">
                         {insight.confidence}%
                       </Badge>
                     </div>
