@@ -125,7 +125,7 @@ export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDeta
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                      <XAxis dataKey="month" fontSize={10} fontWeights="900" axisLine={false} tickLine={false} />
+                      <XAxis dataKey="month" fontSize={10} fontWeight={900} axisLine={false} tickLine={false} />
                       <YAxis hide />
                       <Tooltip />
                       <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fill="url(#colorRev)" />

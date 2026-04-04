@@ -98,8 +98,8 @@ export function KoperasiManagerDashboard() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="month" fontSize={10} fontWeights="900" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
-                  <YAxis fontSize={10} fontWeights="900" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                  <XAxis dataKey="month" fontSize={10} fontWeight={900} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                  <YAxis fontSize={10} fontWeight={900} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
                   <Tooltip 
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }} 
                   />

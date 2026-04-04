@@ -78,6 +78,12 @@ function healthBadgeClass(status: string) {
   return 'bg-rose-50 text-rose-700 border-rose-200'
 }
 
+function scoreToStatus(score: number) {
+  if (score >= 80) return 'good'
+  if (score >= 65) return 'warning'
+  return 'critical'
+}
+
 const SURFACE_CARD = 'overflow-hidden border border-slate-200 bg-white shadow-sm'
 
 export function KementerianNationalDashboard() {
@@ -309,7 +315,7 @@ export function KementerianNationalDashboard() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="month" fontSize={10} fontWeights="900" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                  <XAxis dataKey="month" fontSize={10} fontWeight={900} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
                   <YAxis yAxisId="left" hide />
                   <YAxis yAxisId="right" orientation="right" hide />
                   <Tooltip 
