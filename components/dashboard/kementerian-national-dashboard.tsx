@@ -173,15 +173,16 @@ const METRIC_TONES: Record<
 
 function insightToneClass(index: number) {
   const variants = [
-    'border-rose-200 bg-rose-50/85',
-    'border-amber-200 bg-amber-50/85',
-    'border-stone-200 bg-stone-50/85',
+    'border-rose-200/70 bg-[linear-gradient(180deg,#ffffff_0%,#fff7f6_100%)]',
+    'border-amber-200/70 bg-[linear-gradient(180deg,#ffffff_0%,#fffaf1_100%)]',
+    'border-sky-200/70 bg-[linear-gradient(180deg,#ffffff_0%,#f5f9ff_100%)]',
   ]
   return variants[index % variants.length]
 }
 
-const SURFACE_CARD = 'overflow-hidden border-stone-200/80 bg-white shadow-[0_18px_40px_-32px_rgba(15,23,42,0.28)]'
-const SUBTLE_PANEL = 'rounded-2xl border border-stone-200 bg-stone-50/80'
+const SURFACE_CARD =
+  'overflow-hidden border border-[#ead8d6]/55 bg-white shadow-[0_20px_42px_-34px_rgba(145,0,15,0.15)]'
+const SUBTLE_PANEL = 'rounded-2xl bg-[#f3f4f5] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.38)]'
 
 function areSameSelections(left: string[], right: string[]) {
   return left.length === right.length && left.every((item, index) => item === right[index])
@@ -413,18 +414,18 @@ export function KementerianNationalDashboard() {
   return (
     <div className="space-y-5 pb-6">
       <Card
-        className={`${SURFACE_CARD} border-rose-200/70 bg-[linear-gradient(180deg,#fffdfd_0%,#fff9f8_54%,#fff6f2_100%)]`}
+        className={`${SURFACE_CARD} bg-[linear-gradient(180deg,#fcfbfb_0%,#f7f4f3_100%)]`}
       >
         <CardContent className="relative p-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(244,63,94,0.07),transparent_24%),radial-gradient(circle_at_84%_82%,rgba(251,191,36,0.08),transparent_22%)]" />
-          <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(120,113,108,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.08)_1px,transparent_1px)] [background-size:32px_32px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(145,0,15,0.08),transparent_24%),radial-gradient(circle_at_84%_82%,rgba(184,25,31,0.05),transparent_22%)]" />
+          <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(120,113,108,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.06)_1px,transparent_1px)] [background-size:32px_32px]" />
           <div className="relative grid gap-5 p-5 xl:grid-cols-[1.12fr_0.88fr] xl:p-6">
             <div className="min-w-0 space-y-5">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge className="border border-rose-200 bg-white/90 text-rose-700 hover:bg-white/90">
+                <Badge className="border border-[#e4beba]/70 bg-[#ffefed] text-[#930010] hover:bg-[#ffefed]">
                   Kementerian
                 </Badge>
-                <Badge className="border border-stone-200 bg-stone-100/90 text-stone-700 hover:bg-stone-100/90">
+                <Badge className="border border-[#e7dfdd] bg-white/90 text-[#6b4a46] hover:bg-white/90">
                   Seluruh koperasi nasional
                 </Badge>
                 <Badge className="border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-50">
@@ -433,45 +434,51 @@ export function KementerianNationalDashboard() {
               </div>
 
               <div className="space-y-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-rose-700">
-                  Dashboard Pengawasan Nasional
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#930010]">
+                  Real-time Monitoring Engine
                 </p>
                 <div className="max-w-4xl">
-                  <h1 className="text-3xl font-bold leading-tight tracking-tight text-slate-950 sm:text-[2.6rem]">
-                    Monitoring koperasi nasional dengan alert dini dan insight yang siap dipresentasikan
+                  <h1 className="font-display text-3xl font-bold leading-tight tracking-tight text-slate-950 sm:text-[2.6rem]">
+                    National oversight untuk koperasi nasional dengan alert dini dan insight siap presentasi
                   </h1>
-                  <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+                  <p className="mt-3 max-w-3xl text-sm leading-6 text-[#5f666d]">
                     {snapshot.aiSummary}
                   </p>
                 </div>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className={`${SUBTLE_PANEL} bg-white/88 p-4`}>
-                  <p className="text-xs uppercase tracking-[0.18em] text-stone-500">Cakupan aktif</p>
-                  <p className="mt-3 text-2xl font-bold text-slate-950">{snapshot.scopeLabel}</p>
-                  <p className="mt-1 text-sm text-slate-600">{snapshot.contextLabel}</p>
+                <div className={`${SUBTLE_PANEL} bg-white/80 p-4`}>
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#7b5c57]">Cakupan aktif</p>
+                  <p className="mt-3 font-display text-2xl font-bold text-slate-950">{snapshot.scopeLabel}</p>
+                  <p className="mt-1 text-sm text-[#5f666d]">{snapshot.contextLabel}</p>
                 </div>
-                <div className="rounded-2xl border border-red-200 bg-red-50/90 p-4">
+                <div className="rounded-2xl bg-[#fff4f2] p-4 shadow-[inset_0_0_0_1px_rgba(254,202,202,0.8)]">
                   <p className="text-xs uppercase tracking-[0.18em] text-red-700">Alert kritis</p>
-                  <p className="mt-3 text-2xl font-bold text-slate-950">{snapshot.summary.criticalCount}</p>
+                  <p className="mt-3 font-display text-2xl font-bold text-slate-950">{snapshot.summary.criticalCount}</p>
                   <p className="mt-1 text-sm text-red-700/90">Prioritas nasional untuk intervensi cepat</p>
                 </div>
-                <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-4">
+                <div className="rounded-2xl bg-[#fffaf1] p-4 shadow-[inset_0_0_0_1px_rgba(253,230,138,0.85)]">
                   <p className="text-xs uppercase tracking-[0.18em] text-amber-700">Skor kesehatan</p>
-                  <p className="mt-3 text-2xl font-bold text-slate-950">{Math.round(snapshot.summary.overallScore)}/100</p>
+                  <p className="mt-3 font-display text-2xl font-bold text-slate-950">{Math.round(snapshot.summary.overallScore)}/100</p>
                   <p className="mt-1 text-sm text-amber-700/90">Status {snapshot.summary.overallHealth}</p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Button asChild className="bg-rose-700 text-white hover:bg-rose-800">
+                <Button
+                  asChild
+                  className="bg-[linear-gradient(135deg,#91000f_0%,#b8191f_100%)] text-white shadow-[0_18px_36px_-24px_rgba(145,0,15,0.48)] hover:opacity-95"
+                >
                   <Link href="/command-center">
                     <BarChart3 className="mr-2 h-4 w-4" />
                     Pusat kendali
                   </Link>
                 </Button>
-                <Button asChild className="bg-rose-700 text-white hover:bg-rose-800">
+                <Button
+                  asChild
+                  className="bg-[linear-gradient(135deg,#91000f_0%,#b8191f_100%)] text-white shadow-[0_18px_36px_-24px_rgba(145,0,15,0.48)] hover:opacity-95"
+                >
                   <Link href="/keuangan/laporan">
                     <FileText className="mr-2 h-4 w-4" />
                     Laporan finansial
@@ -480,7 +487,7 @@ export function KementerianNationalDashboard() {
                 <Button
                   asChild
                   variant="secondary"
-                  className="border border-stone-200 bg-white text-slate-700 hover:bg-stone-50"
+                  className="border border-[#ead8d6]/70 bg-white text-[#5f666d] hover:bg-[#fbf7f6]"
                 >
                   <Link href="/ai/forecast">
                     <Brain className="mr-2 h-4 w-4" />
@@ -489,7 +496,7 @@ export function KementerianNationalDashboard() {
                 </Button>
                 <Button
                   variant="secondary"
-                  className="border border-stone-200 bg-stone-100 text-slate-700 hover:bg-stone-200"
+                  className="border border-[#ead8d6]/70 bg-[#f3f4f5] text-[#5f666d] hover:bg-[#ebe8e7]"
                   onClick={() =>
                     setFilters({
                       provinceId: 'all',
@@ -506,29 +513,29 @@ export function KementerianNationalDashboard() {
             </div>
 
             <div className="grid gap-4">
-              <Card className={`${SURFACE_CARD} border-rose-200/80 bg-white/92 backdrop-blur-sm`}>
+              <Card className={`${SURFACE_CARD} bg-white/92 backdrop-blur-sm`}>
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <CardTitle className="text-lg text-slate-950">Panel Eksekutif</CardTitle>
-                      <CardDescription className="text-slate-600">
+                      <CardDescription className="text-[#5f666d]">
                         Ringkasan cepat untuk briefing pimpinan dan tindak lanjut nasional.
                       </CardDescription>
                     </div>
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50">
-                      <BarChart3 className="h-5 w-5 text-rose-700" />
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ffefed] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.7)]">
+                      <BarChart3 className="h-5 w-5 text-[#930010]" />
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="rounded-2xl border border-rose-200 bg-[linear-gradient(135deg,#fffdfd_0%,#fff5f5_100%)] p-4">
+                  <div className="rounded-2xl bg-[linear-gradient(135deg,#fffdfd_0%,#fff5f5_100%)] p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.7)]">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-700">Status nasional</p>
-                        <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#930010]">Status nasional</p>
+                        <p className="mt-2 font-display text-3xl font-bold tracking-tight text-slate-950">
                           {Math.round(snapshot.summary.overallScore)}/100
                         </p>
-                        <p className="mt-1 text-sm text-slate-600">{snapshot.scopeLabel}</p>
+                        <p className="mt-1 text-sm text-[#5f666d]">{snapshot.scopeLabel}</p>
                       </div>
                       <Badge className={healthBadgeClass(snapshot.summary.overallHealth)}>
                         {snapshot.summary.overallHealth}
@@ -544,35 +551,35 @@ export function KementerianNationalDashboard() {
 
                   <div className="grid gap-3 sm:grid-cols-3">
                     <div className={`${SUBTLE_PANEL} p-4`}>
-                      <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Koperasi</p>
-                      <p className="mt-2 text-2xl font-bold text-slate-950">
+                      <p className="text-xs uppercase tracking-[0.16em] text-[#7b5c57]">Koperasi</p>
+                      <p className="mt-2 font-display text-2xl font-bold text-slate-950">
                         {snapshot.summary.cooperatives.toLocaleString('id-ID')}
                       </p>
                     </div>
-                    <div className="rounded-2xl border border-red-200 bg-red-50/85 p-4">
+                    <div className="rounded-2xl bg-[#fff4f2] p-4 shadow-[inset_0_0_0_1px_rgba(254,202,202,0.85)]">
                       <p className="text-xs uppercase tracking-[0.16em] text-red-700">Alert kritis</p>
-                      <p className="mt-2 text-2xl font-bold text-slate-950">{snapshot.summary.criticalCount}</p>
+                      <p className="mt-2 font-display text-2xl font-bold text-slate-950">{snapshot.summary.criticalCount}</p>
                     </div>
-                    <div className="rounded-2xl border border-amber-200 bg-amber-50/85 p-4">
+                    <div className="rounded-2xl bg-[#fffaf1] p-4 shadow-[inset_0_0_0_1px_rgba(253,230,138,0.85)]">
                       <p className="text-xs uppercase tracking-[0.16em] text-amber-700">NPL rata-rata</p>
-                      <p className="mt-2 text-2xl font-bold text-slate-950">{snapshot.summary.avgNpl.toFixed(1)}%</p>
+                      <p className="mt-2 font-display text-2xl font-bold text-slate-950">{snapshot.summary.avgNpl.toFixed(1)}%</p>
                     </div>
                   </div>
 
                   <div className="grid gap-2 sm:grid-cols-3">
-                    <Button asChild variant="secondary" className="justify-between border border-stone-200 bg-white text-slate-700 hover:bg-stone-50">
+                    <Button asChild variant="secondary" className="justify-between border border-[#ead8d6]/70 bg-white text-[#5f666d] hover:bg-[#fbf7f6]">
                       <Link href="/keuangan/laporan">
                         Laporan nasional
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
-                    <Button asChild variant="secondary" className="justify-between border border-stone-200 bg-white text-slate-700 hover:bg-stone-50">
+                    <Button asChild variant="secondary" className="justify-between border border-[#ead8d6]/70 bg-white text-[#5f666d] hover:bg-[#fbf7f6]">
                       <Link href="/ai/forecast">
                         Forecast AI
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
-                    <Button asChild variant="secondary" className="justify-between border border-stone-200 bg-white text-slate-700 hover:bg-stone-50">
+                    <Button asChild variant="secondary" className="justify-between border border-[#ead8d6]/70 bg-white text-[#5f666d] hover:bg-[#fbf7f6]">
                       <Link href="#records">
                         Rekaman data
                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -582,17 +589,17 @@ export function KementerianNationalDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className={`${SURFACE_CARD} border-rose-200/80 bg-white/92 backdrop-blur-sm`}>
+              <Card className={`${SURFACE_CARD} bg-[linear-gradient(180deg,#ffffff_0%,#f5f9ff_100%)] backdrop-blur-sm`}>
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <CardTitle className="text-lg text-slate-950">AI Intelligence Layer</CardTitle>
-                      <CardDescription className="text-slate-600">
+                      <CardDescription className="text-[#5f666d]">
                         Ringkasan anomali, risiko, dan rekomendasi tindakan.
                       </CardDescription>
                     </div>
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50">
-                      <Sparkles className="h-5 w-5 text-rose-700" />
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 shadow-[inset_0_0_0_1px_rgba(186,230,253,0.9)]">
+                      <Sparkles className="h-5 w-5 text-sky-700" />
                     </div>
                   </div>
                 </CardHeader>
@@ -786,15 +793,15 @@ export function KementerianNationalDashboard() {
             <div className={`${SUBTLE_PANEL} p-4`}>
               <div className="mb-4">
                 <p className="text-sm font-semibold text-slate-950">Filter Hierarki Pengawasan</p>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm text-[#5f666d]">
                   Nasional - regional - desa - koperasi. Pilih cakupan tanpa meninggalkan halaman utama.
                 </p>
               </div>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-12">
                 <div className="space-y-2 xl:col-span-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Provinsi</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Provinsi</p>
                   <Select value={filters.provinceId} onValueChange={updateProvince}>
-                    <SelectTrigger className="w-full min-w-0">
+                    <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
                       <SelectValue placeholder="Semua provinsi" />
                     </SelectTrigger>
                     <SelectContent>
@@ -809,9 +816,9 @@ export function KementerianNationalDashboard() {
                 </div>
 
                 <div className="space-y-2 xl:col-span-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Regional</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Regional</p>
                   <Select value={filters.regionId} onValueChange={updateRegion}>
-                    <SelectTrigger className="w-full min-w-0">
+                    <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
                       <SelectValue placeholder="Semua regional" />
                     </SelectTrigger>
                     <SelectContent>
@@ -826,9 +833,9 @@ export function KementerianNationalDashboard() {
                 </div>
 
                 <div className="space-y-2 xl:col-span-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Desa</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Desa</p>
                   <Select value={filters.villageId} onValueChange={updateVillage}>
-                    <SelectTrigger className="w-full min-w-0">
+                    <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
                       <SelectValue placeholder="Semua desa" />
                     </SelectTrigger>
                     <SelectContent>
@@ -843,9 +850,9 @@ export function KementerianNationalDashboard() {
                 </div>
 
                 <div className="space-y-2 xl:col-span-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Koperasi</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Koperasi</p>
                   <Select value={filters.cooperativeId} onValueChange={updateCooperative}>
-                    <SelectTrigger className="w-full min-w-0">
+                    <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
                       <SelectValue placeholder="Semua koperasi" />
                     </SelectTrigger>
                     <SelectContent>
