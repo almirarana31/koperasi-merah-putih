@@ -16,6 +16,7 @@ import {
   Users,
   Wallet,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import {
   Area,
   AreaChart,
@@ -29,7 +30,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { StatsCard } from '@/components/stats-card'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -117,6 +117,115 @@ function actionLabel(row: GroupSummary) {
   return 'Lihat detail'
 }
 
+type MetricTone = 'navy' | 'sky' | 'teal' | 'amber' | 'crimson' | 'emerald'
+
+const METRIC_TONES: Record<
+  MetricTone,
+  { card: string; label: string; value: string; iconWrap: string; icon: string; accent: string }
+> = {
+  navy: {
+    card: 'border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)]',
+    label: 'text-slate-600',
+    value: 'text-slate-950',
+    iconWrap: 'border-slate-200 bg-slate-100',
+    icon: 'text-slate-700',
+    accent: 'bg-slate-700',
+  },
+  sky: {
+    card: 'border-sky-200 bg-[linear-gradient(180deg,#f8fcff_0%,#eef8ff_100%)]',
+    label: 'text-sky-700',
+    value: 'text-slate-950',
+    iconWrap: 'border-sky-200 bg-sky-100',
+    icon: 'text-sky-700',
+    accent: 'bg-sky-500',
+  },
+  teal: {
+    card: 'border-teal-200 bg-[linear-gradient(180deg,#f8fffe_0%,#ecfdf8_100%)]',
+    label: 'text-teal-700',
+    value: 'text-slate-950',
+    iconWrap: 'border-teal-200 bg-teal-100',
+    icon: 'text-teal-700',
+    accent: 'bg-teal-500',
+  },
+  amber: {
+    card: 'border-amber-200 bg-[linear-gradient(180deg,#fffdf7_0%,#fff7e6_100%)]',
+    label: 'text-amber-700',
+    value: 'text-slate-950',
+    iconWrap: 'border-amber-200 bg-amber-100',
+    icon: 'text-amber-700',
+    accent: 'bg-amber-500',
+  },
+  crimson: {
+    card: 'border-rose-200 bg-[linear-gradient(180deg,#fff8f8_0%,#fff0f0_100%)]',
+    label: 'text-rose-700',
+    value: 'text-slate-950',
+    iconWrap: 'border-rose-200 bg-rose-100',
+    icon: 'text-rose-700',
+    accent: 'bg-rose-500',
+  },
+  emerald: {
+    card: 'border-emerald-200 bg-[linear-gradient(180deg,#fbfffd_0%,#effcf4_100%)]',
+    label: 'text-emerald-700',
+    value: 'text-slate-950',
+    iconWrap: 'border-emerald-200 bg-emerald-100',
+    icon: 'text-emerald-700',
+    accent: 'bg-emerald-500',
+  },
+}
+
+function insightToneClass(index: number) {
+  const variants = [
+    'border-sky-200 bg-sky-50/85',
+    'border-amber-200 bg-amber-50/85',
+    'border-emerald-200 bg-emerald-50/85',
+  ]
+  return variants[index % variants.length]
+}
+
+function OverviewMetricCard({
+  title,
+  value,
+  description,
+  icon: Icon,
+  tone,
+  trend,
+}: {
+  title: string
+  value: string
+  description: string
+  icon: LucideIcon
+  tone: MetricTone
+  trend?: { value: number; isPositive: boolean }
+}) {
+  const palette = METRIC_TONES[tone]
+
+  return (
+    <Card className={`overflow-hidden shadow-sm ${palette.card}`}>
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${palette.label}`}>{title}</p>
+            <p className={`mt-3 text-[2rem] font-bold leading-none tracking-tight ${palette.value}`}>{value}</p>
+            <p className="mt-2 text-sm text-slate-600">{description}</p>
+            {trend && (
+              <p className={`mt-3 text-sm font-medium ${trend.isPositive ? 'text-emerald-700' : 'text-rose-700'}`}>
+                {trend.isPositive ? '+' : ''}
+                {trend.value.toFixed(1)}% dari periode sebelumnya
+              </p>
+            )}
+          </div>
+          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${palette.iconWrap}`}>
+            <Icon className={`h-5 w-5 ${palette.icon}`} />
+          </div>
+        </div>
+        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/70">
+          <div className={`h-full w-[62%] rounded-full ${palette.accent}`} />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function KementerianNationalDashboard() {
   const [filters, setFilters] = useState<ScopeFilters>({
     provinceId: 'all',
@@ -181,6 +290,13 @@ export function KementerianNationalDashboard() {
   const weakestCooperatives = [...snapshot.cooperativeComparisons]
     .sort((left, right) => left.overallScore - right.overallScore)
     .slice(0, 5)
+  const healthTone: MetricTone =
+    snapshot.summary.overallHealth === 'good'
+      ? 'emerald'
+      : snapshot.summary.overallHealth === 'warning'
+        ? 'amber'
+        : 'crimson'
+  const nplTone: MetricTone = snapshot.summary.avgNpl >= 6 ? 'crimson' : 'amber'
 
   const updateProvince = (provinceId: string) => {
     setFilters({
@@ -245,27 +361,28 @@ export function KementerianNationalDashboard() {
 
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden border-none bg-[linear-gradient(135deg,#7a1215_0%,#be0817_52%,#d64b1e_100%)] text-primary-foreground shadow-[0_34px_90px_-42px_rgba(122,18,21,0.72)]">
+      <Card className="overflow-hidden border-none bg-[linear-gradient(140deg,#0f172a_0%,#18324d_44%,#115e59_100%)] text-white shadow-[0_34px_90px_-42px_rgba(15,23,42,0.7)]">
         <CardContent className="relative p-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.16),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(0,0,0,0.16),transparent_28%)]" />
-          <div className="absolute -left-12 top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -right-12 bottom-0 h-44 w-44 rounded-full bg-orange-200/15 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.16),transparent_28%),linear-gradient(115deg,rgba(255,255,255,0.06),transparent_36%)]" />
+          <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:32px_32px]" />
+          <div className="absolute -left-12 top-10 h-40 w-40 rounded-full bg-sky-300/16 blur-3xl" />
+          <div className="absolute -right-12 bottom-0 h-44 w-44 rounded-full bg-amber-300/18 blur-3xl" />
           <div className="relative grid gap-5 p-5 lg:grid-cols-[1.12fr_0.88fr] lg:p-6">
             <div className="space-y-5">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge className="border-none bg-white/18 text-white hover:bg-white/18">
+                <Badge className="border border-white/15 bg-white/10 text-white hover:bg-white/10">
                   Kementerian
                 </Badge>
-                <Badge className="border-none bg-white/18 text-white hover:bg-white/18">
+                <Badge className="border border-cyan-200/20 bg-cyan-300/12 text-cyan-50 hover:bg-cyan-300/12">
                   Seluruh koperasi nasional
                 </Badge>
-                <Badge className="border-none bg-white/18 text-white hover:bg-white/18">
+                <Badge className="border border-amber-200/20 bg-amber-300/12 text-amber-50 hover:bg-amber-300/12">
                   {toRelativeUpdateLabel(KEMENTERIAN_DASHBOARD_DATA.lastUpdated, clock)}
                 </Badge>
               </div>
 
               <div className="space-y-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/88">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-100">
                   Dashboard Pengawasan Nasional
                 </p>
                 <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
@@ -273,7 +390,7 @@ export function KementerianNationalDashboard() {
                     <h1 className="text-[2rem] font-bold leading-tight tracking-tight sm:text-[2.5rem]">
                       Monitoring koperasi nasional dengan early warning dan insight AI
                     </h1>
-                    <p className="mt-3 max-w-3xl text-sm leading-6 text-white/92">
+                    <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-100/92">
                       {snapshot.aiSummary}
                     </p>
                   </div>
@@ -281,25 +398,25 @@ export function KementerianNationalDashboard() {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-3xl border border-white/16 bg-white/14 p-4 backdrop-blur-sm">
-                  <p className="text-xs uppercase tracking-[0.18em] text-white/84">Cakupan aktif</p>
-                  <p className="mt-3 text-3xl font-bold">{snapshot.scopeLabel}</p>
-                  <p className="mt-1 text-sm text-white/90">{snapshot.contextLabel}</p>
+                <div className="rounded-3xl border border-white/16 bg-white/10 p-4 backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-[0.18em] text-sky-100">Cakupan aktif</p>
+                  <p className="mt-3 text-3xl font-bold text-white">{snapshot.scopeLabel}</p>
+                  <p className="mt-1 text-sm text-slate-100/90">{snapshot.contextLabel}</p>
                 </div>
-                <div className="rounded-3xl border border-white/16 bg-black/14 p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-white/84">Alert kritis</p>
-                  <p className="mt-3 text-3xl font-bold">{snapshot.summary.criticalCount}</p>
-                  <p className="mt-1 text-sm text-white/90">Prioritas nasional untuk intervensi cepat</p>
+                <div className="rounded-3xl border border-red-200/18 bg-red-500/12 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-red-100">Alert kritis</p>
+                  <p className="mt-3 text-3xl font-bold text-white">{snapshot.summary.criticalCount}</p>
+                  <p className="mt-1 text-sm text-red-50/90">Prioritas nasional untuk intervensi cepat</p>
                 </div>
-                <div className="rounded-3xl border border-white/16 bg-white/14 p-4">
-                  <p className="text-xs uppercase tracking-[0.18em] text-white/84">Skor kesehatan</p>
-                  <p className="mt-3 text-3xl font-bold">{Math.round(snapshot.summary.overallScore)}/100</p>
-                  <p className="mt-1 text-sm text-white/90">Status {snapshot.summary.overallHealth}</p>
+                <div className="rounded-3xl border border-amber-200/18 bg-amber-300/12 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-amber-100">Skor kesehatan</p>
+                  <p className="mt-3 text-3xl font-bold text-white">{Math.round(snapshot.summary.overallScore)}/100</p>
+                  <p className="mt-1 text-sm text-amber-50/90">Status {snapshot.summary.overallHealth}</p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Button asChild className="bg-white text-primary hover:bg-white/90">
+                <Button asChild className="bg-white text-slate-900 hover:bg-slate-100">
                   <Link href="/keuangan/laporan">
                     <FileText className="mr-2 h-4 w-4" />
                     Laporan finansial
@@ -308,7 +425,7 @@ export function KementerianNationalDashboard() {
                 <Button
                   asChild
                   variant="secondary"
-                  className="border border-white/12 bg-white/10 text-primary-foreground hover:bg-white/16"
+                  className="border border-cyan-200/20 bg-cyan-300/12 text-cyan-50 hover:bg-cyan-300/18"
                 >
                   <Link href="/ai/forecast">
                     <Brain className="mr-2 h-4 w-4" />
@@ -317,7 +434,7 @@ export function KementerianNationalDashboard() {
                 </Button>
                 <Button
                   variant="secondary"
-                  className="border border-white/12 bg-white/10 text-primary-foreground hover:bg-white/16"
+                  className="border border-white/14 bg-slate-950/18 text-white hover:bg-slate-950/26"
                   onClick={() =>
                     setFilters({
                       provinceId: 'all',
@@ -333,29 +450,29 @@ export function KementerianNationalDashboard() {
               </div>
             </div>
 
-              <Card className="border-white/16 bg-white/12 text-white shadow-none backdrop-blur-sm">
+            <Card className="border-slate-200/70 bg-[linear-gradient(180deg,rgba(248,250,252,0.96),rgba(226,232,240,0.92))] text-slate-900 shadow-[0_24px_50px_-32px_rgba(15,23,42,0.85)] backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <CardTitle className="text-lg text-white">AI Intelligence Layer</CardTitle>
-                    <CardDescription className="text-white/88">
+                    <CardTitle className="text-lg text-slate-950">AI Intelligence Layer</CardTitle>
+                    <CardDescription className="text-slate-600">
                       Ringkasan anomali, risiko, dan rekomendasi tindakan.
                     </CardDescription>
                   </div>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/12">
-                    <Sparkles className="h-5 w-5" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-sky-200 bg-sky-100">
+                    <Sparkles className="h-5 w-5 text-sky-700" />
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                {snapshot.aiInsights.slice(0, 3).map((insight) => (
-                  <div key={insight.id} className="rounded-2xl border border-white/16 bg-black/14 p-4">
+                {snapshot.aiInsights.slice(0, 3).map((insight, index) => (
+                  <div key={insight.id} className={`rounded-2xl border p-4 ${insightToneClass(index)}`}>
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="font-semibold">{insight.title}</p>
-                        <p className="mt-1 text-sm leading-6 text-white/90">{insight.description}</p>
+                        <p className="font-semibold text-slate-900">{insight.title}</p>
+                        <p className="mt-1 text-sm leading-6 text-slate-600">{insight.description}</p>
                       </div>
-                      <Badge className="border-none bg-white/18 text-white hover:bg-white/18">
+                      <Badge className="border border-slate-200 bg-white/85 text-slate-700 hover:bg-white/85">
                         {insight.confidence}%
                       </Badge>
                     </div>
@@ -434,43 +551,49 @@ export function KementerianNationalDashboard() {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <StatsCard
+        <OverviewMetricCard
           title="Koperasi Terpantau"
           value={snapshot.summary.cooperatives.toLocaleString('id-ID')}
           description={`${snapshot.summary.regionCount} regional | ${snapshot.summary.villageCount} desa`}
           icon={Building2}
+          tone="navy"
         />
-        <StatsCard
+        <OverviewMetricCard
           title="Total Anggota"
           value={snapshot.summary.totalMembers.toLocaleString('id-ID')}
           description="Member aktif dalam cakupan terpilih"
           icon={Users}
+          tone="sky"
           trend={{ value: Math.abs(snapshot.summary.memberGrowthPct), isPositive: snapshot.summary.memberGrowthPct >= 0 }}
         />
-        <StatsCard
+        <OverviewMetricCard
           title="Pendapatan Anggota"
           value={formatCompactCurrency(snapshot.summary.avgIncomeAfter)}
           description="Rata-rata setelah bergabung koperasi"
           icon={Wallet}
+          tone="teal"
           trend={{ value: snapshot.summary.incomeImprovementPct, isPositive: true }}
         />
-        <StatsCard
+        <OverviewMetricCard
           title="Pendapatan Koperasi"
           value={formatCompactCurrency(snapshot.summary.avgMonthlyRevenue)}
           description="Rata-rata pendapatan per koperasi"
           icon={BarChart3}
+          tone="emerald"
         />
-        <StatsCard
+        <OverviewMetricCard
           title="Rata-rata NPL"
           value={`${snapshot.summary.avgNpl.toFixed(1)}%`}
           description="Pemantauan kualitas pinjaman"
           icon={ShieldAlert}
+          tone={nplTone}
         />
-        <StatsCard
+        <OverviewMetricCard
           title="Skor Kesehatan"
           value={`${Math.round(snapshot.summary.overallScore)}/100`}
           description={`Status ${snapshot.summary.overallHealth}`}
           icon={HeartPulse}
+          tone={healthTone}
         />
       </div>
 
@@ -486,15 +609,15 @@ export function KementerianNationalDashboard() {
                 <AreaChart data={snapshot.trend}>
                   <defs>
                     <linearGradient id="membersFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#be0817" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="#be0817" stopOpacity={0.03} />
+                      <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.34} />
+                      <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0.04} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
                   <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} tickFormatter={(value) => compactNumberFormatter.format(value)} />
                   <Tooltip formatter={(value) => [Number(value).toLocaleString('id-ID'), 'Anggota']} />
-                  <Area type="monotone" dataKey="members" stroke="#be0817" fill="url(#membersFill)" strokeWidth={2.5} />
+                  <Area type="monotone" dataKey="members" stroke="#0284c7" fill="url(#membersFill)" strokeWidth={2.5} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -514,7 +637,7 @@ export function KementerianNationalDashboard() {
                   <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} tickFormatter={(value) => formatCompactCurrency(Number(value))} />
                   <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Pendapatan']} />
-                  <Line type="monotone" dataKey="avgIncome" stroke="#0f766e" strokeWidth={2.5} dot={{ fill: '#0f766e', r: 3 }} />
+                  <Line type="monotone" dataKey="avgIncome" stroke="#0f766e" strokeWidth={2.5} dot={{ fill: '#14b8a6', r: 3 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
