@@ -90,9 +90,9 @@ export function KoperasiManagerDashboard() {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
                   <XAxis dataKey="month" fontSize={12} axisLine={false} tickLine={false} />
                   <YAxis fontSize={12} axisLine={false} tickLine={false} />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="aktif" stroke="#be0817" fill="#be0817" fillOpacity={0.05} strokeWidth={2} />
-                  <Area type="monotone" dataKey="onboarding" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.05} strokeWidth={2} />
+                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
+                  <Area type="monotone" dataKey="aktif" stroke="#be0817" fill="#be0817" fillOpacity={0.05} strokeWidth={3} />
+                  <Area type="monotone" dataKey="onboarding" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.05} strokeWidth={3} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

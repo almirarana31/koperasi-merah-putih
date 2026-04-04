@@ -204,68 +204,10 @@ export function KementerianDashboard() {
                   <XAxis dataKey="month" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis yAxisId="left" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value/1000}k`} />
                   <YAxis yAxisId="right" orientation="right" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value/1000} Ton`} />
-                  <Tooltip />
-                  <Legend />
-                  <Area yAxisId="left" type="monotone" dataKey="anggota" name="Total Anggota" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorAnggota)" />
-                  <Area yAxisId="right" type="monotone" dataKey="beras" name="Beras (Ton)" stroke="#3b82f6" strokeWidth={2} fillOpacity={0} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+                  <Tooltip contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }} />
+                  <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '10px', fontWeight: 'bold' }} />
 
-        {/* Early Warning System (Alerts) */}
-        <Card className="border-border/50 shadow-sm flex flex-col">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Early Warning System (EWS)</CardTitle>
-              <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">Anomali Terdeteksi</Badge>
-            </div>
-            <CardDescription className="text-xs">Deteksi dini NPL, penurunan anggota, dan anomali pasar.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1 space-y-3">
-            {alerts.map((alert) => (
-              <div key={alert.id} className="group relative flex flex-col gap-1 rounded-xl border border-border/50 bg-secondary/30 p-3.5 transition-colors hover:bg-secondary/50 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {alert.type === "critical" ? (
-                      <AlertTriangle className="h-4 w-4 text-primary" />
-                    ) : alert.type === "warning" ? (
-                      <Info className="h-4 w-4 text-amber-500" />
-                    ) : (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                    )}
-                    <span className="text-sm font-bold tracking-tight text-slate-900">{alert.title}</span>
-                  </div>
-                  <span className="text-[10px] font-medium text-muted-foreground">{alert.time}</span>
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed font-medium">{alert.desc}</p>
-              </div>
-            ))}
-            <Button variant="ghost" className="w-full text-xs font-bold text-muted-foreground mt-2 shadow-sm border border-border/20">
-              Lihat Detail Semua Desa →
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Income & NPL per Koperasi */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg">Metrik Koperasi: Pendapatan & NPL</CardTitle>
-            <CardDescription className="text-xs">Analisis pendapatan rata-rata anggota vs tingkat NPL per koperasi.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={incomeData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
-                  <XAxis dataKey="name" fontSize={11} tickLine={false} axisLine={false} />
-                  <YAxis fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="income" name="Pendapatan (Juta/Bulan)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="income" name="Pendapatan (Juta)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="npl" name="NPL (%)" fill="#be0817" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -296,7 +238,7 @@ export function KementerianDashboard() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="flex flex-wrap justify-center gap-2 mt-2">
@@ -318,6 +260,84 @@ export function KementerianDashboard() {
               ))}
               <Button variant="link" className="px-0 text-xs font-bold text-primary" asChild>
                 <Link href="/anggota">Audit Seluruh Catatan Desa →</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-1">
+        {/* Cross-Koperasi Data Table (Nationwide Monitoring) */}
+        <Card className="border-border/50 shadow-sm overflow-hidden">
+          <CardHeader className="bg-slate-50/50 border-b border-border/50 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <CardTitle className="text-xl font-black text-slate-950">Monitoring Lintas Koperasi (Nasional)</CardTitle>
+                <CardDescription className="text-xs font-semibold text-slate-600">Komparasi performa real-time antar desa dan unit koperasi.</CardDescription>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center rounded-lg border border-border/50 bg-background px-2 py-1">
+                  <span className="text-[9px] font-black text-slate-400 uppercase mr-2">Provinsi:</span>
+                  <select className="bg-transparent text-[10px] font-bold outline-none border-none cursor-pointer">
+                    <option>Semua Wilayah</option>
+                    <option>Jawa Barat</option>
+                    <option>Sulawesi Selatan</option>
+                    <option>Sumatera Utara</option>
+                  </select>
+                </div>
+                <div className="flex items-center rounded-lg border border-border/50 bg-background px-2 py-1">
+                  <span className="text-[9px] font-black text-slate-400 uppercase mr-2">Komoditas:</span>
+                  <select className="bg-transparent text-[10px] font-bold outline-none border-none cursor-pointer">
+                    <option>Semua</option>
+                    <option>Beras</option>
+                    <option>Jagung</option>
+                    <option>Cabai</option>
+                  </select>
+                </div>
+                <Button size="sm" variant="outline" className="h-8 text-[10px] font-bold border-primary/20 text-primary hover:bg-primary/5">Terapkan Filter</Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50/80 border-b border-border/50">
+                    <th className="px-4 py-3 text-[10px] font-black uppercase text-slate-500 tracking-wider">Nama Koperasi / Desa</th>
+                    <th className="px-4 py-3 text-[10px] font-black uppercase text-slate-500 tracking-wider">Total Anggota</th>
+                    <th className="px-4 py-3 text-[10px] font-black uppercase text-slate-500 tracking-wider">Produksi (Ton)</th>
+                    <th className="px-4 py-3 text-[10px] font-black uppercase text-slate-500 tracking-wider">Pendapatan Rerata</th>
+                    <th className="px-4 py-3 text-[10px] font-black uppercase text-slate-500 tracking-wider">NPL (%)</th>
+                    <th className="px-4 py-3 text-[10px] font-black uppercase text-slate-500 tracking-wider text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/40">
+                  {[
+                    { name: "Kop. Sukatani (Desa A)", members: "1,240", prod: "450", income: "Rp 5.8jt", npl: "1.2%", status: "Sehat" },
+                    { name: "Kop. Merdeka (Desa B)", members: "850", prod: "320", income: "Rp 5.2jt", npl: "2.1%", status: "Sehat" },
+                    { name: "Kop. Jaya (Desa C)", members: "2,100", prod: "580", income: "Rp 4.9jt", npl: "3.5%", status: "Peringatan" },
+                    { name: "Kop. Makmur (Desa D)", members: "1,100", prod: "285", income: "Rp 6.1jt", npl: "1.5%", status: "Sehat" },
+                    { name: "Kop. Tani Sejahtera (Desa E)", members: "920", prod: "310", income: "Rp 5.5jt", npl: "0.8%", status: "Sangat Sehat" },
+                  ].map((row, i) => (
+                    <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
+                      <td className="px-4 py-3 text-sm font-bold text-slate-900">{row.name}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-slate-700">{row.members}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-slate-700">{row.prod}</td>
+                      <td className="px-4 py-3 text-sm font-bold text-emerald-600">{row.income}</td>
+                      <td className={`px-4 py-3 text-sm font-bold ${parseFloat(row.npl) > 3 ? 'text-primary' : 'text-slate-700'}`}>{row.npl}</td>
+                      <td className="px-4 py-3 text-right">
+                        <Button variant="ghost" size="sm" className="h-7 text-[10px] font-black text-slate-500 group-hover:text-primary transition-colors">
+                          Detail Unit →
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="p-4 bg-slate-50/30 border-t border-border/50 text-center">
+              <Button variant="link" className="text-xs font-bold text-primary" asChild>
+                <Link href="/anggota">Lihat Seluruh 1,248 Koperasi Terdaftar →</Link>
               </Button>
             </div>
           </CardContent>
