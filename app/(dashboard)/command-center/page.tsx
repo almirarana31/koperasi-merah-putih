@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -116,7 +116,7 @@ const logisticsRegions = [
   { region: "Sumatra", deliveries: 22, status: "delayed", percentage: 70 },
 ]
 
-const logs = [
+const initialLogs = [
   { time: "14:20:05", role: "SYSADMIN", action: "Database scaling event", status: "success" },
   { time: "14:18:22", role: "KEMENTERIAN", action: "NPL Audit: Koperasi Maju Jaya", status: "warning" },
   { time: "14:15:10", role: "BANK", action: "Credit Scoring generated (Batch 42)", status: "success" },
@@ -127,6 +127,29 @@ export default function ExecutiveCommandCenterPage() {
   const [exportTarget, setExportTarget] = useState<"koperasi" | "pemda" | "bank">("koperasi")
   const [activeView, setActiveView] = useState<"war-room" | "monitoring" | "audit">("war-room")
   const [isExporting, setIsExporting] = useState(false)
+  const [logs, setLogs] = useState(initialLogs)
+
+  useEffect(() => {
+    const actions = [
+      { role: "PETANI", action: "Harvest report uploaded (Lahan A1)", status: "success" },
+      { role: "LOGISTIK", action: "Delivery route optimized (Route 4)", status: "success" },
+      { role: "KASIR", action: "End-of-shift report generated", status: "success" },
+      { role: "KETUA", action: "New loan policy approved", status: "info" },
+      { role: "BANK", action: "NPL Alert: Sudden increase (Bali Region)", status: "warning" },
+      { role: "PEMDA", action: "Production data requested for Q2", status: "info" }
+    ]
+
+    const intervalId = setInterval(() => {
+      const randomAction = actions[Math.floor(Math.random() * actions.length)]
+      const newLog = {
+        time: new Date().toLocaleTimeString("id-ID"),
+        ...randomAction
+      }
+      setLogs(prev => [newLog, ...prev].slice(0, 15))
+    }, 5000)
+
+    return () => clearInterval(intervalId)
+  }, [])
 
   const handleExportPDF = async () => {
     setIsExporting(true)

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { MessageCircle, X, Send, Minimize2, Maximize2, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,28 +18,57 @@ interface Message {
   timestamp: Date
 }
 
-const quickActions = [
-  "Berapa stok beras hari ini?",
-  "Prediksi harga cabai minggu depan?",
-  "Anggota dengan transaksi tertinggi?",
-  "Rekomendasi komoditas untuk dijual?",
-]
-
 export function FloatingAIChatbot() {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Halo! Saya Asisten AI Koperasi Merah Putih. Ada yang bisa saya bantu hari ini?",
-      timestamp: new Date(),
-    },
-  ])
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isTyping, setIsTyping] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const getQuickActions = () => {
+    if (pathname.includes("command-center") || pathname.includes("dashboard")) {
+      return [
+        "Ringkasan performa nasional hari ini?",
+        "Unit koperasi mana yang butuh audit?",
+        "Status NPL agregat saat ini?",
+        "Forecast produksi beras 3 bulan ke depan?"
+      ]
+    }
+    if (pathname.includes("keuangan")) {
+      return [
+        "Analisis arus kas bulan ini?",
+        "Daftar pengajuan pinjaman tertunda?",
+        "Siapa anggota dengan NPL tertinggi?",
+        "Proyeksi SHU akhir tahun?"
+      ]
+    }
+    return [
+      "Berapa stok beras hari ini?",
+      "Prediksi harga cabai minggu depan?",
+      "Anggota dengan transaksi tertinggi?",
+      "Rekomendasi komoditas untuk dijual?",
+    ]
+  }
+
+  const quickActions = getQuickActions()
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      const welcomeMessage = pathname.includes("command-center") 
+        ? "Halo! Saya Asisten AI Strategis KOPDES. Saya memantau data nasional secara real-time. Ada yang ingin Anda audit atau tanyakan mengenai performa unit?"
+        : "Halo! Saya Asisten AI Koperasi Merah Putih. Ada yang bisa saya bantu hari ini?"
+      
+      setMessages([{
+        id: "1",
+        role: "assistant",
+        content: welcomeMessage,
+        timestamp: new Date(),
+      }])
+    }
+  }, [pathname, messages.length])
 
   useEffect(() => {
     if (scrollRef.current) {

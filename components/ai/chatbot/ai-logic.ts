@@ -1,6 +1,51 @@
 export const getAIResponse = (query: string): string => {
   const lowerQuery = query.toLowerCase()
 
+  if (lowerQuery.includes("performa nasional") || lowerQuery.includes("ringkasan")) {
+    return `📊 **Executive Summary (Nasional):**
+
+• **Total Unit Aktif:** 1,248 (99.8% Online)
+• **NPL Agregat:** 2.4% (Zona Hijau ✓)
+• **Anggota Baru:** +1,240 (↗️ 4.2% MoM)
+• **Produksi Agregat:** 12,500 ton (+8% vs target)
+
+**Rekomendasi Strategis:**
+✓ Fokus pada Koperasi Wilayah Timur yang melampaui forecast
+✓ Audit preventif untuk 3 unit dengan tren NPL naik
+✓ Optimasi logistik Jawa-Bali untuk efisiensi margin`
+  }
+
+  if (lowerQuery.includes("audit") || lowerQuery.includes("unit koperasi")) {
+    return `🔍 **Analisis Prioritas Audit:**
+
+1. **Koperasi Maju Jaya (Jawa Barat)**
+   - Skor: 58 (⚠️ KRITIS)
+   - Masalah: Rasio likuiditas < 1.0
+   - NPL: 4.8% (Mendekati batas intervensi)
+
+2. **Koperasi Tani Makmur (Sumatra)**
+   - Skor: 64 (⚠️ WASPADA)
+   - Masalah: Penundaan pelaporan stok
+   - NPL: 3.1%
+
+**AI Insight:** Segera kirim tim audit untuk Koperasi Maju Jaya guna restrukturisasi piutang.`
+  }
+
+  if (lowerQuery.includes("npl") || lowerQuery.includes("kredit macet")) {
+    return `🛡️ **Status NPL Agregat:** 2.4%
+
+**Trend Wilayah:**
+• Jawa: 1.8% (Stabil)
+• Sumatra: 3.2% (Meningkat ⚠️)
+• Sulawesi: 2.1% (Menurun ✓)
+• Bali: 1.5% (Sangat Sehat ✓)
+
+**Saran Mitigasi:**
+✓ Terapkan skema asuransi gagal panen di Sumatra
+✓ Perketat credit scoring untuk komoditas hortikultura
+✓ Confidence: 92%`
+  }
+
   if (lowerQuery.includes("stok") || lowerQuery.includes("inventory")) {
     return `📦 **Status Stok Hari Ini:**
 
