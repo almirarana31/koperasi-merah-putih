@@ -26,7 +26,7 @@ import { useAuth } from '@/lib/auth'
 import type { DataScope, Role } from '@/lib/rbac'
 
 // Import Specialized Dashboards
-import { KementerianDashboard } from '@/components/dashboard/roles/kementerian-dashboard'
+import { KementerianNationalDashboard } from '@/components/dashboard/kementerian-national-dashboard'
 import { PetaniDashboard } from '@/components/dashboard/roles/petani-dashboard'
 import { KoperasiManagerDashboard } from '@/components/dashboard/roles/koperasi-manager-dashboard'
 import { KasirDashboard } from '@/components/dashboard/roles/kasir-dashboard'
@@ -45,7 +45,7 @@ export default function DashboardPage() {
   const renderDashboard = () => {
     switch (user.role) {
       case 'kementerian':
-        return <KementerianDashboard />
+        return <KementerianNationalDashboard />
       case 'petani':
         return <PetaniDashboard />
       case 'koperasi_manager':

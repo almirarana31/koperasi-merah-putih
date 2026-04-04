@@ -206,10 +206,25 @@ export function KementerianDashboard() {
                   <YAxis yAxisId="right" orientation="right" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value/1000} Ton`} />
                   <Tooltip contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }} />
                   <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '10px', fontWeight: 'bold' }} />
-
-                  <Bar dataKey="income" name="Pendapatan (Juta)" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="npl" name="NPL (%)" fill="#be0817" radius={[4, 4, 0, 0]} />
-                </BarChart>
+                  <Area
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="anggota"
+                    name="Anggota"
+                    stroke="#10b981"
+                    fill="url(#colorAnggota)"
+                    strokeWidth={3}
+                  />
+                  <Area
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="beras"
+                    name="Produksi Beras (Ton)"
+                    stroke="#be0817"
+                    fill="transparent"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
