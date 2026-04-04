@@ -30,7 +30,6 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -618,240 +617,6 @@ export function KementerianNationalDashboard() {
         </CardContent>
       </Card>
 
-      <Card className={SURFACE_CARD}>
-        <CardHeader className="pb-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <CardTitle className="text-lg">Filter Hierarki Pengawasan</CardTitle>
-              <CardDescription>
-                Nasional - regional - desa - koperasi. Pilih cakupan untuk membandingkan kesejahteraan dan risiko.
-              </CardDescription>
-            </div>
-            <div className={`${SUBTLE_PANEL} w-full px-4 py-3 lg:max-w-sm`}>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Cakupan terpilih</p>
-              <p className="mt-1 font-semibold text-slate-950">{snapshot.scopeLabel}</p>
-              <p className="mt-1 text-sm text-slate-600">{snapshot.contextLabel}</p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-12">
-          <div className="space-y-2 xl:col-span-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Provinsi</p>
-            <Select value={filters.provinceId} onValueChange={updateProvince}>
-            <SelectTrigger className="w-full min-w-0">
-              <SelectValue placeholder="Semua provinsi" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua provinsi</SelectItem>
-              {provinceOptions.map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          </div>
-
-          <div className="space-y-2 xl:col-span-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Regional</p>
-            <Select value={filters.regionId} onValueChange={updateRegion}>
-            <SelectTrigger className="w-full min-w-0">
-              <SelectValue placeholder="Semua regional" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua regional</SelectItem>
-              {regionOptions.map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          </div>
-
-          <div className="space-y-2 xl:col-span-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Desa</p>
-            <Select value={filters.villageId} onValueChange={updateVillage}>
-            <SelectTrigger className="w-full min-w-0">
-              <SelectValue placeholder="Semua desa" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua desa</SelectItem>
-              {villageOptions.map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          </div>
-
-          <div className="space-y-2 xl:col-span-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Koperasi</p>
-            <Select value={filters.cooperativeId} onValueChange={updateCooperative}>
-            <SelectTrigger className="w-full min-w-0">
-              <SelectValue placeholder="Semua koperasi" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua koperasi</SelectItem>
-              {cooperativeOptions.map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className={SURFACE_CARD}>
-        <CardHeader className="pb-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <CardTitle className="text-lg">Perbandingan Multi-Entitas</CardTitle>
-              <CardDescription>
-                Bandingkan beberapa desa dan koperasi sekaligus untuk pengawasan nasional, evaluasi lintas wilayah, dan eskalasi cepat.
-              </CardDescription>
-            </div>
-            <div className={`${SUBTLE_PANEL} px-4 py-3 lg:max-w-sm`}>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Mode supervisi</p>
-              <p className="mt-1 font-semibold text-slate-950">Desa dan koperasi aktif dipantau bersamaan</p>
-              <p className="mt-1 text-sm text-slate-600">Pilih hingga 3 desa dan 3 koperasi untuk tabel komparasi terfokus.</p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-5 xl:grid-cols-2">
-            <div className="space-y-4">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-950">Perbandingan Desa</p>
-                  <p className="text-sm text-slate-600">Pilih desa untuk membandingkan kesejahteraan, NPL, dan kesehatan.</p>
-                </div>
-                <Badge variant="outline" className="w-fit border-stone-200 bg-stone-50">
-                  {selectedVillageComparisons.length} desa dipilih
-                </Badge>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {villageComparisonOptions.map((row) => {
-                  const isActive = villageComparisonIds.includes(row.id)
-                  return (
-                    <button
-                      key={row.id}
-                      type="button"
-                      onClick={() => toggleVillageComparison(row.id)}
-                      className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                        isActive
-                          ? 'border-rose-200 bg-rose-50 text-rose-700'
-                          : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-                      }`}
-                    >
-                      {row.label}
-                    </button>
-                  )
-                })}
-              </div>
-              <div className="overflow-x-auto">
-                <Table className="min-w-[680px]">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Desa</TableHead>
-                      <TableHead className="text-right">Anggota</TableHead>
-                      <TableHead className="text-right">Growth</TableHead>
-                      <TableHead className="text-right">Pendapatan</TableHead>
-                      <TableHead className="text-right">NPL</TableHead>
-                      <TableHead className="text-right">Skor</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {selectedVillageComparisons.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{row.label}</p>
-                            <p className="text-sm text-muted-foreground">{row.region}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
-                        <TableCell className={`text-right ${row.memberGrowthPct >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                          {formatPercent(row.memberGrowthPct)}
-                        </TableCell>
-                        <TableCell className="text-right">{formatCompactCurrency(row.avgIncomeAfter)}</TableCell>
-                        <TableCell className="text-right">{row.avgNpl.toFixed(1)}%</TableCell>
-                        <TableCell className="text-right">{Math.round(row.overallScore)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-slate-950">Perbandingan Koperasi</p>
-                  <p className="text-sm text-slate-600">Bandingkan beberapa koperasi untuk risiko, pendapatan, dan intervensi.</p>
-                </div>
-                <Badge variant="outline" className="w-fit border-stone-200 bg-stone-50">
-                  {selectedCooperativeComparisons.length} koperasi dipilih
-                </Badge>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {cooperativeComparisonOptions.map((row) => {
-                  const isActive = cooperativeComparisonIds.includes(row.id)
-                  return (
-                    <button
-                      key={row.id}
-                      type="button"
-                      onClick={() => toggleCooperativeComparison(row.id)}
-                      className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-                        isActive
-                          ? 'border-rose-200 bg-rose-50 text-rose-700'
-                          : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-                      }`}
-                    >
-                      {row.label}
-                    </button>
-                  )
-                })}
-              </div>
-              <div className="overflow-x-auto">
-                <Table className="min-w-[720px]">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Koperasi</TableHead>
-                      <TableHead className="text-right">Anggota</TableHead>
-                      <TableHead className="text-right">Welfare</TableHead>
-                      <TableHead className="text-right">Pendapatan</TableHead>
-                      <TableHead className="text-right">NPL</TableHead>
-                      <TableHead className="text-right">Skor</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {selectedCooperativeComparisons.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{row.label}</p>
-                            <p className="text-sm text-muted-foreground">{row.village} | {row.region}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
-                        <TableCell className="text-right text-emerald-600">{formatPercent(row.incomeImprovementPct)}</TableCell>
-                        <TableCell className="text-right">{formatCompactCurrency(row.avgMonthlyRevenue)}</TableCell>
-                        <TableCell className="text-right">{row.avgNpl.toFixed(1)}%</TableCell>
-                        <TableCell className="text-right">{Math.round(row.overallScore)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <OverviewMetricCard
           title="Koperasi Terpantau"
@@ -899,14 +664,14 @@ export function KementerianNationalDashboard() {
         />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-3">
-        <Card className={SURFACE_CARD}>
+      <div className="grid gap-4 xl:grid-cols-12">
+        <Card className={`${SURFACE_CARD} xl:col-span-4`}>
           <CardHeader className="pb-4">
             <CardTitle className="text-lg">Tren Anggota</CardTitle>
             <CardDescription>Total anggota dan pertumbuhan nasional saat ini.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px]">
+            <div className="h-[230px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={snapshot.trend}>
                   <defs>
@@ -926,13 +691,13 @@ export function KementerianNationalDashboard() {
           </CardContent>
         </Card>
 
-        <Card className={SURFACE_CARD}>
+        <Card className={`${SURFACE_CARD} xl:col-span-4`}>
           <CardHeader className="pb-4">
             <CardTitle className="text-lg">Tren Kesejahteraan</CardTitle>
             <CardDescription>Pendapatan rata-rata anggota sebelum dan sesudah intervensi koperasi.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[250px]">
+            <div className="h-[230px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={snapshot.trend}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
@@ -946,13 +711,20 @@ export function KementerianNationalDashboard() {
           </CardContent>
         </Card>
 
-        <Card className={SURFACE_CARD}>
+        <Card className={`${SURFACE_CARD} xl:col-span-4`}>
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Tren NPL</CardTitle>
-            <CardDescription>Early warning kualitas pinjaman per periode.</CardDescription>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <CardTitle className="text-lg">Risiko & Early Warning</CardTitle>
+                <CardDescription>NPL nasional dan alert prioritas untuk tindak lanjut cepat.</CardDescription>
+              </div>
+              <Badge className="border border-red-200 bg-red-50 text-red-700 hover:bg-red-50">
+                {snapshot.topAlerts.length} alert
+              </Badge>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
+          <CardContent className="space-y-4">
+            <div className="h-[170px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={snapshot.trend}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(15,23,42,0.08)" />
@@ -963,28 +735,267 @@ export function KementerianNationalDashboard() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
+            <div className="space-y-3">
+              {snapshot.topAlerts.slice(0, 3).map((alert) => (
+                <div key={alert.id} className={`rounded-2xl border px-4 py-3 ${severityAlertClass(alert.severity)}`}>
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-semibold">{alert.title}</p>
+                        <Badge className={severityBadgeClass(alert.severity)}>{alert.severity}</Badge>
+                      </div>
+                      <p className="mt-1 text-sm font-medium">{alert.scopeLabel}</p>
+                      <p className="mt-1 text-sm leading-6">{alert.message}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid gap-3">
-        {snapshot.topAlerts.slice(0, 3).map((alert) => (
-          <Alert key={alert.id} className={severityAlertClass(alert.severity)}>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle className="flex flex-wrap items-center gap-2">
-              {alert.title}
-              <Badge className={severityBadgeClass(alert.severity)}>{alert.severity}</Badge>
-              <Badge variant="outline" className="border-current/20 bg-white/60">
-                {alert.scopeLabel}
-              </Badge>
-            </AlertTitle>
-            <AlertDescription className="space-y-1.5">
-              <p>{alert.message}</p>
-              <p className="font-medium">{alert.recommendation}</p>
-            </AlertDescription>
-          </Alert>
-        ))}
-      </div>
+      <Card className={SURFACE_CARD}>
+        <CardHeader className="pb-4">
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+            <div>
+              <CardTitle className="text-lg">Cakupan & Perbandingan Supervisi</CardTitle>
+              <CardDescription>
+                Atur cakupan pengawasan, bandingkan banyak desa dan koperasi, lalu lanjutkan drill-down ke detail records.
+              </CardDescription>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3 xl:w-[30rem]">
+              <div className={`${SUBTLE_PANEL} p-3`}>
+                <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Cakupan</p>
+                <p className="mt-1 font-semibold text-slate-950">{snapshot.scopeLabel}</p>
+              </div>
+              <div className={`${SUBTLE_PANEL} p-3`}>
+                <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Desa aktif</p>
+                <p className="mt-1 font-semibold text-slate-950">{selectedVillageComparisons.length}</p>
+              </div>
+              <div className={`${SUBTLE_PANEL} p-3`}>
+                <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Koperasi aktif</p>
+                <p className="mt-1 font-semibold text-slate-950">{selectedCooperativeComparisons.length}</p>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="grid gap-5 xl:grid-cols-[0.88fr_1.12fr]">
+          <div className="space-y-4">
+            <div className={`${SUBTLE_PANEL} p-4`}>
+              <div className="mb-4">
+                <p className="text-sm font-semibold text-slate-950">Filter Hierarki Pengawasan</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Nasional - regional - desa - koperasi. Pilih cakupan tanpa meninggalkan halaman utama.
+                </p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-12">
+                <div className="space-y-2 xl:col-span-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Provinsi</p>
+                  <Select value={filters.provinceId} onValueChange={updateProvince}>
+                    <SelectTrigger className="w-full min-w-0">
+                      <SelectValue placeholder="Semua provinsi" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua provinsi</SelectItem>
+                      {provinceOptions.map((option) => (
+                        <SelectItem key={option.id} value={option.id}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2 xl:col-span-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Regional</p>
+                  <Select value={filters.regionId} onValueChange={updateRegion}>
+                    <SelectTrigger className="w-full min-w-0">
+                      <SelectValue placeholder="Semua regional" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua regional</SelectItem>
+                      {regionOptions.map((option) => (
+                        <SelectItem key={option.id} value={option.id}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2 xl:col-span-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Desa</p>
+                  <Select value={filters.villageId} onValueChange={updateVillage}>
+                    <SelectTrigger className="w-full min-w-0">
+                      <SelectValue placeholder="Semua desa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua desa</SelectItem>
+                      {villageOptions.map((option) => (
+                        <SelectItem key={option.id} value={option.id}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2 xl:col-span-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Koperasi</p>
+                  <Select value={filters.cooperativeId} onValueChange={updateCooperative}>
+                    <SelectTrigger className="w-full min-w-0">
+                      <SelectValue placeholder="Semua koperasi" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Semua koperasi</SelectItem>
+                      {cooperativeOptions.map((option) => (
+                        <SelectItem key={option.id} value={option.id}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className={`${SUBTLE_PANEL} p-4`}>
+                <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Konteks</p>
+                <p className="mt-2 font-semibold text-slate-950">{snapshot.contextLabel}</p>
+                <p className="mt-1 text-sm text-slate-600">{snapshot.breadcrumb.join(' / ')}</p>
+              </div>
+              <div className="rounded-2xl border border-red-200 bg-red-50/85 p-4">
+                <p className="text-xs uppercase tracking-[0.16em] text-red-700">Intervensi prioritas</p>
+                <p className="mt-2 font-semibold text-slate-950">
+                  {snapshot.summary.criticalCount} alert kritis, {snapshot.summary.avgNpl.toFixed(1)}% NPL
+                </p>
+                <p className="mt-1 text-sm text-red-700/90">Fokuskan pengawasan pada unit dengan skor terendah.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="space-y-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-950">Perbandingan Desa</p>
+                  <p className="text-sm text-slate-600">Pilih desa untuk membandingkan kesejahteraan, NPL, dan kesehatan.</p>
+                </div>
+                <Badge variant="outline" className="w-fit border-stone-200 bg-stone-50">
+                  {selectedVillageComparisons.length} desa dipilih
+                </Badge>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {villageComparisonOptions.map((row) => {
+                  const isActive = villageComparisonIds.includes(row.id)
+                  return (
+                    <button
+                      key={row.id}
+                      type="button"
+                      onClick={() => toggleVillageComparison(row.id)}
+                      className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'border-rose-200 bg-rose-50 text-rose-700'
+                          : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                      }`}
+                    >
+                      {row.label}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="overflow-x-auto">
+                <Table className="min-w-[560px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Desa</TableHead>
+                      <TableHead className="text-right">Anggota</TableHead>
+                      <TableHead className="text-right">NPL</TableHead>
+                      <TableHead className="text-right">Skor</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedVillageComparisons.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{row.label}</p>
+                            <p className="text-sm text-muted-foreground">{row.region}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
+                        <TableCell className="text-right">{row.avgNpl.toFixed(1)}%</TableCell>
+                        <TableCell className="text-right">{Math.round(row.overallScore)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-950">Perbandingan Koperasi</p>
+                  <p className="text-sm text-slate-600">Bandingkan beberapa koperasi untuk risiko, pendapatan, dan intervensi.</p>
+                </div>
+                <Badge variant="outline" className="w-fit border-stone-200 bg-stone-50">
+                  {selectedCooperativeComparisons.length} koperasi dipilih
+                </Badge>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {cooperativeComparisonOptions.map((row) => {
+                  const isActive = cooperativeComparisonIds.includes(row.id)
+                  return (
+                    <button
+                      key={row.id}
+                      type="button"
+                      onClick={() => toggleCooperativeComparison(row.id)}
+                      className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'border-rose-200 bg-rose-50 text-rose-700'
+                          : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                      }`}
+                    >
+                      {row.label}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="overflow-x-auto">
+                <Table className="min-w-[560px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Koperasi</TableHead>
+                      <TableHead className="text-right">Welfare</TableHead>
+                      <TableHead className="text-right">NPL</TableHead>
+                      <TableHead className="text-right">Skor</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedCooperativeComparisons.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{row.label}</p>
+                            <p className="text-sm text-muted-foreground">{row.village}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right text-emerald-600">{formatPercent(row.incomeImprovementPct)}</TableCell>
+                        <TableCell className="text-right">{row.avgNpl.toFixed(1)}%</TableCell>
+                        <TableCell className="text-right">{Math.round(row.overallScore)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Tabs defaultValue="hierarki" className="space-y-4">
         <TabsList className="grid h-auto w-full grid-cols-2 gap-2 rounded-2xl border border-stone-200 bg-white p-2 xl:grid-cols-4">
