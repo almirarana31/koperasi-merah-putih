@@ -48,6 +48,22 @@ import { ExportButton } from '@/components/dashboard/export-button'
 import { transactions, formatCurrency, formatDate } from '@/lib/data'
 import { members } from '@/lib/mock-data'
 
+const typeLabels = {
+  simpanan: 'Simpanan',
+  pinjaman: 'Pinjaman',
+  penjualan: 'Penjualan',
+  pembelian: 'Pembelian',
+  operasional: 'Operasional',
+} as const
+
+const typeColors = {
+  simpanan: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  pinjaman: 'bg-amber-50 text-amber-700 border-amber-200',
+  penjualan: 'bg-blue-50 text-blue-700 border-blue-200',
+  pembelian: 'bg-rose-50 text-rose-700 border-rose-200',
+  operasional: 'bg-slate-100 text-slate-700 border-slate-200',
+} as const
+
 export default function KeuanganPage() {
   const { user } = useAuth()
   const isKementerian = user?.role === 'kementerian'
