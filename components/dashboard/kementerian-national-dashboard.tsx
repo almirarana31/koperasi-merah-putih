@@ -184,6 +184,16 @@ function insightToneClass(index: number) {
 const SURFACE_CARD = 'overflow-hidden border-stone-200/80 bg-white shadow-[0_18px_40px_-32px_rgba(15,23,42,0.28)]'
 const SUBTLE_PANEL = 'rounded-2xl border border-stone-200 bg-stone-50/80'
 
+function areSameSelections(left: string[], right: string[]) {
+  return left.length === right.length && left.every((item, index) => item === right[index])
+}
+
+function normalizeComparisonSelection(current: string[], availableIds: string[]) {
+  const valid = current.filter((id) => availableIds.includes(id)).slice(0, 3)
+  if (valid.length > 0) return valid
+  return availableIds.slice(0, 3)
+}
+
 function OverviewMetricCard({
   title,
   value,
@@ -236,6 +246,8 @@ export function KementerianNationalDashboard() {
     cooperativeId: 'all',
   })
   const [clock, setClock] = useState(() => Date.now())
+  const [villageComparisonIds, setVillageComparisonIds] = useState<string[]>([])
+  const [cooperativeComparisonIds, setCooperativeComparisonIds] = useState<string[]>([])
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setClock(Date.now()), 30000)
@@ -259,6 +271,8 @@ export function KementerianNationalDashboard() {
   })
 
   const snapshot = getKementerianDashboardSnapshot(filters)
+  const villageComparisonOptions = snapshot.villageComparisons.slice(0, 8)
+  const cooperativeComparisonOptions = snapshot.cooperativeComparisons.slice(0, 10)
   const ratioOverview = snapshot.selectedCooperative
     ? snapshot.selectedCooperative.ratioScores.map((ratio) => ({
         label: ratio.label,
@@ -299,6 +313,26 @@ export function KementerianNationalDashboard() {
         ? 'amber'
         : 'crimson'
   const nplTone: MetricTone = snapshot.summary.avgNpl >= 6 ? 'crimson' : 'amber'
+  const selectedVillageComparisons = snapshot.villageComparisons.filter((row) => villageComparisonIds.includes(row.id))
+  const selectedCooperativeComparisons = snapshot.cooperativeComparisons.filter((row) =>
+    cooperativeComparisonIds.includes(row.id),
+  )
+
+  useEffect(() => {
+    const availableVillageIds = snapshot.villageComparisons.map((row) => row.id)
+    setVillageComparisonIds((current) => {
+      const next = normalizeComparisonSelection(current, availableVillageIds)
+      return areSameSelections(current, next) ? current : next
+    })
+  }, [snapshot.villageComparisons])
+
+  useEffect(() => {
+    const availableCooperativeIds = snapshot.cooperativeComparisons.map((row) => row.id)
+    setCooperativeComparisonIds((current) => {
+      const next = normalizeComparisonSelection(current, availableCooperativeIds)
+      return areSameSelections(current, next) ? current : next
+    })
+  }, [snapshot.cooperativeComparisons])
 
   const updateProvince = (provinceId: string) => {
     setFilters({
@@ -333,6 +367,22 @@ export function KementerianNationalDashboard() {
     }))
   }
 
+  const toggleVillageComparison = (rowId: string) => {
+    setVillageComparisonIds((current) => {
+      if (current.includes(rowId)) return current.filter((id) => id !== rowId)
+      if (current.length >= 3) return [...current.slice(1), rowId]
+      return [...current, rowId]
+    })
+  }
+
+  const toggleCooperativeComparison = (rowId: string) => {
+    setCooperativeComparisonIds((current) => {
+      if (current.includes(rowId)) return current.filter((id) => id !== rowId)
+      if (current.length >= 3) return [...current.slice(1), rowId]
+      return [...current, rowId]
+    })
+  }
+
   const drillInto = (row: GroupSummary) => {
     if (row.level === 'region') {
       setFilters((current) => ({
@@ -364,12 +414,12 @@ export function KementerianNationalDashboard() {
   return (
     <div className="space-y-5 pb-6">
       <Card
-        className={`${SURFACE_CARD} border-rose-200/70 bg-[linear-gradient(135deg,#fffdfd_0%,#fff8f8_58%,#fff4f1_100%)]`}
+        className={`${SURFACE_CARD} border-rose-200/70 bg-[linear-gradient(180deg,#fffdfd_0%,#fff9f8_54%,#fff6f2_100%)]`}
       >
         <CardContent className="relative p-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(244,63,94,0.1),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.12),transparent_28%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(244,63,94,0.07),transparent_24%),radial-gradient(circle_at_84%_82%,rgba(251,191,36,0.08),transparent_22%)]" />
           <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(120,113,108,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.08)_1px,transparent_1px)] [background-size:32px_32px]" />
-          <div className="relative grid gap-5 p-5 xl:grid-cols-[1.18fr_0.82fr] xl:p-6">
+          <div className="relative grid gap-5 p-5 xl:grid-cols-[1.12fr_0.88fr] xl:p-6">
             <div className="min-w-0 space-y-5">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge className="border border-rose-200 bg-white/90 text-rose-700 hover:bg-white/90">
@@ -417,6 +467,12 @@ export function KementerianNationalDashboard() {
 
               <div className="flex flex-wrap gap-2">
                 <Button asChild className="bg-rose-700 text-white hover:bg-rose-800">
+                  <Link href="/command-center">
+                    <BarChart3 className="mr-2 h-4 w-4" />
+                    Pusat kendali
+                  </Link>
+                </Button>
+                <Button asChild className="bg-rose-700 text-white hover:bg-rose-800">
                   <Link href="/keuangan/laporan">
                     <FileText className="mr-2 h-4 w-4" />
                     Laporan finansial
@@ -450,50 +506,139 @@ export function KementerianNationalDashboard() {
               </div>
             </div>
 
-            <Card className={`${SURFACE_CARD} border-rose-200/80 bg-white/92 backdrop-blur-sm`}>
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <CardTitle className="text-lg text-slate-950">AI Intelligence Layer</CardTitle>
-                    <CardDescription className="text-slate-600">
-                      Ringkasan anomali, risiko, dan rekomendasi tindakan.
-                    </CardDescription>
-                  </div>
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50">
-                    <Sparkles className="h-5 w-5 text-rose-700" />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {snapshot.aiInsights.slice(0, 3).map((insight, index) => (
-                  <div key={insight.id} className={`rounded-2xl border p-4 ${insightToneClass(index)}`}>
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="font-semibold text-slate-900">{insight.title}</p>
-                        <p className="mt-1 text-sm leading-6 text-slate-600">{insight.description}</p>
-                      </div>
-                      <Badge className="border border-stone-200 bg-white text-stone-700 hover:bg-white">
-                        {insight.confidence}%
-                      </Badge>
+            <div className="grid gap-4">
+              <Card className={`${SURFACE_CARD} border-rose-200/80 bg-white/92 backdrop-blur-sm`}>
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-lg text-slate-950">Panel Eksekutif</CardTitle>
+                      <CardDescription className="text-slate-600">
+                        Ringkasan cepat untuk briefing pimpinan dan tindak lanjut nasional.
+                      </CardDescription>
+                    </div>
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50">
+                      <BarChart3 className="h-5 w-5 text-rose-700" />
                     </div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="rounded-2xl border border-rose-200 bg-[linear-gradient(135deg,#fffdfd_0%,#fff5f5_100%)] p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-700">Status nasional</p>
+                        <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
+                          {Math.round(snapshot.summary.overallScore)}/100
+                        </p>
+                        <p className="mt-1 text-sm text-slate-600">{snapshot.scopeLabel}</p>
+                      </div>
+                      <Badge className={healthBadgeClass(snapshot.summary.overallHealth)}>
+                        {snapshot.summary.overallHealth}
+                      </Badge>
+                    </div>
+                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-stone-200">
+                      <div
+                        className={`h-full rounded-full ${snapshot.summary.overallHealth === 'good' ? 'bg-emerald-500' : snapshot.summary.overallHealth === 'warning' ? 'bg-amber-500' : 'bg-red-500'}`}
+                        style={{ width: `${Math.max(16, Math.min(100, Math.round(snapshot.summary.overallScore)))}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className={`${SUBTLE_PANEL} p-4`}>
+                      <p className="text-xs uppercase tracking-[0.16em] text-stone-500">Koperasi</p>
+                      <p className="mt-2 text-2xl font-bold text-slate-950">
+                        {snapshot.summary.cooperatives.toLocaleString('id-ID')}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-red-200 bg-red-50/85 p-4">
+                      <p className="text-xs uppercase tracking-[0.16em] text-red-700">Alert kritis</p>
+                      <p className="mt-2 text-2xl font-bold text-slate-950">{snapshot.summary.criticalCount}</p>
+                    </div>
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50/85 p-4">
+                      <p className="text-xs uppercase tracking-[0.16em] text-amber-700">NPL rata-rata</p>
+                      <p className="mt-2 text-2xl font-bold text-slate-950">{snapshot.summary.avgNpl.toFixed(1)}%</p>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    <Button asChild variant="secondary" className="justify-between border border-stone-200 bg-white text-slate-700 hover:bg-stone-50">
+                      <Link href="/keuangan/laporan">
+                        Laporan nasional
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button asChild variant="secondary" className="justify-between border border-stone-200 bg-white text-slate-700 hover:bg-stone-50">
+                      <Link href="/ai/forecast">
+                        Forecast AI
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                    <Button asChild variant="secondary" className="justify-between border border-stone-200 bg-white text-slate-700 hover:bg-stone-50">
+                      <Link href="#records">
+                        Rekaman data
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className={`${SURFACE_CARD} border-rose-200/80 bg-white/92 backdrop-blur-sm`}>
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-lg text-slate-950">AI Intelligence Layer</CardTitle>
+                      <CardDescription className="text-slate-600">
+                        Ringkasan anomali, risiko, dan rekomendasi tindakan.
+                      </CardDescription>
+                    </div>
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50">
+                      <Sparkles className="h-5 w-5 text-rose-700" />
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {snapshot.aiInsights.slice(0, 3).map((insight, index) => (
+                    <div key={insight.id} className={`rounded-2xl border p-4 ${insightToneClass(index)}`}>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-900">{insight.title}</p>
+                          <p className="mt-1 text-sm leading-6 text-slate-600">{insight.description}</p>
+                        </div>
+                        <Badge className="border border-stone-200 bg-white text-stone-700 hover:bg-white">
+                          {insight.confidence}%
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       <Card className={SURFACE_CARD}>
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg">Filter Hierarki Pengawasan</CardTitle>
-          <CardDescription>
-            Nasional - regional - desa - koperasi. Pilih cakupan untuk membandingkan kesejahteraan dan risiko.
-          </CardDescription>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <CardTitle className="text-lg">Filter Hierarki Pengawasan</CardTitle>
+              <CardDescription>
+                Nasional - regional - desa - koperasi. Pilih cakupan untuk membandingkan kesejahteraan dan risiko.
+              </CardDescription>
+            </div>
+            <div className={`${SUBTLE_PANEL} w-full px-4 py-3 lg:max-w-sm`}>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Cakupan terpilih</p>
+              <p className="mt-1 font-semibold text-slate-950">{snapshot.scopeLabel}</p>
+              <p className="mt-1 text-sm text-slate-600">{snapshot.contextLabel}</p>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Select value={filters.provinceId} onValueChange={updateProvince}>
-            <SelectTrigger>
+        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-12">
+          <div className="space-y-2 xl:col-span-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Provinsi</p>
+            <Select value={filters.provinceId} onValueChange={updateProvince}>
+            <SelectTrigger className="w-full min-w-0">
               <SelectValue placeholder="Semua provinsi" />
             </SelectTrigger>
             <SelectContent>
@@ -505,9 +650,12 @@ export function KementerianNationalDashboard() {
               ))}
             </SelectContent>
           </Select>
+          </div>
 
-          <Select value={filters.regionId} onValueChange={updateRegion}>
-            <SelectTrigger>
+          <div className="space-y-2 xl:col-span-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Regional</p>
+            <Select value={filters.regionId} onValueChange={updateRegion}>
+            <SelectTrigger className="w-full min-w-0">
               <SelectValue placeholder="Semua regional" />
             </SelectTrigger>
             <SelectContent>
@@ -519,9 +667,12 @@ export function KementerianNationalDashboard() {
               ))}
             </SelectContent>
           </Select>
+          </div>
 
-          <Select value={filters.villageId} onValueChange={updateVillage}>
-            <SelectTrigger>
+          <div className="space-y-2 xl:col-span-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Desa</p>
+            <Select value={filters.villageId} onValueChange={updateVillage}>
+            <SelectTrigger className="w-full min-w-0">
               <SelectValue placeholder="Semua desa" />
             </SelectTrigger>
             <SelectContent>
@@ -533,9 +684,12 @@ export function KementerianNationalDashboard() {
               ))}
             </SelectContent>
           </Select>
+          </div>
 
-          <Select value={filters.cooperativeId} onValueChange={updateCooperative}>
-            <SelectTrigger>
+          <div className="space-y-2 xl:col-span-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Koperasi</p>
+            <Select value={filters.cooperativeId} onValueChange={updateCooperative}>
+            <SelectTrigger className="w-full min-w-0">
               <SelectValue placeholder="Semua koperasi" />
             </SelectTrigger>
             <SelectContent>
@@ -547,6 +701,154 @@ export function KementerianNationalDashboard() {
               ))}
             </SelectContent>
           </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className={SURFACE_CARD}>
+        <CardHeader className="pb-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <CardTitle className="text-lg">Perbandingan Multi-Entitas</CardTitle>
+              <CardDescription>
+                Bandingkan beberapa desa dan koperasi sekaligus untuk pengawasan nasional, evaluasi lintas wilayah, dan eskalasi cepat.
+              </CardDescription>
+            </div>
+            <div className={`${SUBTLE_PANEL} px-4 py-3 lg:max-w-sm`}>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">Mode supervisi</p>
+              <p className="mt-1 font-semibold text-slate-950">Desa dan koperasi aktif dipantau bersamaan</p>
+              <p className="mt-1 text-sm text-slate-600">Pilih hingga 3 desa dan 3 koperasi untuk tabel komparasi terfokus.</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-5 xl:grid-cols-2">
+            <div className="space-y-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-950">Perbandingan Desa</p>
+                  <p className="text-sm text-slate-600">Pilih desa untuk membandingkan kesejahteraan, NPL, dan kesehatan.</p>
+                </div>
+                <Badge variant="outline" className="w-fit border-stone-200 bg-stone-50">
+                  {selectedVillageComparisons.length} desa dipilih
+                </Badge>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {villageComparisonOptions.map((row) => {
+                  const isActive = villageComparisonIds.includes(row.id)
+                  return (
+                    <button
+                      key={row.id}
+                      type="button"
+                      onClick={() => toggleVillageComparison(row.id)}
+                      className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'border-rose-200 bg-rose-50 text-rose-700'
+                          : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                      }`}
+                    >
+                      {row.label}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="overflow-x-auto">
+                <Table className="min-w-[680px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Desa</TableHead>
+                      <TableHead className="text-right">Anggota</TableHead>
+                      <TableHead className="text-right">Growth</TableHead>
+                      <TableHead className="text-right">Pendapatan</TableHead>
+                      <TableHead className="text-right">NPL</TableHead>
+                      <TableHead className="text-right">Skor</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedVillageComparisons.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{row.label}</p>
+                            <p className="text-sm text-muted-foreground">{row.region}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
+                        <TableCell className={`text-right ${row.memberGrowthPct >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                          {formatPercent(row.memberGrowthPct)}
+                        </TableCell>
+                        <TableCell className="text-right">{formatCompactCurrency(row.avgIncomeAfter)}</TableCell>
+                        <TableCell className="text-right">{row.avgNpl.toFixed(1)}%</TableCell>
+                        <TableCell className="text-right">{Math.round(row.overallScore)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-slate-950">Perbandingan Koperasi</p>
+                  <p className="text-sm text-slate-600">Bandingkan beberapa koperasi untuk risiko, pendapatan, dan intervensi.</p>
+                </div>
+                <Badge variant="outline" className="w-fit border-stone-200 bg-stone-50">
+                  {selectedCooperativeComparisons.length} koperasi dipilih
+                </Badge>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {cooperativeComparisonOptions.map((row) => {
+                  const isActive = cooperativeComparisonIds.includes(row.id)
+                  return (
+                    <button
+                      key={row.id}
+                      type="button"
+                      onClick={() => toggleCooperativeComparison(row.id)}
+                      className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                        isActive
+                          ? 'border-rose-200 bg-rose-50 text-rose-700'
+                          : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                      }`}
+                    >
+                      {row.label}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="overflow-x-auto">
+                <Table className="min-w-[720px]">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Koperasi</TableHead>
+                      <TableHead className="text-right">Anggota</TableHead>
+                      <TableHead className="text-right">Welfare</TableHead>
+                      <TableHead className="text-right">Pendapatan</TableHead>
+                      <TableHead className="text-right">NPL</TableHead>
+                      <TableHead className="text-right">Skor</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {selectedCooperativeComparisons.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{row.label}</p>
+                            <p className="text-sm text-muted-foreground">{row.village} | {row.region}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
+                        <TableCell className="text-right text-emerald-600">{formatPercent(row.incomeImprovementPct)}</TableCell>
+                        <TableCell className="text-right">{formatCompactCurrency(row.avgMonthlyRevenue)}</TableCell>
+                        <TableCell className="text-right">{row.avgNpl.toFixed(1)}%</TableCell>
+                        <TableCell className="text-right">{Math.round(row.overallScore)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
@@ -1078,7 +1380,7 @@ export function KementerianNationalDashboard() {
           </div>
         </TabsContent>
 
-        <TabsContent value="records" className="space-y-4">
+        <TabsContent value="records" id="records" className="space-y-4">
           <div className="grid gap-4 xl:grid-cols-2">
             <Card className={SURFACE_CARD}>
               <CardHeader className="pb-4">

@@ -173,6 +173,7 @@ export interface KementerianDashboardSnapshot {
   hierarchyTitle: string
   hierarchyRows: GroupSummary[]
   regionComparisons: GroupSummary[]
+  villageComparisons: GroupSummary[]
   cooperativeComparisons: GroupSummary[]
   ageDistribution: DistributionItem[]
   genderDistribution: DistributionItem[]
@@ -1303,6 +1304,7 @@ export function getKementerianDashboardSnapshot(filters: ScopeFilters): Kementer
   if (selectedCooperative) breadcrumb.push(selectedCooperative.name)
 
   const regionComparisons = groupCooperatives(cooperatives, 'region')
+  const villageComparisons = groupCooperatives(cooperatives, 'village')
   const cooperativeComparisons = buildCooperativeSummaries(cooperatives)
   const hierarchyRows = selectedCooperative
     ? buildCooperativeSummaries(
@@ -1349,6 +1351,7 @@ export function getKementerianDashboardSnapshot(filters: ScopeFilters): Kementer
     hierarchyTitle,
     hierarchyRows,
     regionComparisons,
+    villageComparisons,
     cooperativeComparisons,
     ageDistribution,
     genderDistribution,

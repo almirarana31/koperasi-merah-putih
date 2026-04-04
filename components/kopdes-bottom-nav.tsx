@@ -76,10 +76,10 @@ const MOBILE_ROLE_NAV: Record<string, NavItem[]> = {
   ],
   kementerian: [
     { label: 'Beranda', href: '/dashboard', icon: LayoutDashboard },
-    { label: 'Produksi', href: '/produksi/agregasi', icon: Sprout },
-    { label: 'Forecast', href: '/ai/forecast', icon: Brain },
-    { label: 'Logistik', href: '/logistik', icon: Truck },
-    { label: 'Laporan', href: '/keuangan/laporan', icon: FileText },
+    { label: 'Kendali', href: '/command-center', icon: BarChart3 },
+    { label: 'Anggota', href: '/anggota', icon: Users },
+    { label: 'Keuangan', href: '/keuangan', icon: Wallet },
+    { label: 'AI', href: '/ai', icon: Brain },
   ],
   sysadmin: [
     { label: 'Beranda', href: '/dashboard', icon: LayoutDashboard },
