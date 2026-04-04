@@ -38,39 +38,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useAuth } from '@/lib/auth/use-auth'
+import {
+  KEMENTERIAN_DASHBOARD_DATA,
+  type ScopeFilters,
+} from '@/lib/kementerian-dashboard-data'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ExportButton } from '@/components/dashboard/export-button'
 import { transactions, formatCurrency, formatDate } from '@/lib/data'
-
-const typeLabels: Record<string, string> = {
-  simpanan: 'Simpanan',
-  pinjaman: 'Pinjaman',
-  penjualan: 'Penjualan',
-  pembelian: 'Pembelian',
-  operasional: 'Operasional',
-}
-
-const typeColors: Record<string, string> = {
-  simpanan: 'bg-emerald-500/10 text-emerald-500',
-  pinjaman: 'bg-amber-500/10 text-amber-500',
-  penjualan: 'bg-blue-500/10 text-blue-500',
-  pembelian: 'bg-red-500/10 text-red-500',
-  operasional: 'bg-gray-500/10 text-gray-500',
-}
+import { members } from '@/lib/mock-data'
 
 export default function KeuanganPage() {
+  const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
   const [search, setSearch] = useState('')
   const [filterType, setFilterType] = useState<string>('all')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
 
   const filteredTransactions = transactions.filter((tx) => {
     const matchesSearch = tx.deskripsi
       .toLowerCase()
       .includes(search.toLowerCase())
     const matchesType = filterType === 'all' || tx.tipe === filterType
+
+    if (isKementerian) {
+      // In a real app, transactions would be linked to cooperatives/villages
+      // For this mock, we'll assume they are linked to members, and we filter by member location
+      const member = members.find(m => m.name === tx.kategori || m.id === tx.id.replace('TX', 'M'))
+      if (member) {
+        const matchesProvince = filters.provinceId === 'all' || member.province.toUpperCase() === filters.provinceId
+        const matchesRegion = filters.regionId === 'all' || member.district.toUpperCase().includes(filters.regionId.split('-')[0])
+        const matchesVillage = filters.villageId === 'all' || member.village.toUpperCase().includes(filters.villageId.split('-').pop() || '')
+        
+        return matchesSearch && matchesType && matchesProvince && matchesRegion && matchesVillage
+      }
+    }
+
     return matchesSearch && matchesType
   })
 
-  const totalKredit = transactions.reduce((sum, t) => sum + t.kredit, 0)
-  const totalDebit = transactions.reduce((sum, t) => sum + t.debit, 0)
-  const currentSaldo = transactions[transactions.length - 1]?.saldo || 0
+  const totalKredit = filteredTransactions.reduce((sum, t) => sum + t.kredit, 0)
+  const totalDebit = filteredTransactions.reduce((sum, t) => sum + t.debit, 0)
+  const currentSaldo = filteredTransactions[filteredTransactions.length - 1]?.saldo || 0
+
 
   return (
     <div className="space-y-6">
@@ -83,6 +99,21 @@ export default function KeuanganPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {isKementerian && (
+            <ExportButton
+              title="Laporan Transaksi Keuangan Nasional"
+              filename="KOPDES_Keuangan_Nasional"
+              data={filteredTransactions.map(tx => ({
+                'Tanggal': tx.tanggal,
+                'Tipe': tx.tipe,
+                'Kategori': tx.kategori,
+                'Deskripsi': tx.deskripsi,
+                'Debit': tx.debit,
+                'Kredit': tx.kredit,
+                'Saldo': tx.saldo
+              }))}
+            />
+          )}
           <Button variant="outline" asChild>
             <Link href="/keuangan/credit-scoring">
               <TrendingUp className="mr-2 h-4 w-4" />
@@ -172,19 +203,33 @@ export default function KeuanganPage() {
         </Card>
       </div>
 
+      {isKementerian && (
+        <div className="mb-4">
+          <KementerianFilterBar
+            filters={filters}
+            setFilters={setFilters}
+            search={search}
+            setSearch={setSearch}
+            showCommodity={false}
+          />
+        </div>
+      )}
+
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Cari transaksi..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            {!isKementerian && (
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Cari transaksi..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+            )}
             <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger className="w-[160px]">
                 <Filter className="mr-2 h-4 w-4" />

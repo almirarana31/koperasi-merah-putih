@@ -19,9 +19,42 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { useAuth } from '@/lib/auth/use-auth'
+import {
+  KEMENTERIAN_DASHBOARD_DATA,
+  type ScopeFilters,
+} from '@/lib/kementerian-dashboard-data'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ExportButton } from '@/components/dashboard/export-button'
 import { warehouses } from '@/lib/data'
 
 export default function DaftarGudangPage() {
+  const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
+  const [search, setSearch] = useState('')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  const filteredWarehouses = warehouses.filter((warehouse) => {
+    const matchesSearch = warehouse.nama.toLowerCase().includes(search.toLowerCase()) || 
+                         warehouse.alamat.toLowerCase().includes(search.toLowerCase())
+    
+    if (isKementerian) {
+      // Mapping warehouse address to regional filters (heuristic)
+      const matchesProvince = filters.provinceId === 'all' || warehouse.alamat.toUpperCase().includes(filters.provinceId)
+      const matchesRegion = filters.regionId === 'all' || warehouse.alamat.toUpperCase().includes(filters.regionId.split('-')[0])
+      
+      return matchesSearch && matchesProvince && matchesRegion
+    }
+
+    return matchesSearch
+  })
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -39,15 +72,44 @@ export default function DaftarGudangPage() {
             </p>
           </div>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Tambah Gudang
-        </Button>
+        <div className="flex gap-2">
+          {isKementerian && (
+            <ExportButton
+              title="Daftar Gudang Nasional"
+              filename="KOPDES_Inventory_Gudang"
+              data={filteredWarehouses.map(w => ({
+                'Nama': w.nama,
+                'Tipe': w.tipe,
+                'Alamat': w.alamat,
+                'Kapasitas (kg)': w.kapasitas,
+                'Terpakai (kg)': w.kapasitasTerpakai,
+                'Suhu': w.suhu ? `${w.suhu}°C` : '-',
+                'Status': w.status
+              }))}
+            />
+          )}
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Tambah Gudang
+          </Button>
+        </div>
       </div>
+
+      {isKementerian && (
+        <div className="mb-4">
+          <KementerianFilterBar
+            filters={filters}
+            setFilters={setFilters}
+            search={search}
+            setSearch={setSearch}
+            showCommodity={false}
+          />
+        </div>
+      )}
 
       {/* Warehouse Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {warehouses.map((warehouse) => {
+        {filteredWarehouses.map((warehouse) => {
           const usagePercent = Math.round(
             (warehouse.kapasitasTerpakai / warehouse.kapasitas) * 100
           )

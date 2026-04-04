@@ -59,8 +59,15 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { HarvestDetailDialog } from '@/components/dialogs/harvest-detail-dialog'
-import { useAuth } from '@/lib/auth'
+import {
+  KEMENTERIAN_DASHBOARD_DATA,
+  type ScopeFilters,
+} from '@/lib/kementerian-dashboard-data'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ExportButton } from '@/components/dashboard/export-button'
+import { useAuth } from '@/lib/auth/use-auth'
 import { productions, formatDate, getStatusColor } from '@/lib/data'
+import { members } from '@/lib/mock-data'
 
 const gradeColors: Record<string, string> = {
   A: 'bg-primary/10 text-primary',
@@ -124,8 +131,16 @@ const regionalSummaries = [
 
 export default function ProduksiPage() {
   const { user, canRoute } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [selectedHarvest, setSelectedHarvest] = useState<(typeof productions)[number] | null>(null)
@@ -137,10 +152,23 @@ export default function ProduksiPage() {
       prod.memberNama.toLowerCase().includes(search.toLowerCase()) ||
       prod.komoditasNama.toLowerCase().includes(search.toLowerCase())
     const matchesStatus = filterStatus === 'all' || prod.status === filterStatus
+
+    if (isKementerian) {
+      // Find the member associated with this production to get their location
+      const member = members.find(m => m.id === prod.memberId)
+      if (member) {
+        const matchesProvince = filters.provinceId === 'all' || member.province.toUpperCase() === filters.provinceId
+        const matchesRegion = filters.regionId === 'all' || member.district.toUpperCase().includes(filters.regionId.split('-')[0])
+        const matchesVillage = filters.villageId === 'all' || member.village.toUpperCase().includes(filters.villageId.split('-').pop() || '')
+        
+        return matchesSearch && matchesStatus && matchesProvince && matchesRegion && matchesVillage
+      }
+    }
+
     return matchesSearch && matchesStatus
   })
 
-  const totalHarvestVolume = productions.reduce((sum, prod) => sum + prod.jumlah, 0)
+  const totalHarvestVolume = filteredProductions.reduce((sum, prod) => sum + prod.jumlah, 0)
   const isAggregateViewer = user.role === 'pemda' || user.role === 'kementerian'
 
   if (user.role === 'petani') {
@@ -350,14 +378,29 @@ export default function ProduksiPage() {
               Tampilan agregat untuk pemantauan wilayah. Detail individu anggota tidak ditampilkan pada role ini.
             </p>
           </div>
-          {canRoute('/produksi/agregasi') && (
-            <Button variant="outline" asChild>
-              <Link href="/produksi/agregasi">
-                <BarChart3 className="mr-2 h-4 w-4" />
-                Buka Agregasi Detail
-              </Link>
-            </Button>
-          )}
+          <div className="flex gap-2">
+            <ExportButton
+              title="Ringkasan Produksi Wilayah"
+              filename="KOPDES_Produksi_Wilayah"
+              data={filteredProductions.map(p => ({
+                'ID': p.id,
+                'Anggota': p.memberNama,
+                'Komoditas': p.komoditasNama,
+                'Jumlah': `${p.jumlah} ${p.satuan}`,
+                'Grade': p.grade,
+                'Tanggal': p.tanggalPanen,
+                'Status': p.status
+              }))}
+            />
+            {canRoute('/produksi/agregasi') && (
+              <Button variant="outline" asChild>
+                <Link href="/produksi/agregasi">
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  Buka Agregasi Detail
+                </Link>
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -370,7 +413,7 @@ export default function ProduksiPage() {
           <Card>
             <CardContent className="p-4">
               <p className="text-sm text-muted-foreground">Produksi tercatat</p>
-              <p className="mt-2 text-3xl font-bold">188 ton</p>
+              <p className="mt-2 text-3xl font-bold">{totalHarvestVolume.toLocaleString()} ton</p>
               <p className="mt-1 text-xs text-primary">Akumulasi pekan ini</p>
             </CardContent>
           </Card>
@@ -391,6 +434,17 @@ export default function ProduksiPage() {
             </CardContent>
           </Card>
         </div>
+
+        {isKementerian && (
+          <div className="mb-4">
+            <KementerianFilterBar
+              filters={filters}
+              setFilters={setFilters}
+              search={search}
+              setSearch={setSearch}
+            />
+          </div>
+        )}
 
         <div className="grid gap-4 lg:grid-cols-3">
           {regionalSummaries.map((item) => (

@@ -54,25 +54,59 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { useAuth } from '@/lib/auth/use-auth'
+import {
+  KEMENTERIAN_DASHBOARD_DATA,
+  type ScopeFilters,
+} from '@/lib/kementerian-dashboard-data'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ExportButton } from '@/components/dashboard/export-button'
 import { members } from '@/lib/mock-data'
 
 export default function AnggotaPage() {
+  const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
+
   const [search, setSearch] = useState('')
   const [filterRole, setFilterRole] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
   const [selectedMember, setSelectedMember] = useState<any>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [membersList, setMembersList] = useState(members)
 
   const filteredMembers = membersList.filter((member) => {
+    // Basic search
     const matchesSearch =
       member.name.toLowerCase().includes(search.toLowerCase()) ||
       member.memberNumber.toLowerCase().includes(search.toLowerCase()) ||
       member.ktp.includes(search)
     
+    // Existing list filters
     const matchesRole = filterRole === 'all' || member.role === filterRole
     const matchesStatus = filterStatus === 'all' || member.status === filterStatus
+
+    // National monitoring filters (Kementerian only)
+    if (isKementerian) {
+      const matchesProvince = filters.provinceId === 'all' || member.province.toUpperCase() === filters.provinceId
+      // Note: In mock-data.ts, member has 'district', but in filters it's 'regionId'
+      // We need to map these correctly. For now, let's assume 'district' in mock-data corresponds to 'region'
+      const matchesRegion = filters.regionId === 'all' || member.district.toUpperCase().includes(filters.regionId.split('-')[0])
+      const matchesVillage = filters.villageId === 'all' || member.village.toUpperCase().includes(filters.villageId.split('-').pop() || '')
+      
+      // Cooperative mapping might be tricky since mock members don't have cooperativeId
+      // But they have 'group'. In a real app, they would have cooperativeId.
+      
+      return matchesSearch && matchesRole && matchesStatus && matchesProvince && matchesRegion && matchesVillage
+    }
     
     return matchesSearch && matchesRole && matchesStatus
   })
@@ -116,6 +150,22 @@ export default function AnggotaPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {isKementerian && (
+            <ExportButton
+              title="Data Anggota Koperasi Merah Putih"
+              filename="KOPDES_Data_Anggota"
+              data={filteredMembers.map(m => ({
+                'No. Anggota': m.memberNumber,
+                'Nama': m.name,
+                'NIK': m.ktp,
+                'Telepon': m.phone,
+                'Desa': m.village,
+                'Peran': m.role,
+                'Simpanan': m.financial.savings,
+                'Status': m.status
+              }))}
+            />
+          )}
           <Button variant="outline" asChild>
             <Link href="/anggota/onboarding">
               <CreditCard className="mr-2 h-4 w-4" />
@@ -148,7 +198,7 @@ export default function AnggotaPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Total Anggota</CardDescription>
-            <CardTitle className="text-2xl">{members.length}</CardTitle>
+            <CardTitle className="text-2xl">{filteredMembers.length}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center text-xs text-emerald-600">
@@ -161,13 +211,13 @@ export default function AnggotaPage() {
           <CardHeader className="pb-2">
             <CardDescription>Produsen Aktif</CardDescription>
             <CardTitle className="text-2xl">
-              {members.filter(m => m.role === 'produsen' && m.status === 'active').length}
+              {filteredMembers.filter(m => m.role === 'produsen' && m.status === 'active').length}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center text-xs text-muted-foreground">
               <Users className="mr-1 h-3 w-3" />
-              Tersebar di {new Set(members.map(m => m.village)).size} Desa
+              Tersebar di {new Set(filteredMembers.map(m => m.village)).size} Desa
             </div>
           </CardContent>
         </Card>
@@ -175,7 +225,7 @@ export default function AnggotaPage() {
           <CardHeader className="pb-2">
             <CardDescription>Menunggu Verifikasi</CardDescription>
             <CardTitle className="text-2xl text-amber-600">
-              {members.filter(m => m.status === 'pending').length}
+              {filteredMembers.filter(m => m.status === 'pending').length}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -189,7 +239,7 @@ export default function AnggotaPage() {
           <CardHeader className="pb-2">
             <CardDescription>Total Simpanan</CardDescription>
             <CardTitle className="text-2xl">
-              {formatCurrency(members.reduce((sum, m) => sum + m.financial.savings, 0))}
+              {formatCurrency(filteredMembers.reduce((sum, m) => sum + m.financial.savings, 0))}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -198,19 +248,33 @@ export default function AnggotaPage() {
         </Card>
       </div>
 
-      {/* Filters */}
+      {/* Kementerian National Filter Bar (if role permits) */}
+      {isKementerian && (
+        <div className="mb-4">
+          <KementerianFilterBar
+            filters={filters}
+            setFilters={setFilters}
+            search={search}
+            setSearch={setSearch}
+          />
+        </div>
+      )}
+
+      {/* Local Filters */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Cari nama, No Anggota, atau NIK..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            {!isKementerian && (
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Cari nama, No Anggota, atau NIK..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+            )}
             <div className="flex gap-2">
               <Select value={filterRole} onValueChange={setFilterRole}>
                 <SelectTrigger className="w-[150px]">

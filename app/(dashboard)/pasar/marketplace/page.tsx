@@ -32,6 +32,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+import { useAuth } from '@/lib/auth/use-auth'
+import {
+  KEMENTERIAN_DASHBOARD_DATA,
+  type ScopeFilters,
+} from '@/lib/kementerian-dashboard-data'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ExportButton } from '@/components/dashboard/export-button'
+
 const products = [
   {
     id: 1,
@@ -122,14 +130,33 @@ const products = [
 ]
 
 export default function MarketplacePage() {
+  const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
   const [sortBy, setSortBy] = useState('featured')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
 
   const filteredProducts = products
     .filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase())
       const matchesCategory = category === 'all' || product.category === category
+
+      if (isKementerian) {
+        // Filter by location
+        const loc = product.location.toUpperCase()
+        const matchesProvince = filters.provinceId === 'all' || loc.includes(filters.provinceId)
+        const matchesRegion = filters.regionId === 'all' || loc.includes(filters.regionId.split('-')[0])
+        
+        return matchesSearch && matchesCategory && matchesProvince && matchesRegion
+      }
+
       return matchesSearch && matchesCategory
     })
     .sort((a, b) => {
@@ -144,11 +171,29 @@ export default function MarketplacePage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Marketplace</h1>
-          <p className="text-muted-foreground">
-            Belanja langsung dari petani lokal - Segar, Berkualitas, Terpercaya
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Marketplace</h1>
+            <p className="text-muted-foreground">
+              Belanja langsung dari petani lokal - Segar, Berkualitas, Terpercaya
+            </p>
+          </div>
+          {isKementerian && (
+            <ExportButton
+              title="Laporan Marketplace Nasional"
+              filename="KOPDES_Marketplace_Summary"
+              data={filteredProducts.map(p => ({
+                'Produk': p.name,
+                'Kategori': p.category,
+                'Harga': p.price,
+                'Unit': p.unit,
+                'Penjual': p.seller,
+                'Lokasi': p.location,
+                'Stok': p.stock,
+                'Rating': p.rating
+              }))}
+            />
+          )}
         </div>
 
         {/* Featured Banner */}
@@ -172,19 +217,32 @@ export default function MarketplacePage() {
         </Card>
       </div>
 
+      {isKementerian && (
+        <div className="mb-4">
+          <KementerianFilterBar
+            filters={filters}
+            setFilters={setFilters}
+            search={search}
+            setSearch={setSearch}
+          />
+        </div>
+      )}
+
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Cari produk..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            {!isKementerian && (
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Cari produk..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+            )}
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger className="w-[180px]">
                 <Filter className="mr-2 h-4 w-4" />

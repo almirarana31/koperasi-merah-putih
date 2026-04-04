@@ -20,6 +20,13 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { useAuth } from '@/lib/auth/use-auth'
+import {
+  KEMENTERIAN_DASHBOARD_DATA,
+  type ScopeFilters,
+} from '@/lib/kementerian-dashboard-data'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ExportButton } from '@/components/dashboard/export-button'
 import { shipments, orders, formatDate } from '@/lib/data'
 
 const statusColors: Record<string, string> = {
@@ -30,9 +37,34 @@ const statusColors: Record<string, string> = {
 }
 
 export default function TrackingPage() {
-  const activeShipments = shipments.filter(
-    (s) => s.status === 'transit' || s.status === 'pickup'
-  )
+  const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
+  const [search, setSearch] = useState('')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  const activeShipments = shipments.filter((s) => {
+    const isUnderway = s.status === 'transit' || s.status === 'pickup'
+    const order = orders.find((o) => o.id === s.orderId)
+    const matchesSearch = s.nomorResi.toLowerCase().includes(search.toLowerCase()) || 
+                         s.driver.toLowerCase().includes(search.toLowerCase()) ||
+                         order?.buyerNama.toLowerCase().includes(search.toLowerCase())
+    
+    if (isKementerian) {
+      // Heuristic check for shipment/order location
+      const buyerLoc = order?.buyerNama.toUpperCase() || ''
+      const matchesProvince = filters.provinceId === 'all' || buyerLoc.includes(filters.provinceId)
+      
+      return isUnderway && matchesSearch && matchesProvince
+    }
+
+    return isUnderway && matchesSearch
+  })
 
   return (
     <div className="space-y-6">
@@ -49,7 +81,35 @@ export default function TrackingPage() {
             Pantau pengiriman secara real-time
           </p>
         </div>
+        <div className="ml-auto">
+          {isKementerian && (
+            <ExportButton
+              title="Laporan Tracking Logistik Nasional"
+              filename="KOPDES_Logistik_Tracking"
+              data={activeShipments.map(s => ({
+                'Resi': s.nomorResi,
+                'Driver': s.driver,
+                'Kendaraan': s.kendaraan,
+                'Plat': s.platNomor,
+                'Tanggal': s.tanggalBerangkat,
+                'Status': s.status
+              }))}
+            />
+          )}
+        </div>
       </div>
+
+      {isKementerian && (
+        <div className="mb-4">
+          <KementerianFilterBar
+            filters={filters}
+            setFilters={setFilters}
+            search={search}
+            setSearch={setSearch}
+            showCommodity={false}
+          />
+        </div>
+      )}
 
       {/* Map Placeholder */}
       <Card className="overflow-hidden">
