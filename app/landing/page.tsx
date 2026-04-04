@@ -44,14 +44,14 @@ const ENTRY_ROLES: EntryRole[] = [
     scope: 'Lintas koperasi nasional',
     description: 'Pengawasan nasional, analitik, alert risiko, dan laporan wilayah.',
     icon: Landmark,
-    tone: 'bg-sky-50 text-sky-700 border-sky-200',
+    tone: 'bg-rose-50 text-rose-700 border-rose-200',
   },
   {
     title: 'System Admin',
     scope: 'Seluruh platform',
     description: 'Administrasi sistem, audit akses, dan kontrol konfigurasi platform.',
     icon: UserCog,
-    tone: 'bg-slate-100 text-slate-700 border-slate-200',
+    tone: 'bg-stone-100 text-stone-700 border-stone-200',
   },
 ]
 
@@ -129,7 +129,7 @@ export default function LandingPage() {
               <Card className="border-slate-200 bg-white shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-950 text-white">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-700">
                       <LockKeyhole className="h-5 w-5" />
                     </div>
                     <div className="space-y-3">

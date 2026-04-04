@@ -60,6 +60,9 @@ type RoleArtwork = {
   featuredActionIndexes: [number, number, number]
 }
 
+const SURFACE_CARD = 'overflow-hidden border-stone-200/80 bg-white shadow-[0_18px_40px_-32px_rgba(15,23,42,0.28)]'
+const SUBTLE_PANEL = 'rounded-2xl border border-stone-200 bg-stone-50/80'
+
 const SCOPE_LABELS: Record<DataScope, string> = {
   own: 'Data pribadi',
   koperasi: 'Level koperasi',
@@ -427,49 +430,49 @@ function RoleHeroArtwork({
   }
 
   return (
-    <div className="relative min-h-[220px] overflow-hidden rounded-[1.8rem] border border-white/12 bg-[linear-gradient(145deg,rgba(255,255,255,0.12),rgba(255,255,255,0.04))] p-3.5 backdrop-blur-sm sm:min-h-[250px] sm:rounded-[2rem] sm:p-4">
-      <div className="absolute -right-10 -top-8 h-32 w-32 rounded-full bg-white/12 blur-2xl" />
-      <div className="absolute -left-8 bottom-10 h-24 w-24 rounded-full bg-black/10 blur-2xl" />
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),transparent_48%)]" />
+    <div className="relative min-h-[220px] overflow-hidden rounded-[1.8rem] border border-rose-200/80 bg-[linear-gradient(135deg,#ffffff_0%,#fff7f7_62%,#fff1ef_100%)] p-3.5 sm:min-h-[250px] sm:rounded-[2rem] sm:p-4">
+      <div className="absolute -right-10 -top-8 h-32 w-32 rounded-full bg-rose-200/60 blur-2xl" />
+      <div className="absolute -left-8 bottom-10 h-24 w-24 rounded-full bg-amber-100/80 blur-2xl" />
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(190,24,93,0.06),transparent_48%)]" />
       <div className="relative flex h-full flex-col gap-3 sm:gap-4">
         <div className="flex items-start justify-between gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/14 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-primary-foreground/82 sm:px-3 sm:py-1.5 sm:text-[10px] sm:tracking-[0.22em]">
-            <span className="h-2 w-2 rounded-full bg-green-300" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white/90 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-rose-700 sm:px-3 sm:py-1.5 sm:text-[10px] sm:tracking-[0.22em]">
+            <span className="h-2 w-2 rounded-full bg-rose-500" />
             {artwork.eyebrow}
           </div>
-          <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] bg-white/16 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] sm:h-12 sm:w-12 sm:rounded-2xl">
-            <PrimaryIcon className="h-[1.125rem] w-[1.125rem] text-primary-foreground sm:h-5 sm:w-5" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-rose-200 bg-rose-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] sm:h-12 sm:w-12 sm:rounded-2xl">
+            <PrimaryIcon className="h-[1.125rem] w-[1.125rem] text-rose-700 sm:h-5 sm:w-5" />
           </div>
         </div>
 
         <div className="grid flex-1 gap-3 min-[430px]:grid-cols-[1.08fr_0.92fr]">
           <Link
             href={mainAction.href}
-            className="group flex flex-col justify-between rounded-[1.65rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.16),rgba(255,255,255,0.08))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] transition-transform hover:-translate-y-0.5 min-[430px]:rounded-[1.9rem] min-[430px]:p-5"
+            className="group flex flex-col justify-between rounded-[1.65rem] border border-rose-200 bg-white/92 p-4 shadow-[0_18px_40px_-34px_rgba(15,23,42,0.35)] transition-transform hover:-translate-y-0.5 min-[430px]:rounded-[1.9rem] min-[430px]:p-5"
           >
             <div className="flex items-center justify-between">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/74 sm:text-xs sm:tracking-[0.18em]">{artwork.panelLabel}</p>
-              <mainAction.icon className="h-4 w-4 text-primary-foreground/78" />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500 sm:text-xs sm:tracking-[0.18em]">{artwork.panelLabel}</p>
+              <mainAction.icon className="h-4 w-4 text-rose-700" />
             </div>
             <div className="space-y-2.5">
-              <p className="text-[2.35rem] font-bold leading-none tracking-tight text-primary-foreground min-[430px]:text-[2.55rem]">
+              <p className="text-[2.35rem] font-bold leading-none tracking-tight text-slate-950 min-[430px]:text-[2.55rem]">
                 {artwork.stat}
               </p>
-              <p className="max-w-[15rem] text-[13px] leading-5 text-primary-foreground/74 sm:text-sm sm:leading-6">
+              <p className="max-w-[15rem] text-[13px] leading-5 text-slate-600 sm:text-sm sm:leading-6">
                 {artwork.statNote}
               </p>
             </div>
-            <div className="mt-3 rounded-[1.3rem] border border-white/12 bg-black/8 px-3 py-3 sm:mt-4 sm:rounded-2xl">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/62 sm:text-[10px] sm:tracking-[0.18em]">
+            <div className="mt-3 rounded-[1.3rem] border border-stone-200 bg-stone-50 px-3 py-3 sm:mt-4 sm:rounded-2xl">
+              <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-stone-500 sm:text-[10px] sm:tracking-[0.18em]">
                 Status panel
               </p>
               <div className="mt-2 flex items-center justify-between gap-2">
-                <span className="min-w-0 line-clamp-1 text-[15px] font-medium text-primary-foreground sm:text-sm">{mainAction.title}</span>
+                <span className="min-w-0 line-clamp-1 text-[15px] font-medium text-slate-950 sm:text-sm">{mainAction.title}</span>
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-white/12 px-2 py-1 text-[10px] font-semibold text-primary-foreground/80">
+                  <span className="rounded-full bg-rose-50 px-2 py-1 text-[10px] font-semibold text-rose-700">
                     Live
                   </span>
-                  <ArrowRight className="h-3.5 w-3.5 text-primary-foreground/75 transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRight className="h-3.5 w-3.5 text-stone-500 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </div>
             </div>
@@ -479,48 +482,48 @@ function RoleHeroArtwork({
             {secondaryAction && (
               <Link
                 href={secondaryAction.href}
-                className="group rounded-[1.4rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.15),rgba(255,255,255,0.08))] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-transform hover:-translate-y-0.5 min-[430px]:rounded-[1.6rem] min-[430px]:p-4"
+                className="group rounded-[1.4rem] border border-stone-200 bg-white/88 p-3.5 transition-transform hover:-translate-y-0.5 min-[430px]:rounded-[1.6rem] min-[430px]:p-4"
               >
               <div className="flex items-center justify-between">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/66 sm:text-[10px] sm:tracking-[0.18em]">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-stone-500 sm:text-[10px] sm:tracking-[0.18em]">
                   {artwork.secondaryLabel}
                 </p>
-                <secondaryAction.icon className="h-3.5 w-3.5 text-primary-foreground/74 sm:h-4 sm:w-4" />
+                <secondaryAction.icon className="h-3.5 w-3.5 text-rose-700 sm:h-4 sm:w-4" />
               </div>
-              <p className="mt-3 text-[1.9rem] font-bold leading-none tracking-tight text-primary-foreground sm:mt-4 sm:text-2xl">
+              <p className="mt-3 text-[1.9rem] font-bold leading-none tracking-tight text-slate-950 sm:mt-4 sm:text-2xl">
                 {artwork.secondaryValue}
               </p>
               <div className="mt-3 flex items-center justify-between gap-2">
-                <span className="min-w-0 line-clamp-1 text-[15px] font-medium text-primary-foreground/82 sm:text-sm">
+                <span className="min-w-0 line-clamp-1 text-[15px] font-medium text-slate-800 sm:text-sm">
                   {secondaryAction.title}
                 </span>
-                <ArrowRight className="h-3.5 w-3.5 text-primary-foreground/75 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="h-3.5 w-3.5 text-stone-500 transition-transform group-hover:translate-x-0.5" />
               </div>
               </Link>
             )}
             {tertiaryAction && (
               <Link
                 href={tertiaryAction.href}
-                className="group flex min-h-[8.75rem] flex-col justify-between rounded-[1.4rem] border border-white/10 bg-black/8 p-3.5 transition-transform hover:-translate-y-0.5 min-[430px]:flex-1 min-[430px]:rounded-[1.6rem] min-[430px]:p-4"
+                className="group flex min-h-[8.75rem] flex-col justify-between rounded-[1.4rem] border border-stone-200 bg-stone-50 p-3.5 transition-transform hover:-translate-y-0.5 min-[430px]:flex-1 min-[430px]:rounded-[1.6rem] min-[430px]:p-4"
               >
               <div className="flex items-center justify-between">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-primary-foreground/66 sm:text-[10px] sm:tracking-[0.18em]">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-stone-500 sm:text-[10px] sm:tracking-[0.18em]">
                   {artwork.tertiaryLabel}
                 </p>
-                <tertiaryAction.icon className="h-3.5 w-3.5 text-primary-foreground/72 sm:h-4 sm:w-4" />
+                <tertiaryAction.icon className="h-3.5 w-3.5 text-rose-700 sm:h-4 sm:w-4" />
               </div>
               <div>
-                <p className="text-[1.9rem] font-bold leading-none tracking-tight text-primary-foreground sm:text-2xl">
+                <p className="text-[1.9rem] font-bold leading-none tracking-tight text-slate-950 sm:text-2xl">
                   {artwork.tertiaryValue}
                 </p>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full w-[68%] rounded-full bg-white/70" />
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-stone-200">
+                  <div className="h-full w-[68%] rounded-full bg-rose-600" />
                 </div>
                 <div className="mt-3 flex items-center justify-between gap-2">
-                  <span className="min-w-0 line-clamp-1 text-[15px] font-medium text-primary-foreground/82 sm:text-sm">
+                  <span className="min-w-0 line-clamp-1 text-[15px] font-medium text-slate-800 sm:text-sm">
                     {tertiaryAction.title}
                   </span>
-                  <ArrowRight className="h-3.5 w-3.5 text-primary-foreground/75 transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRight className="h-3.5 w-3.5 text-stone-500 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </div>
               </Link>
@@ -533,7 +536,7 @@ function RoleHeroArtwork({
             <Link
               key={action.href}
               href={action.href}
-              className={`rounded-2xl border border-white/8 bg-white/10 px-3 py-2 text-center text-[11px] font-medium text-primary-foreground/84 transition-colors hover:bg-white/18 sm:text-xs ${
+              className={`rounded-2xl border border-stone-200 bg-white/85 px-3 py-2 text-center text-[11px] font-medium text-slate-700 transition-colors hover:bg-stone-50 sm:text-xs ${
                 featuredActions.length % 2 === 1 && index === featuredActions.length - 1
                   ? 'col-span-2 min-[430px]:col-span-1'
                   : ''
@@ -565,7 +568,7 @@ export default function DashboardPage() {
   const hero = HERO_INSIGHTS[user.role]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 pb-6">
       <section className="space-y-3 sm:space-y-4">
         <div className="px-1">
           <p className="text-sm font-medium text-muted-foreground">Selamat datang kembali,</p>
@@ -574,38 +577,41 @@ export default function DashboardPage() {
           </h1>
         </div>
 
-        <Card className="overflow-hidden border-none bg-[linear-gradient(135deg,#be0817_0%,#d92827_54%,#aa2d2a_100%)] text-primary-foreground shadow-[0_28px_70px_-30px_rgba(133,18,23,0.55)]">
+        <Card
+          className={`${SURFACE_CARD} border-rose-200/70 bg-[linear-gradient(135deg,#fffdfd_0%,#fff8f8_58%,#fff4f1_100%)]`}
+        >
           <CardContent className="relative p-0">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.12),transparent_28%)]" />
-            <div className="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/12 blur-3xl" />
-            <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-black/10 blur-2xl" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(244,63,94,0.1),transparent_36%),radial-gradient(circle_at_bottom_left,rgba(251,191,36,0.12),transparent_28%)]" />
+            <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(120,113,108,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.08)_1px,transparent_1px)] [background-size:32px_32px]" />
+            <div className="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-rose-200/70 blur-3xl" />
+            <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-amber-100/80 blur-2xl" />
             <div className="relative grid gap-4 p-4 sm:gap-5 sm:p-6 xl:grid-cols-[1.02fr_0.98fr] xl:items-stretch">
               <div className="space-y-4 sm:space-y-5">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/72">Overview role</p>
-                  <p className="mt-2 text-[2rem] font-bold leading-[0.98] tracking-tight sm:text-5xl">{experience.heading}</p>
-                  <p className="mt-3 max-w-xl text-[13px] leading-5 text-primary-foreground/80 sm:text-sm sm:leading-6">{experience.summary}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-rose-700">Overview role</p>
+                  <p className="mt-2 text-[2rem] font-bold leading-[0.98] tracking-tight text-slate-950 sm:text-5xl">{experience.heading}</p>
+                  <p className="mt-3 max-w-xl text-[13px] leading-5 text-slate-600 sm:text-sm sm:leading-6">{experience.summary}</p>
                 </div>
 
                 <div className="grid gap-2.5 sm:gap-3 sm:grid-cols-[0.9fr_1.1fr]">
-                  <div className="rounded-[1.2rem] border border-white/12 bg-white/12 p-3.5 backdrop-blur-sm sm:rounded-[1.4rem] sm:p-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary-foreground/64">{hero.label}</p>
-                    <p className="mt-2 text-lg font-bold tracking-tight text-primary-foreground sm:text-xl">{hero.value}</p>
+                  <div className={`${SUBTLE_PANEL} p-3.5 sm:p-4`}>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500">{hero.label}</p>
+                    <p className="mt-2 text-lg font-bold tracking-tight text-slate-950 sm:text-xl">{hero.value}</p>
                   </div>
-                  <div className="rounded-[1.2rem] border border-white/10 bg-black/8 p-3.5 sm:rounded-[1.4rem] sm:p-4">
-                    <p className="text-[13px] leading-5 text-primary-foreground/78 sm:text-sm sm:leading-6">{hero.note}</p>
+                  <div className="rounded-[1.2rem] border border-rose-200 bg-white/88 p-3.5 sm:rounded-[1.4rem] sm:p-4">
+                    <p className="text-[13px] leading-5 text-slate-600 sm:text-sm sm:leading-6">{hero.note}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] bg-white/15 text-xl backdrop-blur-sm sm:h-12 sm:w-12 sm:rounded-2xl sm:text-2xl">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-rose-200 bg-rose-50 text-xl text-rose-700 sm:h-12 sm:w-12 sm:rounded-2xl sm:text-2xl">
                     {roleConfig.icon}
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Badge className="border-none bg-white/15 px-3 py-1 text-xs text-primary-foreground backdrop-blur-sm sm:text-sm">
+                    <Badge className="border border-rose-200 bg-white px-3 py-1 text-xs text-rose-700 hover:bg-white sm:text-sm">
                       {roleConfig.label}
                     </Badge>
-                    <Badge className="border-none bg-white/15 px-3 py-1 text-xs text-primary-foreground backdrop-blur-sm sm:text-sm">
+                    <Badge className="border border-stone-200 bg-stone-100 px-3 py-1 text-xs text-stone-700 hover:bg-stone-100 sm:text-sm">
                       {scope}
                     </Badge>
                   </div>
@@ -616,7 +622,7 @@ export default function DashboardPage() {
                     <Button
                       key={action.href}
                       asChild
-                      className="h-10 flex-1 rounded-xl bg-white/16 text-sm text-primary-foreground backdrop-blur-sm hover:bg-white/22 sm:h-11"
+                      className="h-10 flex-1 rounded-xl bg-rose-700 text-sm text-white hover:bg-rose-800 sm:h-11"
                     >
                       <Link href={action.href}>
                         <action.icon className="mr-2 h-4 w-4" />
@@ -645,9 +651,9 @@ export default function DashboardPage() {
 
             return (
               <Link key={action.href} href={action.href} className="group">
-                <Card className="border-white/80 bg-white shadow-sm transition-transform hover:-translate-y-0.5">
+                <Card className={`${SURFACE_CARD} transition-transform hover:-translate-y-0.5`}>
                   <CardContent className="flex flex-col items-center gap-3 p-4 text-center">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/60 bg-background text-primary shadow-sm">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-700 shadow-sm">
                       <Icon className="h-6 w-6" />
                     </div>
                     <div>
@@ -663,8 +669,8 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
-        <Card className="border-white/80 bg-white shadow-sm">
-          <CardHeader className="pb-3">
+        <Card className={SURFACE_CARD}>
+          <CardHeader className="pb-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <CardTitle className="text-lg">Fokus Utama</CardTitle>
@@ -677,8 +683,8 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {experience.priorities.map((priority, index) => (
-              <div key={priority} className="flex items-start gap-3 rounded-2xl border border-border/60 bg-background p-4">
-                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div key={priority} className={`flex items-start gap-3 ${SUBTLE_PANEL} p-4`}>
+                <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
                   {index === 0 ? <ShieldCheck className="h-4 w-4" /> : index === 1 ? <ClipboardCheck className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
                 </div>
                 <div>
@@ -690,8 +696,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-white/80 bg-white shadow-sm">
-          <CardHeader className="pb-3">
+        <Card className={SURFACE_CARD}>
+          <CardHeader className="pb-4">
             <CardTitle className="text-lg">Lanjutan Aksi</CardTitle>
             <CardDescription>Fitur tambahan yang tetap tersedia untuk Anda.</CardDescription>
           </CardHeader>
@@ -701,9 +707,9 @@ export default function DashboardPage() {
                 <Link
                   key={action.href}
                   href={action.href}
-                  className="flex items-center gap-3 rounded-2xl border border-border/60 bg-background p-4 transition-colors hover:border-primary/30 hover:bg-primary/[0.03]"
+                  className="flex items-center gap-3 rounded-2xl border border-stone-200 bg-stone-50/70 p-4 transition-colors hover:border-rose-200 hover:bg-rose-50/60"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
                     <action.icon className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -714,7 +720,7 @@ export default function DashboardPage() {
                 </Link>
               ))
             ) : (
-              <div className="rounded-2xl border border-dashed bg-background p-4">
+              <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50/70 p-4">
                 <p className="font-medium text-foreground">Semua fitur utama sudah tampil di atas</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Role ini memang didesain dengan alur yang lebih ringkas agar fokus kerja tetap jelas.
@@ -725,30 +731,30 @@ export default function DashboardPage() {
         </Card>
       </section>
 
-      <Card className="border-white/80 bg-white shadow-sm">
-        <CardHeader className="pb-3">
+      <Card className={SURFACE_CARD}>
+        <CardHeader className="pb-4">
           <CardTitle className="text-lg">Akses Dilindungi</CardTitle>
           <CardDescription>
             Fitur di luar tanggung jawab role Anda otomatis disembunyikan dari dashboard, sidebar, dan akses URL langsung.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-2xl border border-dashed bg-background p-4">
-            <Users className="mb-3 h-5 w-5 text-primary" />
+          <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50/70 p-4">
+            <Users className="mb-3 h-5 w-5 text-rose-700" />
             <p className="font-medium">Manajemen anggota sensitif</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Penambahan, onboarding, dan verifikasi anggota hanya muncul untuk role pengelola.
             </p>
           </div>
-          <div className="rounded-2xl border border-dashed bg-background p-4">
-            <Warehouse className="mb-3 h-5 w-5 text-primary" />
+          <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50/70 p-4">
+            <Warehouse className="mb-3 h-5 w-5 text-rose-700" />
             <p className="font-medium">Operasional sesuai fungsi</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Gudang, logistik, pasar, dan keuangan dibatasi berdasarkan use case tiap peran.
             </p>
           </div>
-          <div className="rounded-2xl border border-dashed bg-background p-4">
-            <ClipboardCheck className="mb-3 h-5 w-5 text-primary" />
+          <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50/70 p-4">
+            <ClipboardCheck className="mb-3 h-5 w-5 text-rose-700" />
             <p className="font-medium">URL manual tetap ditolak</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Walau alamat halaman diketik langsung, halaman yang tidak sesuai tetap tidak bisa dibuka.

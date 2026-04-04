@@ -84,12 +84,12 @@ const ROLE_ACCESS_OPTIONS: RoleAccessOption[] = [
     workspace: 'Dashboard pengawasan nasional',
     icon: Landmark,
     tone: {
-      iconWrap: 'bg-sky-50 border-sky-200',
-      icon: 'text-sky-700',
-      badge: 'bg-sky-100 text-sky-700',
-      border: 'border-sky-200',
-      selected: 'border-sky-400 bg-sky-50/90',
-      selectedRing: 'ring-sky-100',
+      iconWrap: 'bg-rose-50 border-rose-200',
+      icon: 'text-rose-700',
+      badge: 'bg-rose-100 text-rose-700',
+      border: 'border-rose-200',
+      selected: 'border-rose-400 bg-rose-50/90',
+      selectedRing: 'ring-rose-100',
     },
   },
   {
@@ -100,12 +100,12 @@ const ROLE_ACCESS_OPTIONS: RoleAccessOption[] = [
     workspace: 'Panel administrasi sistem',
     icon: UserCog,
     tone: {
-      iconWrap: 'bg-slate-100 border-slate-200',
-      icon: 'text-slate-700',
-      badge: 'bg-slate-200 text-slate-700',
-      border: 'border-slate-200',
-      selected: 'border-slate-400 bg-slate-100/90',
-      selectedRing: 'ring-slate-200',
+      iconWrap: 'bg-stone-100 border-stone-200',
+      icon: 'text-stone-700',
+      badge: 'bg-stone-200 text-stone-700',
+      border: 'border-stone-200',
+      selected: 'border-stone-400 bg-stone-100/90',
+      selectedRing: 'ring-stone-200',
     },
   },
 ]
@@ -200,8 +200,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f5f7fa_0%,#eef2f6_100%)] px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
       <div className="mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-7xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_44px_120px_-72px_rgba(15,23,42,0.35)] lg:grid-cols-[1.02fr_0.98fr]">
-        <section className="relative hidden overflow-hidden bg-[linear-gradient(165deg,#fffefe_0%,#f7f1f1_36%,#f2f4f7_100%)] px-10 py-10 lg:flex lg:flex-col lg:justify-start lg:gap-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,8,23,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(15,23,42,0.05),transparent_30%)]" />
+        <section className="relative hidden overflow-hidden bg-[linear-gradient(165deg,#fffefe_0%,#f7f1f1_36%,#f6f0ec_100%)] px-10 py-10 lg:flex lg:flex-col lg:justify-start lg:gap-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(190,8,23,0.08),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.06),transparent_30%)]" />
           <div className="relative space-y-8">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -243,14 +243,14 @@ export default function LoginPage() {
           </div>
 
           <div className="relative space-y-4">
-            <div className="rounded-2xl border border-slate-200 bg-slate-950 px-6 py-6 text-white shadow-[0_24px_60px_-40px_rgba(15,23,42,0.85)]">
+            <div className="rounded-2xl border border-rose-200 bg-[linear-gradient(135deg,#fffdfd_0%,#fff6f6_58%,#fff1ef_100%)] px-6 py-6 text-slate-950 shadow-[0_24px_60px_-40px_rgba(190,24,93,0.28)]">
               <div className="mb-5 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Struktur Akses</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-700">Struktur Akses</p>
                   <p className="mt-2 text-xl font-semibold">Empat peran utama sistem</p>
                 </div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
-                  <LockKeyhole className="h-5 w-5 text-white" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200 bg-white/90">
+                  <LockKeyhole className="h-5 w-5 text-rose-700" />
                 </div>
               </div>
 
@@ -259,13 +259,13 @@ export default function LoginPage() {
                   const Icon = option.icon
 
                   return (
-                    <div key={option.role} className="flex items-start gap-3 rounded-xl border border-white/8 bg-white/[0.04] p-3">
+                    <div key={option.role} className="flex items-start gap-3 rounded-xl border border-stone-200 bg-white/88 p-3">
                       <div className={`flex h-10 w-10 items-center justify-center rounded-lg border ${option.tone.iconWrap}`}>
                         <Icon className={`h-5 w-5 ${option.tone.icon}`} />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-medium text-white">{option.title}</p>
-                        <p className="text-sm text-slate-300">{option.scope}</p>
+                        <p className="font-medium text-slate-950">{option.title}</p>
+                        <p className="text-sm text-slate-600">{option.scope}</p>
                       </div>
                     </div>
                   )
