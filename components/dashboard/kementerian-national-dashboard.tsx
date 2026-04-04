@@ -15,6 +15,9 @@ import {
   Sparkles,
   Users,
   Wallet,
+  Info,
+  ChevronRight,
+  Zap,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
@@ -29,13 +32,15 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  Cell,
+  Pie,
+  PieChart,
 } from 'recharts'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   KEMENTERIAN_DASHBOARD_DATA,
   getKementerianDashboardSnapshot,
@@ -56,10 +61,6 @@ const compactNumberFormatter = new Intl.NumberFormat('id-ID', {
   maximumFractionDigits: 1,
 })
 
-function formatCurrency(value: number) {
-  return currencyFormatter.format(value)
-}
-
 function formatCompactCurrency(value: number) {
   const compact = compactNumberFormatter.format(value)
   return `Rp${compact}`
@@ -70,173 +71,13 @@ function formatPercent(value: number) {
   return `${sign}${value.toFixed(1)}%`
 }
 
-function scoreToHealth(score: number) {
-  if (score >= 80) return 'good'
-  if (score >= 65) return 'warning'
-  return 'critical'
-}
-
 function healthBadgeClass(status: string) {
-  if (status === 'good') return 'bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/10'
-  if (status === 'warning') return 'bg-amber-500/10 text-amber-700 hover:bg-amber-500/10'
-  return 'bg-red-500/10 text-red-700 hover:bg-red-500/10'
+  if (status === 'good') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  if (status === 'warning') return 'bg-amber-50 text-amber-700 border-amber-200'
+  return 'bg-rose-50 text-rose-700 border-rose-200'
 }
 
-function severityBadgeClass(severity: AlertSeverity) {
-  if (severity === 'critical') return 'bg-red-500/10 text-red-700 hover:bg-red-500/10'
-  if (severity === 'warning') return 'bg-amber-500/10 text-amber-700 hover:bg-amber-500/10'
-  return 'bg-stone-500/10 text-stone-700 hover:bg-stone-500/10'
-}
-
-function severityAlertClass(severity: AlertSeverity) {
-  if (severity === 'critical') return 'border-red-200 bg-red-50/70 text-red-900'
-  if (severity === 'warning') return 'border-amber-200 bg-amber-50/70 text-amber-900'
-  return 'border-stone-200 bg-stone-50/80 text-stone-900'
-}
-
-function toRelativeUpdateLabel(lastUpdated: string, now: number) {
-  const diffMinutes = Math.max(0, Math.round((now - new Date(lastUpdated).getTime()) / 60000))
-  if (diffMinutes < 1) return 'Baru saja sinkron'
-  if (diffMinutes < 60) return `Sinkron ${diffMinutes} menit lalu`
-  const diffHours = Math.round(diffMinutes / 60)
-  return `Sinkron ${diffHours} jam lalu`
-}
-
-function rowContext(row: GroupSummary) {
-  if (row.level === 'region') return row.province
-  if (row.level === 'village') return row.region
-  if (row.level === 'cooperative') return row.village
-  return row.province
-}
-
-function actionLabel(row: GroupSummary) {
-  if (row.level === 'region') return 'Buka desa'
-  if (row.level === 'village') return 'Buka koperasi'
-  return 'Lihat detail'
-}
-
-type MetricTone = 'neutral' | 'rose' | 'sand' | 'amber' | 'crimson' | 'emerald'
-
-const METRIC_TONES: Record<
-  MetricTone,
-  { card: string; label: string; value: string; iconWrap: string; icon: string; accent: string }
-> = {
-  neutral: {
-    card: 'border-stone-200 bg-[linear-gradient(180deg,#ffffff_0%,#fafaf9_100%)]',
-    label: 'text-stone-600',
-    value: 'text-slate-950',
-    iconWrap: 'border-stone-200 bg-stone-100',
-    icon: 'text-stone-700',
-    accent: 'bg-stone-700',
-  },
-  rose: {
-    card: 'border-rose-200 bg-[linear-gradient(180deg,#fff8f8_0%,#fff2f3_100%)]',
-    label: 'text-rose-700',
-    value: 'text-slate-950',
-    iconWrap: 'border-rose-200 bg-rose-100',
-    icon: 'text-rose-700',
-    accent: 'bg-rose-600',
-  },
-  sand: {
-    card: 'border-orange-200 bg-[linear-gradient(180deg,#fffdf8_0%,#fff5ea_100%)]',
-    label: 'text-orange-700',
-    value: 'text-slate-950',
-    iconWrap: 'border-orange-200 bg-orange-100',
-    icon: 'text-orange-700',
-    accent: 'bg-orange-500',
-  },
-  amber: {
-    card: 'border-amber-200 bg-[linear-gradient(180deg,#fffdf7_0%,#fff7e6_100%)]',
-    label: 'text-amber-700',
-    value: 'text-slate-950',
-    iconWrap: 'border-amber-200 bg-amber-100',
-    icon: 'text-amber-700',
-    accent: 'bg-amber-500',
-  },
-  crimson: {
-    card: 'border-rose-200 bg-[linear-gradient(180deg,#fff8f8_0%,#fff0f0_100%)]',
-    label: 'text-rose-700',
-    value: 'text-slate-950',
-    iconWrap: 'border-rose-200 bg-rose-100',
-    icon: 'text-rose-700',
-    accent: 'bg-rose-500',
-  },
-  emerald: {
-    card: 'border-emerald-200 bg-[linear-gradient(180deg,#fbfffd_0%,#effcf4_100%)]',
-    label: 'text-emerald-700',
-    value: 'text-slate-950',
-    iconWrap: 'border-emerald-200 bg-emerald-100',
-    icon: 'text-emerald-700',
-    accent: 'bg-emerald-500',
-  },
-}
-
-function insightToneClass(index: number) {
-  const variants = [
-    'border-rose-200/70 bg-[linear-gradient(180deg,#ffffff_0%,#fff7f6_100%)]',
-    'border-amber-200/70 bg-[linear-gradient(180deg,#ffffff_0%,#fffaf1_100%)]',
-    'border-sky-200/70 bg-[linear-gradient(180deg,#ffffff_0%,#f5f9ff_100%)]',
-  ]
-  return variants[index % variants.length]
-}
-
-const SURFACE_CARD =
-  'overflow-hidden border border-[#ead8d6]/55 bg-white shadow-[0_20px_42px_-34px_rgba(145,0,15,0.15)]'
-const SUBTLE_PANEL = 'rounded-2xl bg-[#f3f4f5] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.38)]'
-
-function areSameSelections(left: string[], right: string[]) {
-  return left.length === right.length && left.every((item, index) => item === right[index])
-}
-
-function normalizeComparisonSelection(current: string[], availableIds: string[]) {
-  const valid = current.filter((id) => availableIds.includes(id)).slice(0, 3)
-  if (valid.length > 0) return valid
-  return availableIds.slice(0, 3)
-}
-
-function OverviewMetricCard({
-  title,
-  value,
-  description,
-  icon: Icon,
-  tone,
-  trend,
-}: {
-  title: string
-  value: string
-  description: string
-  icon: LucideIcon
-  tone: MetricTone
-  trend?: { value: number; isPositive: boolean }
-}) {
-  const palette = METRIC_TONES[tone]
-
-  return (
-    <Card className={`${SURFACE_CARD} ${palette.card}`}>
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0 flex-1">
-            <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${palette.label}`}>{title}</p>
-            <p className={`mt-3 text-[2rem] font-bold leading-none tracking-tight ${palette.value}`}>{value}</p>
-            <p className="mt-2 text-sm text-slate-600">{description}</p>
-            {trend && (
-              <p className={`mt-3 text-sm font-medium ${trend.isPositive ? 'text-emerald-700' : 'text-rose-700'}`}>
-                {trend.isPositive ? '+' : ''}
-                {trend.value.toFixed(1)}% dari periode sebelumnya
-              </p>
-            )}
-          </div>
-          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${palette.iconWrap}`}>
-            <Icon className={`h-5 w-5 ${palette.icon}`} />
-          </div>
-        </div>
-        <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-stone-200">
-          <div className={`h-full w-[62%] rounded-full ${palette.accent}`} />
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
+const SURFACE_CARD = 'overflow-hidden border border-slate-200 bg-white shadow-sm'
 
 export function KementerianNationalDashboard() {
   const [filters, setFilters] = useState<ScopeFilters>({
@@ -244,15 +85,22 @@ export function KementerianNationalDashboard() {
     regionId: 'all',
     villageId: 'all',
     cooperativeId: 'all',
+    commodityId: 'all',
   })
   const [clock, setClock] = useState(() => Date.now())
-  const [villageComparisonIds, setVillageComparisonIds] = useState<string[]>([])
-  const [cooperativeComparisonIds, setCooperativeComparisonIds] = useState<string[]>([])
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setClock(Date.now()), 30000)
     return () => window.clearInterval(intervalId)
   }, [])
+
+  const commodityOptions = [
+    { id: 'all', label: 'Semua Komoditas' },
+    { id: 'beras', label: 'Beras' },
+    { id: 'jagung', label: 'Jagung' },
+    { id: 'cabai', label: 'Cabai' },
+    { id: 'bawang', label: 'Bawang' },
+  ]
 
   const provinceOptions = KEMENTERIAN_DASHBOARD_DATA.provinceOptions
   const regionOptions = KEMENTERIAN_DASHBOARD_DATA.regionOptions.filter(
@@ -271,293 +119,386 @@ export function KementerianNationalDashboard() {
   })
 
   const snapshot = getKementerianDashboardSnapshot(filters)
-  const villageComparisonOptions = snapshot.villageComparisons.slice(0, 8)
-  const cooperativeComparisonOptions = snapshot.cooperativeComparisons.slice(0, 10)
-  const ratioOverview = snapshot.selectedCooperative
-    ? snapshot.selectedCooperative.ratioScores.map((ratio) => ({
-        label: ratio.label,
-        score: ratio.score,
-        valueLabel: ratio.key === 'profitability' ? `${ratio.value}%` : `${ratio.value}x`,
-        status: ratio.status,
-      }))
-    : [
-        {
-          label: 'Likuiditas',
-          score: snapshot.summary.avgLiquidityScore,
-          valueLabel: 'Skor rata-rata',
-          status: scoreToHealth(snapshot.summary.avgLiquidityScore),
-        },
-        {
-          label: 'Solvabilitas',
-          score: snapshot.summary.avgSolvencyScore,
-          valueLabel: 'Skor rata-rata',
-          status: scoreToHealth(snapshot.summary.avgSolvencyScore),
-        },
-        {
-          label: 'Rentabilitas',
-          score: snapshot.summary.avgProfitabilityScore,
-          valueLabel: 'Skor rata-rata',
-          status: scoreToHealth(snapshot.summary.avgProfitabilityScore),
-        },
-      ]
-  const topGrowthRegions = [...snapshot.regionComparisons]
-    .sort((left, right) => right.incomeImprovementPct - left.incomeImprovementPct)
-    .slice(0, 5)
-  const weakestCooperatives = [...snapshot.cooperativeComparisons]
-    .sort((left, right) => left.overallScore - right.overallScore)
-    .slice(0, 5)
-  const healthTone: MetricTone =
-    snapshot.summary.overallHealth === 'good'
-      ? 'emerald'
-      : snapshot.summary.overallHealth === 'warning'
-        ? 'amber'
-        : 'crimson'
-  const nplTone: MetricTone = snapshot.summary.avgNpl >= 6 ? 'crimson' : 'amber'
-  const selectedVillageComparisons = snapshot.villageComparisons.filter((row) => villageComparisonIds.includes(row.id))
-  const selectedCooperativeComparisons = snapshot.cooperativeComparisons.filter((row) =>
-    cooperativeComparisonIds.includes(row.id),
-  )
-
-  useEffect(() => {
-    const availableVillageIds = snapshot.villageComparisons.map((row) => row.id)
-    setVillageComparisonIds((current) => {
-      const next = normalizeComparisonSelection(current, availableVillageIds)
-      return areSameSelections(current, next) ? current : next
-    })
-  }, [snapshot.villageComparisons])
-
-  useEffect(() => {
-    const availableCooperativeIds = snapshot.cooperativeComparisons.map((row) => row.id)
-    setCooperativeComparisonIds((current) => {
-      const next = normalizeComparisonSelection(current, availableCooperativeIds)
-      return areSameSelections(current, next) ? current : next
-    })
-  }, [snapshot.cooperativeComparisons])
-
-  const updateProvince = (provinceId: string) => {
-    setFilters({
-      provinceId,
-      regionId: 'all',
-      villageId: 'all',
-      cooperativeId: 'all',
-    })
-  }
-
-  const updateRegion = (regionId: string) => {
-    setFilters((current) => ({
-      ...current,
-      regionId,
-      villageId: 'all',
-      cooperativeId: 'all',
-    }))
-  }
-
-  const updateVillage = (villageId: string) => {
-    setFilters((current) => ({
-      ...current,
-      villageId,
-      cooperativeId: 'all',
-    }))
-  }
-
-  const updateCooperative = (cooperativeId: string) => {
-    setFilters((current) => ({
-      ...current,
-      cooperativeId,
-    }))
-  }
-
-  const toggleVillageComparison = (rowId: string) => {
-    setVillageComparisonIds((current) => {
-      if (current.includes(rowId)) return current.filter((id) => id !== rowId)
-      if (current.length >= 3) return [...current.slice(1), rowId]
-      return [...current, rowId]
-    })
-  }
-
-  const toggleCooperativeComparison = (rowId: string) => {
-    setCooperativeComparisonIds((current) => {
-      if (current.includes(rowId)) return current.filter((id) => id !== rowId)
-      if (current.length >= 3) return [...current.slice(1), rowId]
-      return [...current, rowId]
-    })
-  }
 
   const drillInto = (row: GroupSummary) => {
     if (row.level === 'region') {
-      setFilters((current) => ({
-        ...current,
-        regionId: row.id,
-        villageId: 'all',
-        cooperativeId: 'all',
-      }))
-      return
-    }
-
-    if (row.level === 'village') {
-      setFilters((current) => ({
-        ...current,
-        villageId: row.id,
-        cooperativeId: 'all',
-      }))
-      return
-    }
-
-    if (row.level === 'cooperative') {
-      setFilters((current) => ({
-        ...current,
-        cooperativeId: row.id,
-      }))
+      setFilters(prev => ({ ...prev, provinceId: row.province, regionId: row.id, villageId: 'all', cooperativeId: 'all' }))
+    } else if (row.level === 'village') {
+      setFilters(prev => ({ ...prev, regionId: row.region, villageId: row.id, cooperativeId: 'all' }))
+    } else if (row.level === 'cooperative') {
+      setFilters(prev => ({ ...prev, cooperativeId: row.id }))
     }
   }
 
+  const rowContext = (row: GroupSummary) => {
+    if (row.level === 'region') return row.province
+    if (row.level === 'village') return `${row.province} / ${row.region}`
+    if (row.level === 'cooperative') return `${row.region} / ${row.village}`
+    return ''
+  }
+
+  const actionLabel = (row: GroupSummary) => {
+    if (row.level === 'region') return 'Drill-down Desa'
+    if (row.level === 'village') return 'Drill-down Koperasi'
+    if (row.level === 'cooperative') return 'Buka Dashboard'
+    return 'Lihat'
+  }
+
+  // Selected Comparison State
+  const [villageComparisonIds, setVillageComparisonIds] = useState<string[]>([])
+  const [cooperativeComparisonIds, setCooperativeComparisonIds] = useState<string[]>([])
+
+  const toggleVillageComparison = (id: string) => {
+    setVillageComparisonIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
+  }
+  const toggleCooperativeComparison = (id: string) => {
+    setCooperativeComparisonIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
+  }
+
+  const villageComparisonOptions = snapshot.villageComparisons.slice(0, 10)
+  const cooperativeComparisonOptions = snapshot.cooperativeComparisons.slice(0, 10)
+
+  const selectedVillageComparisons = snapshot.villageComparisons.filter(v => villageComparisonIds.includes(v.id))
+  const selectedCooperativeComparisons = snapshot.cooperativeComparisons.filter(c => cooperativeComparisonIds.includes(c.id))
+
+  const weakestCooperatives = [...snapshot.cooperativeComparisons].sort((a, b) => a.overallScore - b.overallScore).slice(0, 5)
+  const topGrowthRegions = [...snapshot.regionComparisons].sort((a, b) => b.incomeImprovementPct - a.incomeImprovementPct).slice(0, 5)
+
+  const nplTone = snapshot.summary.avgNpl > 5 ? 'rose' : snapshot.summary.avgNpl > 3 ? 'sand' : 'emerald'
+  const healthTone = snapshot.summary.overallScore > 80 ? 'emerald' : snapshot.summary.overallScore > 65 ? 'sand' : 'rose'
+
+  const ratioOverview = snapshot.selectedCooperative 
+    ? snapshot.selectedCooperative.ratioScores 
+    : [
+        { label: 'Likuiditas', score: snapshot.summary.avgLiquidityScore, status: scoreToStatus(snapshot.summary.avgLiquidityScore), valueLabel: 'Ratio Lancar' },
+        { label: 'Solvabilitas', score: snapshot.summary.avgSolvencyScore, status: scoreToStatus(snapshot.summary.avgSolvencyScore), valueLabel: 'Debt/Equity' },
+        { label: 'Rentabilitas', score: snapshot.summary.avgProfitabilityScore, status: scoreToStatus(snapshot.summary.avgProfitabilityScore), valueLabel: 'Margin Laba' },
+      ]
+
+  const formatCurrency = (val: number) => currencyFormatter.format(val)
+  const insightToneClass = (idx: number) => {
+    const tones = ['border-sky-100 bg-sky-50/30', 'border-emerald-100 bg-emerald-50/30', 'border-amber-100 bg-amber-50/30']
+    return tones[idx % tones.length]
+  }
+  const severityAlertClass = (s: AlertSeverity) => s === 'critical' ? 'border-rose-100 bg-rose-50/50 text-rose-950' : 'border-amber-100 bg-amber-50/50 text-amber-950'
+  const severityBadgeClass = (s: AlertSeverity) => s === 'critical' ? 'bg-rose-600' : 'bg-amber-600'
+
+  const SUBTLE_PANEL = 'rounded-2xl border border-slate-100 bg-white shadow-sm'
+
   return (
-    <div className="space-y-5 pb-6">
-      <Card
-        className={`${SURFACE_CARD} bg-[linear-gradient(180deg,#fcfbfb_0%,#f7f4f3_100%)]`}
-      >
-        <CardContent className="relative p-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(145,0,15,0.08),transparent_24%),radial-gradient(circle_at_84%_82%,rgba(184,25,31,0.05),transparent_22%)]" />
-          <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(120,113,108,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.06)_1px,transparent_1px)] [background-size:32px_32px]" />
-          <div className="relative grid gap-5 p-5 xl:grid-cols-[1.12fr_0.88fr] xl:p-6">
-            <div className="min-w-0 space-y-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className="border border-[#e4beba]/70 bg-[#ffefed] text-[#930010] hover:bg-[#ffefed]">
-                  Kementerian
-                </Badge>
-                <Badge className="border border-[#e7dfdd] bg-white/90 text-[#6b4a46] hover:bg-white/90">
-                  Seluruh koperasi nasional
-                </Badge>
-                <Badge className="border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-50">
-                  {toRelativeUpdateLabel(KEMENTERIAN_DASHBOARD_DATA.lastUpdated, clock)}
+    <div className="flex flex-col gap-4 p-4 lg:p-6 bg-slate-50 min-h-screen">
+      {/* HEADER SECTION - COMPACT */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-black text-slate-900 tracking-tight">KEMENTERIAN OVERVIEW</h1>
+            <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-bold px-2 py-0">LIVE</Badge>
+          </div>
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+            <RefreshCw className="h-3 w-3 animate-spin-slow" /> 
+            DATA TERPUSAT: {snapshot.scopeLabel} • Sinkron {Math.floor((Date.now() - clock)/60000)}m lalu
+          </p>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-2 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-1 px-2 border-r border-slate-100">
+            <span className="text-[10px] font-black text-slate-400 uppercase">Prov</span>
+            <Select value={filters.provinceId} onValueChange={(v) => setFilters(prev => ({...prev, provinceId: v, regionId: 'all', villageId: 'all', cooperativeId: 'all'}))}>
+              <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[100px] text-xs font-bold p-0">
+                <SelectValue placeholder="Semua" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua</SelectItem>
+                {provinceOptions.map(opt => <SelectItem key={opt.id} value={opt.id}>{opt.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-1 px-2 border-r border-slate-100">
+            <span className="text-[10px] font-black text-slate-400 uppercase">Reg</span>
+            <Select value={filters.regionId} onValueChange={(v) => setFilters(prev => ({...prev, regionId: v, villageId: 'all', cooperativeId: 'all'}))}>
+              <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[100px] text-xs font-bold p-0">
+                <SelectValue placeholder="Semua" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua</SelectItem>
+                {regionOptions.map(opt => <SelectItem key={opt.id} value={opt.id}>{opt.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-1 px-2 border-r border-slate-100">
+            <span className="text-[10px] font-black text-slate-400 uppercase">Komoditas</span>
+            <Select value={filters.commodityId} onValueChange={(v) => setFilters(prev => ({...prev, commodityId: v}))}>
+              <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[100px] text-xs font-bold p-0">
+                <SelectValue placeholder="Semua" />
+              </SelectTrigger>
+              <SelectContent>
+                {commodityOptions.map(opt => <SelectItem key={opt.id} value={opt.id}>{opt.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="h-8 w-8 p-0 hover:bg-rose-50 hover:text-rose-600"
+            onClick={() => setFilters({provinceId: 'all', regionId: 'all', villageId: 'all', cooperativeId: 'all', commodityId: 'all'})}
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* TOP ROW - KPI AGGREGATES */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+        {[
+          { label: 'Total Koperasi', value: snapshot.summary.cooperatives.toLocaleString('id-ID'), icon: Building2, trend: '+12', tone: 'slate' },
+          { label: 'Anggota Aktif', value: snapshot.summary.totalMembers.toLocaleString('id-ID'), icon: Users, trend: formatPercent(snapshot.summary.memberGrowthPct), tone: 'emerald' },
+          { label: 'Inc / Member', value: formatCompactCurrency(snapshot.summary.avgIncomeAfter), icon: Wallet, trend: '+14%', tone: 'emerald' },
+          { label: 'Rev / Kop', value: formatCompactCurrency(snapshot.summary.avgMonthlyRevenue), icon: BarChart3, trend: '+8.2%', tone: 'emerald' },
+          { label: 'Avg NPL', value: `${snapshot.summary.avgNpl.toFixed(1)}%`, icon: ShieldAlert, trend: '-0.2%', tone: snapshot.summary.avgNpl > 3 ? 'rose' : 'emerald' },
+          { label: 'Health Score', value: `${Math.round(snapshot.summary.overallScore)}`, icon: HeartPulse, trend: 'Optimal', tone: 'emerald' },
+        ].map((kpi, idx) => (
+          <Card key={idx} className={`${SURFACE_CARD} transition-all hover:border-rose-300 hover:shadow-md bg-white border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]`}>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start">
+                <div className={`p-2 rounded-xl bg-slate-50 text-slate-600`}>
+                  <kpi.icon className="h-4 w-4" />
+                </div>
+                <Badge className={`text-[9px] font-black ${kpi.tone === 'rose' ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                  {kpi.trend}
                 </Badge>
               </div>
-
-              <div className="space-y-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#930010]">
-                  Real-time Monitoring Engine
-                </p>
-                <div className="max-w-4xl">
-                  <h1 className="font-display text-3xl font-bold leading-tight tracking-tight text-slate-950 sm:text-[2.6rem]">
-                    National oversight untuk koperasi nasional dengan alert dini dan insight siap presentasi
-                  </h1>
-                  <p className="mt-3 max-w-3xl text-sm leading-6 text-[#5f666d]">
-                    {snapshot.aiSummary}
-                  </p>
-                </div>
+              <div className="mt-3">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</p>
+                <p className="text-2xl font-black text-slate-900 tracking-tighter mt-0.5">{kpi.value}</p>
               </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div className={`${SUBTLE_PANEL} bg-white/80 p-4`}>
-                  <p className="text-xs uppercase tracking-[0.18em] text-[#7b5c57]">Cakupan aktif</p>
-                  <p className="mt-3 font-display text-2xl font-bold text-slate-950">{snapshot.scopeLabel}</p>
-                  <p className="mt-1 text-sm text-[#5f666d]">{snapshot.contextLabel}</p>
-                </div>
-                <div className="rounded-2xl bg-[#fff4f2] p-4 shadow-[inset_0_0_0_1px_rgba(254,202,202,0.8)]">
-                  <p className="text-xs uppercase tracking-[0.18em] text-red-700">Alert kritis</p>
-                  <p className="mt-3 font-display text-2xl font-bold text-slate-950">{snapshot.summary.criticalCount}</p>
-                  <p className="mt-1 text-sm text-red-700/90">Prioritas nasional untuk intervensi cepat</p>
-                </div>
-                <div className="rounded-2xl bg-[#fffaf1] p-4 shadow-[inset_0_0_0_1px_rgba(253,230,138,0.85)]">
-                  <p className="text-xs uppercase tracking-[0.18em] text-amber-700">Skor kesehatan</p>
-                  <p className="mt-3 font-display text-2xl font-bold text-slate-950">{Math.round(snapshot.summary.overallScore)}/100</p>
-                  <p className="mt-1 text-sm text-amber-700/90">Status {snapshot.summary.overallHealth}</p>
-                </div>
+      {/* MIDDLE SECTION - CHARTS & EWS */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* MAIN CHART - 8 COLS */}
+        <Card className={`${SURFACE_CARD} lg:col-span-8 flex flex-col`}>
+          <CardHeader className="p-4 border-b border-slate-100 flex flex-row items-center justify-between space-y-0">
+            <div className="space-y-0.5">
+              <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">Performa Pertumbuhan Nasional</CardTitle>
+              <CardDescription className="text-[10px] font-bold text-slate-500">Korelasi anggota baru vs produksi beras (agregat)</CardDescription>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600">
+                <div className="h-2 w-2 rounded-full bg-emerald-500" /> ANGGOTA
               </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  asChild
-                  className="bg-[linear-gradient(135deg,#91000f_0%,#b8191f_100%)] text-white shadow-[0_18px_36px_-24px_rgba(145,0,15,0.48)] hover:opacity-95"
-                >
-                  <Link href="/command-center">
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    Pusat kendali
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  className="bg-[linear-gradient(135deg,#91000f_0%,#b8191f_100%)] text-white shadow-[0_18px_36px_-24px_rgba(145,0,15,0.48)] hover:opacity-95"
-                >
-                  <Link href="/keuangan/laporan">
-                    <FileText className="mr-2 h-4 w-4" />
-                    Laporan finansial
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="secondary"
-                  className="border border-[#ead8d6]/70 bg-white text-[#5f666d] hover:bg-[#fbf7f6]"
-                >
-                  <Link href="/ai/forecast">
-                    <Brain className="mr-2 h-4 w-4" />
-                    Forecast AI
-                  </Link>
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="border border-[#ead8d6]/70 bg-[#f3f4f5] text-[#5f666d] hover:bg-[#ebe8e7]"
-                  onClick={() =>
-                    setFilters({
-                      provinceId: 'all',
-                      regionId: 'all',
-                      villageId: 'all',
-                      cooperativeId: 'all',
-                    })
-                  }
-                >
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Reset cakupan
-                </Button>
+              <div className="flex items-center gap-1.5 text-[9px] font-black text-rose-600">
+                <div className="h-2 w-2 rounded-full bg-rose-500" /> PRODUKSI
               </div>
             </div>
+          </CardHeader>
+          <CardContent className="p-4 flex-1">
+            <div className="h-[280px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={snapshot.trend}>
+                  <defs>
+                    <linearGradient id="colorEmerald" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="month" fontSize={10} fontWeights="900" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                  <YAxis yAxisId="left" hide />
+                  <YAxis yAxisId="right" orientation="right" hide />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }} 
+                    cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }}
+                  />
+                  <Area yAxisId="left" type="monotone" dataKey="members" stroke="#10b981" strokeWidth={3} fill="url(#colorEmerald)" isAnimationActive={false} />
+                  <Area yAxisId="right" type="monotone" dataKey="npl" stroke="#be0817" strokeWidth={2} fill="transparent" isAnimationActive={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
 
-            <div className="grid gap-4">
-              <Card className={`${SURFACE_CARD} bg-white/92 backdrop-blur-sm`}>
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <CardTitle className="text-lg text-slate-950">Panel Eksekutif</CardTitle>
-                      <CardDescription className="text-[#5f666d]">
-                        Ringkasan cepat untuk briefing pimpinan dan tindak lanjut nasional.
-                      </CardDescription>
+        {/* EWS - 4 COLS */}
+        <Card className={`${SURFACE_CARD} lg:col-span-4 flex flex-col`}>
+          <CardHeader className="p-4 border-b border-slate-100 flex flex-row items-center justify-between space-y-0 bg-slate-50/50">
+            <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+              <ShieldAlert className="h-4 w-4 text-rose-600" /> EARLY WARNING
+            </CardTitle>
+            <Badge variant="destructive" className="h-5 px-2 text-[9px] font-black rounded-full">3 KRITIS</Badge>
+          </CardHeader>
+          <CardContent className="p-0 flex-1 overflow-y-auto">
+            <div className="divide-y divide-slate-100">
+              {snapshot.topAlerts.slice(0, 4).map((alert) => (
+                <div key={alert.id} className="p-3.5 hover:bg-slate-50 transition-colors group cursor-pointer">
+                  <div className="flex items-start gap-3">
+                    <div className={`mt-0.5 p-1.5 rounded-lg ${alert.severity === 'critical' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'}`}>
+                      <AlertTriangle className="h-3 w-3" />
                     </div>
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ffefed] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.7)]">
-                      <BarChart3 className="h-5 w-5 text-[#930010]" />
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="rounded-2xl bg-[linear-gradient(135deg,#fffdfd_0%,#fff5f5_100%)] p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.7)]">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#930010]">Status nasional</p>
-                        <p className="mt-2 font-display text-3xl font-bold tracking-tight text-slate-950">
-                          {Math.round(snapshot.summary.overallScore)}/100
-                        </p>
-                        <p className="mt-1 text-sm text-[#5f666d]">{snapshot.scopeLabel}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-[11px] font-black text-slate-900 truncate uppercase">{alert.title}</p>
+                        <span className="text-[9px] font-bold text-slate-400 whitespace-nowrap">2H LALU</span>
                       </div>
-                      <Badge className={healthBadgeClass(snapshot.summary.overallHealth)}>
-                        {snapshot.summary.overallHealth}
-                      </Badge>
-                    </div>
-                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-stone-200">
-                      <div
-                        className={`h-full rounded-full ${snapshot.summary.overallHealth === 'good' ? 'bg-emerald-500' : snapshot.summary.overallHealth === 'warning' ? 'bg-amber-500' : 'bg-red-500'}`}
-                        style={{ width: `${Math.max(16, Math.min(100, Math.round(snapshot.summary.overallScore)))}%` }}
-                      />
+                      <p className="text-[10px] text-slate-500 mt-1 font-semibold leading-tight line-clamp-2">{alert.message}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-[9px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">{alert.scopeLabel}</span>
+                        <ChevronRight className="h-3 w-3 text-slate-300 group-hover:translate-x-1 transition-transform" />
+                      </div>
                     </div>
                   </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+          <div className="p-3 border-t border-slate-100 bg-slate-50/30">
+            <Button variant="ghost" className="w-full h-8 text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all">
+              Buka Command Center <ArrowRight className="ml-2 h-3 w-3" />
+            </Button>
+          </div>
+        </Card>
+      </div>
 
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div className={`${SUBTLE_PANEL} p-4`}>
-                      <p className="text-xs uppercase tracking-[0.16em] text-[#7b5c57]">Koperasi</p>
-                      <p className="mt-2 font-display text-2xl font-bold text-slate-950">
-                        {snapshot.summary.cooperatives.toLocaleString('id-ID')}
-                      </p>
+      {/* BOTTOM SECTION - TABLES & ANALYTICS */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        {/* CROSS KOPERASI TABLE - 8 COLS */}
+        <Card className={`${SURFACE_CARD} lg:col-span-8 flex flex-col`}>
+          <CardHeader className="p-4 border-b border-slate-100 bg-slate-900">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <CardTitle className="text-sm font-black text-white uppercase tracking-widest">Audit Lintas Unit Kerja</CardTitle>
+                <CardDescription className="text-[10px] font-bold text-slate-400">Monitoring 1,248 Unit Nasional • Filter Aktif: {snapshot.scopeLabel}</CardDescription>
+              </div>
+              <Button size="sm" className="h-8 bg-rose-600 hover:bg-rose-700 text-[10px] font-black text-white px-4 rounded-lg shadow-lg shadow-rose-900/20 uppercase tracking-tighter">
+                Download Audit PDF
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0 overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-slate-50">
+                <TableRow className="border-none hover:bg-transparent">
+                  <TableHead className="text-[9px] font-black text-slate-400 uppercase px-4 h-10">Unit Koperasi</TableHead>
+                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-center h-10">Status</TableHead>
+                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-right h-10">Anggota</TableHead>
+                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-right h-10">Inc / Mem</TableHead>
+                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-right h-10">NPL Ratio</TableHead>
+                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-right px-4 h-10">Skor</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {snapshot.cooperativeComparisons.slice(0, 6).map((row) => (
+                  <TableRow key={row.id} className="border-slate-100 hover:bg-slate-50 transition-colors group cursor-pointer">
+                    <TableCell className="px-4 py-3">
+                      <div className="min-w-[140px]">
+                        <p className="text-xs font-black text-slate-900 group-hover:text-rose-600 transition-colors uppercase truncate">{row.label}</p>
+                        <p className="text-[9px] font-bold text-slate-400 tracking-tighter">{row.village}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge className={`text-[8px] font-black h-4 px-1 ${healthBadgeClass(row.overallHealth)}`}>
+                        {row.overallHealth.toUpperCase()}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right text-xs font-bold text-slate-600">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
+                    <TableCell className="text-right text-xs font-black text-emerald-600">{formatCompactCurrency(row.avgIncomeAfter)}</TableCell>
+                    <TableCell className={`text-right text-xs font-black ${row.avgNpl > 3 ? 'text-rose-600' : 'text-slate-900'}`}>{row.avgNpl.toFixed(1)}%</TableCell>
+                    <TableCell className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <div className="w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${row.overallScore > 80 ? 'bg-emerald-500' : row.overallScore > 60 ? 'bg-amber-500' : 'bg-rose-500'}`} style={{ width: `${row.overallScore}%` }} />
+                        </div>
+                        <span className="text-[10px] font-black text-slate-900">{Math.round(row.overallScore)}</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+          <div className="p-3 bg-slate-50/50 border-t border-slate-100 text-center">
+            <Button variant="link" className="h-auto p-0 text-[10px] font-black text-rose-600 hover:no-underline uppercase tracking-widest" asChild>
+              <Link href="/anggota">Audit Seluruh Database Unit (1,248) →</Link>
+            </Button>
+          </div>
+        </Card>
+
+        {/* DEMOGRAPHICS & HEALTH - 4 COLS */}
+        <div className="lg:col-span-4 flex flex-col gap-4">
+          <Card className={`${SURFACE_CARD} flex-1`}>
+            <CardHeader className="p-4 border-b border-slate-100 pb-3">
+              <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">Kesehatan Portfolio</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="h-[140px] w-full relative">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'Sehat', value: 450, color: '#10b981' },
+                        { name: 'Waspada', value: 620, color: '#f59e0b' },
+                        { name: 'Kritis', value: 178, color: '#be0817' },
+                      ]}
+                      innerRadius={45}
+                      outerRadius={60}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {[0,1,2].map((_, i) => <Cell key={i} fill={['#10b981', '#f59e0b', '#be0817'][i]} />)}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <span className="text-lg font-black text-slate-900">1,248</span>
+                  <span className="text-[8px] font-black text-slate-400 uppercase">Unit</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-1.5 mt-2">
+                {[
+                  { label: 'Sangat Sehat', count: '450', color: 'bg-emerald-500' },
+                  { label: 'Waspada / Audit', count: '620', color: 'bg-amber-500' },
+                  { label: 'Intervensi Segera', count: '178', color: 'bg-rose-500' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <div className={`h-2 w-2 rounded-full ${item.color}`} />
+                      <span className="text-[9px] font-black text-slate-600 uppercase tracking-tighter">{item.label}</span>
                     </div>
-                    <div className="rounded-2xl bg-[#fff4f2] p-4 shadow-[inset_0_0_0_1px_rgba(254,202,202,0.85)]">
-                      <p className="text-xs uppercase tracking-[0.16em] text-red-700">Alert kritis</p>
+                    <span className="text-xs font-black text-slate-900">{item.count}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className={`${SURFACE_CARD} bg-white border-rose-100`}>
+            <CardHeader className="p-4 border-b border-rose-50 flex flex-row items-center justify-between space-y-0 bg-rose-50/20">
+              <CardTitle className="text-sm font-black text-rose-900 uppercase tracking-tight flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-rose-600" /> AI INSIGHT
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              <div className="space-y-1">
+                <p className="text-xs font-black text-slate-900 leading-tight">DETEKSI ANOMALI PENDAPATAN</p>
+                <p className="text-[10px] text-slate-600 font-medium leading-relaxed">
+                  Tren pendapatan di Wilayah Timur melampaui forecast 12%. Disarankan alokasi modal tambahan untuk infrastruktur pasca-panen.
+                </p>
+              </div>
+              <div className="pt-2 border-t border-rose-100">
+                <Button className="w-full h-9 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-200">
+                  Konsultasi Strategi AI
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}
+ext-xs uppercase tracking-[0.16em] text-red-700">Alert kritis</p>
                       <p className="mt-2 font-display text-2xl font-bold text-slate-950">{snapshot.summary.criticalCount}</p>
                     </div>
                     <div className="rounded-2xl bg-[#fffaf1] p-4 shadow-[inset_0_0_0_1px_rgba(253,230,138,0.85)]">
@@ -797,75 +738,91 @@ export function KementerianNationalDashboard() {
                   Nasional - regional - desa - koperasi. Pilih cakupan tanpa meninggalkan halaman utama.
                 </p>
               </div>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-12">
-                <div className="space-y-2 xl:col-span-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Provinsi</p>
-                  <Select value={filters.provinceId} onValueChange={updateProvince}>
-                    <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
-                      <SelectValue placeholder="Semua provinsi" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Semua provinsi</SelectItem>
-                      {provinceOptions.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2 xl:col-span-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Regional</p>
-                  <Select value={filters.regionId} onValueChange={updateRegion}>
-                    <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
-                      <SelectValue placeholder="Semua regional" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Semua regional</SelectItem>
-                      {regionOptions.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2 xl:col-span-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Desa</p>
-                  <Select value={filters.villageId} onValueChange={updateVillage}>
-                    <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
-                      <SelectValue placeholder="Semua desa" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Semua desa</SelectItem>
-                      {villageOptions.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2 xl:col-span-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Koperasi</p>
-                  <Select value={filters.cooperativeId} onValueChange={updateCooperative}>
-                    <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
-                      <SelectValue placeholder="Semua koperasi" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Semua koperasi</SelectItem>
-                      {cooperativeOptions.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-12">
+              <div className="space-y-2 xl:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Provinsi</p>
+                <Select value={filters.provinceId} onValueChange={(v) => setFilters(prev => ({...prev, provinceId: v, regionId: 'all', villageId: 'all', cooperativeId: 'all'}))}>
+                  <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
+                    <SelectValue placeholder="Semua provinsi" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua provinsi</SelectItem>
+                    {provinceOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+
+              <div className="space-y-2 xl:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Regional</p>
+                <Select value={filters.regionId} onValueChange={(v) => setFilters(prev => ({...prev, regionId: v, villageId: 'all', cooperativeId: 'all'}))}>
+                  <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
+                    <SelectValue placeholder="Semua regional" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua regional</SelectItem>
+                    {regionOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2 xl:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Desa</p>
+                <Select value={filters.villageId} onValueChange={(v) => setFilters(prev => ({...prev, villageId: v, cooperativeId: 'all'}))}>
+                  <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
+                    <SelectValue placeholder="Semua desa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua desa</SelectItem>
+                    {villageOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2 xl:col-span-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Koperasi</p>
+                <Select value={filters.cooperativeId} onValueChange={(v) => setFilters(prev => ({...prev, cooperativeId: v}))}>
+                  <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
+                    <SelectValue placeholder="Semua koperasi" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua koperasi</SelectItem>
+                    {cooperativeOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2 xl:col-span-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7b5c57]">Komoditas</p>
+                <Select value={filters.commodityId} onValueChange={(v) => setFilters(prev => ({...prev, commodityId: v}))}>
+                  <SelectTrigger className="w-full min-w-0 border-[#ead8d6]/70 bg-white text-[#5f666d] shadow-none">
+                    <SelectValue placeholder="Semua komoditas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {commodityOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">

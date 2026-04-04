@@ -53,17 +53,17 @@ export function SysadminDashboard() {
           { title: "API Latency", value: "42ms", change: "Stable", trend: "up", icon: Zap, color: "text-amber-600", bg: "bg-amber-50" },
           { title: "Error Logs", value: "0", change: "Last 24h", trend: "down", icon: AlertCircle, color: "text-primary", bg: "bg-primary/5" },
         ].map((kpi, idx) => (
-          <Card key={idx} className="border-border/50 shadow-sm">
+          <Card key={idx} className="border-slate-200 bg-white shadow-sm overflow-hidden">
             <CardContent className="p-5">
               <div className="flex justify-between items-center">
                 <div className={`p-2 rounded-xl ${kpi.bg} ${kpi.color}`}>
                   <kpi.icon className="h-5 w-5" />
                 </div>
-                <div className="text-[10px] font-bold text-muted-foreground uppercase">{kpi.change}</div>
+                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.change}</div>
               </div>
               <div className="mt-4">
-                <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider drop-shadow-sm">{kpi.title}</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm">{kpi.value}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] drop-shadow-sm">{kpi.title}</p>
+                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -72,24 +72,24 @@ export function SysadminDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
         {/* Module Performance */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Kesehatan Modul Platform</CardTitle>
-            <CardDescription className="text-xs">Uptime dan responsivitas per layanan inti.</CardDescription>
+        <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
+          <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Kesehatan Modul Platform</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Uptime dan responsivitas per layanan inti.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-6 mt-4">
+          <CardContent className="p-6">
+            <div className="space-y-6">
               {systemHealth.map((module) => (
                 <div key={module.module} className="space-y-2">
-                  <div className="flex justify-between items-center text-sm">
+                  <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-tight">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold">{module.module} Service</span>
-                      <Badge variant="outline" className="text-[9px] h-4">Latency: {module.latency}</Badge>
+                      <span className="text-slate-900">{module.module} Service</span>
+                      <Badge variant="outline" className="text-[9px] h-4 font-black border-slate-200 text-slate-500 uppercase">Latency: {module.latency}</Badge>
                     </div>
-                    <span className="font-medium text-emerald-600">{module.status}% Uptime</span>
+                    <span className="text-emerald-600">{module.status}% Uptime</span>
                   </div>
-                  <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${module.status}%` }} />
+                  <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200">
+                    <div className="h-full bg-emerald-500 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]" style={{ width: `${module.status}%` }} />
                   </div>
                 </div>
               ))}
@@ -98,28 +98,32 @@ export function SysadminDashboard() {
         </Card>
 
         {/* System Alerts & Audits */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Audit Log Terbaru</CardTitle>
+        <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
+          <CardHeader className="pb-3 bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Audit Log Terbaru</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {[
-              { user: "Sysadmin", action: "Role update", target: "Ketua", time: "5 mnt lalu" },
-              { user: "AI Worker", action: "Sync complete", target: "Price Data", time: "12 mnt lalu" },
-              { user: "Manager A", action: "Export PDF", target: "Q1 Report", time: "45 mnt lalu" },
-              { user: "System", action: "Auto-backup", target: "Postgres", time: "1 jam lalu" },
-            ].map((log, idx) => (
-              <div key={idx} className="flex items-start gap-3 p-3 rounded-xl border border-border/50 bg-secondary/10">
-                <div className="mt-1 h-2 w-2 rounded-full bg-blue-500" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-slate-950 truncate">{log.user} performed {log.action}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Target: {log.target} • {log.time}</p>
+          <CardContent className="p-0">
+            <div className="divide-y divide-slate-100">
+              {[
+                { user: "Sysadmin", action: "Role update", target: "Ketua", time: "5 mnt lalu" },
+                { user: "AI Worker", action: "Sync complete", target: "Price Data", time: "12 mnt lalu" },
+                { user: "Manager A", action: "Export PDF", target: "Q1 Report", time: "45 mnt lalu" },
+                { user: "System", action: "Auto-backup", target: "Postgres", time: "1 jam lalu" },
+              ].map((log, idx) => (
+                <div key={idx} className="flex items-start gap-3 p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
+                  <div className="mt-1.5 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-black text-slate-900 truncate uppercase tracking-tight group-hover:text-rose-600 transition-colors">{log.user} performed {log.action}</p>
+                    <p className="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-widest">Target: {log.target} • {log.time}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-            <Button variant="ghost" className="w-full text-xs font-bold text-primary" asChild>
-              <Link href="/command-center">Buka Konsol Kendali →</Link>
-            </Button>
+              ))}
+            </div>
+            <div className="p-3 bg-slate-50/30">
+              <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all" asChild>
+                <Link href="/command-center">Buka Konsol Kendali →</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

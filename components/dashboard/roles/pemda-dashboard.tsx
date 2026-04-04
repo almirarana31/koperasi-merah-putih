@@ -53,20 +53,20 @@ export function PemdaDashboard() {
           { title: "Distribusi", value: "Stabil", change: "Ok", trend: "up", icon: Truck, color: "text-purple-600", bg: "bg-purple-50" },
           { title: "Harga Rata-rata", value: "Rp 12.8k", change: "+4%", trend: "up", icon: TrendingUp, color: "text-amber-600", bg: "bg-amber-50" },
         ].map((kpi, idx) => (
-          <Card key={idx} className="border-border/50 shadow-sm">
+          <Card key={idx} className="border-slate-200 bg-white shadow-sm overflow-hidden">
             <CardContent className="p-5">
               <div className="flex justify-between items-center">
                 <div className={`p-2 rounded-xl ${kpi.bg} ${kpi.color}`}>
                   <kpi.icon className="h-5 w-5" />
                 </div>
-                <div className="flex items-center gap-1 text-[10px] font-bold">
+                <div className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-tight ${kpi.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
                   {kpi.trend === 'up' ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                   {kpi.change}
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider drop-shadow-sm">{kpi.title}</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm">{kpi.value}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] drop-shadow-sm">{kpi.title}</p>
+                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -75,22 +75,25 @@ export function PemdaDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
         {/* Regional Production Chart */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Produksi Per Kecamatan</CardTitle>
-            <CardDescription className="text-xs">Perbandingan hasil panen utama antar wilayah.</CardDescription>
+        <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
+          <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Produksi Per Kecamatan</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Perbandingan hasil panen utama antar wilayah.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full mt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={regionalProduction}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
-                  <XAxis dataKey="area" fontSize={12} axisLine={false} tickLine={false} />
-                  <YAxis fontSize={12} axisLine={false} tickLine={false} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="beras" name="Beras" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="cabai" name="Cabai" fill="#be0817" radius={[4, 4, 0, 0]} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="area" fontSize={10} fontWeights="900" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                  <YAxis fontSize={10} fontWeights="900" axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }} 
+                    cursor={{ fill: '#f8fafc' }}
+                  />
+                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', paddingBottom: '20px' }} />
+                  <Bar dataKey="beras" name="Beras" fill="#3b82f6" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+                  <Bar dataKey="cabai" name="Cabai" fill="#be0817" radius={[4, 4, 0, 0]} isAnimationActive={false} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -98,32 +101,36 @@ export function PemdaDashboard() {
         </Card>
 
         {/* Top Performing Cooperatives */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Koperasi Unggulan</CardTitle>
-            <CardDescription className="text-xs">Berdasarkan volume & kepatuhan.</CardDescription>
+        <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
+          <CardHeader className="pb-3 bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Koperasi Unggulan</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Berdasarkan volume & kepatuhan.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {[
-              { name: "Kop. Sukatani", area: "Kec. A", volume: "450 Ton", status: "Gold" },
-              { name: "Kop. Berkah", area: "Kec. B", volume: "320 Ton", status: "Silver" },
-              { name: "Kop. Mandiri", area: "Kec. D", volume: "285 Ton", status: "Silver" },
-              { name: "Kop. Tani Jaya", area: "Kec. C", volume: "150 Ton", status: "Active" },
-            ].map((kop, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3.5 rounded-xl border border-border/50 bg-white group">
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-slate-950">{kop.name}</span>
-                  <span className="text-[10px] text-muted-foreground mt-0.5">{kop.area}</span>
+          <CardContent className="p-0">
+            <div className="divide-y divide-slate-100">
+              {[
+                { name: "Kop. Sukatani", area: "Kec. A", volume: "450 Ton", status: "Gold" },
+                { name: "Kop. Berkah", area: "Kec. B", volume: "320 Ton", status: "Silver" },
+                { name: "Kop. Mandiri", area: "Kec. D", volume: "285 Ton", status: "Silver" },
+                { name: "Kop. Tani Jaya", area: "Kec. C", volume: "150 Ton", status: "Active" },
+              ].map((kop, idx) => (
+                <div key={idx} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-black text-slate-900 group-hover:text-rose-600 transition-colors uppercase tracking-tight">{kop.name}</span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{kop.area}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-black text-emerald-600">{kop.volume}</p>
+                    <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 h-4 border-slate-200 text-slate-500 mt-1">{kop.status}</Badge>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-emerald-600">{kop.volume}</p>
-                  <Badge variant="outline" className="text-[9px] h-4 mt-1">{kop.status}</Badge>
-                </div>
-              </div>
-            ))}
-            <Button variant="ghost" className="w-full text-xs font-bold text-primary" asChild>
-              <Link href="/produksi/agregasi">Detail Wilayah →</Link>
-            </Button>
+              ))}
+            </div>
+            <div className="p-3 bg-slate-50/30">
+              <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all" asChild>
+                <Link href="/produksi/agregasi">Detail Wilayah →</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

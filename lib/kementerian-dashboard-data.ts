@@ -6,6 +6,7 @@ export interface ScopeFilters {
   regionId: string
   villageId: string
   cooperativeId: string
+  commodityId: string
 }
 
 export interface OptionItem {

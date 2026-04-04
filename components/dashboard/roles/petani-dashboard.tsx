@@ -45,50 +45,50 @@ export function PetaniDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
-        <h2 className="text-2xl font-bold tracking-tight drop-shadow-sm">Pusat Kerja Petani</h2>
-        <p className="text-slate-700 text-sm font-medium drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Pantau panen, harga pasar, dan layanan keuangan Anda.</p>
+        <h2 className="text-2xl font-black tracking-tight text-slate-950 drop-shadow-sm">Pusat Kerja Petani</h2>
+        <p className="text-slate-700 text-sm font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Pantau panen, harga pasar, dan layanan keuangan Anda.</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         {/* Main Status Card */}
-        <Card className="md:col-span-2 border-primary/20 bg-gradient-to-br from-white to-emerald-50/30 overflow-hidden relative">
+        <Card className="md:col-span-2 border-primary/20 bg-gradient-to-br from-white to-emerald-50/30 overflow-hidden relative shadow-sm">
           <div className="absolute top-0 right-0 p-6 opacity-10">
-            <Sprout className="h-24 w-24" />
+            <Sprout className="h-24 w-24 text-primary" />
           </div>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Badge className="bg-emerald-500 hover:bg-emerald-600">Panen Aktif</Badge>
-              <span className="text-xs text-muted-foreground font-medium">Update: 15 menit lalu</span>
+              <Badge className="bg-emerald-600 hover:bg-emerald-700 font-black text-[10px] uppercase tracking-wider">Panen Aktif</Badge>
+              <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Update: 15 menit lalu</span>
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Estimasi Hasil Panen</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Estimasi Hasil Panen</p>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <p className="text-4xl font-bold">2.9 <span className="text-xl">Ton</span></p>
-                  <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <p className="text-4xl font-black text-slate-950 tracking-tighter">2.9 <span className="text-xl">Ton</span></p>
+                  <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
                     <ArrowUpRight className="h-3 w-3" /> +12%
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">Komoditas: Cabai Merah (Lahan A1)</p>
+                <p className="text-xs font-bold text-slate-600 mt-2">Komoditas: Cabai Merah (Lahan A1)</p>
               </div>
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Kesiapan Panen</span>
-                  <span className="font-bold">85%</span>
+                <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-tight text-slate-900">
+                  <span>Kesiapan Panen</span>
+                  <span className="font-black text-emerald-700">85%</span>
                 </div>
-                <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 w-[85%] rounded-full" />
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200">
+                  <div className="h-full bg-emerald-500 w-[85%] rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]" />
                 </div>
-                <p className="text-[11px] text-muted-foreground leading-tight italic">
+                <p className="text-[10px] text-slate-500 font-bold leading-tight italic">
                   *AI memprediksi panen optimal dalam 4 hari berdasarkan cuaca & kelembaban.
                 </p>
               </div>
             </div>
             <div className="mt-6 flex gap-3">
-              <Button className="rounded-xl h-10 px-6" asChild>
+              <Button className="rounded-xl h-10 px-6 font-black text-[11px] uppercase tracking-widest bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200" asChild>
                 <Link href="/produksi">Catat Aktivitas Panen</Link>
               </Button>
-              <Button variant="outline" className="rounded-xl h-10 px-6" asChild>
+              <Button variant="outline" className="rounded-xl h-10 px-6 font-black text-[11px] uppercase tracking-widest border-emerald-200 text-emerald-700 hover:bg-emerald-50 shadow-sm" asChild>
                 <Link href="/assistant">Tanya AI Tani</Link>
               </Button>
             </div>
@@ -96,31 +96,37 @@ export function PetaniDashboard() {
         </Card>
 
         {/* Quick Price Card */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
+        <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
+          <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Harga Pasar</CardTitle>
+              <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Harga Pasar</CardTitle>
               <ShoppingCart className="h-4 w-4 text-primary" />
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             <div>
-              <p className="text-2xl font-bold">Rp 14.500 <span className="text-xs font-normal text-muted-foreground">/kg</span></p>
+              <p className="text-3xl font-black text-slate-950 tracking-tighter">Rp 14.500 <span className="text-xs font-bold text-slate-400">/kg</span></p>
               <div className="flex items-center gap-1.5 mt-1">
                 <TrendingUp className="h-3 w-3 text-emerald-600" />
-                <span className="text-xs font-bold text-emerald-600">Naik 6% hari ini</span>
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tight">Naik 6% hari ini</span>
               </div>
             </div>
             <div className="h-[80px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={priceTrendData}>
-                  <Line type="monotone" dataKey="harga" stroke="#be0817" strokeWidth={2} dot={false} />
-                </LineChart>
+                <AreaChart data={priceTrendData}>
+                  <defs>
+                    <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#be0817" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#be0817" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <Area type="monotone" dataKey="harga" stroke="#be0817" strokeWidth={3} fill="url(#colorPrice)" isAnimationActive={false} />
+                </AreaChart>
               </ResponsiveContainer>
             </div>
-            <Button variant="ghost" size="sm" className="w-full text-xs font-bold text-primary group" asChild>
+            <Button variant="ghost" size="sm" className="w-full text-[10px] font-black text-primary group uppercase tracking-widest hover:bg-rose-50" asChild>
               <Link href="/pasar/harga">
-                Lihat Semua Komoditas <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
+                Lihat Komoditas <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
           </CardContent>

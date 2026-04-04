@@ -55,20 +55,20 @@ export function BankDashboard() {
           { title: "Loan Pending", value: "16 Berkas", change: "4 Urgent", trend: "up", icon: Clock, color: "text-amber-600", bg: "bg-amber-50" },
           { title: "Avg Credit Score", value: "742", change: "+12 pts", trend: "up", icon: ShieldCheck, color: "text-purple-600", bg: "bg-purple-50" },
         ].map((kpi, idx) => (
-          <Card key={idx} className="border-border/50 shadow-sm">
+          <Card key={idx} className="border-slate-200 bg-white shadow-sm overflow-hidden">
             <CardContent className="p-5">
               <div className="flex justify-between items-center">
                 <div className={`p-2 rounded-xl ${kpi.bg} ${kpi.color}`}>
                   <kpi.icon className="h-5 w-5" />
                 </div>
-                <div className="flex items-center gap-1 text-[10px] font-bold">
+                <div className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-tight ${kpi.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
                   {kpi.trend === 'up' ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                   {kpi.change}
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider drop-shadow-sm">{kpi.title}</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm">{kpi.value}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] drop-shadow-sm">{kpi.title}</p>
+                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -77,38 +77,46 @@ export function BankDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
         {/* Risk Profile Chart */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Profil Risiko Portfolio</CardTitle>
-            <CardDescription className="text-xs">Distribusi profil risiko seluruh peminjam.</CardDescription>
+        <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
+          <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Profil Risiko Portfolio</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Distribusi profil risiko seluruh peminjam.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-[220px] flex items-center justify-center">
+          <CardContent className="p-6">
+            <div className="h-[220px] flex items-center justify-center relative">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={riskDistribution}
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
+                    innerRadius={65}
+                    outerRadius={85}
+                    paddingAngle={8}
                     dataKey="value"
+                    stroke="none"
+                    isAnimationActive={false}
                   >
                     {riskDistribution.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }} 
+                  />
                 </PieChart>
               </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-2xl font-black text-slate-900 tracking-tighter">742</span>
+                <span className="text-[8px] font-black text-slate-400 uppercase">Avg Score</span>
+              </div>
             </div>
-            <div className="space-y-2 mt-4">
+            <div className="space-y-2 mt-6">
               {riskDistribution.map((item) => (
-                <div key={item.name} className="flex items-center justify-between text-xs px-3 py-2 rounded-lg bg-secondary/30">
+                <div key={item.name} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="font-medium text-muted-foreground">{item.name}</span>
+                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-tight">{item.name}</span>
                   </div>
-                  <span className="font-bold">{item.value}%</span>
+                  <span className="text-xs font-black text-slate-900">{item.value}%</span>
                 </div>
               ))}
             </div>
@@ -116,37 +124,39 @@ export function BankDashboard() {
         </Card>
 
         {/* Loan Applications Table-like List */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between">
+        <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between bg-slate-50/50 border-b border-slate-100 py-3">
             <div>
-              <CardTitle className="text-lg">Pengajuan Pinjaman Terbaru</CardTitle>
-              <CardDescription className="text-xs">Menunggu review analis kredit.</CardDescription>
+              <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Pengajuan Pinjaman Terbaru</CardTitle>
+              <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Menunggu review analis kredit.</CardDescription>
             </div>
-            <Button size="sm" variant="outline" className="h-8 text-xs" asChild>
-              <Link href="/keuangan/pinjaman">Semua Pengajuan</Link>
+            <Button size="sm" variant="ghost" className="h-8 text-[10px] font-black text-rose-600 hover:bg-rose-50 uppercase tracking-widest" asChild>
+              <Link href="/keuangan/pinjaman">Semua Pengajuan →</Link>
             </Button>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {[
-              { name: "Pak Budi Santoso", amount: "Rp 25.000.000", score: 785, status: "High Confidence", color: "text-emerald-600" },
-              { name: "Ibu Siti Aminah", amount: "Rp 12.000.000", score: 690, status: "Medium Risk", color: "text-amber-600" },
-              { name: "Kelompok Tani Merdeka", amount: "Rp 150.000.000", score: 812, status: "Priority", color: "text-blue-600" },
-              { name: "Pak Ahmad Dahlan", amount: "Rp 8.500.000", score: 620, status: "Manual Review", color: "text-stone-500" },
-            ].map((loan, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3.5 rounded-xl border border-border/50 bg-white hover:border-primary/30 transition-all cursor-pointer group">
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-slate-950 group-hover:text-primary transition-colors">{loan.name}</span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="outline" className="text-[10px] px-1.5 h-4">Score: {loan.score}</Badge>
-                    <span className={`text-[10px] font-bold ${loan.color}`}>{loan.status}</span>
+          <CardContent className="p-0">
+            <div className="divide-y divide-slate-100">
+              {[
+                { name: "Pak Budi Santoso", amount: "Rp 25.000.000", score: 785, status: "High Confidence", color: "text-emerald-600", bg: "bg-emerald-50" },
+                { name: "Ibu Siti Aminah", amount: "Rp 12.000.000", score: 690, status: "Medium Risk", color: "text-amber-600", bg: "bg-amber-50" },
+                { name: "Kelompok Tani Merdeka", amount: "Rp 150.000.000", score: 812, status: "Priority", color: "text-blue-600", bg: "bg-blue-50" },
+                { name: "Pak Ahmad Dahlan", amount: "Rp 8.500.000", score: 620, status: "Manual Review", color: "text-slate-500", bg: "bg-slate-100" },
+              ].map((loan, idx) => (
+                <div key={idx} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-black text-slate-900 group-hover:text-rose-600 transition-colors uppercase tracking-tight">{loan.name}</span>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 h-4 border-slate-200 text-slate-500">Score: {loan.score}</Badge>
+                      <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full ${loan.bg} ${loan.color}`}>{loan.status}</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-black text-slate-900">{loan.amount}</p>
+                    <p className="text-[9px] text-slate-400 uppercase font-black mt-1 tracking-widest">Investasi Modal</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold text-slate-950">{loan.amount}</p>
-                  <p className="text-[10px] text-muted-foreground uppercase font-medium mt-1 tracking-wider">Investasi Modal</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
