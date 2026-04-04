@@ -700,5 +700,6 @@ export default function ExecutiveCommandCenterPage() {
         </Card>
       </div>
     </div>
+  </div>
   )
 }

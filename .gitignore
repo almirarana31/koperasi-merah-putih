@@ -43,3 +43,9 @@ coverage/
 *.log
 *.pid
 *.seed
+check_braces.py
+fix_command_center_v2.py
+fix_command_center_v3.py
+fix_command_center_v4.py
+fix_command_center_v5.py
+fix_command_center.py
