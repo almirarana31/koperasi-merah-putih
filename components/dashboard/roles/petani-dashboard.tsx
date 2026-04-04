@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
   Sprout,
   ShoppingCart,
@@ -30,6 +31,7 @@ import {
 } from "recharts"
 import Link from "next/link"
 import { DashboardLinks } from "./dashboard-shared"
+import { LoanApplicationDialog } from "@/components/dialogs/loan-application-dialog"
 
 const priceTrendData = [
   { day: "Sen", harga: 12500 },
@@ -42,6 +44,8 @@ const priceTrendData = [
 ]
 
 export function PetaniDashboard() {
+  const [isLoanDialogOpen, setIsLoanDialogOpen] = useState(false)
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
@@ -199,8 +203,8 @@ export function PetaniDashboard() {
                 <p className="text-xl font-bold">Rp 12.500.000</p>
               </div>
             </div>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/keuangan/pinjaman">Ajukan Baru</Link>
+            <Button variant="outline" size="sm" onClick={() => setIsLoanDialogOpen(true)}>
+              Ajukan Baru
             </Button>
           </CardContent>
         </Card>
@@ -223,6 +227,12 @@ export function PetaniDashboard() {
       </div>
 
       <DashboardLinks />
+      <LoanApplicationDialog 
+        open={isLoanDialogOpen} 
+        onOpenChange={setIsLoanDialogOpen} 
+      />
     </div>
   )
+}
+ )
 }

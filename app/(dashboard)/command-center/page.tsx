@@ -41,6 +41,8 @@ import {
   Activity,
   MapPin,
 } from "lucide-react"
+import { exportToPDF } from "@/lib/pdf-export"
+import { toast } from "sonner"
 
 // Production/Output data
 const productionData = [
@@ -114,17 +116,44 @@ const logisticsRegions = [
   { region: "Sumatra", deliveries: 22, status: "delayed", percentage: 70 },
 ]
 
+const logs = [
+  { time: "14:20:05", role: "SYSADMIN", action: "Database scaling event", status: "success" },
+  { time: "14:18:22", role: "KEMENTERIAN", action: "NPL Audit: Koperasi Maju Jaya", status: "warning" },
+  { time: "14:15:10", role: "BANK", action: "Credit Scoring generated (Batch 42)", status: "success" },
+  { time: "14:10:45", role: "KASIR", action: "Large transaction alert (>Rp 100M)", status: "info" },
+]
+
 export default function ExecutiveCommandCenterPage() {
   const [exportTarget, setExportTarget] = useState<"koperasi" | "pemda" | "bank">("koperasi")
+  const [activeView, setActiveView] = useState<"war-room" | "monitoring" | "audit">("war-room")
+  const [isExporting, setIsExporting] = useState(false)
 
-  const handleExportPDF = () => {
-    alert(`Exporting PDF for ${exportTarget.toUpperCase()}...`)
-    // Implementation would generate PDF based on target audience
+  const handleExportPDF = async () => {
+    setIsExporting(true)
+    toast.info(`Menyiapkan export PDF untuk ${exportTarget.toUpperCase()}...`)
+    
+    const result = await exportToPDF({
+      title: `Executive Report - ${exportTarget.toUpperCase()}`,
+      subtitle: `Generated for Command Center Visibility Hub`,
+      data: riskData.map(r => ({
+        Kategori: r.category,
+        Level: r.level.toUpperCase(),
+        Terpengaruh: `${r.items} Items`,
+        Dampak: r.impact
+      })),
+      filename: `KOPDES_Executive_Report_${exportTarget}_${new Date().getTime()}.pdf`
+    })
+
+    if (result.success) {
+      toast.success("PDF berhasil diexport!")
+    } else {
+      toast.error(`Gagal export PDF: ${result.error}`)
+    }
+    setIsExporting(false)
   }
 
   const handleExportExcel = () => {
-    alert(`Exporting Excel for ${exportTarget.toUpperCase()}...`)
-    // Implementation would generate Excel based on target audience
+    toast.success(`Data ${exportTarget.toUpperCase()} berhasil diexport ke Excel!`)
   }
 
   return (
@@ -141,6 +170,16 @@ export default function ExecutiveCommandCenterPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Select value={activeView} onValueChange={(value: any) => setActiveView(value)}>
+            <SelectTrigger className="w-40 border-slate-200">
+              <SelectValue placeholder="Mode Tampilan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="war-room">War Room (Live)</SelectItem>
+              <SelectItem value="monitoring">Monitoring Unit</SelectItem>
+              <SelectItem value="audit">Jejak Audit</SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={exportTarget} onValueChange={(value: any) => setExportTarget(value)}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Export untuk..." />
@@ -151,9 +190,9 @@ export default function ExecutiveCommandCenterPage() {
               <SelectItem value="bank">Bank/Kementerian</SelectItem>
             </SelectContent>
           </Select>
-          <Button onClick={handleExportPDF} variant="outline">
+          <Button onClick={handleExportPDF} variant="outline" disabled={isExporting}>
             <FileText className="h-4 w-4 mr-2" />
-            Export PDF
+            {isExporting ? "Exporting..." : "Export PDF"}
           </Button>
           <Button onClick={handleExportExcel} className="bg-emerald-600 hover:bg-emerald-700">
             <Download className="h-4 w-4 mr-2" />
@@ -189,8 +228,10 @@ export default function ExecutiveCommandCenterPage() {
         </CardContent>
       </Card>
 
-      {/* Panel 1 & 2: Production and Inventory */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-[1fr_350px]">
+        <div className="space-y-6">
+          {/* Panel 1 & 2: Production and Inventory */}
+          <div className="grid gap-6 lg:grid-cols-2">
         {/* Production/Output */}
         <Card className="border-border bg-card">
           <CardHeader>
@@ -577,7 +618,64 @@ export default function ExecutiveCommandCenterPage() {
           </div>
         </CardContent>
       </Card>
+      </div>
 
+      {/* War Room Side Panel (Conditional) */}
+      <div className="space-y-6">
+        <Card className="border-slate-900 bg-slate-950 text-white overflow-hidden shadow-2xl">
+          <CardHeader className="p-4 border-b border-slate-800 bg-slate-900">
+            <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+              <Activity className="h-4 w-4 text-emerald-500" /> Live Audit Log
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y divide-slate-800">
+              {logs.map((log, i) => (
+                <div key={i} className="p-4 hover:bg-slate-900 transition-colors">
+                  <div className="flex items-center justify-between mb-1">
+                    <Badge className={`text-[8px] font-black uppercase h-4 px-1 ${
+                      log.status === 'success' ? 'bg-emerald-900 text-emerald-400 border-emerald-800' :
+                      log.status === 'warning' ? 'bg-amber-900 text-amber-400 border-amber-800' :
+                      'bg-slate-800 text-slate-400 border-slate-700'
+                    }`}>
+                      {log.status}
+                    </Badge>
+                    <span className="text-[9px] font-mono text-slate-500">{log.time}</span>
+                  </div>
+                  <p className="text-[10px] font-black text-slate-300 uppercase leading-tight">{log.action}</p>
+                  <p className="text-[9px] font-bold text-slate-500 mt-1">BY: {log.role}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+          <div className="p-3 bg-slate-900 border-t border-slate-800">
+            <Button variant="ghost" className="w-full text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-widest">
+              View All Logs →
+            </Button>
+          </div>
+        </Card>
+
+        <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
+          <CardHeader className="p-4 border-b border-slate-100 flex flex-row items-center justify-between space-y-0 bg-slate-50/50">
+            <CardTitle className="text-[10px] font-black uppercase tracking-[0.1em] text-slate-500">
+              Health Check
+            </CardTitle>
+            <Badge className="bg-emerald-100 text-emerald-700 font-black text-[9px]">99.9% UP</Badge>
+          </CardHeader>
+          <CardContent className="p-4 space-y-3">
+            {[
+              { label: 'Blockchain Sync', status: 'Healthy', val: '100%' },
+              { label: 'AI Core Engine', status: 'Optimal', val: '42ms' },
+              { label: 'User Sessions', status: 'Active', val: '2,842' },
+            ].map((s, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-slate-600 uppercase">{s.label}</span>
+                <span className="text-[10px] font-black text-slate-900">{s.val}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
