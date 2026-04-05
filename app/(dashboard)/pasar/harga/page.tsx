@@ -299,7 +299,7 @@ export default function HargaPasarPage() {
              <div>
                 <div className="flex items-center gap-3">
                    <Badge className="bg-white text-rose-600 font-black text-[9px] px-2 h-5 border-none">VOLATILITY ALERT</Badge>
-                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">Abnormal Price Movement Detected (>20%)</span>
+                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">Abnormal Price Movement Detected ({'>'}20%)</span>
                 </div>
                 <p className="text-white text-base font-black uppercase mt-2 tracking-tight">Perhatian: Terdeteksi lonjakan harga Beras Grade A yang tidak wajar di regional Jawa Timur. Segera lakukan audit stok.</p>
              </div>

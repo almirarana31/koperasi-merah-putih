@@ -262,21 +262,3 @@ export default function AIIntelligenceHubPage() {
     </div>
   )
 }
-der-amber-500 bg-amber-50/50' :
-                  'border-purple-500 bg-purple-50/50'
-                }`}
-              >
-                <p className="text-sm font-medium leading-tight">
-                  {analysis.recommendations[0]}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {analysis.impact}
-                </p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-}

@@ -37,22 +37,23 @@ const gradingDistribution = [
 
 export default function GradingKementerianPage() {
   const [filters, setFilters] = useState<ScopeFilters>({
-    province: 'all',
-    regency: 'all',
-    village: 'all',
-    cooperative: 'all',
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
   })
 
   const processedData = useMemo(() => {
     let scaleFactor = 1.0
-    if (filters.cooperative !== 'all') scaleFactor = 0.05
-    else if (filters.regency !== 'all') scaleFactor = 0.2
-    else if (filters.province !== 'all') scaleFactor = 0.45
+    if (filters.cooperativeId !== 'all') scaleFactor = 0.05
+    else if (filters.regionId !== 'all') scaleFactor = 0.2
+    else if (filters.provinceId !== 'all') scaleFactor = 0.45
 
     const filtered = gradingResults.filter(item => {
-      const matchProvince = filters.province === 'all' || item.province === filters.province
-      const matchRegency = filters.regency === 'all' || item.regency === filters.regency
-      const matchCoop = filters.cooperative === 'all' || item.cooperative === filters.cooperative
+      const matchProvince = filters.provinceId === 'all' || item.province === filters.provinceId
+      const matchRegency = filters.regionId === 'all' || item.regency === filters.regionId
+      const matchCoop = filters.cooperativeId === 'all' || item.cooperative === filters.cooperativeId
       return matchProvince && matchRegency && matchCoop
     })
 
@@ -94,7 +95,7 @@ export default function GradingKementerianPage() {
           </div>
         </div>
 
-        <KementerianFilterBar onFilterChange={setFilters} />
+        <KementerianFilterBar filters={filters} setFilters={setFilters} />
       </div>
 
       {/* KPI Section */}
@@ -308,4 +309,3 @@ export default function GradingKementerianPage() {
     </div>
   )
 }
-

@@ -252,7 +252,7 @@ export default function LaporanOtomatisPage() {
                 <div className="space-y-1">
                   <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">QUERY DATA SOURCE</p>
                   <div className="flex gap-2 p-2 bg-slate-800 rounded border border-slate-700 text-[10px] font-bold">
-                    SELECT national_kpi FROM kopdes_audit WHERE anomaly_score > 0.85
+                    SELECT national_kpi FROM kopdes_audit WHERE anomaly_score {'>'} 0.85
                   </div>
                 </div>
                 <Button className="w-full bg-emerald-500 hover:bg-emerald-400 text-white text-[9px] font-black uppercase tracking-widest h-9">

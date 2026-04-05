@@ -33,17 +33,18 @@ const seasonalData = [
 
 export default function MarketAnalysisKementerianPage() {
   const [filters, setFilters] = useState<ScopeFilters>({
-    province: 'all',
-    regency: 'all',
-    village: 'all',
-    cooperative: 'all',
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
   })
 
   const processedData = useMemo(() => {
     let scaleFactor = 1.0
-    if (filters.cooperative !== 'all') scaleFactor = 0.1
-    else if (filters.regency !== 'all') scaleFactor = 0.3
-    else if (filters.province !== 'all') scaleFactor = 0.6
+    if (filters.cooperativeId !== 'all') scaleFactor = 0.1
+    else if (filters.regionId !== 'all') scaleFactor = 0.3
+    else if (filters.provinceId !== 'all') scaleFactor = 0.6
 
     return {
       trends: marketTrends.map(t => ({
@@ -91,7 +92,7 @@ export default function MarketAnalysisKementerianPage() {
           </div>
         </div>
 
-        <KementerianFilterBar onFilterChange={setFilters} />
+        <KementerianFilterBar filters={filters} setFilters={setFilters} />
       </div>
 
       {/* KPI Section - Market Health */}
@@ -239,4 +240,3 @@ export default function MarketAnalysisKementerianPage() {
     </div>
   )
 }
-

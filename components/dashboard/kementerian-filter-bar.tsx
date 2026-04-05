@@ -15,6 +15,8 @@ import {
   type ScopeFilters,
 } from '@/lib/kementerian-dashboard-data'
 
+export type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
+
 interface KementerianFilterBarProps {
   filters: ScopeFilters
   setFilters: (filters: ScopeFilters | ((prev: ScopeFilters) => ScopeFilters)) => void
