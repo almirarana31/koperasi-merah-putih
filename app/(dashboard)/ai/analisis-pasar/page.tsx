@@ -1,162 +1,242 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { TrendingUp, TrendingDown, AlertCircle, Lightbulb } from 'lucide-react'
+import { TrendingUp, TrendingDown, AlertCircle, Lightbulb, BrainCircuit, Globe, Zap, History, BarChart3, Search, Share2, Target } from 'lucide-react'
+import { KementerianFilterBar, type ScopeFilters } from '@/components/dashboard/kementerian-filter-bar'
+import { Button } from '@/components/ui/button'
 
 const marketTrends = [
-  { metrik: 'Demand Beras', tren: 'up', perubahan: '+34%', insight: 'Musim panen dimulai, demand tinggi' },
-  { metrik: 'Harga Cabai', tren: 'down', perubahan: '-12%', insight: 'Oversupply dari kompetitor' },
-  { metrik: 'Order Wortel', tren: 'up', perubahan: '+67%', insight: 'Pembeli baru bergabung' },
-  { metrik: 'Kepuasan Buyer', tren: 'up', perubahan: '+8%', insight: 'Kualitas produk meningkat' },
+  { metrik: 'National Rice Demand', tren: 'up', perubahan: '+34%', insight: 'Harvest season peak, surging B2B demand' },
+  { metrik: 'Chili Price Index', tren: 'down', perubahan: '-12%', insight: 'Oversupply from non-member competitors' },
+  { metrik: 'Carrot Export Orders', tren: 'up', perubahan: '+67%', insight: 'New international buyers onboarded' },
+  { metrik: 'Buyer Trust Index', tren: 'up', perubahan: '+8%', insight: 'Quality consistency improvement' },
 ]
 
 const competitorData = [
-  { minggu: 'Minggu 1', kami: 45, kompA: 38, kompB: 32, kompC: 28 },
-  { minggu: 'Minggu 2', kami: 52, kompA: 41, kompB: 35, kompC: 31 },
-  { minggu: 'Minggu 3', kami: 58, kompA: 39, kompB: 38, kompC: 34 },
-  { minggu: 'Minggu 4', kami: 64, kompA: 42, kompB: 40, kompC: 36 },
+  { minggu: 'Week 1', kementerian: 45, corpA: 38, corpB: 32, corpC: 28 },
+  { minggu: 'Week 2', kementerian: 52, corpA: 41, corpB: 35, corpC: 31 },
+  { minggu: 'Week 3', kementerian: 58, corpA: 39, corpB: 38, corpC: 34 },
+  { minggu: 'Week 4', kementerian: 64, corpA: 42, corpB: 40, corpC: 36 },
 ]
 
 const seasonalData = [
-  { bulan: 'Jan', padi: 35, daging: 42, sayur: 38, buah: 28 },
-  { bulan: 'Feb', padi: 38, daging: 45, sayur: 40, buah: 32 },
-  { bulan: 'Mar', padi: 42, daging: 48, sayur: 45, buah: 38 },
-  { bulan: 'Apr', padi: 48, daging: 50, sayur: 52, buah: 45 },
-  { bulan: 'Mei', padi: 58, daging: 52, sayur: 68, buah: 58 },
-  { bulan: 'Jun', padi: 72, daging: 54, sayur: 75, buah: 68 },
+  { bulan: 'Jan', paddy: 35, meat: 42, vegetable: 38, fruit: 28 },
+  { bulan: 'Feb', paddy: 38, meat: 45, vegetable: 40, fruit: 32 },
+  { bulan: 'Mar', paddy: 42, meat: 48, vegetable: 45, fruit: 38 },
+  { bulan: 'Apr', paddy: 48, meat: 50, vegetable: 52, fruit: 45 },
+  { bulan: 'May', paddy: 58, meat: 52, vegetable: 68, fruit: 58 },
+  { bulan: 'Jun', paddy: 72, meat: 54, vegetable: 75, fruit: 68 },
 ]
 
-export default function MarketAnalysisPage() {
+export default function MarketAnalysisKementerianPage() {
+  const [filters, setFilters] = useState<ScopeFilters>({
+    province: 'all',
+    regency: 'all',
+    village: 'all',
+    cooperative: 'all',
+  })
+
+  const processedData = useMemo(() => {
+    let scaleFactor = 1.0
+    if (filters.cooperative !== 'all') scaleFactor = 0.1
+    else if (filters.regency !== 'all') scaleFactor = 0.3
+    else if (filters.province !== 'all') scaleFactor = 0.6
+
+    return {
+      trends: marketTrends.map(t => ({
+        ...t,
+        perubahan: t.tren === 'up' ? `+${(parseFloat(t.perubahan) * scaleFactor).toFixed(1)}%` : `-${(Math.abs(parseFloat(t.perubahan)) * scaleFactor).toFixed(1)}%`
+      })),
+      competitors: competitorData.map(d => ({
+        ...d,
+        kementerian: d.kementerian * scaleFactor,
+        corpA: d.corpA * scaleFactor,
+        corpB: d.corpB * scaleFactor,
+        corpC: d.corpC * scaleFactor,
+      })),
+      seasonal: seasonalData.map(d => ({
+        ...d,
+        paddy: d.paddy * scaleFactor,
+        meat: d.meat * scaleFactor,
+        vegetable: d.vegetable * scaleFactor,
+        fruit: d.fruit * scaleFactor,
+      }))
+    }
+  }, [filters])
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Analisis Pasar & Kompetitor</h1>
-        <p className="text-muted-foreground mt-2">Intelligence pasar real-time dengan AI sentiment analysis</p>
+    <div className="flex flex-col gap-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase flex items-center gap-2">
+              <BarChart3 className="h-8 w-8 text-slate-900" />
+              National Market & Competitor Intelligence
+            </h1>
+            <p className="text-slate-500 font-medium">
+              Analisis sentimen pasar global dan audit kompetitif lintas korporasi.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" className="font-bold border-2">
+              <Share2 className="mr-2 h-4 w-4" /> SHARE REPORT
+            </Button>
+            <Button className="bg-slate-900 font-bold">
+              <Search className="mr-2 h-4 w-4" /> DEEP SEARCH
+            </Button>
+          </div>
+        </div>
+
+        <KementerianFilterBar onFilterChange={setFilters} />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {marketTrends.map((trend) => (
-          <Card key={trend.metrik}>
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <CardTitle className="text-sm font-medium">{trend.metrik}</CardTitle>
+      {/* KPI Section - Market Health */}
+      <div className="grid gap-4 md:grid-cols-4">
+        {processedData.trends.map((trend) => (
+          <Card key={trend.metrik} className="border-l-4 border-l-slate-900 shadow-sm">
+            <CardHeader className="pb-2 p-4">
+              <div className="flex items-center justify-between mb-1">
+                <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-500">{trend.metrik}</CardDescription>
                 {trend.tren === 'up' ? (
-                  <TrendingUp className="h-5 w-5 text-green-600" />
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
                 ) : (
-                  <TrendingDown className="h-5 w-5 text-red-600" />
+                  <TrendingDown className="h-4 w-4 text-rose-500" />
                 )}
               </div>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className={`text-2xl font-bold ${trend.tren === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+              <CardTitle className={`text-2xl font-black ${trend.tren === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
                 {trend.perubahan}
-              </div>
-              <p className="text-xs text-muted-foreground">{trend.insight}</p>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight italic">
+                "{trend.insight}"
+              </p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Posisi Kompetitif vs Kompetitor</CardTitle>
-          <CardDescription>Market share berdasarkan volume transaksi bulanan</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={competitorData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="minggu" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="kami" stroke="var(--primary)" strokeWidth={3} name="KOPDES (Kami)" />
-              <Line type="monotone" dataKey="kompA" stroke="#3b82f6" strokeWidth={2} name="Kompetitor A" />
-              <Line type="monotone" dataKey="kompB" stroke="#f59e0b" strokeWidth={2} name="Kompetitor B" />
-              <Line type="monotone" dataKey="kompC" stroke="#8b5cf6" strokeWidth={2} name="Kompetitor C" />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      {/* Competitive Analysis Section */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2 border-2 shadow-sm">
+          <CardHeader className="border-b bg-slate-50/50">
+            <CardTitle className="text-sm font-black uppercase tracking-tighter text-slate-900">Market Share Dominance (vs. Corporate Aggregators)</CardTitle>
+            <CardDescription className="text-[10px] font-bold uppercase text-slate-500">KOPDES performance vs Private Sector Competitors</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={processedData.competitors}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="minggu" tick={{ fill: "#64748b", fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#64748b", fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: "#0f172a", border: "none", borderRadius: "8px", color: "#fff" }}
+                  itemStyle={{ fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }}
+                />
+                <Legend iconType="rect" wrapperStyle={{ paddingTop: "20px", fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }} />
+                <Line type="monotone" dataKey="kementerian" stroke="#0f172a" strokeWidth={4} dot={{ r: 6 }} name="KOPDES (MINISTRY)" />
+                <Line type="monotone" dataKey="corpA" stroke="#3b82f6" strokeWidth={2} name="CORPORATE A" />
+                <Line type="monotone" dataKey="corpB" stroke="#f59e0b" strokeWidth={2} name="CORPORATE B" />
+                <Line type="monotone" dataKey="corpC" stroke="#cbd5e1" strokeWidth={2} name="CORPORATE C" />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Pola Musiman & Forecast</CardTitle>
-          <CardDescription>Tren permintaan berdasarkan kategori produk</CardDescription>
+        <Card className="border-2 shadow-sm bg-slate-900 text-white">
+          <CardHeader className="border-b border-slate-800">
+            <CardTitle className="text-sm font-black uppercase tracking-tighter flex items-center gap-2">
+              <Target className="h-4 w-4 text-emerald-400" />
+              Strategic Market Targets
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
+            <div className="space-y-3">
+              <div className="p-3 bg-slate-800 rounded border border-slate-700">
+                <p className="text-[10px] font-black text-emerald-400 uppercase mb-1">Target 1: Organic Premium</p>
+                <p className="text-xs font-medium text-slate-300">
+                  Global demand for Organic certification is surging <span className="text-white font-bold">+45%</span>. AI suggests shifting 20% of cooperative land to Organic Tier-1.
+                </p>
+              </div>
+              <div className="p-3 bg-slate-800 rounded border border-slate-700">
+                <p className="text-[10px] font-black text-blue-400 uppercase mb-1">Target 2: Regional Hubs</p>
+                <p className="text-xs font-medium text-slate-300">
+                  <span className="text-white font-bold">East Java</span> market share is currently dominated by Corp B. Recommend aggressive pricing subsidies for local KUDs.
+                </p>
+              </div>
+              <div className="p-3 bg-slate-800 rounded border border-slate-700">
+                <p className="text-[10px] font-black text-amber-400 uppercase mb-1">Target 3: Export Supply</p>
+                <p className="text-xs font-medium text-slate-300">
+                  Middle-East demand for <span className="text-white font-bold">Processed Vegetables</span> is unmet. Opportunity for cooperative-based canning facilities.
+                </p>
+              </div>
+            </div>
+            <Button className="w-full bg-emerald-500 text-slate-900 font-black text-[10px] uppercase h-10 hover:bg-emerald-600">
+              DOWNLOAD STRATEGY BRIEF
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Seasonal Analysis Section */}
+      <Card className="border-2 shadow-sm">
+        <CardHeader className="border-b bg-slate-50/50">
+          <CardTitle className="text-sm font-black uppercase tracking-tighter text-slate-900">National Seasonal Demand & Production Cycles</CardTitle>
+          <CardDescription className="text-[10px] font-bold uppercase text-slate-500">Analyzing category performance trends over 6 months</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={seasonalData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="bulan" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="padi" fill="#10b981" name="Padi/Beras" />
-              <Bar dataKey="daging" fill="#3b82f6" name="Daging" />
-              <Bar dataKey="sayur" fill="#f59e0b" name="Sayur" />
-              <Bar dataKey="buah" fill="#8b5cf6" name="Buah" />
+            <BarChart data={processedData.seasonal}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+              <XAxis dataKey="bulan" tick={{ fill: "#64748b", fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "#64748b", fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
+              <Tooltip 
+                contentStyle={{ backgroundColor: "#0f172a", border: "none", borderRadius: "8px", color: "#fff" }}
+                itemStyle={{ fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }}
+              />
+              <Legend iconType="rect" wrapperStyle={{ paddingTop: "20px", fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }} />
+              <Bar dataKey="paddy" fill="#0f172a" name="PADDY/RICE" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="meat" fill="#3b82f6" name="MEAT/LIVESTOCK" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="vegetable" fill="#10b981" name="VEGETABLES" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="fruit" fill="#f59e0b" name="FRUITS" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-orange-600" />
-              Market Opportunities
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="border-l-4 border-green-500 bg-green-50 p-3 rounded">
-              <p className="font-medium text-sm">Permintaan Sayur Meningkat 75%</p>
-              <p className="text-xs text-muted-foreground">Musim panen optimal di bulan Mei-Juni</p>
-              <p className="text-sm font-bold text-green-700 mt-1">Estimasi Rp 8.2jt revenue tambahan</p>
+      {/* Footer AI Recommendation */}
+      <Card className="border-2 border-slate-900 bg-slate-900 text-white overflow-hidden">
+        <div className="flex">
+          <div className="p-6 bg-amber-500 flex items-center justify-center">
+            <Lightbulb className="h-12 w-12 text-slate-900" />
+          </div>
+          <div className="p-6 flex-1 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-black uppercase tracking-tighter">AI Executive Summary: Market Sentiment</h3>
+              <Badge className="bg-white text-slate-900 font-black">ACTIONABLE INTELLIGENCE</Badge>
             </div>
-            <div className="border-l-4 border-blue-500 bg-blue-50 p-3 rounded">
-              <p className="font-medium text-sm">Buyer Baru di Jawa Timur</p>
-              <p className="text-xs text-muted-foreground">5 perusahaan baru mencari supplier</p>
-              <p className="text-sm font-bold text-blue-700 mt-1">Potensi 3 kontrak baru</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="p-3 bg-slate-800 rounded border border-slate-700">
+                <p className="text-[10px] font-black text-amber-400 uppercase mb-1">Critical Insight</p>
+                <p className="text-xs font-medium text-slate-300">
+                  <span className="text-white font-bold">Vegetable Demand</span> is predicted to surge 75% in the next 60 days. Current cooperative production is only at 60% capacity. AI recommends triggering emergency production incentives.
+                </p>
+              </div>
+              <div className="p-3 bg-slate-800 rounded border border-slate-700">
+                <p className="text-[10px] font-black text-emerald-400 uppercase mb-1">Competitive Edge</p>
+                <p className="text-xs font-medium text-slate-300">
+                  KOPDES logistics efficiency is <span className="text-white font-bold">14% higher</span> than Corp A. Use this margin advantage to secure long-term contracts with Hotel & Restaurant chains.
+                </p>
+              </div>
             </div>
-            <div className="border-l-4 border-purple-500 bg-purple-50 p-3 rounded">
-              <p className="font-medium text-sm">Premium Product Trend</p>
-              <p className="text-xs text-muted-foreground">Produk organik demand +45%</p>
-              <p className="text-sm font-bold text-purple-700 mt-1">Margin keuntungan 2x lebih tinggi</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-yellow-600" />
-              Strategi Kompetitif
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-              <p className="font-medium text-sm">1. Agresif di Pasar Baru</p>
-              <p className="text-xs text-muted-foreground">Target Jawa Timur dengan harga kompetitif</p>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="font-medium text-sm">2. Fokus Premium Quality</p>
-              <p className="text-xs text-muted-foreground">Grade A + Organic certification</p>
-            </div>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="font-medium text-sm">3. Expand Product Range</p>
-              <p className="text-xs text-muted-foreground">Tambah sayur organik & produk processed</p>
-            </div>
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-              <p className="font-medium text-sm">4. Partnership Program</p>
-              <p className="text-xs text-muted-foreground">Kolaborasi dengan koperasi lain</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </Card>
     </div>
   )
 }
+

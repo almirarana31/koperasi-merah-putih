@@ -1,234 +1,324 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Bell, AlertTriangle, TrendingUp, AlertCircle } from 'lucide-react'
-import { useAuth } from '@/lib/auth'
+import { 
+  Bell, 
+  AlertTriangle, 
+  TrendingUp, 
+  AlertCircle, 
+  ShieldAlert, 
+  Zap, 
+  Clock, 
+  History,
+  Filter,
+  CheckCircle2,
+  MoreVertical,
+  Activity
+} from 'lucide-react'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { type ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
-const notifications = [
+const strategicNotifications = [
   {
-    judul: 'Opportunity: Demand Beras Naik 176%',
-    deskripsi: 'Forecast menunjukkan permintaan Beras Grade A akan naik signifikan bulan depan',
-    tipe: 'opportunity',
-    prioritas: 'high',
-    waktu: '2 jam yang lalu',
-    action: 'Lihat Forecast',
+    judul: 'CRITICAL: NATIONAL DEMAND SPIKE +176%',
+    deskripsi: 'Proyeksi demand Beras Grade A melonjak drastis di 12 provinsi. Segera aktivasi cadangan pangan nasional.',
+    tipe: 'OPPORTUNITY',
+    priority: 'HIGH',
+    waktu: '12 MIN AGO',
+    region: 'NATIONAL',
+    action: 'VIEW FORECAST',
+    anomalyScore: 0.92,
   },
   {
-    judul: 'Alert: Stok Cabai Menipis',
-    deskripsi: 'Inventaris Cabai Merah tinggal 120 kg. Lakukan reorder segera untuk menghindari stockout',
-    tipe: 'alert',
-    prioritas: 'high',
-    waktu: '4 jam yang lalu',
-    action: 'Lihat Stok',
+    judul: 'ALERT: CABAI STOCKOUT RISK',
+    deskripsi: 'Stok Cabai Merah di 15 Koperas Jawa Timur berada di level kritis (120 kg). Potensi inflasi lokal terdeteksi.',
+    tipe: 'ALERT',
+    priority: 'HIGH',
+    waktu: '45 MIN AGO',
+    region: 'JAWA TIMUR',
+    action: 'MOBILIZE STOCK',
+    anomalyScore: 0.88,
   },
   {
-    judul: 'Insight: Harga Wortel Optimal',
-    deskripsi: 'Harga Wortel sudah mencapai level optimal dengan margin Rp 2.8k per kg',
-    tipe: 'insight',
-    prioritas: 'medium',
-    waktu: '6 jam yang lalu',
-    action: 'Lihat Rekomendasi',
+    judul: 'INSIGHT: OPTIMAL PRICING ACHIEVED',
+    deskripsi: 'Wortel mencapai equilibrium harga optimal dengan margin agregat Rp 2.8k/kg di wilayah Barat.',
+    tipe: 'INSIGHT',
+    priority: 'MEDIUM',
+    waktu: '2 HOURS AGO',
+    region: 'SUMATERA',
+    action: 'LOCK MARGIN',
+    anomalyScore: 0.15,
   },
   {
-    judul: 'Update: Kompetitor A Naikkan Harga',
-    deskripsi: 'Kompetitor A baru saja menaikkan harga Beras 8%. Peluang untuk capture market share',
-    tipe: 'update',
-    prioritas: 'medium',
-    waktu: '1 hari yang lalu',
-    action: 'Analisis Kompetitor',
+    judul: 'COMPETITOR UPDATE: PRICE HIKE 8%',
+    deskripsi: 'Kompetitor eksternal menaikkan harga Beras. Rekomendasi: Pertahankan harga KOPDES untuk capture market share.',
+    tipe: 'UPDATE',
+    priority: 'MEDIUM',
+    waktu: '4 HOURS AGO',
+    region: 'NASIONAL',
+    action: 'PRICE ANALYSIS',
+    anomalyScore: 0.45,
   },
   {
-    judul: 'Forecast: Musim Panen Beras Dimulai',
-    deskripsi: 'Prediksi musim panen optimal untuk Beras akan dimulai 15-20 Mei. Persiapkan gudang',
-    tipe: 'forecast',
-    prioritas: 'low',
-    waktu: '2 hari yang lalu',
-    action: 'Lihat Timeline',
+    judul: 'FORECAST: HARVEST SEASON ACTIVATION',
+    deskripsi: 'Masa panen raya Beras diprediksi mulai 15-20 Mei. Pastikan audit kapasitas gudang Cold Storage selesai h-7.',
+    tipe: 'FORECAST',
+    priority: 'LOW',
+    waktu: '1 DAY AGO',
+    region: 'SULAWESI SELATAN',
+    action: 'AUDIT GUDANG',
+    anomalyScore: 0.05,
   },
 ]
 
 const notificationRules = [
   {
-    nama: 'Price Alert - Beras Grade A',
-    kondisi: 'Jika harga naik/turun > 5%',
-    aksi: 'Kirim notifikasi + email',
-    status: 'Aktif',
+    nama: 'VOLATILITY MONITOR - BERAS GRADE A',
+    kondisi: 'DELTA PRICE > 5% WITHIN 24H',
+    aksi: 'TRIGGER STRATEGIC INTERVENTION',
+    status: 'ACTIVE',
+    severity: 'HIGH',
   },
   {
-    nama: 'Stock Low Alert',
-    kondisi: 'Jika stok < 20% dari target',
-    aksi: 'Kirim notifikasi urgent',
-    status: 'Aktif',
+    nama: 'STOCK CRITICAL THRESHOLD',
+    kondisi: 'INVENTORY < 20% OF TARGET (ALL COMMODITIES)',
+    aksi: 'AUTO-REORDER & ALERT LOGISTICS',
+    status: 'ACTIVE',
+    severity: 'CRITICAL',
   },
   {
-    nama: 'High Demand Alert',
-    kondisi: 'Jika demand forecast > 80',
-    aksi: 'Kirim notifikasi + suggestion',
-    status: 'Aktif',
+    nama: 'DEMAND SURGE PREDICTOR',
+    kondisi: 'AI FORECAST > 0.80 CONFIDENCE',
+    aksi: 'PUSH MARKET OPPORTUNITY ALERT',
+    status: 'ACTIVE',
+    severity: 'MEDIUM',
   },
   {
-    nama: 'Delivery Delay Alert',
-    kondisi: 'Jika shipment delay > 2 jam',
-    aksi: 'Notifikasi + escalate ke manager',
-    status: 'Aktif',
+    nama: 'LOGISTICS DELAY ESCALATION',
+    kondisi: 'SHIPMENT DELAY > 2H LINTAS PROVINSI',
+    aksi: 'NOTIFY REGIONAL MANAGER + ESCALATE',
+    status: 'ACTIVE',
+    severity: 'MEDIUM',
   },
 ]
 
 function getIcon(tipe: string) {
   switch (tipe) {
-    case 'opportunity':
-      return <TrendingUp className="h-5 w-5 text-green-600" />
-    case 'alert':
-      return <AlertTriangle className="h-5 w-5 text-red-600" />
-    case 'insight':
-      return <AlertCircle className="h-5 w-5 text-blue-600" />
-    case 'update':
-      return <Bell className="h-5 w-5 text-yellow-600" />
-    case 'forecast':
-      return <TrendingUp className="h-5 w-5 text-purple-600" />
-    default:
-      return <Bell className="h-5 w-5" />
-  }
-}
-
-function getColor(tipe: string) {
-  switch (tipe) {
-    case 'opportunity':
-      return 'bg-green-50 border-green-200'
-    case 'alert':
-      return 'bg-red-50 border-red-200'
-    case 'insight':
-      return 'bg-blue-50 border-blue-200'
-    case 'update':
-      return 'bg-yellow-50 border-yellow-200'
-    case 'forecast':
-      return 'bg-purple-50 border-purple-200'
-    default:
-      return 'bg-muted'
+    case 'OPPORTUNITY': return <TrendingUp className="h-4 w-4 text-emerald-600" />
+    case 'ALERT': return <AlertTriangle className="h-4 w-4 text-rose-600" />
+    case 'INSIGHT': return <AlertCircle className="h-4 w-4 text-blue-600" />
+    case 'UPDATE': return <Bell className="h-4 w-4 text-amber-600" />
+    case 'FORECAST': return <Zap className="h-4 w-4 text-purple-600" />
+    default: return <Bell className="h-4 w-4 text-slate-400" />
   }
 }
 
 export default function NotifikasiPage() {
-  const { user } = useAuth()
-  const canManageRules = user?.role !== 'petani'
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  const scaleFactor = filters.provinceId === 'all' ? 1 : filters.regionId === 'all' ? 0.3 : 0.1
+
+  const stats = [
+    { label: 'ACTIVE ALERTS', value: Math.floor(154 * scaleFactor), icon: Activity, color: 'text-rose-600' },
+    { label: 'RESOLVED (24H)', value: Math.floor(89 * scaleFactor), icon: CheckCircle2, color: 'text-emerald-600' },
+    { label: 'AI TRIGGERED', value: '72%', icon: Zap, color: 'text-amber-500' },
+    { label: 'AVG RESPONSE', value: '8.4m', icon: Clock, color: 'text-blue-600' },
+  ]
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Notifikasi Cerdas</h1>
-        <p className="text-muted-foreground mt-2">
-          {canManageRules
-            ? 'Sistem alert otomatis berdasarkan business rules dan AI triggers'
-            : 'Ringkasan notifikasi penting untuk aktivitas dan keputusan Anda'}
-        </p>
+    <div className="flex flex-col gap-6">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">
+              STRATEGIC NOTIFICATION HUB
+            </h1>
+            <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+              SISTEM ALERT NASIONAL BERDASARKAN BUSINESS RULES & AI TRIGGERS
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="h-8 text-[9px] font-black uppercase tracking-widest border-slate-200">
+              MARK ALL READ
+            </Button>
+            <Button className="h-8 bg-slate-900 hover:bg-slate-800 text-[9px] font-black uppercase tracking-widest">
+              NOTIFICATION SETTINGS
+            </Button>
+          </div>
+        </div>
+
+        <KementerianFilterBar filters={filters} setFilters={setFilters} />
       </div>
 
-      <div className="space-y-3">
-        <h2 className="text-xl font-semibold">Notifikasi Terbaru</h2>
-        {notifications.map((notif, idx) => (
-          <Card key={idx} className={`border-l-4 ${getColor(notif.tipe)}`}>
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-4">
-                {getIcon(notif.tipe)}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-semibold">{notif.judul}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">{notif.deskripsi}</p>
-                    </div>
-                    <Badge variant={notif.prioritas === 'high' ? 'destructive' : 'secondary'}>
-                      {notif.prioritas === 'high' ? 'Urgent' : notif.prioritas === 'medium' ? 'Medium' : 'Low'}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t">
-                    <span className="text-xs text-muted-foreground">{notif.waktu}</span>
-                    <Button size="sm" variant="ghost">{notif.action}</Button>
-                  </div>
-                </div>
+      {/* STATS GRID */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {stats.map((stat) => (
+          <Card key={stat.label} className="border-none bg-white shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                <span className="text-[10px] font-black text-slate-900">{stat.value}</span>
               </div>
+              <p className="text-[9px] font-black tracking-widest text-slate-500 uppercase mt-2">{stat.label}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {canManageRules && (
-        <>
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Notifikasi Rules</h2>
-            <div className="grid gap-4">
-              {notificationRules.map((rule) => (
-                <Card key={rule.nama}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <CardTitle className="text-base">{rule.nama}</CardTitle>
-                      <Badge>{rule.status}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="grid gap-4 text-sm md:grid-cols-2">
-                      <div>
-                        <p className="font-medium text-muted-foreground">Kondisi Trigger</p>
-                        <p className="mt-1">{rule.kondisi}</p>
-                      </div>
-                      <div>
-                        <p className="font-medium text-muted-foreground">Aksi</p>
-                        <p className="mt-1">{rule.aksi}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 border-t pt-2">
-                      <Button size="sm" variant="outline">Edit</Button>
-                      <Button size="sm" variant="outline">Hapus</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+        {/* RECENT NOTIFICATIONS */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+            <History className="h-4 w-4 text-slate-900" />
+            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">LIVE ALERT FEED</h2>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Buat Rule Notifikasi Baru</CardTitle>
-              <CardDescription>Setup alert otomatis sesuai kebutuhan bisnis</CardDescription>
+          <div className="flex flex-col gap-3">
+            {strategicNotifications.map((notif, idx) => (
+              <Card key={idx} className={`border-none shadow-sm overflow-hidden group transition-all hover:bg-slate-50/50`}>
+                <div className={`h-1 w-full ${
+                  notif.priority === 'HIGH' ? 'bg-rose-600' : 
+                  notif.priority === 'MEDIUM' ? 'bg-amber-500' : 'bg-slate-300'
+                }`} />
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-4">
+                    <div className={`mt-1 h-10 w-10 shrink-0 rounded-lg flex items-center justify-center ${
+                      notif.tipe === 'ALERT' ? 'bg-rose-50' : 
+                      notif.tipe === 'OPPORTUNITY' ? 'bg-emerald-50' : 'bg-slate-50'
+                    }`}>
+                      {getIcon(notif.tipe)}
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] font-black tracking-tighter text-slate-900 uppercase">[{notif.region}]</span>
+                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">• {notif.tipe}</span>
+                          </div>
+                          <h3 className="text-[11px] font-black leading-tight text-slate-900 uppercase tracking-tight">
+                            {notif.judul}
+                          </h3>
+                        </div>
+                        <Badge variant={notif.priority === 'HIGH' ? 'destructive' : 'secondary'} className="text-[8px] font-black uppercase tracking-widest">
+                          {notif.priority}
+                        </Badge>
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase leading-relaxed mt-1.5 max-w-2xl">
+                        {notif.deskripsi}
+                      </p>
+
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="h-3 w-3 text-slate-400" />
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{notif.waktu}</span>
+                          </div>
+                          {notif.anomalyScore > 0 && (
+                            <div className="flex items-center gap-1.5">
+                              <ShieldAlert className="h-3 w-3 text-rose-500" />
+                              <span className="text-[8px] font-black text-rose-600 uppercase tracking-widest">ANOMALY: {Math.floor(notif.anomalyScore * 100)}%</span>
+                            </div>
+                          )}
+                        </div>
+                        <Button size="sm" variant="ghost" className="h-7 text-[8px] font-black uppercase tracking-widest hover:text-emerald-600">
+                          {notif.action}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* NOTIFICATION RULES */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+            <Filter className="h-4 w-4 text-slate-900" />
+            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">BUSINESS RULES ENGINE</h2>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {notificationRules.map((rule) => (
+              <Card key={rule.nama} className="border-none shadow-sm group">
+                <CardHeader className="p-4 pb-2">
+                  <div className="flex items-start justify-between">
+                    <CardTitle className="text-[10px] font-black tracking-widest text-slate-900 uppercase max-w-[80%] leading-tight">
+                      {rule.nama}
+                    </CardTitle>
+                    <Badge className="text-[8px] font-black bg-emerald-100 text-emerald-700 uppercase">
+                      {rule.status}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 pt-2">
+                  <div className="p-3 bg-slate-50 rounded border border-slate-100 space-y-2 mb-3">
+                    <div>
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">CONDITION</p>
+                      <p className="text-[9px] font-black text-slate-900 mt-0.5 uppercase">{rule.kondisi}</p>
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">SYSTEM ACTION</p>
+                      <p className="text-[9px] font-black text-slate-900 mt-0.5 uppercase">{rule.aksi}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between border-t border-slate-50 pt-2">
+                    <Badge variant="outline" className={`text-[8px] font-black uppercase ${
+                      rule.severity === 'CRITICAL' ? 'border-rose-300 text-rose-600 bg-rose-50' : 'border-slate-300 text-slate-600'
+                    }`}>
+                      {rule.severity}
+                    </Badge>
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-slate-400 hover:text-slate-900">
+                        <MoreVertical className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card className="border-dashed border-2 border-slate-200 bg-transparent">
+            <CardHeader className="p-4 text-center">
+              <CardTitle className="text-[11px] font-black tracking-widest text-slate-900 uppercase">CONFIGURE NEW NATIONAL TRIGGER</CardTitle>
+              <CardDescription className="text-[9px] font-bold text-slate-500 uppercase mt-1">MAP AI INSIGHTS TO EXECUTIVE ALERTS</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="text-sm font-medium">Nama Rule</label>
-                  <input type="text" placeholder="Contoh: High Order Alert" className="mt-1 w-full rounded-md border px-3 py-2" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Trigger Parameter</label>
-                  <select className="mt-1 w-full rounded-md border px-3 py-2">
-                    <option>Harga</option>
-                    <option>Stok</option>
-                    <option>Order</option>
-                    <option>Pengiriman</option>
-                    <option>Demand</option>
+            <CardContent className="p-4 pt-0 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest">PARAMETER</label>
+                  <select className="w-full h-8 text-[9px] font-black bg-white rounded border border-slate-200 px-2 uppercase">
+                    <option>NATIONAL_PRICE</option>
+                    <option>STOCK_DENSITY</option>
+                    <option>LOGISTICS_LATENCY</option>
+                    <option>AI_FORECAST_ERR</option>
                   </select>
                 </div>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="text-sm font-medium">Kondisi</label>
-                  <input type="text" placeholder="Contoh: > 80" className="mt-1 w-full rounded-md border px-3 py-2" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Notifikasi Ke</label>
-                  <select className="mt-1 w-full rounded-md border px-3 py-2">
-                    <option>Dashboard + Email</option>
-                    <option>Dashboard Only</option>
-                    <option>Email Only</option>
-                    <option>SMS + Email</option>
-                  </select>
+                <div className="space-y-1">
+                  <label className="text-[8px] font-black text-slate-400 uppercase tracking-widest">THRESHOLD</label>
+                  <input type="text" placeholder="E.G. > 5%" className="w-full h-8 text-[9px] font-black bg-white rounded border border-slate-200 px-2 uppercase" />
                 </div>
               </div>
-              <Button className="w-full">Buat Rule</Button>
+              <Button className="w-full bg-slate-900 hover:bg-slate-800 text-[9px] font-black uppercase tracking-widest h-9">
+                ACTIVATE TRIGGER ENGINE
+              </Button>
             </CardContent>
           </Card>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,192 +1,268 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Download, FileText, Mail } from 'lucide-react'
-import { useAuth } from '@/lib/auth'
+import { 
+  Download, 
+  FileText, 
+  Mail, 
+  Plus, 
+  Clock, 
+  BarChart3, 
+  Globe, 
+  ShieldCheck, 
+  Filter,
+  Send,
+  History,
+  Settings2
+} from 'lucide-react'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { type ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
-const laporan = [
+const activeReports = [
   {
-    nama: 'Daily Market Report',
-    deskripsi: 'Ringkasan harga, demand, dan performa penjualan harian',
-    frekuensi: 'Setiap hari 06:00',
-    template: 'Standard',
-    kirimKe: 'admin@kopdes.id',
-    status: 'Aktif',
+    nama: 'NATIONAL MARKET DENSITY REPORT',
+    deskripsi: 'Audit komprehensif densitas pasar, anomali harga, dan efisiensi serapan nasional.',
+    frekuensi: 'DAILY 06:00 WIB',
+    template: 'EXECUTIVE AUDIT',
+    recipients: 'STRATEGIC.UNIT@KEMENTERIAN.GO.ID',
+    status: 'ACTIVE',
+    lastGenerated: 'TODAY 06:00',
   },
   {
-    nama: 'Weekly Forecast Report',
-    deskripsi: 'Prediksi permintaan dan rekomendasi stok minggu depan',
-    frekuensi: 'Setiap Senin 08:00',
-    template: 'Executive',
-    kirimKe: 'admin@kopdes.id, manajer@kopdes.id',
-    status: 'Aktif',
+    nama: 'AGGREGATE SUPPLY-DEMAND FORECAST',
+    deskripsi: 'Proyeksi ketahanan pangan 3 bulan kedepan berdasarkan data AI antar-provinsi.',
+    frekuensi: 'WEEKLY (MON) 08:00 WIB',
+    template: 'FORECAST MODEL V5',
+    recipients: 'PLANNING.DIV@KEMENTERIAN.GO.ID',
+    status: 'ACTIVE',
+    lastGenerated: '30 MAR 2026',
   },
   {
-    nama: 'Monthly Financial Report',
-    deskripsi: 'Laporan keuangan, cash flow, dan profitabilitas bulanan',
-    frekuensi: 'Akhir bulan',
-    template: 'Detailed',
-    kirimKe: 'admin@kopdes.id',
-    status: 'Aktif',
+    nama: 'COOPERATIVE PERFORMANCE INDEX',
+    deskripsi: 'Ranking efisiensi dan kepatuhan audit 35.000+ koperasi unit desa (KUD).',
+    frekuensi: 'MONTHLY (EOM)',
+    template: 'COMPLIANCE DEEP-DIVE',
+    recipients: 'AUDIT.INTERNAL@KEMENTERIAN.GO.ID',
+    status: 'ACTIVE',
+    lastGenerated: '31 MAR 2026',
   },
 ]
 
-const templateLaporan = [
+const reportTemplates = [
   {
-    nama: 'Daily Brief',
-    deskripsi: '1 halaman ringkasan harian',
-    sections: ['Top metrics', 'Alert dan issues', 'Quick actions'],
+    nama: 'STRATEGIC BRIEF',
+    deskripsi: '1 halaman ringkasan KPI kritis untuk level Menteri.',
+    sections: ['TOP NATIONAL METRICS', 'RISK HEATMAP', 'IMMEDIATE INTERVENTIONS'],
+    icon: ShieldCheck,
   },
   {
-    nama: 'Weekly Executive',
-    deskripsi: '3-5 halaman dengan dashboard dan insight',
-    sections: ['Performance summary', 'Forecast', 'Recommendations', 'Risk analysis'],
+    nama: 'EXECUTIVE SUMMARY',
+    deskripsi: 'Laporan 5-10 halaman dengan visualisasi trend & forecast.',
+    sections: ['PROVINCIAL PERFORMANCE', 'COMMODITY FLOW', 'LOGISTICS EFFICIENCY', 'ROI ANALYSIS'],
+    icon: BarChart3,
   },
   {
-    nama: 'Monthly Deep Dive',
-    deskripsi: 'Laporan komprehensif 8-10 halaman',
-    sections: ['Financial analysis', 'Market trends', 'Competitor analysis', 'Strategic recommendations'],
+    nama: 'REGULATORY COMPLIANCE',
+    deskripsi: 'Laporan audit teknis untuk kepatuhan standar nasional.',
+    sections: ['COLD CHAIN INTEGRITY', 'CONTRACTUAL AUDIT', 'MEMBER WELFARE INDEX', 'SYSTEM HEALTH'],
+    icon: Globe,
   },
-]
-
-const scheduleOptions = [
-  'Setiap hari pada jam tertentu',
-  'Setiap Senin pukul 08:00',
-  'Setiap 1 Mei dan 1 Oktober',
-  'Custom schedule',
 ]
 
 export default function LaporanOtomatisPage() {
-  const { user } = useAuth()
-  const canManageReports = user?.role !== 'petani'
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  const scaleFactor = filters.provinceId === 'all' ? 1 : filters.regionId === 'all' ? 0.3 : 0.1
+
+  const stats = [
+    { label: 'REPORTS GENERATED', value: Math.floor(452 * scaleFactor), icon: FileText, color: 'text-blue-600' },
+    { label: 'AUTO-DISTRIBUTION', value: '98%', icon: Send, color: 'text-emerald-600' },
+    { label: 'DATA INTEGRITY', value: '99.9%', icon: ShieldCheck, color: 'text-indigo-600' },
+    { label: 'SYSTEM UPTIME', value: '24/7', icon: Clock, color: 'text-emerald-500' },
+  ]
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Laporan Otomatis</h1>
-        <p className="mt-2 text-muted-foreground">
-          {canManageReports
-            ? 'Generate laporan berkala secara otomatis dengan AI insights'
-            : 'Lihat laporan yang paling relevan untuk aktivitas anggota Anda'}
-        </p>
+    <div className="flex flex-col gap-6">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">
+              NATIONAL REPORTING CENTER
+            </h1>
+            <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+              GENERASI LAPORAN OTOMATIS BERBASIS AI & AUDIT REAL-TIME
+            </p>
+          </div>
+          <Button className="bg-slate-900 hover:bg-slate-800 text-[9px] font-black uppercase tracking-widest h-8 px-4">
+            <Plus className="mr-2 h-3.5 w-3.5" /> NEW AUTOMATION
+          </Button>
+        </div>
+
+        <KementerianFilterBar filters={filters} setFilters={setFilters} />
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">{canManageReports ? 'Laporan Aktif' : 'Laporan Tersedia'}</h2>
-        {laporan.map((item) => (
-          <Card key={item.nama}>
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3">
-                  <FileText className="mt-1 h-5 w-5 text-primary" />
-                  <div>
-                    <CardTitle className="text-lg">{item.nama}</CardTitle>
-                    <CardDescription>{item.deskripsi}</CardDescription>
-                  </div>
-                </div>
-                <Badge variant={item.status === 'Aktif' ? 'default' : 'secondary'}>{item.status}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid gap-4 text-sm md:grid-cols-3">
-                <div>
-                  <p className="text-muted-foreground">Frekuensi</p>
-                  <p className="font-medium">{item.frekuensi}</p>
+      {/* STATS GRID */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {stats.map((stat) => (
+          <Card key={stat.label} className="border-none bg-white shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`h-8 w-8 rounded-lg bg-slate-50 flex items-center justify-center`}>
+                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Template</p>
-                  <p className="font-medium">{item.template}</p>
+                  <p className="text-[9px] font-black tracking-widest text-slate-500 uppercase">{stat.label}</p>
+                  <p className="text-lg font-black tracking-tight text-slate-900">{stat.value}</p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">{canManageReports ? 'Dikirim ke' : 'Akses'}</p>
-                  <p className="text-xs font-medium">{canManageReports ? item.kirimKe : 'Tersedia untuk dibuka sesuai role Anda'}</p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2 border-t pt-2">
-                <Button size="sm" variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Download
-                </Button>
-                {canManageReports && (
-                  <>
-                    <Button size="sm" variant="outline">
-                      <Mail className="mr-2 h-4 w-4" />
-                      Kirim Sekarang
-                    </Button>
-                    <Button size="sm" variant="outline">Edit</Button>
-                  </>
-                )}
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {canManageReports && (
-        <>
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Template Laporan</h2>
-            <div className="grid gap-4 md:grid-cols-3">
-              {templateLaporan.map((template) => (
-                <Card key={template.nama}>
-                  <CardHeader>
-                    <CardTitle className="text-base">{template.nama}</CardTitle>
-                    <CardDescription>{template.deskripsi}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <ul className="space-y-1 text-sm text-muted-foreground">
-                      {template.sections.map((section) => (
-                        <li key={section}>+ {section}</li>
-                      ))}
-                    </ul>
-                    <Button className="w-full" size="sm">Gunakan Template</Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+        {/* ACTIVE AUTOMATIONS */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+            <History className="h-4 w-4 text-slate-900" />
+            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">ACTIVE AUTOMATIONS</h2>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Buat Laporan Baru</CardTitle>
-              <CardDescription>Schedule laporan otomatis dengan konfigurasi custom</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="text-sm font-medium">Nama Laporan</label>
-                  <input type="text" placeholder="Contoh: Weekly Sales Report" className="mt-1 w-full rounded-md border px-3 py-2" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Template</label>
-                  <select className="mt-1 w-full rounded-md border px-3 py-2">
-                    <option>Daily Brief</option>
-                    <option>Weekly Executive</option>
-                    <option>Monthly Deep Dive</option>
-                  </select>
-                </div>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="text-sm font-medium">Jadwal Pengiriman</label>
-                  <select className="mt-1 w-full rounded-md border px-3 py-2">
-                    {scheduleOptions.map((option) => (
-                      <option key={option}>{option}</option>
+          <div className="flex flex-col gap-3">
+            {activeReports.map((item) => (
+              <Card key={item.nama} className="border-none shadow-sm overflow-hidden group">
+                <div className="h-1 w-full bg-slate-100 group-hover:bg-emerald-500 transition-colors" />
+                <CardHeader className="p-4 pb-2">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 h-5 w-5 rounded-md bg-slate-900 flex items-center justify-center shrink-0">
+                        <FileText className="h-3 w-3 text-white" />
+                      </div>
+                      <div className="space-y-1">
+                        <CardTitle className="text-[11px] font-black tracking-widest text-slate-900 uppercase leading-tight">
+                          {item.nama}
+                        </CardTitle>
+                        <CardDescription className="text-[9px] font-bold text-slate-500 uppercase leading-relaxed max-w-md">
+                          {item.deskripsi}
+                        </CardDescription>
+                      </div>
+                    </div>
+                    <Badge className="text-[8px] font-black bg-emerald-100 text-emerald-700 tracking-widest uppercase">
+                      {item.status}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 pt-2">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-3 bg-slate-50 rounded border border-slate-100 mb-4">
+                    <div>
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">FREQUENCY</p>
+                      <p className="text-[10px] font-black text-slate-900 mt-0.5 uppercase">{item.frekuensi}</p>
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">TEMPLATE</p>
+                      <p className="text-[10px] font-black text-slate-900 mt-0.5 uppercase">{item.template}</p>
+                    </div>
+                    <div className="lg:col-span-2">
+                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">DISTRIBUTION</p>
+                      <p className="text-[10px] font-black text-slate-900 mt-0.5 truncate uppercase">{item.recipients}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-3 w-3 text-slate-400" />
+                      <span className="text-[9px] font-black text-slate-400 uppercase">LAST GENERATED: {item.lastGenerated}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" className="h-7 text-[8px] font-black uppercase tracking-widest border-slate-200">
+                        <Download className="mr-1.5 h-3 w-3" /> EXPORT PDF
+                      </Button>
+                      <Button size="sm" variant="outline" className="h-7 text-[8px] font-black uppercase tracking-widest border-slate-200">
+                        <Mail className="mr-1.5 h-3 w-3" /> PUSH NOW
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-slate-400 hover:text-slate-900">
+                        <Settings2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* REPORT TEMPLATES */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+            <Filter className="h-4 w-4 text-slate-900" />
+            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">SYSTEM TEMPLATES</h2>
+          </div>
+
+          <div className="grid gap-3">
+            {reportTemplates.map((template) => (
+              <Card key={template.nama} className="border-none shadow-sm hover:border-emerald-500/50 hover:border transition-all">
+                <CardHeader className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-slate-900 flex items-center justify-center">
+                      <template.icon className="h-4 w-4 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-[10px] font-black tracking-widest text-slate-900 uppercase">{template.nama}</CardTitle>
+                      <CardDescription className="text-[8px] font-bold text-slate-500 uppercase">{template.deskripsi}</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <div className="space-y-2 mb-4">
+                    {template.sections.map((section) => (
+                      <div key={section} className="flex items-center gap-2">
+                        <div className="h-1 w-1 rounded-full bg-emerald-500" />
+                        <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">{section}</span>
+                      </div>
                     ))}
-                  </select>
+                  </div>
+                  <Button className="w-full h-8 text-[9px] font-black uppercase tracking-widest border-slate-200" variant="outline">
+                    DEPLOY TEMPLATE
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card className="border-none bg-slate-900 text-white shadow-xl overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <FileText className="h-24 w-24" />
+            </div>
+            <CardHeader className="p-6">
+              <CardTitle className="text-[12px] font-black tracking-widest uppercase">CUSTOM REPORT BUILDER</CardTitle>
+              <CardDescription className="text-[9px] font-bold text-slate-400 uppercase">CONSTRUCT ADVANCED AUDIT PARAMETERS</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 pt-0 space-y-4">
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">QUERY DATA SOURCE</p>
+                  <div className="flex gap-2 p-2 bg-slate-800 rounded border border-slate-700 text-[10px] font-bold">
+                    SELECT national_kpi FROM kopdes_audit WHERE anomaly_score > 0.85
+                  </div>
                 </div>
-                <div>
-                  <label className="text-sm font-medium">Kirim ke Email</label>
-                  <input type="email" placeholder="admin@kopdes.id" className="mt-1 w-full rounded-md border px-3 py-2" />
-                </div>
+                <Button className="w-full bg-emerald-500 hover:bg-emerald-400 text-white text-[9px] font-black uppercase tracking-widest h-9">
+                  GENERATE CUSTOM QUERY
+                </Button>
               </div>
-              <Button className="w-full">Buat Laporan Otomatis</Button>
             </CardContent>
           </Card>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   )
 }

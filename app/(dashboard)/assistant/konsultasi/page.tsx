@@ -1,135 +1,304 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, AlertCircle, Lightbulb } from 'lucide-react'
-import { useAuth } from '@/lib/auth'
+import { 
+  CheckCircle, 
+  AlertCircle, 
+  Lightbulb, 
+  BrainCircuit, 
+  ShieldAlert, 
+  Search,
+  MessageSquareText,
+  TrendingUp,
+  History,
+  Scale
+} from 'lucide-react'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { type ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
-const konsultasiTopics = [
+const strategicTopics = [
   {
-    kategori: 'Teknik Pertanian',
-    pertanyaan: [
-      'Waktu optimal untuk menanam Beras',
-      'Cara meningkatkan hasil panen Cabai',
-      'Manajemen kesehatan tanaman Wortel',
-      'Irigasi & pengairan efisien',
-      'Pengendalian hama organik',
+    kategori: 'STRATEGI NASIONAL & KETAHANAN PANGAN',
+    priority: 'CRITICAL',
+    topics: [
+      'Waktu optimal untuk penanaman komoditas strategis nasional',
+      'Mitigasi kegagalan panen lintas provinsi',
+      'Stabilisasi pasokan pangan daerah remote',
+      'Integrasi cadangan beras pemerintah (CBP)',
+      'Program subsidi pupuk presisi berbasis data AI',
     ],
   },
   {
-    kategori: 'Pasar & Penjualan',
-    pertanyaan: [
-      'Target harga jual Beras Grade A',
-      'Strategi penetrasi pasar baru',
-      'Negosiasi kontrak dengan buyer',
-      'Program loyalitas pembeli',
-      'Positioning produk premium',
+    kategori: 'OPTIMASI PASAR & INTERVENSI HARGA',
+    priority: 'HIGH',
+    topics: [
+      'Analisis target harga jual komoditas Grade A nasional',
+      'Efektivitas intervensi harga pada pasar lokal',
+      'Negosiasi kontrak ekspor agregat koperasi',
+      'Deteksi anomali harga di tingkat distributor',
+      'Positioning produk unggulan daerah di pasar global',
     ],
   },
   {
-    kategori: 'Logistik & Distribusi',
-    pertanyaan: [
-      'Optimasi rute pengiriman',
-      'Manajemen cold chain',
-      'Packaging produk aman',
-      'Supply chain risk management',
-      'Last mile delivery strategy',
+    kategori: 'LOGISTIK NASIONAL & COLD CHAIN AUDIT',
+    priority: 'MEDIUM',
+    topics: [
+      'Optimasi rute logistik nasional untuk efisiensi BBM',
+      'Audit infrastruktur cold chain di wilayah Timur',
+      'Standardisasi packaging ekspor berkelanjutan',
+      'Manajemen risiko rantai pasok terhadap bencana',
+      'Integrasi last-mile delivery antar koperasi unit desa',
     ],
   },
   {
-    kategori: 'Keuangan & Bisnis',
-    pertanyaan: [
-      'Break even analysis produk',
-      'Cash flow management',
-      'Pembiayaan ekspansi',
-      'Margin keuntungan optimal',
-      'ROI perhitungan investasi',
+    kategori: 'KEUANGAN MIKRO & INVESTASI STRATEGIS',
+    priority: 'HIGH',
+    topics: [
+      'Analisis kelayakan kredit usaha rakyat (KUR) massal',
+      'Manajemen arus kas agregat ekosistem KOPDES',
+      'Pembiayaan ekspansi infrastruktur pasca panen',
+      'Optimasi margin keuntungan produsen vs distributor',
+      'Evaluasi ROI teknologi pertanian digital (AgriTech)',
     ],
   },
 ]
 
 const recentConsultations = [
   {
-    topik: 'Cara meningkatkan hasil panen Cabai',
-    jawaban: 'Untuk meningkatkan hasil panen cabai sebaiknya fokus pada 3 hal:\n1. Pemilihan benih unggul (varietas Keriting/Rawit)\n2. Nutrisi tanaman (pupuk NPK seimbang)\n3. Manajemen air (irigasi drip)\n\nPotensi peningkatan: 25-30% dengan investasi minimal.',
-    status: 'Terjawab',
-    rating: 5,
+    region: 'JAWA BARAT',
+    coop: 'KUD MANDIRI SEJAHTERA',
+    topik: 'Anomali Harga Cabai di Pasar Induk',
+    jawaban: 'Intervensi disarankan: Mobilisasi stok dari Jawa Tengah (Surplus 15%). Gunakan armada Logistik Nasional rute 04. Estimasi normalisasi harga: 48 jam.',
+    status: 'RESOLVED',
+    impact: 'HIGH',
+    time: '12 MIN LALU',
   },
   {
-    topik: 'Strategi penetrasi pasar Jawa Timur',
-    jawaban: 'Rekomendasi 3 fase:\nPhase 1: Partnership dengan distributor lokal\nPhase 2: Direct sales ke buyer institutional\nPhase 3: Brand establishment & premium positioning\n\nTimeline: 6-9 bulan\nEstimasi revenue: Rp 5jt/bulan',
-    status: 'Terjawab',
-    rating: 4,
+    region: 'SULAWESI SELATAN',
+    coop: 'KOPERASI TANI MAKMUR',
+    topik: 'Optimasi Distribusi Beras Premium',
+    jawaban: 'Rekomendasi: Alihkan 30% supply ke Balikpapan (Demand Gap 12%). Harga jual potensial: +Rp 800/kg. Efisiensi rute: 15%.',
+    status: 'IN-PROGRESS',
+    impact: 'MEDIUM',
+    time: '45 MIN LALU',
+  },
+  {
+    region: 'NASIONAL',
+    coop: 'PUSAT DATA KEMENTERIAN',
+    topik: 'Simulasi Dampak El Nino Q3',
+    jawaban: 'Vulnerabilitas terdeteksi pada 12% lahan padi. Disarankan percepatan masa tanam 2 minggu & optimalisasi embung di 450 titik prioritas.',
+    status: 'ADVISORY',
+    impact: 'CRITICAL',
+    time: '2 JAM LALU',
   },
 ]
 
 export default function KonsultasiPage() {
-  const { user } = useAuth()
-  const isPetaniView = user?.role === 'petani'
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  const scaleFactor = filters.provinceId === 'all' ? 1 : filters.regionId === 'all' ? 0.3 : 0.1
+
+  const stats = [
+    { 
+      label: 'STRATEGIC QUERIES', 
+      value: Math.floor(1254 * scaleFactor), 
+      trend: '+12%', 
+      icon: MessageSquareText,
+      color: 'text-emerald-600'
+    },
+    { 
+      label: 'AI ACCURACY RATE', 
+      value: '98.2%', 
+      trend: 'STABLE', 
+      icon: BrainCircuit,
+      color: 'text-blue-600'
+    },
+    { 
+      label: 'RESOLVED ISSUES', 
+      value: Math.floor(892 * scaleFactor), 
+      trend: '+5%', 
+      icon: CheckCircle,
+      color: 'text-emerald-500'
+    },
+    { 
+      label: 'RISK ALERTS', 
+      value: Math.floor(42 * scaleFactor), 
+      trend: '-18%', 
+      icon: ShieldAlert,
+      color: 'text-rose-600'
+    },
+  ]
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          {isPetaniView ? 'Konsultasi Tani AI' : 'Konsultasi AI Pertanian & Bisnis'}
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          {isPetaniView
-            ? 'Tanya jawab dengan AI untuk keputusan usaha tani, harga, dan pembiayaan pribadi.'
-            : 'Tanya jawab dengan AI expert di berbagai topik pertanian dan bisnis'}
-        </p>
+    <div className="flex flex-col gap-6">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">
+              STRATEGIC CONSULTATION HUB
+            </h1>
+            <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+              PUSAT KONSULTASI STRATEGIS & INTELEJEN AI NASIONAL
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-[10px] font-black text-emerald-700">
+              AI ENGINE: ACTIVE
+            </Badge>
+            <Badge variant="outline" className="border-slate-300 bg-slate-50 text-[10px] font-black text-slate-700 uppercase">
+              REFRESH: 60S
+            </Badge>
+          </div>
+        </div>
+
+        <KementerianFilterBar filters={filters} setFilters={setFilters} />
       </div>
 
-      <div className="grid gap-4">
-        {konsultasiTopics.map((topic) => (
-          <Card key={topic.kategori}>
-            <CardHeader>
-              <CardTitle className="text-lg">{topic.kategori}</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {topic.pertanyaan.map((q) => (
-                <Button
-                  key={q}
-                  variant="outline"
-                  className="justify-start h-auto p-3 text-left"
-                >
-                  <Lightbulb className="mr-2 h-4 w-4 flex-shrink-0 text-yellow-600" />
-                  <span className="text-sm">{q}</span>
-                </Button>
-              ))}
+      {/* KPI GRID */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {stats.map((stat) => (
+          <Card key={stat.label} className="border-none bg-white shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                <span className={`text-[9px] font-black uppercase ${stat.trend.startsWith('+') ? 'text-emerald-600' : stat.trend.startsWith('-') ? 'text-rose-600' : 'text-slate-500'}`}>
+                  {stat.trend}
+                </span>
+              </div>
+              <div className="mt-2">
+                <p className="text-[9px] font-black tracking-widest text-slate-500 uppercase">{stat.label}</p>
+                <p className="text-xl font-black tracking-tight text-slate-900">{stat.value}</p>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold">Konsultasi Terakhir</h2>
-        {recentConsultations.map((cons, idx) => (
-          <Card key={idx}>
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-lg">{cons.topik}</CardTitle>
-                  <Badge className="mt-2">{cons.status}</Badge>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">Rating</p>
-                  <p className="text-lg font-bold text-yellow-600">{'★'.repeat(cons.rating)}</p>
-                </div>
+      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+        {/* STRATEGIC KNOWLEDGE BASE */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+            <Scale className="h-4 w-4 text-slate-900" />
+            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">STRATEGIC KNOWLEDGE BASE</h2>
+          </div>
+          
+          <div className="grid gap-3">
+            {strategicTopics.map((group) => (
+              <Card key={group.kategori} className="overflow-hidden border-none shadow-sm transition-all hover:shadow-md">
+                <div className={`h-1 w-full ${group.priority === 'CRITICAL' ? 'bg-rose-600' : group.priority === 'HIGH' ? 'bg-amber-500' : 'bg-blue-500'}`} />
+                <CardHeader className="py-3 px-4 bg-slate-50/50">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-[10px] font-black tracking-widest text-slate-900 uppercase">
+                      {group.kategori}
+                    </CardTitle>
+                    <Badge className={`text-[8px] font-black ${group.priority === 'CRITICAL' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'}`}>
+                      {group.priority}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 grid grid-cols-1 gap-2">
+                  {group.topics.map((q) => (
+                    <Button
+                      key={q}
+                      variant="outline"
+                      className="group justify-start h-auto p-3 text-left border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30"
+                    >
+                      <div className="flex gap-3">
+                        <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-slate-100 group-hover:bg-emerald-100 transition-colors">
+                          <Lightbulb className="h-2.5 w-2.5 text-slate-600 group-hover:text-emerald-600" />
+                        </div>
+                        <span className="text-[10px] font-bold leading-tight text-slate-700 group-hover:text-slate-900">
+                          {q.toUpperCase()}
+                        </span>
+                      </div>
+                    </Button>
+                  ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* LIVE STRATEGIC AUDIT FEED */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+            <History className="h-4 w-4 text-slate-900" />
+            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">LIVE STRATEGIC AUDIT</h2>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {recentConsultations.map((cons, idx) => (
+              <Card key={idx} className="border-none shadow-sm">
+                <CardHeader className="p-4 pb-0">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-black tracking-tighter text-emerald-600">{cons.region}</span>
+                        <span className="text-[8px] font-bold text-slate-400">•</span>
+                        <span className="text-[9px] font-black tracking-tighter text-slate-500">{cons.coop}</span>
+                      </div>
+                      <CardTitle className="text-[11px] font-black leading-tight text-slate-900 uppercase">
+                        {cons.topik}
+                      </CardTitle>
+                    </div>
+                    <Badge className={`text-[8px] font-black ${
+                      cons.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-700' : 
+                      cons.status === 'ADVISORY' ? 'bg-blue-100 text-blue-700' : 
+                      'bg-amber-100 text-amber-700'
+                    }`}>
+                      {cons.status}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 space-y-3">
+                  <div className="rounded border border-slate-100 bg-slate-50/50 p-3">
+                    <p className="text-[10px] font-bold leading-relaxed text-slate-700 uppercase italic">
+                      " {cons.jawaban} "
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-50">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1">
+                        <ShieldAlert className={`h-3 w-3 ${cons.impact === 'CRITICAL' ? 'text-rose-600' : 'text-slate-400'}`} />
+                        <span className="text-[8px] font-black text-slate-500 uppercase">IMPACT: {cons.impact}</span>
+                      </div>
+                      <span className="text-[8px] font-black text-slate-400">{cons.time}</span>
+                    </div>
+                    <Button variant="ghost" size="sm" className="h-6 text-[8px] font-black uppercase tracking-widest hover:text-emerald-600">
+                      AUDIT DETAIL
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <Card className="border-dashed border-2 border-slate-200 bg-transparent">
+            <CardContent className="p-6 flex flex-col items-center justify-center text-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center">
+                <BrainCircuit className="h-5 w-5 text-slate-400" />
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-muted rounded-lg p-4">
-                <p className="text-sm whitespace-pre-wrap">{cons.jawaban}</p>
+              <div>
+                <p className="text-[10px] font-black text-slate-900 uppercase">KONSULTASI STRATEGIS BARU</p>
+                <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">HUBUNGKAN AI DENGAN PARAMETER KEBIJAKAN TERBARU</p>
               </div>
-              <div className="flex gap-2">
-                <Button size="sm">Lihat Detail</Button>
-                <Button size="sm" variant="outline">Tanya Lanjut</Button>
-              </div>
+              <Button size="sm" className="bg-slate-900 hover:bg-slate-800 text-[9px] font-black uppercase tracking-widest">
+                LAUNCH STRATEGY SIMULATOR
+              </Button>
             </CardContent>
           </Card>
-        ))}
+        </div>
       </div>
     </div>
   )
