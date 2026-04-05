@@ -84,7 +84,7 @@ function scoreToStatus(score: number) {
   return 'critical'
 }
 
-const SURFACE_CARD = 'overflow-hidden border border-slate-200 bg-white shadow-sm'
+const SURFACE_CARD = 'overflow-hidden border border-[var(--dashboard-secondary)]/10 bg-white shadow-sm'
 
 export function KementerianNationalDashboard() {
   const [filters, setFilters] = useState<ScopeFilters>({
@@ -196,15 +196,15 @@ export function KementerianNationalDashboard() {
   const SUBTLE_PANEL = 'rounded-2xl border border-slate-100 bg-white shadow-sm'
 
   return (
-    <div className="flex flex-col gap-4 p-4 lg:p-6 bg-slate-50 min-h-screen">
+    <div className="flex min-h-screen flex-col gap-4 bg-[var(--dashboard-neutral)] p-4 lg:p-6">
       {/* HEADER SECTION - COMPACT */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">KEMENTERIAN OVERVIEW</h1>
-            <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-bold px-2 py-0">LIVE</Badge>
+            <h1 className="text-xl font-black text-[var(--dashboard-secondary)] tracking-tight">KEMENTERIAN OVERVIEW</h1>
+            <Badge variant="outline" className="border-[var(--dashboard-primary)]/20 bg-[var(--dashboard-primary)]/8 px-2 py-0 font-bold text-[var(--dashboard-primary)]">LIVE</Badge>
           </div>
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--dashboard-secondary)]/70">
             <RefreshCw className="h-3 w-3 animate-spin-slow" /> 
             DATA TERPUSAT: {snapshot.scopeLabel} • Sinkron {Math.floor((Date.now() - clock)/60000)}m lalu
           </p>
@@ -260,20 +260,32 @@ export function KementerianNationalDashboard() {
       {/* TOP ROW - KPI AGGREGATES */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
         {[
-          { label: 'Total Koperasi', value: snapshot.summary.cooperatives.toLocaleString('id-ID'), icon: Building2, trend: '+12', tone: 'slate' },
-          { label: 'Anggota Aktif', value: snapshot.summary.totalMembers.toLocaleString('id-ID'), icon: Users, trend: formatPercent(snapshot.summary.memberGrowthPct), tone: 'emerald' },
-          { label: 'Inc / Member', value: formatCompactCurrency(snapshot.summary.avgIncomeAfter), icon: Wallet, trend: '+14%', tone: 'emerald' },
-          { label: 'Rev / Kop', value: formatCompactCurrency(snapshot.summary.avgMonthlyRevenue), icon: BarChart3, trend: '+8.2%', tone: 'emerald' },
-          { label: 'Avg NPL', value: `${snapshot.summary.avgNpl.toFixed(1)}%`, icon: ShieldAlert, trend: '-0.2%', tone: snapshot.summary.avgNpl > 3 ? 'rose' : 'emerald' },
-          { label: 'Health Score', value: `${Math.round(snapshot.summary.overallScore)}`, icon: HeartPulse, trend: 'Optimal', tone: 'emerald' },
+          { label: 'Total Koperasi', value: snapshot.summary.cooperatives.toLocaleString('id-ID'), icon: Building2, trend: '+12', tone: 'secondary' },
+          { label: 'Anggota Aktif', value: snapshot.summary.totalMembers.toLocaleString('id-ID'), icon: Users, trend: formatPercent(snapshot.summary.memberGrowthPct), tone: 'secondary' },
+          { label: 'Inc / Member', value: formatCompactCurrency(snapshot.summary.avgIncomeAfter), icon: Wallet, trend: '+14%', tone: 'tertiary' },
+          { label: 'Rev / Kop', value: formatCompactCurrency(snapshot.summary.avgMonthlyRevenue), icon: BarChart3, trend: '+8.2%', tone: 'tertiary' },
+          { label: 'Avg NPL', value: `${snapshot.summary.avgNpl.toFixed(1)}%`, icon: ShieldAlert, trend: '-0.2%', tone: snapshot.summary.avgNpl > 3 ? 'primary' : 'secondary' },
+          { label: 'Health Score', value: `${Math.round(snapshot.summary.overallScore)}`, icon: HeartPulse, trend: 'Optimal', tone: 'secondary' },
         ].map((kpi, idx) => (
           <Card key={idx} className={`${SURFACE_CARD} transition-all hover:border-rose-300 hover:shadow-md bg-white border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]`}>
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
-                <div className={`p-2 rounded-xl bg-slate-50 text-slate-600`}>
+                <div className={`rounded-xl p-2 ${
+                  kpi.tone === 'primary'
+                    ? 'bg-[var(--dashboard-primary)]/10 text-[var(--dashboard-primary)]'
+                    : kpi.tone === 'tertiary'
+                      ? 'bg-[var(--dashboard-tertiary)]/20 text-[#8A5F00]'
+                      : 'bg-[var(--dashboard-secondary)]/10 text-[var(--dashboard-secondary)]'
+                }`}>
                   <kpi.icon className="h-4 w-4" />
                 </div>
-                <Badge className={`text-[9px] font-black ${kpi.tone === 'rose' ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                <Badge className={`text-[9px] font-black ${
+                  kpi.tone === 'primary'
+                    ? 'bg-[var(--dashboard-primary)]/10 text-[var(--dashboard-primary)]'
+                    : kpi.tone === 'tertiary'
+                      ? 'bg-[var(--dashboard-tertiary)]/20 text-[#8A5F00]'
+                      : 'bg-[var(--dashboard-secondary)]/10 text-[var(--dashboard-secondary)]'
+                }`}>
                   {kpi.trend}
                 </Badge>
               </div>
@@ -296,11 +308,11 @@ export function KementerianNationalDashboard() {
               <CardDescription className="text-[10px] font-bold text-slate-500">Korelasi anggota baru vs produksi beras (agregat)</CardDescription>
             </div>
             <div className="flex gap-4">
-              <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600">
-                <div className="h-2 w-2 rounded-full bg-emerald-500" /> ANGGOTA
+              <div className="flex items-center gap-1.5 text-[9px] font-black text-[var(--dashboard-secondary)]">
+                <div className="h-2 w-2 rounded-full bg-[var(--dashboard-secondary)]" /> ANGGOTA
               </div>
-              <div className="flex items-center gap-1.5 text-[9px] font-black text-rose-600">
-                <div className="h-2 w-2 rounded-full bg-rose-500" /> PRODUKSI
+              <div className="flex items-center gap-1.5 text-[9px] font-black text-[var(--dashboard-primary)]">
+                <div className="h-2 w-2 rounded-full bg-[var(--dashboard-primary)]" /> RISIKO
               </div>
             </div>
           </CardHeader>
@@ -309,9 +321,9 @@ export function KementerianNationalDashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={snapshot.trend}>
                   <defs>
-                    <linearGradient id="colorEmerald" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                    <linearGradient id="colorMembers" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#455A64" stopOpacity={0.16}/>
+                      <stop offset="95%" stopColor="#455A64" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -322,8 +334,8 @@ export function KementerianNationalDashboard() {
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }} 
                     cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }}
                   />
-                  <Area yAxisId="left" type="monotone" dataKey="members" stroke="#10b981" strokeWidth={3} fill="url(#colorEmerald)" isAnimationActive={false} />
-                  <Area yAxisId="right" type="monotone" dataKey="npl" stroke="#be0817" strokeWidth={2} fill="transparent" isAnimationActive={false} />
+                  <Area yAxisId="left" type="monotone" dataKey="members" stroke="#455A64" strokeWidth={3} fill="url(#colorMembers)" isAnimationActive={false} />
+                  <Area yAxisId="right" type="monotone" dataKey="npl" stroke="#D32F2F" strokeWidth={2} fill="transparent" isAnimationActive={false} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -374,13 +386,13 @@ export function KementerianNationalDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* CROSS KOPERASI TABLE - 8 COLS */}
         <Card className={`${SURFACE_CARD} lg:col-span-8 flex flex-col`}>
-          <CardHeader className="p-4 border-b border-slate-100 bg-slate-900">
+          <CardHeader className="border-b border-[#394B54] bg-[var(--dashboard-secondary)] p-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <CardTitle className="text-sm font-black text-white uppercase tracking-widest">Audit Lintas Unit Kerja</CardTitle>
-                <CardDescription className="text-[10px] font-bold text-slate-400">Monitoring 1,248 Unit Nasional • Filter Aktif: {snapshot.scopeLabel}</CardDescription>
+                <CardDescription className="text-[10px] font-bold text-white/70">Monitoring 1,248 Unit Nasional - Filter Aktif: {snapshot.scopeLabel}</CardDescription>
               </div>
-              <Button size="sm" className="h-8 bg-rose-600 hover:bg-rose-700 text-[10px] font-black text-white px-4 rounded-lg shadow-lg shadow-rose-900/20 uppercase tracking-tighter">
+              <Button size="sm" className="h-8 rounded-lg bg-[var(--dashboard-primary)] px-4 text-[10px] font-black text-white uppercase tracking-tighter shadow-lg shadow-rose-900/20 hover:bg-[#B82A2A]">
                 Download Audit PDF
               </Button>
             </div>
@@ -413,12 +425,12 @@ export function KementerianNationalDashboard() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right text-xs font-bold text-slate-600">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
-                    <TableCell className="text-right text-xs font-black text-emerald-600">{formatCompactCurrency(row.avgIncomeAfter)}</TableCell>
+                    <TableCell className="text-right text-xs font-black text-[var(--dashboard-secondary)]">{formatCompactCurrency(row.avgIncomeAfter)}</TableCell>
                     <TableCell className={`text-right text-xs font-black ${row.avgNpl > 3 ? 'text-rose-600' : 'text-slate-900'}`}>{row.avgNpl.toFixed(1)}%</TableCell>
                     <TableCell className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full ${row.overallScore > 80 ? 'bg-emerald-500' : row.overallScore > 60 ? 'bg-amber-500' : 'bg-rose-500'}`} style={{ width: `${row.overallScore}%` }} />
+                          <div className={`h-full rounded-full ${row.overallScore > 80 ? 'bg-[var(--dashboard-secondary)]' : row.overallScore > 60 ? 'bg-[var(--dashboard-tertiary)]' : 'bg-[var(--dashboard-primary)]'}`} style={{ width: `${row.overallScore}%` }} />
                         </div>
                         <span className="text-[10px] font-black text-slate-900">{Math.round(row.overallScore)}</span>
                       </div>
@@ -449,16 +461,16 @@ export function KementerianNationalDashboard() {
                   <PieChart>
                     <Pie
                       data={[
-                        { name: 'Sehat', value: 450, color: '#10b981' },
-                        { name: 'Waspada', value: 620, color: '#f59e0b' },
-                        { name: 'Kritis', value: 178, color: '#be0817' },
+                        { name: 'Sehat', value: 450, color: '#455A64' },
+                        { name: 'Waspada', value: 620, color: '#FBC02D' },
+                        { name: 'Kritis', value: 178, color: '#D32F2F' },
                       ]}
                       innerRadius={45}
                       outerRadius={60}
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {[0,1,2].map((_, i) => <Cell key={i} fill={['#10b981', '#f59e0b', '#be0817'][i]} />)}
+                      {[0,1,2].map((_, i) => <Cell key={i} fill={['#455A64', '#FBC02D', '#D32F2F'][i]} />)}
                     </Pie>
                     <Tooltip />
                   </PieChart>
@@ -470,9 +482,9 @@ export function KementerianNationalDashboard() {
               </div>
               <div className="grid grid-cols-1 gap-1.5 mt-2">
                 {[
-                  { label: 'Sangat Sehat', count: '450', color: 'bg-emerald-500' },
-                  { label: 'Waspada / Audit', count: '620', color: 'bg-amber-500' },
-                  { label: 'Intervensi Segera', count: '178', color: 'bg-rose-500' },
+                  { label: 'Sangat Sehat', count: '450', color: 'bg-[var(--dashboard-secondary)]' },
+                  { label: 'Waspada / Audit', count: '620', color: 'bg-[var(--dashboard-tertiary)]' },
+                  { label: 'Intervensi Segera', count: '178', color: 'bg-[var(--dashboard-primary)]' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 shadow-sm">
                     <div className="flex items-center gap-2">

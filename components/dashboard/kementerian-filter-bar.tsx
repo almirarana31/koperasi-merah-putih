@@ -1,6 +1,6 @@
 'use client'
 
-import { Search, RefreshCw, Filter } from 'lucide-react'
+import { RefreshCw, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -23,6 +23,13 @@ interface KementerianFilterBarProps {
   showCommodity?: boolean
 }
 
+const triggerClassName =
+  'h-8 rounded-lg border border-[var(--dashboard-secondary)]/12 bg-white px-3 text-[10px] font-black tracking-tight text-[var(--dashboard-secondary)] shadow-none transition-colors hover:bg-[var(--dashboard-neutral)]'
+
+const contentClassName = 'border-[var(--dashboard-secondary)]/15 bg-white text-[var(--dashboard-secondary)]'
+const itemClassName =
+  'text-[10px] font-black uppercase tracking-tight focus:bg-[var(--dashboard-neutral)] focus:text-[var(--dashboard-secondary)]'
+
 export function KementerianFilterBar({
   filters,
   setFilters,
@@ -32,7 +39,7 @@ export function KementerianFilterBar({
 }: KementerianFilterBarProps) {
   const provinceOptions = KEMENTERIAN_DASHBOARD_DATA.provinceOptions
   const regionOptions = KEMENTERIAN_DASHBOARD_DATA.regionOptions.filter(
-    (option) => filters.provinceId === 'all' || option.provinceId === filters.provinceId
+    (option) => filters.provinceId === 'all' || option.provinceId === filters.provinceId,
   )
   const villageOptions = KEMENTERIAN_DASHBOARD_DATA.villageOptions.filter((option) => {
     const matchesProvince = filters.provinceId === 'all' || option.provinceId === filters.provinceId
@@ -67,23 +74,21 @@ export function KementerianFilterBar({
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-center gap-2 bg-slate-900 p-2 rounded-xl shadow-xl border border-slate-800">
-        {/* Search Input - If provided */}
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--dashboard-secondary)]/15 bg-[var(--dashboard-neutral)] p-2 shadow-[0_16px_36px_-22px_rgba(69,90,100,0.45)]">
         {setSearch !== undefined && (
-          <div className="relative flex-1 min-w-[180px] border-r border-slate-800 pr-2">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <div className="relative min-w-[180px] flex-1 border-r border-[var(--dashboard-secondary)]/10 pr-2">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--dashboard-secondary)]/45" />
             <Input
               placeholder="PENCARIAN DATA NASIONAL..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 h-8 border-none bg-transparent shadow-none focus-visible:ring-0 text-[10px] font-black text-white placeholder:text-slate-600 uppercase tracking-widest"
+              className="h-8 border-none bg-transparent pl-9 text-[10px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)] placeholder:text-[var(--dashboard-secondary)]/45 shadow-none focus-visible:ring-0"
             />
           </div>
         )}
 
-        {/* Province */}
-        <div className="flex items-center gap-2 px-3 border-r border-slate-800">
-          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">PROV</span>
+        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
+          <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">PROV</span>
           <Select
             value={filters.provinceId}
             onValueChange={(v) =>
@@ -96,13 +101,15 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[140px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+            <SelectTrigger className={`${triggerClassName} w-[140px]`}>
               <SelectValue placeholder="SEMUA PROVINSI" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800 text-white">
-              <SelectItem value="all" className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">SEMUA PROVINSI</SelectItem>
+            <SelectContent className={contentClassName}>
+              <SelectItem value="all" className={itemClassName}>
+                SEMUA PROVINSI
+              </SelectItem>
               {provinceOptions.map((opt) => (
-                <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
+                <SelectItem key={opt.id} value={opt.id} className={itemClassName}>
                   {opt.label}
                 </SelectItem>
               ))}
@@ -110,9 +117,8 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        {/* Region */}
-        <div className="flex items-center gap-2 px-3 border-r border-slate-800">
-          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">KAB/KOTA</span>
+        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
+          <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">KAB/KOTA</span>
           <Select
             value={filters.regionId}
             onValueChange={(v) =>
@@ -124,13 +130,15 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[140px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+            <SelectTrigger className={`${triggerClassName} w-[140px]`}>
               <SelectValue placeholder="SEMUA KABUPATEN" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800 text-white">
-              <SelectItem value="all" className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">SEMUA KAB/KOTA</SelectItem>
+            <SelectContent className={contentClassName}>
+              <SelectItem value="all" className={itemClassName}>
+                SEMUA KAB/KOTA
+              </SelectItem>
               {regionOptions.map((opt) => (
-                <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
+                <SelectItem key={opt.id} value={opt.id} className={itemClassName}>
                   {opt.label}
                 </SelectItem>
               ))}
@@ -138,9 +146,8 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        {/* Village */}
-        <div className="flex items-center gap-2 px-3 border-r border-slate-800">
-          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">DESA</span>
+        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
+          <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">DESA</span>
           <Select
             value={filters.villageId}
             onValueChange={(v) =>
@@ -151,13 +158,15 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[140px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+            <SelectTrigger className={`${triggerClassName} w-[140px]`}>
               <SelectValue placeholder="SEMUA DESA" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800 text-white">
-              <SelectItem value="all" className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">SEMUA DESA</SelectItem>
+            <SelectContent className={contentClassName}>
+              <SelectItem value="all" className={itemClassName}>
+                SEMUA DESA
+              </SelectItem>
               {villageOptions.map((opt) => (
-                <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
+                <SelectItem key={opt.id} value={opt.id} className={itemClassName}>
                   {opt.label}
                 </SelectItem>
               ))}
@@ -165,9 +174,8 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        {/* Cooperative */}
-        <div className="flex items-center gap-2 px-3 border-r border-slate-800">
-          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">KOPERASI</span>
+        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
+          <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">KOPERASI</span>
           <Select
             value={filters.cooperativeId}
             onValueChange={(v) =>
@@ -177,13 +185,15 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[160px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+            <SelectTrigger className={`${triggerClassName} w-[160px]`}>
               <SelectValue placeholder="SEMUA ENTITAS" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-slate-800 text-white">
-              <SelectItem value="all" className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">SEMUA KOPERASI</SelectItem>
+            <SelectContent className={contentClassName}>
+              <SelectItem value="all" className={itemClassName}>
+                SEMUA KOPERASI
+              </SelectItem>
               {cooperativeOptions.map((opt) => (
-                <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
+                <SelectItem key={opt.id} value={opt.id} className={itemClassName}>
                   {opt.label}
                 </SelectItem>
               ))}
@@ -191,22 +201,19 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        {/* Commodity */}
         {showCommodity && (
-          <div className="flex items-center gap-2 px-3 border-r border-slate-800">
-            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">KOMODITAS</span>
+          <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
+            <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">KOMODITAS</span>
             <Select
               value={filters.commodityId}
-              onValueChange={(v) =>
-                setFilters((prev) => ({ ...prev, commodityId: v }))
-              }
+              onValueChange={(v) => setFilters((prev) => ({ ...prev, commodityId: v }))}
             >
-              <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[140px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+              <SelectTrigger className={`${triggerClassName} w-[140px]`}>
                 <SelectValue placeholder="SEMUA" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900 border-slate-800 text-white">
+              <SelectContent className={contentClassName}>
                 {commodityOptions.map((opt) => (
-                  <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
+                  <SelectItem key={opt.id} value={opt.id} className={itemClassName}>
                     {opt.label}
                   </SelectItem>
                 ))}
@@ -215,11 +222,10 @@ export function KementerianFilterBar({
           </div>
         )}
 
-        {/* Reset Button */}
         <Button
           size="sm"
           variant="ghost"
-          className="h-8 w-8 p-0 text-slate-500 hover:bg-rose-500 hover:text-white transition-all ml-auto rounded-lg"
+          className="ml-auto h-8 w-8 rounded-lg p-0 text-[var(--dashboard-secondary)]/70 transition-all hover:bg-[var(--dashboard-primary)] hover:text-white"
           onClick={resetFilters}
         >
           <RefreshCw className="h-3.5 w-3.5" />

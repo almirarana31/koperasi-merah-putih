@@ -7,6 +7,10 @@
 :root {
   --background: oklch(0.982 0.004 70); /* Off-white */
   --foreground: oklch(0.27 0.03 24); /* Warm charcoal */
+  --dashboard-primary: #D32F2F;
+  --dashboard-secondary: #455A64;
+  --dashboard-tertiary: #FBC02D;
+  --dashboard-neutral: #F8F9FA;
   --card: oklch(0.995 0.002 70);
   --card-foreground: oklch(0.27 0.03 24);
   --popover: oklch(0.995 0.002 70);

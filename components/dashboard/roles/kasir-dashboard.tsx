@@ -54,14 +54,14 @@ export function KasirDashboard() {
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardContent className="p-6">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Total Kas Masuk (Hari Ini)</p>
-            <p className="text-3xl font-black mt-2 text-emerald-600 tracking-tighter">Rp 52.450.000</p>
+            <p className="text-3xl font-black mt-2 text-[var(--dashboard-secondary)] tracking-tighter">Rp 52.450.000</p>
             <div className="flex items-center gap-2 mt-2">
-              <span className="text-[10px] font-black bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full uppercase">+18% dari kemarin</span>
+              <span className="text-[10px] font-black bg-[var(--dashboard-secondary)]/10 text-[var(--dashboard-secondary)] px-2 py-0.5 rounded-full uppercase">+18% dari kemarin</span>
             </div>
             <div className="mt-6 flex gap-2">
               <Button 
                 size="sm" 
-                className="flex-1 rounded-xl font-black text-[10px] uppercase tracking-widest bg-slate-900 hover:bg-slate-800 shadow-md shadow-slate-200"
+                className="flex-1 rounded-xl bg-[var(--dashboard-secondary)] font-black text-[10px] uppercase tracking-widest text-white shadow-md shadow-slate-200 hover:bg-[#394B54]"
                 onClick={() => setIsRecordDialogOpen(true)}
               >
                 Input Transaksi
