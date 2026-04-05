@@ -66,24 +66,24 @@ export function KementerianFilterBar({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-2 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+    <div className="w-full">
+      <div className="flex flex-wrap items-center gap-2 bg-slate-900 p-2 rounded-xl shadow-xl border border-slate-800">
         {/* Search Input - If provided */}
         {setSearch !== undefined && (
-          <div className="relative flex-1 min-w-[200px] border-r border-slate-100 pr-2">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <div className="relative flex-1 min-w-[180px] border-r border-slate-800 pr-2">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
             <Input
-              placeholder="Cari..."
+              placeholder="PENCARIAN DATA NASIONAL..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 h-8 border-none bg-transparent shadow-none focus-visible:ring-0 text-xs font-bold text-slate-900 placeholder:text-slate-400"
+              className="pl-9 h-8 border-none bg-transparent shadow-none focus-visible:ring-0 text-[10px] font-black text-white placeholder:text-slate-600 uppercase tracking-widest"
             />
           </div>
         )}
 
         {/* Province */}
-        <div className="flex items-center gap-1 px-2 border-r border-slate-100">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Prov</span>
+        <div className="flex items-center gap-2 px-3 border-r border-slate-800">
+          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">PROV</span>
           <Select
             value={filters.provinceId}
             onValueChange={(v) =>
@@ -96,13 +96,13 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[120px] text-xs font-black p-0 text-slate-900 tracking-tight">
-              <SelectValue placeholder="Semua" />
+            <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[140px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+              <SelectValue placeholder="SEMUA PROVINSI" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all" className="text-xs font-bold">Semua Provinsi</SelectItem>
+            <SelectContent className="bg-slate-900 border-slate-800 text-white">
+              <SelectItem value="all" className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">SEMUA PROVINSI</SelectItem>
               {provinceOptions.map((opt) => (
-                <SelectItem key={opt.id} value={opt.id} className="text-xs font-bold">
+                <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
                   {opt.label}
                 </SelectItem>
               ))}
@@ -111,8 +111,8 @@ export function KementerianFilterBar({
         </div>
 
         {/* Region */}
-        <div className="flex items-center gap-1 px-2 border-r border-slate-100">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kab/Kota</span>
+        <div className="flex items-center gap-2 px-3 border-r border-slate-800">
+          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">KAB/KOTA</span>
           <Select
             value={filters.regionId}
             onValueChange={(v) =>
@@ -124,13 +124,13 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[120px] text-xs font-black p-0 text-slate-900 tracking-tight">
-              <SelectValue placeholder="Semua" />
+            <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[140px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+              <SelectValue placeholder="SEMUA KABUPATEN" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all" className="text-xs font-bold">Semua Kab/Kota</SelectItem>
+            <SelectContent className="bg-slate-900 border-slate-800 text-white">
+              <SelectItem value="all" className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">SEMUA KAB/KOTA</SelectItem>
               {regionOptions.map((opt) => (
-                <SelectItem key={opt.id} value={opt.id} className="text-xs font-bold">
+                <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
                   {opt.label}
                 </SelectItem>
               ))}
@@ -139,8 +139,8 @@ export function KementerianFilterBar({
         </div>
 
         {/* Village */}
-        <div className="flex items-center gap-1 px-2 border-r border-slate-100">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Desa</span>
+        <div className="flex items-center gap-2 px-3 border-r border-slate-800">
+          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">DESA</span>
           <Select
             value={filters.villageId}
             onValueChange={(v) =>
@@ -151,13 +151,13 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[120px] text-xs font-black p-0 text-slate-900 tracking-tight">
-              <SelectValue placeholder="Semua" />
+            <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[140px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+              <SelectValue placeholder="SEMUA DESA" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all" className="text-xs font-bold">Semua Desa</SelectItem>
+            <SelectContent className="bg-slate-900 border-slate-800 text-white">
+              <SelectItem value="all" className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">SEMUA DESA</SelectItem>
               {villageOptions.map((opt) => (
-                <SelectItem key={opt.id} value={opt.id} className="text-xs font-bold">
+                <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
                   {opt.label}
                 </SelectItem>
               ))}
@@ -166,8 +166,8 @@ export function KementerianFilterBar({
         </div>
 
         {/* Cooperative */}
-        <div className="flex items-center gap-1 px-2 border-r border-slate-100">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kop</span>
+        <div className="flex items-center gap-2 px-3 border-r border-slate-800">
+          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">KOPERASI</span>
           <Select
             value={filters.cooperativeId}
             onValueChange={(v) =>
@@ -177,13 +177,13 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[120px] text-xs font-black p-0 text-slate-900 tracking-tight">
-              <SelectValue placeholder="Semua" />
+            <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[160px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+              <SelectValue placeholder="SEMUA ENTITAS" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all" className="text-xs font-bold">Semua Koperasi</SelectItem>
+            <SelectContent className="bg-slate-900 border-slate-800 text-white">
+              <SelectItem value="all" className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">SEMUA KOPERASI</SelectItem>
               {cooperativeOptions.map((opt) => (
-                <SelectItem key={opt.id} value={opt.id} className="text-xs font-bold">
+                <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
                   {opt.label}
                 </SelectItem>
               ))}
@@ -193,20 +193,20 @@ export function KementerianFilterBar({
 
         {/* Commodity */}
         {showCommodity && (
-          <div className="flex items-center gap-1 px-2 border-r border-slate-100">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Komoditas</span>
+          <div className="flex items-center gap-2 px-3 border-r border-slate-800">
+            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest shrink-0">KOMODITAS</span>
             <Select
               value={filters.commodityId}
               onValueChange={(v) =>
                 setFilters((prev) => ({ ...prev, commodityId: v }))
               }
             >
-              <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[120px] text-xs font-black p-0 text-slate-900 tracking-tight">
-                <SelectValue placeholder="Semua" />
+              <SelectTrigger className="h-8 border-none bg-slate-800/50 hover:bg-slate-800 transition-colors shadow-none w-[140px] text-[10px] font-black px-3 text-white tracking-tight rounded-lg">
+                <SelectValue placeholder="SEMUA" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-slate-900 border-slate-800 text-white">
                 {commodityOptions.map((opt) => (
-                  <SelectItem key={opt.id} value={opt.id} className="text-xs font-bold">
+                  <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-tight focus:bg-slate-800 focus:text-white">
                     {opt.label}
                   </SelectItem>
                 ))}
@@ -219,10 +219,10 @@ export function KementerianFilterBar({
         <Button
           size="sm"
           variant="ghost"
-          className="h-8 w-8 p-0 hover:bg-rose-50 hover:text-rose-600"
+          className="h-8 w-8 p-0 text-slate-500 hover:bg-rose-500 hover:text-white transition-all ml-auto rounded-lg"
           onClick={resetFilters}
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-3.5 w-3.5" />
         </Button>
       </div>
     </div>

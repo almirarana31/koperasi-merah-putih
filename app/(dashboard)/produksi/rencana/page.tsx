@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   AlertTriangle,
   Calendar,
@@ -8,6 +8,11 @@ import {
   Leaf,
   Plus,
   TrendingUp,
+  Search,
+  Target,
+  BarChart3,
+  MapPin,
+  Building2,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -20,7 +25,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useAuth } from '@/lib/auth'
+import { useAuth } from '@/lib/auth/use-auth'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
 const rencanaTanam = [
   {
@@ -28,7 +35,9 @@ const rencanaTanam = [
     komoditas: 'Padi',
     varietas: 'IR64',
     luasHa: 15.5,
-    kelompok: 'Kelompok Tani Makmur Jaya',
+    kelompok: 'Klp. Makmur Jaya',
+    desa: 'SUKAMAJU',
+    koperasi: 'KOP. MAJU JAYA',
     musim: 'MT1 2024',
     tanggalMulai: '2024-01-15',
     tanggalPanen: '2024-04-15',
@@ -41,7 +50,9 @@ const rencanaTanam = [
     komoditas: 'Jagung',
     varietas: 'Hibrida',
     luasHa: 8.0,
-    kelompok: 'Kelompok Tani Makmur Jaya',
+    kelompok: 'Klp. Makmur Jaya',
+    desa: 'SUKAMAJU',
+    koperasi: 'KOP. MAJU JAYA',
     musim: 'MT1 2024',
     tanggalMulai: '2024-02-01',
     tanggalPanen: '2024-05-01',
@@ -54,7 +65,9 @@ const rencanaTanam = [
     komoditas: 'Kentang',
     varietas: 'Granola',
     luasHa: 5.0,
-    kelompok: 'Kelompok Tani Sumber Rezeki',
+    kelompok: 'Klp. Sumber Rezeki',
+    desa: 'CIBODAS',
+    koperasi: 'KOP. MANDIRI',
     musim: 'MT1 2024',
     tanggalMulai: '2024-01-20',
     tanggalPanen: '2024-04-20',
@@ -67,7 +80,9 @@ const rencanaTanam = [
     komoditas: 'Cabai Merah',
     varietas: 'TM999',
     luasHa: 3.2,
-    kelompok: 'Kelompok Tani Makmur Jaya',
+    kelompok: 'Klp. Makmur Jaya',
+    desa: 'SUKAMAJU',
+    koperasi: 'KOP. MAJU JAYA',
     musim: 'MT2 2024',
     tanggalMulai: '2024-03-01',
     tanggalPanen: '2024-06-15',
@@ -75,254 +90,183 @@ const rencanaTanam = [
     status: 'dijadwalkan',
     estimasiHasil: '28 ton',
   },
-] as const
-
-const personalPlans = [
-  {
-    id: 'PR-001',
-    komoditas: 'Padi Premium',
-    musim: 'Musim Gadu 2026',
-    luas: '1.5 Ha',
-    tanggalMulai: '8 Apr 2026',
-    targetPanen: '18 Jul 2026',
-    progress: 35,
-    status: 'Pembibitan selesai',
-    catatan: 'Benih sudah siap, tinggal penjadwalan pemupukan pertama.',
-  },
-  {
-    id: 'PR-002',
-    komoditas: 'Jagung Pipil',
-    musim: 'Musim Gadu 2026',
-    luas: '0.8 Ha',
-    tanggalMulai: '20 Apr 2026',
-    targetPanen: '12 Agu 2026',
-    progress: 10,
-    status: 'Lahan disiapkan',
-    catatan: 'Menunggu hujan ringan sebelum tanam serentak.',
-  },
-] as const
+]
 
 const musimOptions = ['MT1 2024', 'MT2 2024', 'MT1 2025']
 
 export default function RencanaTanamPage() {
   const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
+  const isPetani = user?.role === 'petani'
+
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
   const [filterMusim, setFilterMusim] = useState('semua')
+  const [search, setSearch] = useState('')
 
-  if (!user) return null
+  const filteredRencana = useMemo(() => {
+    return rencanaTanam.filter(r => {
+      const matchesSearch = r.komoditas.toLowerCase().includes(search.toLowerCase()) || r.kelompok.toLowerCase().includes(search.toLowerCase())
+      const matchesMusim = filterMusim === 'semua' || r.musim === filterMusim
+      
+      if (!isKementerian) return matchesSearch && matchesMusim
 
-  if (user.role === 'petani') {
-    return (
-      <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Rencana Tanam Saya</h1>
-            <p className="text-muted-foreground">
-              Atur musim tanam Anda sendiri, pantau progres lahan, dan siapkan target panen tanpa melihat data anggota lain.
-            </p>
-          </div>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Tambah Rencana Saya
-          </Button>
-        </div>
+      const matchesVillage = filters.villageId === 'all' || r.desa.toUpperCase().includes(filters.villageId.split('-').pop() || '')
+      const matchesKop = filters.cooperativeId === 'all' || r.koperasi.toUpperCase().includes(filters.cooperativeId.split('-').pop() || '')
+      const matchesCommodity = filters.commodityId === 'all' || r.komoditas.toLowerCase().includes(filters.commodityId.toLowerCase())
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Rencana Aktif</CardDescription>
-              <CardTitle className="text-3xl">{personalPlans.length}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">Semua milik Anda</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Luas Lahan Direncanakan</CardDescription>
-              <CardTitle className="text-3xl">2.3 Ha</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-primary">Siap untuk musim gadu</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Target Panen</CardDescription>
-              <CardTitle className="text-3xl">4.1 ton</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-1 text-xs text-primary">
-                <TrendingUp className="h-3 w-3" />
-                Berdasarkan kondisi lahan saat ini
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Perhatian Minggu Ini</CardDescription>
-              <CardTitle className="text-3xl text-amber-600">1</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-1 text-xs text-amber-600">
-                <AlertTriangle className="h-3 w-3" />
-                Pemupukan tahap awal
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      return matchesSearch && matchesMusim && matchesVillage && matchesKop && matchesCommodity
+    })
+  }, [search, filterMusim, filters, isKementerian])
 
-        <div className="grid gap-4 lg:grid-cols-[1.35fr_0.95fr]">
-          <div className="space-y-4">
-            {personalPlans.map((plan) => (
-              <Card key={plan.id} className="overflow-hidden">
-                <CardHeader className="pb-3">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Leaf className="h-5 w-5 text-primary" />
-                        <CardTitle className="text-lg">{plan.komoditas}</CardTitle>
-                        <Badge variant="outline">{plan.musim}</Badge>
-                      </div>
-                      <CardDescription className="mt-1">{plan.status}</CardDescription>
-                    </div>
-                    <Badge className="bg-primary/10 text-primary">{plan.id}</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid gap-3 text-sm sm:grid-cols-3">
-                    <div className="rounded-xl bg-secondary/35 p-3">
-                      <p className="text-muted-foreground">Luas</p>
-                      <p className="mt-1 font-semibold">{plan.luas}</p>
-                    </div>
-                    <div className="rounded-xl bg-secondary/35 p-3">
-                      <p className="text-muted-foreground">Mulai</p>
-                      <p className="mt-1 font-semibold">{plan.tanggalMulai}</p>
-                    </div>
-                    <div className="rounded-xl bg-secondary/35 p-3">
-                      <p className="text-muted-foreground">Target Panen</p>
-                      <p className="mt-1 font-semibold">{plan.targetPanen}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Progres lahan</span>
-                      <span className="font-medium">{plan.progress}%</span>
-                    </div>
-                    <Progress value={plan.progress} className="h-2" />
-                  </div>
-
-                  <p className="text-sm text-muted-foreground">{plan.catatan}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <Card className="h-fit border-dashed">
-            <CardHeader>
-              <CardTitle className="text-base">Checklist Petani</CardTitle>
-              <CardDescription>Supaya rencana tanam lebih siap dieksekusi.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="rounded-xl bg-secondary/35 p-3">
-                <p className="font-medium">Pastikan jadwal pupuk awal sudah dibuat</p>
-                <p className="mt-1 text-muted-foreground">Jadwal yang rapi membantu prediksi panen dan kebutuhan pembiayaan.</p>
-              </div>
-              <div className="rounded-xl bg-secondary/35 p-3">
-                <p className="font-medium">Sinkronkan rencana dengan jadwal panen</p>
-                <p className="mt-1 text-muted-foreground">Supaya koperasi bisa menyiapkan gudang dan pembeli lebih cepat.</p>
-              </div>
-              <div className="rounded-xl bg-secondary/35 p-3">
-                <p className="font-medium">Pantau kondisi harga sebelum menentukan luas tanam</p>
-                <p className="mt-1 text-muted-foreground">Komoditas dengan tren harga baik bisa diprioritaskan di musim berikutnya.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
-  const filtered =
-    filterMusim === 'semua'
-      ? rencanaTanam
-      : rencanaTanam.filter((item) => item.musim === filterMusim)
-
-  const totalLuas = rencanaTanam.reduce((acc, item) => acc + item.luasHa, 0)
-  const berjalan = rencanaTanam.filter((item) => item.status === 'berjalan').length
+  const totals = useMemo(() => {
+    return {
+      count: filteredRencana.length,
+      luas: filteredRencana.reduce((acc, r) => acc + r.luasHa, 0),
+      berjalan: filteredRencana.filter(r => r.status === 'berjalan').length,
+      estHasil: filteredRencana.reduce((acc, r) => acc + parseInt(r.estimasiHasil), 0)
+    }
+  }, [filteredRencana])
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Rencana Tanam</h1>
-          <p className="text-muted-foreground">Perencanaan dan monitoring musim tanam koperasi</p>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Rencana Produksi Nasional</h1>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+            Orkestrasi Musim Tanam dan Proyeksi Hasil Panen Lintas Wilayah
+          </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Buat Rencana
-        </Button>
+        {!isPetani && (
+          <Button size="sm" className="h-10 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200">
+            <Plus className="mr-2 h-4 w-4" />
+            Buat Rencana Strategis
+          </Button>
+        )}
       </div>
 
+      {/* Kementerian Filter Bar */}
+      {isKementerian && <KementerianFilterBar filters={filters} setFilters={setFilters} search={search} setSearch={setSearch} />}
+
+      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Rencana</CardDescription>
-            <CardTitle className="text-3xl">{rencanaTanam.length}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">{berjalan} sedang berjalan</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Luas Tanam</CardDescription>
-            <CardTitle className="text-3xl">{totalLuas.toFixed(1)} Ha</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-primary">Musim ini</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Estimasi Hasil</CardDescription>
-            <CardTitle className="text-3xl">220 ton</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs text-primary">
-              <TrendingUp className="h-3 w-3" />
-              +15% dari target
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Perlu Perhatian</CardDescription>
-            <CardTitle className="text-3xl text-amber-600">1</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs text-amber-600">
-              <AlertTriangle className="h-3 w-3" />
-              Terlambat jadwal
-            </div>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'Rencana Aktif', value: totals.count, sub: `${totals.berjalan} Dalam Proses`, icon: Target, tone: 'slate' },
+          { label: 'Akumulasi Lahan', value: `${totals.luas.toFixed(1)} Ha`, sub: 'Area Terencana', icon: Leaf, tone: 'emerald' },
+          { label: 'Proyeksi Output', value: `${totals.estHasil} Ton`, sub: 'Est. Panen Global', icon: BarChart3, tone: 'emerald' },
+          { label: 'Risk Alert', value: '1', sub: 'Terlambat Jadwal', icon: AlertTriangle, tone: 'rose' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+            <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <stat.icon className={`h-3.5 w-3.5 ${stat.tone === 'rose' ? 'text-rose-500' : 'text-slate-400'}`} />
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-2xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
+              <p className={`text-[10px] font-bold uppercase mt-1 tracking-widest ${stat.tone === 'rose' ? 'text-rose-600' : 'text-slate-500'}`}>{stat.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Local Filter: Musim */}
+      <div className="flex bg-white p-2 rounded-xl border border-slate-100 shadow-sm w-fit gap-2">
+        <span className="flex items-center px-3 text-[9px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-100">Filter Musim</span>
         <Select value={filterMusim} onValueChange={setFilterMusim}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <Calendar className="mr-2 h-4 w-4" />
+          <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[160px] text-[10px] font-black uppercase px-2 focus:ring-0">
             <SelectValue placeholder="Pilih Musim" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="semua">Semua Musim</SelectItem>
+          <SelectContent className="bg-slate-900 border-slate-800 text-white">
+            <SelectItem value="semua" className="text-[10px] font-black uppercase">SEMUA MUSIM</SelectItem>
             {musimOptions.map((musim) => (
-              <SelectItem key={musim} value={musim}>
+              <SelectItem key={musim} value={musim} className="text-[10px] font-black uppercase">
                 {musim}
               </SelectItem>
             ))}
           </SelectContent>
+        </Select>
+      </div>
+
+      {/* Rencana Grid */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {filteredRencana.map((rencana) => (
+          <Card key={rencana.id} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden group hover:shadow-lg transition-all">
+            <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                    <Leaf className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">
+                        {rencana.komoditas}
+                      </h3>
+                      <Badge variant="outline" className="text-[8px] font-black uppercase border-slate-200 text-slate-500 h-4">{rencana.varietas}</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">PELAKSANA:</p>
+                      <p className="text-[9px] font-black text-slate-900 uppercase tracking-tight">{rencana.kelompok}</p>
+                    </div>
+                  </div>
+                </div>
+                <Badge className={`text-[9px] font-black uppercase border-none px-2 h-5 ${rencana.status === 'berjalan' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                  {rencana.status === 'berjalan' ? 'ON-GOING' : 'SCHEDULED'}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">AREA</p>
+                  <p className="text-xs font-black text-slate-900 mt-1">{rencana.luasHa} HA</p>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">MUSIM</p>
+                  <p className="text-xs font-black text-slate-900 mt-1">{rencana.musim}</p>
+                </div>
+                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                  <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">EST. HASIL</p>
+                  <p className="text-xs font-black text-emerald-700 mt-1">{rencana.estimasiHasil}</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tight">
+                  <div className="flex items-center gap-1.5 text-slate-400">
+                    <Calendar className="h-3 w-3" />
+                    <span>{rencana.tanggalMulai} — {rencana.tanggalPanen}</span>
+                  </div>
+                  <span className="text-slate-900">{rencana.progress}% PROGRESS</span>
+                </div>
+                <Progress value={rencana.progress} className="h-1.5 bg-slate-100" />
+              </div>
+
+              <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-50">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-3 w-3 text-slate-400" />
+                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{rencana.desa} • {rencana.koperasi}</span>
+                </div>
+                <Button variant="ghost" size="sm" className="h-8 text-[9px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100">
+                  Detail Rencana
+                  <ChevronRight className="ml-1.5 h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+   </SelectContent>
         </Select>
       </div>
 

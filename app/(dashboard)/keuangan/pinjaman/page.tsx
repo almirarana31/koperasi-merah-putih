@@ -13,57 +13,27 @@ import {
   Sparkles,
   TrendingUp,
   Wallet,
+  ShieldAlert,
+  Globe,
+  Activity,
+  Download,
+  FileText,
+  Search,
+  Filter,
+  BarChart3,
 } from 'lucide-react'
-import { useAuth } from '@/lib/auth'
+import { useAuth } from '@/lib/auth/use-auth'
 import { formatCurrency, formatDate, loans, members } from '@/lib/data'
-import type { Role, User } from '@/lib/rbac'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Slider } from '@/components/ui/slider'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
-type PersonalLoanStatus = 'review' | 'active' | 'repaid'
 type ReviewStatus = 'baru' | 'analisis' | 'komite' | 'disetujui' | 'perlu_dokumen'
-
-type PersonalLoanRecord = {
-  id: string
-  purpose: string
-  amount: number
-  tenor: number
-  submittedAt: string
-  status: PersonalLoanStatus
-  remainingBalance: number
-  note: string
-}
-
-type SelfLoanProfile = {
-  memberId: string
-  nik: string
-  village: string
-  commodity: string
-  creditScore: number
-  savingsBalance: number
-  activeLoanBalance: number
-  maxLoanAmount: number
-  interestRate: number
-  recommendedTenor: number
-  history: PersonalLoanRecord[]
-}
 
 type ReviewerApplication = {
   id: string
@@ -76,29 +46,7 @@ type ReviewerApplication = {
   submittedAt: string
   status: ReviewStatus
   recommendation: string
-  assignedRoles: Role[]
-}
-
-const tujuanPinjaman = ['Modal tanam', 'Pupuk dan bibit', 'Alat panen', 'Perbaikan irigasi']
-const tenorOptions = [3, 6, 9, 12, 18]
-
-const SELF_SERVICE_PROFILES: Record<string, SelfLoanProfile> = {
-  'USR-001': {
-    memberId: 'M005',
-    nik: '3201234567890005',
-    village: 'Cikupa, Tangerang',
-    commodity: 'Padi dan gabah',
-    creditScore: 742,
-    savingsBalance: 8500000,
-    activeLoanBalance: 4500000,
-    maxLoanAmount: 35000000,
-    interestRate: 6,
-    recommendedTenor: 12,
-    history: [
-      { id: 'APL-2602-014', purpose: 'Modal pupuk musim tanam', amount: 12000000, tenor: 12, submittedAt: '2026-02-10', status: 'active', remainingBalance: 4500000, note: 'Pembayaran lancar dan diprioritaskan untuk panen April.' },
-      { id: 'APL-2508-003', purpose: 'Perbaikan pompa air', amount: 7000000, tenor: 6, submittedAt: '2025-08-05', status: 'repaid', remainingBalance: 0, note: 'Lunas tepat waktu pada Januari 2026.' },
-    ],
-  },
+  assignedRoles: string[]
 }
 
 const REVIEWER_APPLICATIONS: ReviewerApplication[] = [
@@ -107,320 +55,289 @@ const REVIEWER_APPLICATIONS: ReviewerApplication[] = [
   { id: 'APL-2603-025', borrowerName: 'Pak Hendra Wijaya', village: 'Cibodas', commodity: 'Kentang', amount: 14000000, tenor: 12, score: 733, submittedAt: '2026-03-21', status: 'komite', recommendation: 'Menunggu persetujuan komite.', assignedRoles: ['bank', 'ketua', 'kementerian', 'sysadmin'] },
 ]
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max)
-}
-
-function createFallbackProfile(user: User): SelfLoanProfile {
-  const member = members.find((item) => item.nama === user.name)
-  const loan = loans.find((item) => item.memberNama === user.name || item.memberId === member?.id)
-  const savings = (member?.simpananPokok ?? 500000) + (member?.simpananWajib ?? 1500000)
-  return {
-    memberId: member?.id ?? user.id,
-    nik: member?.nik ?? '-',
-    village: [member?.desa, member?.kecamatan].filter(Boolean).join(', ') || 'Wilayah koperasi',
-    commodity: member?.komoditas?.join(', ') || 'Usaha anggota',
-    creditScore: loan ? 710 : 690,
-    savingsBalance: savings,
-    activeLoanBalance: loan?.sisaPinjaman ?? 0,
-    maxLoanAmount: Math.max(savings * 4, 10000000),
-    interestRate: 6.5,
-    recommendedTenor: 12,
-    history: loan
-      ? [{ id: loan.id, purpose: 'Pinjaman produktif anggota', amount: loan.jumlahPinjaman, tenor: loan.tenor, submittedAt: loan.tanggalPinjam, status: loan.status === 'lunas' ? 'repaid' : 'active', remainingBalance: loan.sisaPinjaman, note: loan.status === 'lunas' ? 'Pinjaman telah selesai dibayarkan.' : `Jatuh tempo ${formatDate(loan.tanggalJatuhTempo)}.` }]
-      : [],
-  }
-}
-
-function personalStatusMeta(status: PersonalLoanStatus) {
-  const map = {
-    review: { label: 'Dalam review', className: 'border-amber-200 bg-amber-50 text-amber-700' },
-    active: { label: 'Berjalan', className: 'border-blue-200 bg-blue-50 text-blue-700' },
-    repaid: { label: 'Lunas', className: 'border-emerald-200 bg-emerald-50 text-emerald-700' },
-  }
-  return map[status]
-}
-
 function reviewStatusMeta(status: ReviewStatus) {
   const map = {
-    baru: { label: 'Baru masuk', className: 'border-slate-200 bg-slate-50 text-slate-700' },
-    analisis: { label: 'Analisis', className: 'border-blue-200 bg-blue-50 text-blue-700' },
-    komite: { label: 'Komite', className: 'border-violet-200 bg-violet-50 text-violet-700' },
-    disetujui: { label: 'Disetujui', className: 'border-emerald-200 bg-emerald-50 text-emerald-700' },
-    perlu_dokumen: { label: 'Butuh dokumen', className: 'border-red-200 bg-red-50 text-red-700' },
+    baru: { label: 'BARU MASUK', className: 'bg-slate-100 text-slate-700' },
+    analisis: { label: 'ANALISIS', className: 'bg-blue-100 text-blue-700' },
+    komite: { label: 'KOMITE', className: 'bg-violet-100 text-violet-700' },
+    disetujui: { label: 'DISETUJUI', className: 'bg-emerald-100 text-emerald-700' },
+    perlu_dokumen: { label: 'BUTUH DOKUMEN', className: 'bg-rose-100 text-rose-700' },
   }
   return map[status]
 }
 
 export default function PinjamanPage() {
-  const { user, canRoute } = useAuth()
-  const isPetaniView = user?.role === 'petani'
-  const canSeeCreditScoring = canRoute('/keuangan/credit-scoring')
-  const backHref = canRoute('/keuangan') ? '/keuangan' : '/dashboard'
-  const profile = useMemo(() => (user ? SELF_SERVICE_PROFILES[user.id] ?? createFallbackProfile(user) : null), [user])
-  const initialQueue = useMemo(
-    () => (user && !isPetaniView ? REVIEWER_APPLICATIONS.filter((item) => item.assignedRoles.includes(user.role)) : []),
-    [isPetaniView, user],
-  )
-  const [requestedAmount, setRequestedAmount] = useState(5000000)
-  const [selectedPurpose, setSelectedPurpose] = useState(tujuanPinjaman[0])
-  const [selectedTenor, setSelectedTenor] = useState('12')
-  const [notes, setNotes] = useState('')
-  const [loanHistory, setLoanHistory] = useState<PersonalLoanRecord[]>([])
-  const [reviewerQueue, setReviewerQueue] = useState<ReviewerApplication[]>([])
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
+  const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
+  
+  const [search, setSearch] = useState('')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
 
-  useEffect(() => {
-    if (!profile) return
-    setRequestedAmount(clamp(Math.min(profile.maxLoanAmount, 8000000), 1000000, profile.maxLoanAmount))
-    setSelectedPurpose(tujuanPinjaman[0])
-    setSelectedTenor(String(profile.recommendedTenor))
-    setNotes('')
-    setLoanHistory(profile.history)
-  }, [profile])
+  const filteredQueue = useMemo(() => {
+    return REVIEWER_APPLICATIONS.filter((item) => {
+      const matchesSearch = item.borrowerName.toLowerCase().includes(search.toLowerCase()) || 
+                           item.id.toLowerCase().includes(search.toLowerCase())
+      
+      // Hierarchical Filter Simulation
+      const loc = item.village.toUpperCase()
+      const matchesProvince = filters.provinceId === 'all' || true // In real app, check against region hierarchy
+      const matchesCommodity = filters.commodityId === 'all' || item.commodity.toUpperCase().includes(filters.commodityId.toUpperCase())
+      
+      return matchesSearch && matchesProvince && matchesCommodity
+    })
+  }, [search, filters])
 
-  useEffect(() => {
-    setReviewerQueue(initialQueue)
-  }, [initialQueue])
+  const stats = useMemo(() => {
+    const totalVolume = filteredQueue.reduce((sum, i) => sum + i.amount, 0)
+    const avgScore = filteredQueue.length > 0 ? filteredQueue.reduce((sum, i) => sum + i.score, 0) / filteredQueue.length : 0
+    return {
+      count: filteredQueue.length,
+      totalVolume,
+      avgScore
+    }
+  }, [filteredQueue])
 
-  const monthlyInstallment = useMemo(() => {
-    if (!profile) return 0
-    const tenor = Number(selectedTenor)
-    const interest = requestedAmount * (profile.interestRate / 100) * (tenor / 12)
-    return Math.round((requestedAmount + interest) / tenor)
-  }, [profile, requestedAmount, selectedTenor])
-
-  const approvalChance = useMemo(() => {
-    if (!profile) return 0
-    const scoreWeight = profile.creditScore * 0.08
-    const limitWeight = 35 - (requestedAmount / profile.maxLoanAmount) * 20
-    return clamp(Math.round(scoreWeight + limitWeight), 45, 95)
-  }, [profile, requestedAmount])
-
-  const processedQueue = useMemo(
-    () => reviewerQueue.filter((item) => item.status === 'disetujui' || item.status === 'perlu_dokumen'),
-    [reviewerQueue],
-  )
-
-  const queueTotal = useMemo(() => reviewerQueue.reduce((sum, item) => sum + item.amount, 0), [reviewerQueue])
-
-  const handleAmountInput = (value: string) => {
-    if (!profile) return
-    const numericValue = Number(value.replace(/[^\d]/g, ''))
-    setRequestedAmount(clamp(Number.isNaN(numericValue) ? 0 : numericValue, 1000000, profile.maxLoanAmount))
-  }
-
-  const handleSubmit = () => {
-    if (!profile || !user) return
-    setLoanHistory((current) => [
-      {
-        id: `APL-${Date.now().toString().slice(-6)}`,
-        purpose: selectedPurpose,
-        amount: requestedAmount,
-        tenor: Number(selectedTenor),
-        submittedAt: new Date().toISOString().slice(0, 10),
-        status: 'review',
-        remainingBalance: requestedAmount,
-        note: `Ajuan baru oleh ${user.name}. Menunggu verifikasi koperasi.`,
-      },
-      ...current,
-    ])
-    setNotes('')
-    setShowSuccessDialog(true)
-  }
-
-  const updateApplicationStatus = (id: string, status: ReviewStatus) => {
-    setReviewerQueue((current) =>
-      current.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              status,
-              recommendation:
-                status === 'disetujui'
-                  ? `Disetujui oleh ${user?.name}. Siap ke tahap pencairan.`
-                  : `Dokumen tambahan diminta oleh ${user?.name}.`,
-            }
-          : item,
-      ),
-    )
-  }
-
-  if (!user) {
-    return (
-      <Alert>
-        <FileWarning className="h-4 w-4" />
-        <AlertTitle>Sesi tidak ditemukan</AlertTitle>
-        <AlertDescription>Silakan kembali ke login untuk memilih role dan akun.</AlertDescription>
-      </Alert>
-    )
-  }
-
-  if (isPetaniView && !profile) {
-    return (
-      <Alert>
-        <FileWarning className="h-4 w-4" />
-        <AlertTitle>Profil pinjaman belum tersedia</AlertTitle>
-        <AlertDescription>Data untuk akun ini belum siap. Coba pilih akun lain atau kembali ke dashboard.</AlertDescription>
-      </Alert>
-    )
-  }
+  if (!user) return null
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="space-y-3">
-          <Button variant="ghost" size="sm" asChild className="w-fit px-0 hover:bg-transparent">
-            <Link href={backHref}>
-              <ArrowLeft className="h-4 w-4" />
-              Kembali
-            </Link>
-          </Button>
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center shadow-xl">
+            <Wallet className="h-6 w-6 text-emerald-500" />
+          </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              {isPetaniView ? 'Pinjaman Saya' : 'Review Pengajuan Pinjaman'}
-            </h1>
-            <p className="text-muted-foreground">
-              {isPetaniView
-                ? `Semua data di halaman ini mengikuti akun ${user.name}.`
-                : `Halaman ini berubah ke mode reviewer untuk role ${user.role}.`}
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">National Credit Hub</h1>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+              Monitoring Agregat Pembiayaan & Risiko Kredit • {stats.count} Aplikasi Aktif
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          {canSeeCreditScoring && (
-            <Button variant="outline" asChild>
-              <Link href="/keuangan/credit-scoring">
-                <TrendingUp className="h-4 w-4" />
-                Credit Scoring
-              </Link>
-            </Button>
-          )}
-          {canRoute('/keuangan/shu') && (
-            <Button variant="outline" asChild>
-              <Link href="/keuangan/shu">
-                <PiggyBank className="h-4 w-4" />
-                Lihat SHU
-              </Link>
-            </Button>
-          )}
-          <Button asChild>
-            <Link href="/assistant">
-              <Sparkles className="h-4 w-4" />
-              Tanya Assistant
-            </Link>
+           <Button variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+            <FileText className="h-4 w-4 mr-2 text-rose-600" />
+            NPL Report
+          </Button>
+          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200">
+            <Download className="h-4 w-4 mr-2" />
+            Audit PDF
           </Button>
         </div>
       </div>
 
-      {isPetaniView && profile ? (
-        <>
-          <div className="grid gap-4 xl:grid-cols-[1.3fr_1fr]">
-            <Card className="border-red-200/70 bg-gradient-to-br from-red-600 via-red-500 to-red-700 text-white shadow-lg shadow-red-200/60">
-              <CardContent className="space-y-4 p-6">
-                <Badge className="border-white/20 bg-white/15 text-white hover:bg-white/15">Akun aktif: {user.name}</Badge>
-                <div>
-                  <p className="text-sm text-red-50/80">Limit pinjaman untuk akun ini</p>
-                  <h2 className="mt-2 text-3xl font-bold">{formatCurrency(profile.maxLoanAmount)}</h2>
-                  <p className="mt-2 text-sm text-red-50/90">
-                    Profil usaha {profile.commodity.toLowerCase()} di {profile.village} dengan skor {profile.creditScore}.
-                  </p>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
-                    <p className="text-xs uppercase tracking-[0.24em] text-red-50/75">Simpanan</p>
-                    <p className="mt-2 font-semibold">{formatCurrency(profile.savingsBalance)}</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
-                    <p className="text-xs uppercase tracking-[0.24em] text-red-50/75">Pinjaman aktif</p>
-                    <p className="mt-2 font-semibold">{formatCurrency(profile.activeLoanBalance)}</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
-                    <p className="text-xs uppercase tracking-[0.24em] text-red-50/75">Bunga</p>
-                    <p className="mt-2 font-semibold">{profile.interestRate}% per tahun</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+      {/* Kementerian Hierarchical Filter Bar */}
+      <KementerianFilterBar filters={filters} setFilters={setFilters} />
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Ringkasan akun</CardTitle>
-                <CardDescription>Data anggota ditampilkan sesuai profil akun yang aktif.</CardDescription>
+      {/* High-Density KPI Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Antrian Aplikasi', value: stats.count.toLocaleString(), sub: 'Entitas', icon: Clock3, color: 'text-slate-900' },
+          { label: 'Volume Pengajuan', value: (stats.totalVolume / 1000000).toFixed(1), sub: 'Juta IDR', icon: CircleDollarSign, color: 'text-emerald-600' },
+          { label: 'Rerata Credit Score', value: Math.round(stats.avgScore), sub: 'Poin', icon: Activity, color: 'text-blue-600' },
+          { label: 'Default Risk', value: '2.4%', sub: 'Nasional', icon: ShieldAlert, color: 'text-rose-600' },
+        ].map((s, i) => (
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center">
+                <s.icon className={`h-5 w-5 ${s.color}`} />
+              </div>
+              <div>
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-xl font-black tracking-tighter ${s.color}`}>{s.value}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">{s.sub}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+        <div className="space-y-6">
+           {/* Search & Action Bar */}
+           <Card className="border-none shadow-sm bg-slate-50/50">
+              <CardContent className="p-4">
+                 <div className="flex flex-col gap-4 md:flex-row md:items-center">
+                    <div className="relative flex-1">
+                       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                       <Input
+                         placeholder="CARI NAMA PEMOHON ATAU TRX ID..."
+                         value={search}
+                         onChange={(e) => setSearch(e.target.value)}
+                         className="pl-9 bg-white border-slate-200 h-11 text-[11px] font-bold uppercase tracking-wider focus:ring-slate-900"
+                       />
+                    </div>
+                    <Button variant="outline" className="h-11 border-slate-200 bg-white font-black text-[10px] uppercase tracking-widest px-6 shadow-sm">
+                       <Filter className="h-4 w-4 mr-2" /> Opsi Lanjut
+                    </Button>
+                 </div>
+              </CardContent>
+           </Card>
+
+           {/* Applications List - High Density Cards */}
+           <div className="space-y-4">
+              {filteredQueue.map((item) => {
+                const status = reviewStatusMeta(item.status)
+                return (
+                  <Card key={item.id} className="group border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-white overflow-hidden border-l-4 border-l-slate-900">
+                    <CardContent className="p-5">
+                       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                          <div className="space-y-1">
+                             <div className="flex items-center gap-3">
+                                <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.borrowerName}</h3>
+                                <Badge className={`h-5 text-[8px] font-black uppercase px-2 rounded border-none ${status.className}`}>
+                                   {status.label}
+                                </Badge>
+                             </div>
+                             <div className="flex items-center gap-4 mt-2">
+                                <div className="flex items-center gap-1.5">
+                                   <MapPin className="h-3 w-3 text-slate-400" />
+                                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{item.village}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                   <Activity className="h-3 w-3 text-emerald-500" />
+                                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{item.commodity}</span>
+                                </div>
+                                <span className="text-[9px] font-mono font-bold text-slate-400 uppercase">#{item.id}</span>
+                             </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-3">
+                             <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center justify-center min-w-[80px]">
+                                <span className="text-[8px] font-black text-slate-400 uppercase">NOMINAL</span>
+                                <span className="text-[11px] font-black text-slate-900 mt-0.5">{formatCurrency(item.amount)}</span>
+                             </div>
+                             <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center justify-center min-w-[60px]">
+                                <span className="text-[8px] font-black text-slate-400 uppercase">TENOR</span>
+                                <span className="text-[11px] font-black text-slate-900 mt-0.5">{item.tenor}M</span>
+                             </div>
+                             <div className="p-2.5 rounded-xl bg-slate-900 text-white flex flex-col items-center justify-center min-w-[60px] shadow-lg">
+                                <span className="text-[8px] font-black text-slate-500 uppercase">SCORE</span>
+                                <span className="text-[11px] font-black text-emerald-400 mt-0.5">{item.score}</span>
+                             </div>
+                          </div>
+                       </div>
+
+                       <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between group-hover:bg-slate-100 transition-colors">
+                          <p className="text-[10px] font-bold text-slate-600 italic tracking-tight leading-relaxed">"{item.recommendation}"</p>
+                          <Button variant="ghost" size="sm" className="h-8 text-[9px] font-black uppercase text-slate-900 hover:bg-white shadow-sm transition-all shrink-0 ml-4">
+                             DETAIL AUDIT <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                          </Button>
+                       </div>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+           </div>
+        </div>
+
+        {/* Audit Side Panel */}
+        <div className="space-y-6">
+           <Card className="border-none shadow-xl bg-slate-950 text-white overflow-hidden">
+              <CardHeader className="p-5 border-b border-white/5 bg-slate-900/50">
+                 <div className="flex items-center justify-between">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                       <BarChart3 className="h-4 w-4 text-emerald-500" /> CREDIT FEED
+                    </CardTitle>
+                    <div className="flex items-center gap-1.5">
+                       <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                       <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">LIVE DATA</span>
+                    </div>
+                 </div>
               </CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border bg-secondary/35 p-4">
-                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">ID anggota</p>
-                  <p className="mt-2 font-semibold">{profile.memberId}</p>
-                </div>
-                <div className="rounded-2xl border bg-secondary/35 p-4">
-                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">NIK</p>
-                  <p className="mt-2 font-semibold">{profile.nik}</p>
-                </div>
-                <div className="rounded-2xl border bg-secondary/35 p-4">
-                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Komoditas</p>
-                  <p className="mt-2 font-semibold">{profile.commodity}</p>
-                </div>
-                <div className="rounded-2xl border bg-secondary/35 p-4">
-                  <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Tenor saran</p>
-                  <p className="mt-2 font-semibold">{profile.recommendedTenor} bulan</p>
-                </div>
+              <CardContent className="p-0">
+                 <div className="divide-y divide-white/5">
+                    {[
+                      { time: '14:22', action: 'Approval: AP-022', status: 'SUCCESS', borrower: 'Subang' },
+                      { time: '14:10', action: 'Credit Score Update', status: 'INFO', borrower: 'Bandung' },
+                      { time: '13:55', action: 'Disbursement Alert', status: 'WARN', borrower: 'Nasional' },
+                      { time: '13:40', action: 'New App: AP-045', status: 'PENDING', borrower: 'Cikupa' },
+                    ].map((log, i) => (
+                      <div key={i} className="p-5 hover:bg-white/5 transition-colors cursor-pointer group">
+                         <div className="flex items-center justify-between mb-2">
+                            <Badge className={`text-[8px] font-black uppercase px-1.5 h-4 border-none ${
+                              log.status === 'WARN' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
+                            }`}>
+                               {log.status}
+                            </Badge>
+                            <span className="text-[9px] font-mono text-slate-600">{log.time}</span>
+                         </div>
+                         <p className="text-[11px] font-black text-slate-200 uppercase leading-tight group-hover:text-emerald-400 transition-colors">{log.action}</p>
+                         <p className="text-[9px] font-bold text-slate-500 uppercase mt-1 tracking-tighter">REGION: {log.borrower}</p>
+                      </div>
+                    ))}
+                 </div>
+                 <div className="p-4 bg-white/5 border-t border-white/5 text-center">
+                    <Button variant="ghost" className="w-full text-[9px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-10">
+                       Buka Konsol Kredit →
+                    </Button>
+                 </div>
               </CardContent>
-            </Card>
+           </Card>
+
+           <Card className="border-none shadow-sm bg-slate-50">
+              <CardHeader className="p-4 border-b border-slate-200">
+                 <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Analisis Risiko Nasional</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                 {[
+                   { label: 'Indeks Kolektibilitas', val: '98.2%', status: 'Sangat Sehat' },
+                   { label: 'Likuiditas Cabang', val: 'Rp 4.2M', status: 'Optimal' },
+                   { label: 'Konsentrasi Sektor', val: 'PADI', status: 'Tinggi' },
+                 ].map((h, i) => (
+                    <div key={i} className="flex items-center justify-between group">
+                       <span className="text-[10px] font-bold text-slate-500 uppercase">{h.label}</span>
+                       <div className="text-right">
+                          <p className="text-[10px] font-black text-slate-900 uppercase group-hover:text-emerald-600 transition-colors">{h.val}</p>
+                          <p className="text-[8px] font-bold text-slate-400 uppercase">{h.status}</p>
+                       </div>
+                    </div>
+                 ))}
+                 <div className="pt-2">
+                    <Button className="w-full h-10 bg-white border border-slate-200 text-slate-900 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 shadow-sm rounded-xl">
+                       Lihat Heatmap Risiko
+                    </Button>
+                 </div>
+              </CardContent>
+           </Card>
+        </div>
+      </div>
+
+      {/* Global Risk Alert Banner */}
+      <Card className="bg-rose-600 border-none overflow-hidden relative shadow-2xl shadow-rose-100 group cursor-pointer">
+        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform duration-700">
+          <ShieldAlert className="h-32 w-32 text-white" />
+        </div>
+        <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-8 relative">
+          <div className="flex items-center gap-6">
+             <div className="h-14 w-14 rounded-2xl bg-white/20 border border-white/10 flex items-center justify-center shrink-0">
+                <FileWarning className="h-7 w-7 text-white animate-pulse" />
+             </div>
+             <div>
+                <div className="flex items-center gap-3">
+                   <Badge className="bg-white text-rose-600 font-black text-[9px] px-2 h-5 border-none">SYSTEM ALERT</Badge>
+                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">High Volatility Detected (Kredit Musim Tanam)</span>
+                </div>
+                <p className="text-white text-base font-black uppercase mt-2 tracking-tight">Perhatian: Terjadi lonjakan pengajuan pinjaman di Jawa Timur. Perketat verifikasi scoring.</p>
+             </div>
           </div>
-
-          <Tabs defaultValue="ajukan" className="space-y-4">
-            <TabsList className="grid h-auto w-full grid-cols-2 rounded-2xl bg-secondary/50 p-1">
-              <TabsTrigger value="ajukan" className="rounded-xl py-2">Ajukan pinjaman</TabsTrigger>
-              <TabsTrigger value="riwayat" className="rounded-xl py-2">Riwayat akun ini</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="ajukan" className="space-y-4">
-              <div className="grid gap-4 xl:grid-cols-[1.3fr_0.9fr]">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Form pembiayaan usaha</CardTitle>
-                    <CardDescription>Pengajuan akan tercatat atas akun {user.name}.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-5">
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="tujuan">Tujuan pinjaman</Label>
-                        <Select value={selectedPurpose} onValueChange={setSelectedPurpose}>
-                          <SelectTrigger id="tujuan" className="w-full"><SelectValue placeholder="Pilih tujuan" /></SelectTrigger>
-                          <SelectContent>
-                            {tujuanPinjaman.map((purpose) => <SelectItem key={purpose} value={purpose}>{purpose}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="tenor">Tenor</Label>
-                        <Select value={selectedTenor} onValueChange={setSelectedTenor}>
-                          <SelectTrigger id="tenor" className="w-full"><SelectValue placeholder="Pilih tenor" /></SelectTrigger>
-                          <SelectContent>
-                            {tenorOptions.map((tenor) => <SelectItem key={tenor} value={String(tenor)}>{tenor} bulan</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between gap-3">
-                        <Label htmlFor="nominal">Nominal pinjaman</Label>
-                        <span className="text-sm font-medium text-primary">{formatCurrency(requestedAmount)}</span>
-                      </div>
-                      <Slider value={[requestedAmount]} min={1000000} max={profile.maxLoanAmount} step={500000} onValueChange={(value) => setRequestedAmount(value[0] ?? requestedAmount)} />
-                      <Input id="nominal" inputMode="numeric" value={requestedAmount.toString()} onChange={(event) => handleAmountInput(event.target.value)} />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="catatan">Catatan usaha</Label>
-                      <Textarea id="catatan" value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Ceritakan kebutuhan modal Anda." className="min-h-28" />
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      <Button onClick={handleSubmit}>
-                        <Wallet className="h-4 w-4" />
+          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-black text-[11px] uppercase tracking-widest px-8 rounded-xl shadow-xl transition-all">
+             Audit Regional →
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+allet className="h-4 w-4" />
                         Kirim pengajuan
                       </Button>
                       <Button variant="outline" asChild>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import {
   AlertCircle,
   Calendar,
@@ -8,21 +9,27 @@ import {
   Leaf,
   MapPin,
   User,
+  Search,
+  Building2,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useAuth } from '@/lib/auth'
+import { useAuth } from '@/lib/auth/use-auth'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
-const jadwalPanen = [
+const initialJadwalPanen = [
   {
     id: 'JP001',
     tanggal: '2024-02-18',
     hari: 'Minggu',
+    desa: 'CIBODAS',
+    koperasi: 'KOP. MANDIRI',
     items: [
       {
         komoditas: 'Kentang',
         produsen: 'Pak Hendra Wijaya',
-        lokasi: 'Cibodas, Lembang',
+        lokasi: 'Blok Utara',
         estimasi: '400 kg',
         waktu: '06:00 - 10:00',
         status: 'terkonfirmasi',
@@ -30,7 +37,7 @@ const jadwalPanen = [
       {
         komoditas: 'Wortel',
         produsen: 'Pak Hendra Wijaya',
-        lokasi: 'Cibodas, Lembang',
+        lokasi: 'Blok Utara',
         estimasi: '250 kg',
         waktu: '06:00 - 10:00',
         status: 'terkonfirmasi',
@@ -41,20 +48,14 @@ const jadwalPanen = [
     id: 'JP002',
     tanggal: '2024-02-20',
     hari: 'Selasa',
+    desa: 'SUKAMAJU',
+    koperasi: 'KOP. MAJU JAYA',
     items: [
       {
         komoditas: 'Cabai Merah',
         produsen: 'Bu Sri Wahyuni',
-        lokasi: 'Sukamaju, Cianjur',
+        lokasi: 'Lahan A1',
         estimasi: '150 kg',
-        waktu: '07:00 - 09:00',
-        status: 'terkonfirmasi',
-      },
-      {
-        komoditas: 'Tomat',
-        produsen: 'Bu Sri Wahyuni',
-        lokasi: 'Sukamaju, Cianjur',
-        estimasi: '200 kg',
         waktu: '07:00 - 09:00',
         status: 'terkonfirmasi',
       },
@@ -64,251 +65,184 @@ const jadwalPanen = [
     id: 'JP003',
     tanggal: '2024-02-22',
     hari: 'Kamis',
+    desa: 'SUKAMAJU',
+    koperasi: 'KOP. MAJU JAYA',
     items: [
       {
         komoditas: 'Beras Premium',
         produsen: 'Pak Slamet Widodo',
-        lokasi: 'Sukamaju, Cianjur',
+        lokasi: 'Blok Sawah Tengah',
         estimasi: '2000 kg',
         waktu: '06:00 - 12:00',
         status: 'menunggu',
       },
     ],
   },
-  {
-    id: 'JP004',
-    tanggal: '2024-02-25',
-    hari: 'Minggu',
-    items: [
-      {
-        komoditas: 'Ikan Tongkol',
-        produsen: 'Pak Ahmad Sudirman',
-        lokasi: 'Pantai Indah, Palabuhanratu',
-        estimasi: '300 kg',
-        waktu: '05:00 - 08:00',
-        status: 'menunggu',
-      },
-      {
-        komoditas: 'Udang',
-        produsen: 'Pak Ahmad Sudirman',
-        lokasi: 'Pantai Indah, Palabuhanratu',
-        estimasi: '100 kg',
-        waktu: '05:00 - 08:00',
-        status: 'menunggu',
-      },
-    ],
-  },
-] as const
-
-const personalSchedule = [
-  {
-    id: 'PS-001',
-    komoditas: 'Padi Premium',
-    tanggal: '12 Apr 2026',
-    waktu: '07:00 - 09:00',
-    lokasi: 'Blok Sawah Timur',
-    status: 'Petugas akan datang',
-    detail: 'Siapkan gabah di area timbang sebelum pukul 07:00.',
-  },
-  {
-    id: 'PS-002',
-    komoditas: 'Jagung Pipil',
-    tanggal: '20 Apr 2026',
-    waktu: '08:00 - 10:30',
-    lokasi: 'Lahan Bukit Barat',
-    status: 'Menunggu konfirmasi',
-    detail: 'Tim koperasi akan mengunci jadwal setelah cuaca stabil.',
-  },
-] as const
+]
 
 const today: string = '2024-02-17'
 
 export default function JadwalPanenPage() {
   const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
 
-  if (!user) return null
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
 
-  const totalEstimasi = jadwalPanen.reduce((acc, item) => {
-    return acc + item.items.reduce((sum, detail) => sum + Number.parseInt(detail.estimasi, 10), 0)
-  }, 0)
+  const [search, setSearch] = useState('')
 
-  if (user.role === 'petani') {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Jadwal Panen Saya</h1>
-          <p className="text-muted-foreground">
-            Lihat kapan koperasi datang menjemput hasil panen Anda dan apa saja yang perlu disiapkan sebelumnya.
-          </p>
-        </div>
+  const filteredJadwal = useMemo(() => {
+    return initialJadwalPanen.filter(j => {
+      const matchesSearch = j.items.some(i => i.komoditas.toLowerCase().includes(search.toLowerCase()) || i.produsen.toLowerCase().includes(search.toLowerCase()))
+      if (!isKementerian) return matchesSearch
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Jadwal aktif</CardDescription>
-              <CardTitle className="text-3xl">{personalSchedule.length}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">Semua untuk lahan Anda</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Panen terdekat</CardDescription>
-              <CardTitle className="text-xl">12 Apr 2026</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-primary">Padi premium siap diproses</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Status konfirmasi</CardDescription>
-              <CardTitle className="text-xl">1 jadwal final</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">1 jadwal masih menunggu cuaca</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Pengingat</CardDescription>
-              <CardTitle className="text-xl">Siapkan area timbang</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">Agar proses jemput hasil panen lebih cepat</p>
-            </CardContent>
-          </Card>
-        </div>
+      const matchesVillage = filters.villageId === 'all' || j.desa.toUpperCase().includes(filters.villageId.split('-').pop() || '')
+      const matchesKop = filters.cooperativeId === 'all' || j.koperasi.toUpperCase().includes(filters.cooperativeId.split('-').pop() || '')
+      const matchesCommodity = filters.commodityId === 'all' || j.items.some(i => i.komoditas.toLowerCase().includes(filters.commodityId.toLowerCase()))
 
-        <div className="grid gap-4 lg:grid-cols-[1.35fr_0.95fr]">
-          <div className="space-y-4">
-            {personalSchedule.map((item) => (
-              <Card key={item.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <CardTitle className="text-lg">{item.komoditas}</CardTitle>
-                      <CardDescription>{item.detail}</CardDescription>
-                    </div>
-                    <Badge variant="outline">{item.status}</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="grid gap-3 text-sm sm:grid-cols-3">
-                  <div className="rounded-xl bg-secondary/35 p-3">
-                    <p className="text-muted-foreground">Tanggal</p>
-                    <p className="mt-1 font-semibold">{item.tanggal}</p>
-                  </div>
-                  <div className="rounded-xl bg-secondary/35 p-3">
-                    <p className="text-muted-foreground">Waktu</p>
-                    <p className="mt-1 font-semibold">{item.waktu}</p>
-                  </div>
-                  <div className="rounded-xl bg-secondary/35 p-3">
-                    <p className="text-muted-foreground">Lokasi</p>
-                    <p className="mt-1 font-semibold">{item.lokasi}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      return matchesSearch && matchesVillage && matchesKop && matchesCommodity
+    })
+  }, [search, filters, isKementerian])
 
-          <Card className="h-fit border-dashed">
-            <CardHeader>
-              <CardTitle className="text-base">Checklist Hari Panen</CardTitle>
-              <CardDescription>Persiapan singkat agar serah terima hasil panen lancar.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="rounded-xl bg-secondary/35 p-3">
-                <p className="font-medium">Pisahkan hasil berdasarkan grade</p>
-                <p className="mt-1 text-muted-foreground">Memudahkan penilaian kualitas dan penawaran harga.</p>
-              </div>
-              <div className="rounded-xl bg-secondary/35 p-3">
-                <p className="font-medium">Pastikan timbangan dan karung siap</p>
-                <p className="mt-1 text-muted-foreground">Mengurangi waktu tunggu saat petugas datang.</p>
-              </div>
-              <div className="rounded-xl bg-secondary/35 p-3">
-                <p className="font-medium">Buka notifikasi cuaca dan harga</p>
-                <p className="mt-1 text-muted-foreground">Berguna jika jadwal perlu diubah atau hasil perlu ditahan dulu.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
+  const totals = useMemo(() => {
+    let est = 0
+    let itemsCount = 0
+    filteredJadwal.forEach(j => {
+      j.items.forEach(i => {
+        est += parseInt(i.estimasi)
+        itemsCount++
+      })
+    })
+    return { est, itemsCount, schedules: filteredJadwal.length }
+  }, [filteredJadwal])
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Jadwal Panen</h1>
-        <p className="text-muted-foreground">Timeline panen dari produsen koperasi</p>
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Logistik Panen Nasional</h1>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+            Sinkronisasi Jadwal Penjemputan Hasil Bumi Lintas Entitas
+          </p>
+        </div>
       </div>
 
+      {/* Kementerian Filter Bar */}
+      {isKementerian && <KementerianFilterBar filters={filters} setFilters={setFilters} search={search} setSearch={setSearch} />}
+
+      {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Jadwal Minggu Ini</CardDescription>
-            <CardTitle className="text-3xl">{jadwalPanen.length}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">Dari 8 produsen</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Item Panen</CardDescription>
-            <CardTitle className="text-3xl">
-              {jadwalPanen.reduce((acc, item) => acc + item.items.length, 0)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">Komoditas dijadwalkan</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Estimasi Total</CardDescription>
-            <CardTitle className="text-3xl">{(totalEstimasi / 1000).toFixed(1)} ton</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-primary">Hasil panen</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Terkonfirmasi</CardDescription>
-            <CardTitle className="text-3xl">
-              {jadwalPanen.reduce(
-                (acc, item) => acc + item.items.filter((detail) => detail.status === 'terkonfirmasi').length,
-                0
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">Item siap panen</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'Total Jadwal', value: totals.schedules, sub: 'Batch Penjemputan', icon: Calendar, tone: 'slate' },
+          { label: 'Item Panen', value: totals.itemsCount, sub: 'Komoditas Terdata', icon: Leaf, tone: 'emerald' },
+          { label: 'Volume Estimasi', value: `${(totals.est / 1000).toFixed(1)} TON`, sub: 'Proyeksi Beban Logistik', icon: Clock, tone: 'emerald' },
+          { label: 'Status Hub', value: 'OPTIMAL', sub: 'Kesiapan Armada', icon: CheckCircle2, tone: 'emerald' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
+            <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <stat.icon className="h-3.5 w-3.5 text-slate-400" />
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-2xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
+              <p className="text-[10px] font-bold text-slate-500 uppercase mt-1 tracking-widest">{stat.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <div className="space-y-4">
-        {jadwalPanen.map((jadwal, index) => {
-          const isToday = jadwal.tanggal === today
-          const isPast = jadwal.tanggal < today
+      {/* Timeline View */}
+      <div className="space-y-8 relative">
+        {filteredJadwal.length === 0 ? (
+          <div className="py-20 text-center bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tidak ada jadwal dalam scope filter ini</p>
+          </div>
+        ) : (
+          filteredJadwal.map((jadwal, index) => {
+            const isToday = jadwal.tanggal === today
+            return (
+              <div key={jadwal.id} className="relative pl-12 group">
+                {/* Timeline Line */}
+                {index < filteredJadwal.length - 1 && (
+                  <div className="absolute left-5 top-10 bottom-0 w-0.5 bg-slate-100 group-hover:bg-emerald-100 transition-colors" />
+                )}
+                
+                {/* Timeline Dot */}
+                <div className={`absolute left-0 top-0 h-10 w-10 rounded-xl border-4 border-white shadow-lg flex items-center justify-center transition-all z-10 ${
+                  isToday ? 'bg-slate-900 scale-110' : 'bg-white'
+                }`}>
+                  <Calendar className={`h-4 w-4 ${isToday ? 'text-emerald-400' : 'text-slate-400'}`} />
+                </div>
 
-          return (
-            <div key={jadwal.id} className="relative">
-              {index < jadwalPanen.length - 1 && (
-                <div className="absolute bottom-0 left-[19px] top-12 w-0.5 bg-border" />
-              )}
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{jadwal.hari}, {jadwal.tanggal}</h3>
+                      {isToday && <Badge className="bg-emerald-500 text-white text-[8px] font-black uppercase border-none">HARI INI</Badge>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-3 w-3 text-slate-400" />
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{jadwal.desa} • {jadwal.koperasi}</span>
+                    </div>
+                  </div>
 
-              <div className="flex gap-4">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 ${
-                      isToday
-                        ? 'border-primary bg-primary text-primary-foreground'
-                        : isPast
-                        ? 'border-muted bg-muted'
+                  <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+                    <CardContent className="p-0 divide-y divide-slate-50">
+                      {jadwal.items.map((item, itemIndex) => (
+                        <div key={itemIndex} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                          <div className="flex items-start gap-4">
+                            <div className="h-10 w-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+                              <Leaf className="h-5 w-5 text-slate-900" />
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.komoditas}</p>
+                              <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-1.5">
+                                  <User className="h-3 w-3 text-slate-400" />
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.produsen}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <MapPin className="h-3 w-3 text-slate-400" />
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.lokasi}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between sm:justify-end gap-8 bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-lg border sm:border-none border-slate-100">
+                            <div className="text-left sm:text-right">
+                              <p className="text-sm font-black text-emerald-600 tracking-tighter">{item.estimasi.toUpperCase()}</p>
+                              <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5 sm:justify-end">
+                                <Clock className="h-3 w-3" />
+                                {item.waktu}
+                              </div>
+                            </div>
+                            <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                              item.status === 'terkonfirmasi' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
+                            }`}>
+                              {item.status === 'terkonfirmasi' ? <CheckCircle2 className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )
+          })
+        )}
+      </div>
+    </div>
+  )
+}
+g-muted'
                         : 'border-border bg-background'
                     }`}
                   >

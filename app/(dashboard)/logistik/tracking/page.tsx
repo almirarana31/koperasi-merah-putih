@@ -1,7 +1,7 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { useState } from 'react'
 import {
   ArrowLeft,
   Truck,
@@ -11,6 +11,14 @@ import {
   CheckCircle,
   Navigation,
   Package,
+  Globe,
+  ShieldAlert,
+  Download,
+  FileText,
+  Activity,
+  Layers,
+  ArrowRight,
+  Search,
 } from 'lucide-react'
 import {
   Card,
@@ -21,20 +29,19 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { useAuth } from '@/lib/auth/use-auth'
 import {
-  KEMENTERIAN_DASHBOARD_DATA,
   type ScopeFilters,
 } from '@/lib/kementerian-dashboard-data'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
-import { ExportButton } from '@/components/dashboard/export-button'
 import { shipments, orders, formatDate } from '@/lib/data'
 
 const statusColors: Record<string, string> = {
-  dijadwalkan: 'bg-gray-500',
+  dijadwalkan: 'bg-slate-500',
   pickup: 'bg-amber-500',
-  transit: 'bg-blue-500',
-  delivered: 'bg-emerald-500',
+  transit: 'bg-blue-600',
+  delivered: 'bg-emerald-600',
 }
 
 export default function TrackingPage() {
@@ -49,207 +56,294 @@ export default function TrackingPage() {
     commodityId: 'all',
   })
 
-  const activeShipments = shipments.filter((s) => {
-    const isUnderway = s.status === 'transit' || s.status === 'pickup'
-    const order = orders.find((o) => o.id === s.orderId)
-    const matchesSearch = s.nomorResi.toLowerCase().includes(search.toLowerCase()) || 
-                         s.driver.toLowerCase().includes(search.toLowerCase()) ||
-                         order?.buyerNama.toLowerCase().includes(search.toLowerCase())
-    
-    if (isKementerian) {
-      // Heuristic check for shipment/order location
+  const filteredShipments = useMemo(() => {
+    return shipments.filter((s) => {
+      const isUnderway = s.status === 'transit' || s.status === 'pickup'
+      const order = orders.find((o) => o.id === s.orderId)
+      const matchesSearch = s.nomorResi.toLowerCase().includes(search.toLowerCase()) || 
+                           s.driver.toLowerCase().includes(search.toLowerCase()) ||
+                           order?.buyerNama.toLowerCase().includes(search.toLowerCase())
+      
+      // Hierarchical Filter Simulation
       const buyerLoc = order?.buyerNama.toUpperCase() || ''
       const matchesProvince = filters.provinceId === 'all' || buyerLoc.includes(filters.provinceId)
       
       return isUnderway && matchesSearch && matchesProvince
-    }
+    })
+  }, [search, filters])
 
-    return isUnderway && matchesSearch
-  })
+  const stats = useMemo(() => {
+    const activeCount = filteredShipments.length
+    const transitCount = filteredShipments.filter(s => s.status === 'transit').length
+    const pickupCount = filteredShipments.filter(s => s.status === 'pickup').length
+    return { activeCount, transitCount, pickupCount }
+  }, [filteredShipments])
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/logistik">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Live Tracking</h1>
-          <p className="text-muted-foreground">
-            Pantau pengiriman secara real-time
-          </p>
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center shadow-xl">
+            <Truck className="h-6 w-6 text-emerald-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">National Logistics Tracking</h1>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+              Real-time Fleet Monitoring & Supply Chain Visibility • {stats.activeCount} Units Underway
+            </p>
+          </div>
         </div>
-        <div className="ml-auto">
-          {isKementerian && (
-            <ExportButton
-              title="Laporan Tracking Logistik Nasional"
-              filename="KOPDES_Logistik_Tracking"
-              data={activeShipments.map(s => ({
-                'Resi': s.nomorResi,
-                'Driver': s.driver,
-                'Kendaraan': s.kendaraan,
-                'Plat': s.platNomor,
-                'Tanggal': s.tanggalBerangkat,
-                'Status': s.status
-              }))}
-            />
-          )}
+        <div className="flex flex-wrap gap-2">
+           <Button variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+            <ShieldAlert className="h-4 w-4 mr-2 text-rose-600" />
+            Delay Alerts
+          </Button>
+          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200">
+            <Download className="h-4 w-4 mr-2" />
+            Logistic PDF
+          </Button>
         </div>
       </div>
 
-      {isKementerian && (
-        <div className="mb-4">
-          <KementerianFilterBar
-            filters={filters}
-            setFilters={setFilters}
-            search={search}
-            setSearch={setSearch}
-            showCommodity={false}
-          />
-        </div>
-      )}
+      {/* Kementerian Hierarchical Filter Bar */}
+      <KementerianFilterBar filters={filters} setFilters={setFilters} />
 
-      {/* Map Placeholder */}
-      <Card className="overflow-hidden">
-        <div className="relative h-[400px] bg-muted">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <Navigation className="mx-auto h-16 w-16 text-muted-foreground/50" />
-              <p className="mt-4 text-lg font-medium text-muted-foreground">
-                Peta Tracking
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Integrasi dengan layanan peta akan ditampilkan di sini
-              </p>
-            </div>
-          </div>
-          {/* Simulated markers */}
-          <div className="absolute left-[30%] top-[40%] flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 text-white shadow-lg">
-            <Truck className="h-5 w-5" />
-          </div>
-          <div className="absolute left-[60%] top-[30%] flex h-10 w-10 items-center justify-center rounded-full bg-amber-500 text-white shadow-lg">
-            <Truck className="h-5 w-5" />
-          </div>
-        </div>
-      </Card>
-
-      {/* Active Shipments */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {activeShipments.length > 0 ? (
-          activeShipments.map((shipment) => {
-            const order = orders.find((o) => o.id === shipment.orderId)
-            return (
-              <Card key={shipment.id}>
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`flex h-12 w-12 items-center justify-center rounded-full ${
-                          statusColors[shipment.status]
-                        } text-white`}
-                      >
-                        <Truck className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-base">
-                          {shipment.nomorResi}
-                        </CardTitle>
-                        <CardDescription>{order?.buyerNama}</CardDescription>
-                      </div>
-                    </div>
-                    <Badge
-                      className={
-                        shipment.status === 'transit'
-                          ? 'bg-blue-500/10 text-blue-500'
-                          : 'bg-amber-500/10 text-amber-500'
-                      }
-                    >
-                      {shipment.status === 'transit'
-                        ? 'Dalam Perjalanan'
-                        : 'Pickup'}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid gap-3 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">{shipment.driver}</span>
-                      <span className="text-muted-foreground">
-                        ({shipment.noHpDriver})
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Truck className="h-4 w-4 text-muted-foreground" />
-                      <span>
-                        {shipment.kendaraan} - {shipment.platNomor}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span>Berangkat: {formatDate(shipment.tanggalBerangkat)}</span>
-                    </div>
-                  </div>
-
-                  {/* Route Timeline */}
-                  <div className="rounded-lg bg-muted p-3">
-                    <p className="mb-2 text-xs font-medium text-muted-foreground">
-                      RUTE PERJALANAN
-                    </p>
-                    <div className="flex items-center gap-2">
-                      {shipment.rute.map((loc, idx) => (
-                        <div key={idx} className="flex items-center">
-                          <div
-                            className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                              idx === 0
-                                ? 'bg-emerald-500/10'
-                                : idx === shipment.rute.length - 1
-                                ? 'bg-primary/10'
-                                : 'bg-muted-foreground/10'
-                            }`}
-                          >
-                            {idx === 0 ? (
-                              <Package className="h-4 w-4 text-emerald-500" />
-                            ) : idx === shipment.rute.length - 1 ? (
-                              <MapPin className="h-4 w-4 text-primary" />
-                            ) : (
-                              <Navigation className="h-4 w-4 text-muted-foreground" />
-                            )}
-                          </div>
-                          <span className="ml-1 text-xs">{loc}</span>
-                          {idx < shipment.rute.length - 1 && (
-                            <div className="mx-2 h-0.5 w-4 bg-border" />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Button className="w-full" variant="outline">
-                    <Phone className="mr-2 h-4 w-4" />
-                    Hubungi Driver
-                  </Button>
-                </CardContent>
-              </Card>
-            )
-          })
-        ) : (
-          <Card className="md:col-span-2">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <CheckCircle className="h-12 w-12 text-emerald-500" />
-              <p className="mt-4 text-lg font-medium">
-                Tidak ada pengiriman aktif
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Semua pengiriman telah selesai
-              </p>
+      {/* High-Density KPI Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Underway', value: stats.activeCount.toLocaleString(), sub: 'Shipments', icon: Truck, color: 'text-slate-900' },
+          { label: 'In-Transit', value: stats.transitCount.toLocaleString(), sub: 'On Road', icon: Navigation, color: 'text-blue-600' },
+          { label: 'Waiting Pickup', value: stats.pickupCount.toLocaleString(), sub: 'Pending', icon: Package, color: 'text-amber-600' },
+          { label: 'On-Time Rate', value: '96.2%', sub: 'Nasional', icon: Activity, color: 'text-emerald-600' },
+        ].map((s, i) => (
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center">
+                <s.icon className={`h-5 w-5 ${s.color}`} />
+              </div>
+              <div>
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-xl font-black tracking-tighter ${s.color}`}>{s.value}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">{s.sub}</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        )}
+        ))}
       </div>
+
+      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+        <div className="space-y-6">
+           {/* Map Monitoring - Executive Style */}
+           <Card className="border-none shadow-xl overflow-hidden bg-slate-900 h-[500px] relative">
+              <div className="absolute top-0 right-0 p-6 opacity-5">
+                 <Globe className="h-64 w-64 text-white" />
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center p-8">
+                 <div className="text-center z-10">
+                    <div className="h-20 w-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
+                       <Navigation className="h-10 w-10 text-emerald-500 animate-pulse" />
+                    </div>
+                    <h3 className="text-xl font-black text-white uppercase tracking-[0.2em]">Peta Logistik Nasional</h3>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2 max-w-sm mx-auto">
+                       Integrasi satelit real-time untuk pemantauan rute dan optimasi distribusi armada lintas wilayah.
+                    </p>
+                    <div className="mt-8 flex flex-wrap justify-center gap-3">
+                       <Badge className="bg-blue-600 text-white font-black text-[9px] uppercase tracking-widest h-6 border-none">32 TRANSIT</Badge>
+                       <Badge className="bg-amber-600 text-white font-black text-[9px] uppercase tracking-widest h-6 border-none">12 PICKUP</Badge>
+                    </div>
+                 </div>
+              </div>
+              {/* Simulated Points */}
+              <div className="absolute left-[25%] top-[45%] h-8 w-8 bg-blue-600 rounded-full border-4 border-white/20 shadow-2xl animate-bounce flex items-center justify-center">
+                 <Truck className="h-4 w-4 text-white" />
+              </div>
+              <div className="absolute right-[30%] top-[35%] h-8 w-8 bg-amber-600 rounded-full border-4 border-white/20 shadow-2xl animate-pulse flex items-center justify-center">
+                 <Package className="h-4 w-4 text-white" />
+              </div>
+              
+              <div className="absolute bottom-6 left-6 flex items-center gap-4 bg-slate-950/80 p-3 rounded-2xl border border-white/10 backdrop-blur-md">
+                 <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                    <span className="text-[9px] font-black text-white uppercase tracking-widest">Live Feed Active</span>
+                 </div>
+                 <div className="h-4 w-px bg-slate-800" />
+                 <span className="text-[9px] font-black text-slate-500 uppercase">Last Sync: {new Date().toLocaleTimeString()}</span>
+              </div>
+           </Card>
+
+           {/* Shipment Cards Grid */}
+           <div className="grid gap-4 md:grid-cols-2">
+              {filteredShipments.map((shipment) => {
+                const order = orders.find((o) => o.id === shipment.orderId)
+                return (
+                  <Card key={shipment.id} className="group border-none shadow-sm hover:shadow-xl transition-all duration-300 bg-white overflow-hidden border-t-4 border-t-slate-900">
+                    <CardHeader className="p-4 pb-2">
+                       <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-3">
+                             <div className={`h-12 w-12 rounded-xl flex items-center justify-center shadow-inner text-white ${statusColors[shipment.status]}`}>
+                                <Truck className="h-6 w-6" />
+                             </div>
+                             <div className="min-w-0">
+                                <CardTitle className="text-xs font-black text-slate-900 uppercase truncate leading-tight tracking-tight">
+                                   {shipment.nomorResi}
+                                </CardTitle>
+                                <p className="text-[10px] font-bold text-slate-500 uppercase mt-1 truncate max-w-[140px]">{order?.buyerNama}</p>
+                             </div>
+                          </div>
+                          <Badge className={`h-5 text-[8px] font-black uppercase px-2 rounded border-none ${
+                            shipment.status === 'transit' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
+                          }`}>
+                            {shipment.status === 'transit' ? 'IN TRANSIT' : 'PICKUP'}
+                          </Badge>
+                       </div>
+                    </CardHeader>
+                    <CardContent className="p-4 space-y-4">
+                       <div className="grid grid-cols-2 gap-4">
+                          <div className="flex items-center gap-2.5">
+                             <div className="h-6 w-6 rounded bg-slate-50 flex items-center justify-center shrink-0">
+                                <Phone className="h-3 w-3 text-slate-400" />
+                             </div>
+                             <div>
+                                <p className="text-[9px] font-black text-slate-900 tracking-widest">{shipment.driver}</p>
+                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">{shipment.noHpDriver}</p>
+                             </div>
+                          </div>
+                          <div className="flex items-center gap-2.5">
+                             <div className="h-6 w-6 rounded bg-slate-50 flex items-center justify-center shrink-0">
+                                <Activity className="h-3 w-3 text-slate-400" />
+                             </div>
+                             <div>
+                                <p className="text-[9px] font-black text-slate-900 tracking-widest">{shipment.platNomor}</p>
+                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">{shipment.kendaraan}</p>
+                             </div>
+                          </div>
+                       </div>
+
+                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                          <div className="flex items-center justify-between mb-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                             <span>Rute Optimal</span>
+                             <Clock className="h-3 w-3" />
+                          </div>
+                          <div className="flex items-center gap-2">
+                             {shipment.rute.map((loc, idx) => (
+                                <div key={idx} className="flex items-center">
+                                   <div className={`h-6 w-6 rounded-lg flex items-center justify-center ${
+                                     idx === 0 ? 'bg-emerald-600 text-white' : idx === shipment.rute.length - 1 ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-500'
+                                   }`}>
+                                      {idx === 0 ? <Package className="h-3 w-3" /> : idx === shipment.rute.length - 1 ? <MapPin className="h-3 w-3" /> : <Navigation className="h-3 w-3" />}
+                                   </div>
+                                   {idx < shipment.rute.length - 1 && (
+                                      <div className="mx-1 h-0.5 w-4 bg-slate-200" />
+                                   )}
+                                </div>
+                             ))}
+                          </div>
+                          <p className="mt-3 text-[9px] font-bold text-slate-600 uppercase">ETA: {formatDate(shipment.tanggalBerangkat)}</p>
+                       </div>
+
+                       <Button className="w-full h-10 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all shadow-lg">
+                         BUKA KONSOL KOMUNIKASI
+                       </Button>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+           </div>
+        </div>
+
+        {/* Side Audit Panel */}
+        <div className="space-y-6">
+           <Card className="border-none shadow-xl bg-slate-950 text-white overflow-hidden">
+              <CardHeader className="p-5 border-b border-white/5 bg-slate-900/50">
+                 <div className="flex items-center justify-between">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                       <Activity className="h-4 w-4 text-emerald-500" /> LOGISTIK FEED
+                    </CardTitle>
+                    <div className="flex items-center gap-1.5">
+                       <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-ping" />
+                       <span className="text-[9px] font-black text-emerald-500 uppercase">SYNCING</span>
+                    </div>
+                 </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                 <div className="divide-y divide-white/5">
+                    {[
+                      { time: '14:20', action: 'Tangerang -> Karawang', status: 'IN TRANSIT', unit: 'TRK-012' },
+                      { time: '14:15', action: 'Pickup Selesai: Subang', status: 'ON ROAD', unit: 'TRK-005' },
+                      { time: '13:58', action: 'Anomali Rute Terdeteksi', status: 'WARNING', unit: 'TRK-022' },
+                      { time: '13:42', action: 'Armada Siaga: Bandung', status: 'IDLE', unit: 'TRK-008' },
+                    ].map((log, i) => (
+                      <div key={i} className="p-5 hover:bg-white/5 transition-colors cursor-pointer">
+                         <div className="flex items-center justify-between mb-2">
+                            <Badge className={`text-[8px] font-black uppercase px-1.5 h-4 border-none ${
+                              log.status === 'WARNING' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
+                            }`}>
+                               {log.status}
+                            </Badge>
+                            <span className="text-[9px] font-mono text-slate-600">{log.time}</span>
+                         </div>
+                         <p className="text-[11px] font-black text-slate-200 uppercase leading-tight">{log.action}</p>
+                         <p className="text-[9px] font-bold text-slate-500 uppercase mt-1">ID UNIT: {log.unit}</p>
+                      </div>
+                    ))}
+                 </div>
+                 <div className="p-4 bg-white/5 border-t border-white/5">
+                    <Button variant="ghost" className="w-full text-[9px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-10">
+                       Buka Pusat Logistik →
+                    </Button>
+                 </div>
+              </CardContent>
+           </Card>
+
+           <Card className="border-none shadow-sm bg-slate-50">
+              <CardHeader className="p-4 border-b border-slate-200">
+                 <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Health Check: Fleet</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                 {[
+                   { label: 'GPS Uptime', val: '99.8%', status: 'Stable' },
+                   { label: 'Network Latency', val: '24ms', status: 'Low' },
+                   { label: 'Cloud Sync', val: 'Active', status: 'Live' },
+                 ].map((h, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                       <span className="text-[10px] font-bold text-slate-500 uppercase">{h.label}</span>
+                       <div className="text-right">
+                          <p className="text-[10px] font-black text-slate-900 uppercase">{h.val}</p>
+                          <p className="text-[8px] font-bold text-emerald-600 uppercase">{h.status}</p>
+                       </div>
+                    </div>
+                 ))}
+              </CardContent>
+           </Card>
+        </div>
+      </div>
+
+      {filteredShipments.length === 0 && (
+        <Card className="border-dashed py-24 bg-slate-50/50">
+          <CardContent className="flex flex-col items-center justify-center text-center">
+            <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-6 text-slate-300">
+              <Truck className="h-10 w-10" />
+            </div>
+            <h3 className="text-xl font-black text-slate-900 uppercase">Tidak Ada Pengiriman Aktif</h3>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2 max-w-sm mx-auto">
+              Saat ini tidak ada armada yang sedang beroperasi di wilayah yang dipilih.
+            </p>
+            <Button 
+              variant="link" 
+              onClick={() => {
+                setSearch('')
+                setFilters({ provinceId: 'all', regionId: 'all', villageId: 'all', cooperativeId: 'all', commodityId: 'all' })
+              }}
+              className="mt-6 text-[10px] font-black uppercase text-emerald-600"
+            >
+              Lihat Seluruh Nasional
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

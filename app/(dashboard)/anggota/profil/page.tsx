@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -22,9 +23,14 @@ import {
   UserRound,
   Users,
   Wallet,
+  Activity,
+  ShieldAlert,
+  Globe,
+  Settings,
+  Search,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { useAuth } from '@/lib/auth'
+import { useAuth } from '@/lib/auth/use-auth'
 import { members, loans, formatCurrency, formatDate } from '@/lib/data'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -40,6 +46,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { Input } from '@/components/ui/input'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
 type Metric = {
   label: string
@@ -72,34 +81,6 @@ type Preset = {
   activities: Entry[]
   history: Entry[]
 }
-
-type QuickRoute = {
-  label: string
-  href: string
-  icon: LucideIcon
-}
-
-const SCOPE_LABELS = {
-  own: 'Data pribadi',
-  koperasi: 'Level koperasi',
-  district_aggregate: 'Agregat kabupaten',
-  national_aggregate: 'Agregat nasional',
-  all_koperasi: 'Seluruh koperasi',
-} as const
-
-const QUICK_ROUTES: QuickRoute[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Profil', href: '/anggota/profil', icon: UserRound },
-  { label: 'Produksi', href: '/produksi', icon: Sprout },
-  { label: 'Anggota', href: '/anggota', icon: Users },
-  { label: 'Harga Pasar', href: '/pasar/harga', icon: ShoppingCart },
-  { label: 'Pinjaman', href: '/keuangan/pinjaman', icon: Wallet },
-  { label: 'Keuangan', href: '/keuangan', icon: CreditCard },
-  { label: 'Laporan', href: '/keuangan/laporan', icon: FileText },
-  { label: 'Command Center', href: '/command-center', icon: BarChart3 },
-  { label: 'Logistik', href: '/logistik', icon: Truck },
-  { label: 'AI', href: '/ai', icon: Brain },
-]
 
 const ACCOUNT_PRESETS: Record<string, Preset> = {
   'USR-001': {
@@ -256,7 +237,7 @@ function scoreToneClass(tone: Preset['scoreTone']) {
   }
 }
 
-function fallbackPreset(user: NonNullable<ReturnType<typeof useAuth>['user']>): Preset {
+function fallbackPreset(user: any): Preset {
   const member = members.find((item) => item.nama === user.name)
   const loan = loans.find((item) => item.memberNama === user.name || item.memberId === member?.id)
   return {
@@ -283,198 +264,204 @@ function fallbackPreset(user: NonNullable<ReturnType<typeof useAuth>['user']>): 
 
 export default function MemberProfilPage() {
   const { user, roleConfig, canRoute, dataScope } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
+  
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  // When ministry, they can explore other profiles
+  const activeProfileId = isKementerian ? (selectedUserId || user.id) : user.id
+  const preset = ACCOUNT_PRESETS[activeProfileId] ?? fallbackPreset(user)
+  const scoreTone = scoreToneClass(preset.scoreTone)
+
   if (!user || !roleConfig) return null
 
   const member = members.find((item) => item.nama === user.name)
   const linkedLoans = loans.filter((item) => item.memberNama === user.name || item.memberId === member?.id)
-  const preset = ACCOUNT_PRESETS[user.id] ?? fallbackPreset(user)
-  const routes = QUICK_ROUTES.filter((route) => canRoute(route.href))
-  const backHref = canRoute('/anggota') ? '/anggota' : '/dashboard'
-  const title = user.role === 'petani' ? 'Profil Saya' : 'Profil Akun'
-  const subtitle = user.role === 'petani'
-    ? 'Informasi keanggotaan, pembiayaan, dan aktivitas akun Anda.'
-    : 'Informasi akun, peran kerja, dan status akses saat ini.'
-  const scoreTone = scoreToneClass(preset.scoreTone)
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild className="shrink-0">
-            <Link href={backHref}>
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
+       {/* Header Section */}
+       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center shadow-xl">
+            <UserRound className="h-6 w-6 text-emerald-500" />
+          </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
-            <p className="text-sm text-muted-foreground">{subtitle}</p>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">
+              {isKementerian ? 'Penjelajah Profil & Akses' : 'Profil Akun Saya'}
+            </h1>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+              {isKementerian 
+                ? 'Monitoring Hak Akses & Aktivitas Personel Lintas Entitas' 
+                : 'Informasi Keanggotaan, Pembiayaan, dan Aktivitas Akun Anda'}
+            </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          {routes.slice(0, 2).map((route) => (
-            <Button key={route.href} variant="outline" asChild className="w-full sm:w-auto">
-              <Link href={route.href}>
-                <route.icon className="mr-2 h-4 w-4" />
-                {route.label}
-              </Link>
-            </Button>
-          ))}
+           <Button variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+            <Settings className="h-4 w-4 mr-2" />
+            Pengaturan
+          </Button>
+          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg">
+            <Activity className="h-4 w-4 mr-2" />
+            Audit Aktivitas
+          </Button>
         </div>
       </div>
 
-      <div className="space-y-4">
-        <Card className="border-border/80 shadow-[0_18px_40px_-30px_rgba(77,39,32,0.25)]">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
-              <div className="flex flex-1 flex-col gap-5 sm:flex-row sm:items-start">
-                <Avatar className="h-20 w-20 border border-red-100 shadow-sm sm:h-24 sm:w-24">
-                  <AvatarFallback className="bg-red-50 text-xl font-bold text-primary sm:text-2xl">{initials(user.name)}</AvatarFallback>
+      {isKementerian && (
+        <>
+          <KementerianFilterBar filters={filters} setFilters={setFilters} />
+          
+          <Card className="border-none shadow-sm bg-slate-50/50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-4">
+                 <div className="relative flex-1">
+                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                   <Input 
+                    placeholder="CARI PERSONEL BERDASARKAN NAMA ATAU ROLE..." 
+                    className="pl-9 bg-white h-11 border-slate-200 text-[11px] font-bold uppercase tracking-wider"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                   />
+                 </div>
+                 <Select value={selectedUserId || ''} onValueChange={setSelectedUserId}>
+                    <SelectTrigger className="w-64 h-11 border-slate-200 bg-white font-black text-[10px] uppercase">
+                       <SelectValue placeholder="PILIH AKUN SAMPLE" />
+                    </SelectTrigger>
+                    <SelectContent className="font-bold text-[10px] uppercase">
+                       <SelectItem value="USR-009">USR-009: ROOT ADMIN (SYSTEM)</SelectItem>
+                       <SelectItem value="USR-005">USR-005: KETUA KOPERASI (SUKAMAJU)</SelectItem>
+                       <SelectItem value="USR-004">USR-004: MANAJER (SUKAMAJU)</SelectItem>
+                       <SelectItem value="USR-001">USR-001: ANGGOTA (TANGERANG)</SelectItem>
+                    </SelectContent>
+                 </Select>
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {/* Profile Header Card - Executive Style */}
+      <Card className="border-none shadow-xl overflow-hidden bg-white border-t-8 border-t-slate-900">
+        <CardContent className="p-8">
+          <div className="flex flex-col gap-8 xl:flex-row xl:items-start">
+             <div className="flex flex-1 flex-col gap-6 sm:flex-row sm:items-start">
+                <Avatar className="h-28 w-28 rounded-2xl border-4 border-slate-50 shadow-xl shrink-0">
+                  <AvatarFallback className="bg-slate-900 text-white text-3xl font-black">
+                    {initials(user.name)}
+                  </AvatarFallback>
                 </Avatar>
 
                 <div className="min-w-0 flex-1 space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{user.name}</h2>
-                      <Badge className="bg-red-50 text-primary">{preset.tier}</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{preset.accountType}</p>
-                  </div>
+                   <div>
+                     <div className="flex flex-wrap items-center gap-3">
+                        <h2 className="text-3xl font-black tracking-tighter text-slate-900 uppercase leading-none">
+                          {activeProfileId === user.id ? user.name : `EXPLORING: ${activeProfileId}`}
+                        </h2>
+                        <Badge className="bg-emerald-100 text-emerald-700 font-black text-[10px] uppercase tracking-widest px-2 py-1 border-none shadow-sm">
+                          {preset.tier}
+                        </Badge>
+                     </div>
+                     <p className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.15em] mt-2">
+                       {preset.accountType}
+                     </p>
+                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-primary text-primary-foreground">{roleConfig.label}</Badge>
-                    <Badge variant="secondary">{SCOPE_LABELS[dataScope()]}</Badge>
-                    <Badge variant="outline">Akun aktif</Badge>
-                  </div>
+                   <div className="flex flex-wrap gap-2 pt-2">
+                     <Badge className="bg-slate-900 text-white font-black text-[9px] uppercase tracking-widest h-6">{roleConfig.label}</Badge>
+                     <Badge variant="outline" className="border-slate-200 text-slate-500 font-black text-[9px] uppercase tracking-widest h-6">RBAC: {dataScope()}</Badge>
+                     <Badge className="bg-blue-600 text-white font-black text-[9px] uppercase tracking-widest h-6">STATUS: AKTIF</Badge>
+                   </div>
 
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-2xl border bg-secondary/20 p-4">
-                      <div className="flex items-center gap-2 text-sm text-foreground">
-                        <Mail className="h-4 w-4 text-primary" />
-                        <span className="truncate">{user.email}</span>
+                   <div className="grid gap-4 sm:grid-cols-2 mt-6">
+                      <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 group hover:border-slate-300 transition-all">
+                        <div className="flex items-center gap-3">
+                           <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                             <Mail className="h-4 w-4 text-slate-400 group-hover:text-blue-600" />
+                           </div>
+                           <span className="text-[11px] font-bold text-slate-900 truncate">{user.email}</span>
+                        </div>
+                        <div className="mt-4 flex items-center gap-3">
+                           <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                             <Phone className="h-4 w-4 text-slate-400 group-hover:text-emerald-600" />
+                           </div>
+                           <span className="text-[11px] font-black text-slate-900 tracking-widest">{preset.phone}</span>
+                        </div>
                       </div>
-                      <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="h-4 w-4 text-primary" />
-                        <span>{preset.phone}</span>
+
+                      <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 group hover:border-slate-300 transition-all">
+                         <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                              <MapPin className="h-4 w-4 text-slate-400 group-hover:text-rose-600" />
+                            </div>
+                            <span className="text-[11px] font-bold text-slate-600 uppercase tracking-tight leading-tight">{preset.address}</span>
+                         </div>
+                         <div className="mt-4 flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                              <Calendar className="h-4 w-4 text-slate-400 group-hover:text-amber-600" />
+                            </div>
+                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">JOINED {formatDate(preset.joinedAt)}</span>
+                         </div>
                       </div>
-                    </div>
+                   </div>
+                </div>
+             </div>
 
-                    <div className="rounded-2xl border bg-secondary/20 p-4">
-                      <div className="flex items-center gap-2 text-sm text-foreground">
-                        <MapPin className="h-4 w-4 text-primary" />
-                        <span>{preset.address}</span>
+             <div className="w-full rounded-3xl bg-slate-900 p-6 xl:max-w-[21rem] shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                   <Activity className="h-32 w-32 text-white" />
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">{preset.scoreLabel}</p>
+                <p className={`mt-4 text-5xl font-black tracking-tighter ${scoreTone.value}`}>{preset.scoreValue}</p>
+                <div className="mt-4 flex items-center gap-2">
+                   <Badge className={`${scoreTone.badge} font-black text-[10px] uppercase border-none h-6`}>
+                     {preset.scoreState}
+                   </Badge>
+                   <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+                
+                <div className="mt-8 space-y-2">
+                   <div className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3 border border-white/10">
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">USER AUTH ID</span>
+                      <span className="font-mono text-[11px] font-bold text-white uppercase">{activeProfileId}</span>
+                   </div>
+                   {member && (
+                      <div className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3 border border-white/10">
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">MEMBER DATA ID</span>
+                        <span className="font-mono text-[11px] font-bold text-white uppercase">{member.id}</span>
                       </div>
-                      <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4 text-primary" />
-                        <span>Bergabung {formatDate(preset.joinedAt)}</span>
-                      </div>
-                    </div>
-                  </div>
+                   )}
                 </div>
-              </div>
 
-              <div className="w-full rounded-[1.75rem] border bg-secondary/25 p-5 xl:max-w-[21rem]">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{preset.scoreLabel}</p>
-                <p className={`mt-3 text-4xl font-bold tracking-tight ${scoreTone.value}`}>{preset.scoreValue}</p>
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <Badge className={scoreTone.badge}>{preset.scoreState}</Badge>
-                </div>
-                <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
-                  <div className="flex items-center justify-between rounded-2xl bg-background px-3 py-2">
-                    <span>User ID</span>
-                    <span className="font-medium text-foreground">{user.id}</span>
-                  </div>
-                  {member && (
-                    <div className="flex items-center justify-between rounded-2xl bg-background px-3 py-2">
-                      <span>Member ID</span>
-                      <span className="font-medium text-foreground">{member.id}</span>
-                    </div>
-                  )}
-                </div>
-                {canRoute('/keuangan/credit-scoring') && (
-                  <Button asChild variant="outline" className="mt-4 w-full">
-                    <Link href="/keuangan/credit-scoring">
-                      Lihat detail skor
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                <Button className="mt-6 w-full h-12 bg-white text-slate-900 hover:bg-slate-100 font-black text-[11px] uppercase tracking-[0.1em] rounded-xl shadow-lg">
+                  LIHAT DASHBOARD SKOR →
+                </Button>
+             </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-          <Card>
-            <CardHeader>
-              <CardTitle>Status verifikasi akun</CardTitle>
-              <CardDescription>Status keanggotaan dan identitas utama akun.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-3 sm:grid-cols-2">
-              <div className="flex items-center justify-between rounded-2xl border p-3">
-                <span className="text-sm font-medium">Status akun</span>
-                <Badge className="bg-emerald-500 text-white">Aktif</Badge>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl border p-3">
-                <span className="text-sm font-medium">Hak akses</span>
-                <Badge className="bg-blue-500 text-white">Ya</Badge>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl border p-3">
-                <span className="text-sm font-medium">Role aktif</span>
-                <Badge variant="outline">{roleConfig.label}</Badge>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl border p-3">
-                <span className="text-sm font-medium">Scope data</span>
-                <Badge variant="outline">{SCOPE_LABELS[dataScope()]}</Badge>
-              </div>
-              {member && (
-                <div className="flex items-center justify-between rounded-2xl border p-3">
-                  <span className="text-sm font-medium">NIK</span>
-                  <Badge variant="outline">{member.nik}</Badge>
-                </div>
-              )}
-              <div className="flex items-center justify-between rounded-2xl border p-3">
-                <span className="text-sm font-medium">Tier akun</span>
-                <Badge className="bg-red-50 text-primary">{preset.tier}</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Ringkasan akses</CardTitle>
-              <CardDescription>Peran utama akun ini di dalam koperasi.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-2xl border bg-secondary/35 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Deskripsi role</p>
-                <p className="mt-2 text-lg font-semibold">{roleConfig.label}</p>
-                <p className="text-sm text-muted-foreground">{roleConfig.description}</p>
-              </div>
-              <div className="rounded-2xl border bg-secondary/35 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Komoditas utama</p>
-                <p className="mt-2 text-lg font-semibold">{member?.nama ?? user.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {member ? member.komoditas.join(', ') : 'Akun operasional koperasi'}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
+      {/* Metrics Row */}
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {preset.metrics.map((metric) => (
-          <Card key={metric.label}>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${metric.accent}`}>
-                  <metric.icon className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">{metric.label}</p>
-                  <p className="truncate text-lg font-bold">{metric.value}</p>
-                  <p className="text-xs text-muted-foreground">{metric.helper}</p>
-                </div>
+          <Card key={metric.label} className="border-none shadow-sm overflow-hidden bg-white">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className={`h-11 w-11 flex items-center justify-center rounded-xl shadow-inner ${metric.accent}`}>
+                <metric.icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{metric.label}</p>
+                <p className="truncate text-lg font-black tracking-tighter text-slate-900 mt-0.5">{metric.value}</p>
+                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">{metric.helper}</p>
               </div>
             </CardContent>
           </Card>
@@ -482,166 +469,185 @@ export default function MemberProfilPage() {
       </div>
 
       <Tabs defaultValue="ringkasan" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="ringkasan" className="text-xs sm:text-sm">Ringkasan</TabsTrigger>
-          <TabsTrigger value="akses" className="text-xs sm:text-sm">Akses</TabsTrigger>
-          <TabsTrigger value="aktivitas" className="text-xs sm:text-sm">Aktivitas</TabsTrigger>
-          <TabsTrigger value="riwayat" className="text-xs sm:text-sm">Riwayat</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 bg-slate-100 p-1.5 h-12 rounded-2xl shadow-inner">
+          <TabsTrigger value="ringkasan" className="text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-md rounded-xl">Ringkasan</TabsTrigger>
+          <TabsTrigger value="akses" className="text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-md rounded-xl">Peta Akses</TabsTrigger>
+          <TabsTrigger value="aktivitas" className="text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-md rounded-xl">Aktivitas</TabsTrigger>
+          <TabsTrigger value="riwayat" className="text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-md rounded-xl">Audit Log</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="ringkasan" className="mt-4 space-y-4">
-          <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
-            <Card>
-              <CardHeader>
-                <CardTitle>Fokus kerja akun ini</CardTitle>
-                <CardDescription>Prioritas utama yang perlu diperhatikan saat ini.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {preset.workstreams.map((item) => (
-                  <div key={item} className="flex items-start gap-3 rounded-2xl border bg-background p-4">
-                    <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <CheckCircle2 className="h-4 w-4" />
+        <TabsContent value="ringkasan" className="mt-6 space-y-6">
+           <div className="grid gap-6 lg:grid-cols-2">
+              <Card className="border-none shadow-sm">
+                <CardHeader className="p-6 border-b border-slate-50">
+                  <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-widest">Fokus Kerja & KPI</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 space-y-4">
+                  {preset.workstreams.map((item, i) => (
+                    <div key={i} className="flex items-start gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50/30 group hover:border-slate-300 transition-all">
+                       <div className="h-8 w-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                         <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                       </div>
+                       <p className="text-[11px] font-bold text-slate-700 leading-relaxed uppercase tracking-tight">{item}</p>
                     </div>
-                    <p className="text-sm text-foreground">{item}</p>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card className="border-none shadow-sm overflow-hidden">
+                <CardHeader className="p-6 border-b border-slate-50">
+                  <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-widest">Pemetaan Hirarki</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                   <div className="divide-y divide-slate-50">
+                      {[
+                        { label: 'Induk Organisasi', val: 'DNA Desa Platform', sub: 'Root Entity' },
+                        { label: 'Wilayah Kerja', val: preset.address, sub: 'Operation Scope' },
+                        { label: 'Unit Terhubung', val: member?.nama || 'Akun Operasional', sub: 'Direct Link' },
+                      ].map((h, i) => (
+                        <div key={i} className="px-6 py-5 bg-white flex items-center justify-between group cursor-default">
+                           <div>
+                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{h.label}</p>
+                             <p className="text-[11px] font-black text-slate-900 uppercase mt-1 group-hover:text-blue-600 transition-colors">{h.val}</p>
+                           </div>
+                           <Badge variant="outline" className="text-[8px] font-black text-slate-400 border-slate-200">{h.sub}</Badge>
+                        </div>
+                      ))}
+                   </div>
+                   <div className="p-4 bg-slate-50 border-t border-slate-100">
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-3 w-3 text-blue-600" />
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Akses Multi-Entitas: AKTIF</span>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
+           </div>
+        </TabsContent>
+
+        <TabsContent value="akses" className="mt-6">
+           <Card className="border-none shadow-sm">
+              <CardHeader className="p-6 border-b border-slate-50">
+                 <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-widest">Modul Terotorisasi</CardTitle>
+                      <CardDescription className="text-[10px] font-bold text-slate-400 uppercase mt-1">Daftar endpoint sistem yang dapat diakses oleh role ini</CardDescription>
+                    </div>
+                    <Badge className="bg-blue-100 text-blue-700 font-black text-[9px] px-2 h-5">ACL: SYNCED</Badge>
+                 </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {['Dashboard', 'Profil', 'Produksi', 'Anggota', 'Logistik', 'Keuangan', 'AI Suite'].map((m) => (
+                    <div key={m} className="p-4 rounded-xl border border-slate-100 bg-white flex items-center justify-between group hover:border-slate-900 hover:bg-slate-900 transition-all cursor-pointer">
+                       <span className="text-[10px] font-black text-slate-900 uppercase group-hover:text-white">{m}</span>
+                       <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+           </Card>
+        </TabsContent>
+
+        <TabsContent value="aktivitas" className="mt-6">
+          <div className="grid gap-6">
+            <Card className="border-none shadow-sm">
+              <CardHeader className="p-6 border-b border-slate-50">
+                <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-widest">Monitoring Interaksi Terkini</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                {preset.activities.map((item) => (
+                  <div key={item.id} className="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm flex items-center justify-between group hover:border-slate-900 transition-all">
+                    <div className="flex items-center gap-5">
+                       <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center shrink-0">
+                         <Activity className="h-5 w-5 text-blue-600" />
+                       </div>
+                       <div>
+                         <p className="text-xs font-black text-slate-900 uppercase tracking-tight group-hover:text-blue-600">{item.title}</p>
+                         <p className="text-[10px] font-bold text-slate-500 uppercase mt-1 leading-tight">{item.detail}</p>
+                       </div>
+                    </div>
+                    <div className="text-right">
+                       <Badge variant="outline" className="text-[9px] font-black text-slate-400 border-slate-200 uppercase h-5">{formatDate(item.date)}</Badge>
+                    </div>
                   </div>
                 ))}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Identitas terhubung</CardTitle>
-                <CardDescription>Ringkasan identitas dan cakupan kerja akun.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="rounded-2xl border bg-secondary/35 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Nama akun</p>
-                  <p className="mt-2 text-lg font-semibold">{user.name}</p>
-                </div>
-                <div className="rounded-2xl border bg-secondary/35 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Scope akses</p>
-                  <p className="mt-2 text-lg font-semibold">{SCOPE_LABELS[dataScope()]}</p>
-                </div>
-                <div className="rounded-2xl border bg-secondary/35 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Data anggota terkait</p>
-                  <p className="mt-2 text-lg font-semibold">{member?.nama ?? 'Tidak ada member link langsung'}</p>
-                  {member && <p className="text-sm text-muted-foreground">{member.komoditas.join(', ')}</p>}
-                </div>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
-        <TabsContent value="akses" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Modul yang bisa dibuka akun ini</CardTitle>
-              <CardDescription>Menu kerja yang tersedia untuk akun ini.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {routes.map((route) => (
-                <Link key={route.href} href={route.href} className="flex items-center gap-3 rounded-2xl border bg-background p-4 transition-colors hover:border-primary/35 hover:bg-primary/[0.03]">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <route.icon className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-foreground">{route.label}</p>
-                    <p className="text-xs text-muted-foreground">{route.href}</p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                </Link>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="aktivitas" className="mt-4 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Aktivitas terkini akun</CardTitle>
-              <CardDescription>Aktivitas terbaru yang perlu dipantau.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {preset.activities.map((item) => (
-                <div key={item.id} className="rounded-2xl border p-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-semibold text-foreground">{item.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{item.detail}</p>
-                    </div>
-                    <Badge variant="outline">{formatDate(item.date)}</Badge>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {linkedLoans.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Pembiayaan terhubung</CardTitle>
-                <CardDescription>Daftar pinjaman dan status pembiayaan aktif.</CardDescription>
+        <TabsContent value="riwayat" className="mt-6">
+           <Card className="border-none shadow-sm overflow-hidden">
+              <CardHeader className="p-6 border-b border-slate-50 bg-slate-900">
+                <CardTitle className="text-[10px] font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
+                  <ShieldAlert className="h-4 w-4 text-rose-500" /> Executive Audit Trail
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {linkedLoans.map((loan) => (
-                  <div key={loan.id} className="rounded-2xl border p-4">
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="font-semibold">{loan.id}</p>
-                        <p className="text-sm text-muted-foreground">{formatCurrency(loan.jumlahPinjaman)} • tenor {loan.tenor} bulan</p>
-                      </div>
-                      <Badge className={loan.status === 'lunas' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}>
-                        {loan.status === 'lunas' ? 'Lunas' : 'Aktif'}
-                      </Badge>
-                    </div>
-                    <Separator className="my-3" />
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <span>Mulai: {formatDate(loan.tanggalPinjam)}</span>
-                      <span>Jatuh tempo: {formatDate(loan.tanggalJatuhTempo)}</span>
-                      <span>Sisa: {formatCurrency(loan.sisaPinjaman)}</span>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="riwayat" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Riwayat akun</CardTitle>
-              <CardDescription>Catatan aktivitas dan histori penting akun.</CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Aktivitas</TableHead>
-                      <TableHead>Detail</TableHead>
-                      <TableHead>Tanggal</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {preset.history.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="font-mono text-xs">{item.id}</TableCell>
-                        <TableCell className="font-medium">{item.title}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{item.detail}</TableCell>
-                        <TableCell>{formatDate(item.date)}</TableCell>
-                        <TableCell><Badge className={statusClass(item.status)}>{item.status}</Badge></TableCell>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader className="bg-slate-50">
+                      <TableRow className="hover:bg-slate-50 border-none">
+                        <TableHead className="h-10 text-[9px] font-black text-slate-500 uppercase tracking-widest px-6">TRX ID</TableHead>
+                        <TableHead className="h-10 text-[9px] font-black text-slate-500 uppercase tracking-widest px-6">AKTIVITAS</TableHead>
+                        <TableHead className="h-10 text-[9px] font-black text-slate-500 uppercase tracking-widest px-6">DETAIL PARAMETER</TableHead>
+                        <TableHead className="h-10 text-[9px] font-black text-slate-500 uppercase tracking-widest px-6 text-right">TIMESTAMP</TableHead>
+                        <TableHead className="h-10 text-[9px] font-black text-slate-500 uppercase tracking-widest px-6 text-center">STATUS</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {preset.history.map((item) => (
+                        <TableRow key={item.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                          <TableCell className="px-6 py-4">
+                            <span className="font-mono text-[10px] font-bold text-slate-400 uppercase">{item.id}</span>
+                          </TableCell>
+                          <TableCell className="px-6 py-4">
+                            <span className="text-[10px] font-black text-slate-900 uppercase tracking-tight">{item.title}</span>
+                          </TableCell>
+                          <TableCell className="px-6 py-4">
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">{item.detail}</span>
+                          </TableCell>
+                          <TableCell className="px-6 py-4 text-right">
+                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{formatDate(item.date)}</span>
+                          </TableCell>
+                          <TableCell className="px-6 py-4 text-center">
+                            <Badge className={`${statusClass(item.status)} font-black text-[9px] uppercase border-none h-5 px-2`}>
+                              {item.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Security Banner */}
+      <Card className="bg-slate-50 border-2 border-dashed border-slate-200">
+        <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+           <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                 <ShieldCheck className="h-6 w-6 text-emerald-600" />
+              </div>
+              <div>
+                 <p className="text-xs font-black text-slate-900 uppercase tracking-tight">Privasi & Keamanan Data</p>
+                 <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Seluruh akses profil diaudit secara real-time untuk kepatuhan tata kelola nasional.</p>
+              </div>
+           </div>
+           <div className="flex items-center gap-3">
+              <Button variant="ghost" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                 Kebijakan Privasi
+              </Button>
+              <Button variant="outline" className="h-10 border-slate-200 text-slate-900 font-black text-[10px] uppercase tracking-widest px-6 bg-white hover:bg-slate-50">
+                 Audit Access Log
+              </Button>
+           </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

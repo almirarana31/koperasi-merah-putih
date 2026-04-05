@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import {
   Calculator,
   Users,
@@ -8,6 +9,13 @@ import {
   TrendingUp,
   Calendar,
   Download,
+  ShieldAlert,
+  Globe,
+  Activity,
+  FileText,
+  DollarSign,
+  ArrowRight,
+  TrendingDown,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -22,7 +30,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { formatCurrency } from '@/lib/data'
-import { useAuth } from '@/lib/auth'
+import { useAuth } from '@/lib/auth/use-auth'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
 const shuData = {
   tahun: 2023,
@@ -37,11 +47,11 @@ const shuData = {
 }
 
 const pembagianSHU = [
-  { nama: 'Pak Slamet Widodo', simpanan: 1700000, transaksi: 45000000, shuSimpanan: 1850000, shuTransaksi: 2800000, totalSHU: 4650000 },
-  { nama: 'Bu Sri Wahyuni', simpanan: 1300000, transaksi: 38000000, shuSimpanan: 1415000, shuTransaksi: 2365000, totalSHU: 3780000 },
-  { nama: 'Pak Ahmad Sudirman', simpanan: 1100000, transaksi: 28000000, shuSimpanan: 1200000, shuTransaksi: 1740000, totalSHU: 2940000 },
-  { nama: 'Bu Ratna Dewi', simpanan: 2000000, transaksi: 52000000, shuSimpanan: 2180000, shuTransaksi: 3235000, totalSHU: 5415000 },
-  { nama: 'Pak Budi Santoso', simpanan: 2500000, transaksi: 65000000, shuSimpanan: 2725000, shuTransaksi: 4045000, totalSHU: 6770000 },
+  { nama: 'Pak Slamet Widodo', simpanan: 1700000, transaksi: 45000000, shuSimpanan: 1850000, shuTransaksi: 2800000, totalSHU: 4650000, region: 'JAWA BARAT' },
+  { nama: 'Bu Sri Wahyuni', simpanan: 1300000, transaksi: 38000000, shuSimpanan: 1415000, shuTransaksi: 2365000, totalSHU: 3780000, region: 'JAWA TENGAH' },
+  { nama: 'Pak Ahmad Sudirman', simpanan: 1100000, transaksi: 28000000, shuSimpanan: 1200000, shuTransaksi: 1740000, totalSHU: 2940000, region: 'JAWA TIMUR' },
+  { nama: 'Bu Ratna Dewi', simpanan: 2000000, transaksi: 52000000, shuSimpanan: 2180000, shuTransaksi: 3235000, totalSHU: 5415000, region: 'BALI' },
+  { nama: 'Pak Budi Santoso', simpanan: 2500000, transaksi: 65000000, shuSimpanan: 2725000, shuTransaksi: 4045000, totalSHU: 6770000, region: 'SUMATERA UTARA' },
 ]
 
 const alokasi = [
@@ -54,226 +64,287 @@ const alokasi = [
 
 export default function SHUPage() {
   const { user } = useAuth()
-  const isPetaniView = user?.role === 'petani'
-  const myShu = pembagianSHU[0]
+  const isKementerian = user?.role === 'kementerian'
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  const filteredSHU = useMemo(() => {
+    return pembagianSHU.filter(item => {
+      const matchesProvince = filters.provinceId === 'all' || item.region.includes(filters.provinceId.toUpperCase())
+      return matchesProvince
+    })
+  }, [filters])
+
+  const stats = useMemo(() => {
+    // Simulate scaling based on hierarchy
+    const scale = filters.provinceId === 'all' ? 1 : 0.3
+    return {
+      totalRevenue: shuData.totalPendapatan * scale,
+      totalMargin: shuData.labaKotor * scale,
+      distributedSHU: shuData.shuAnggota * scale,
+      activeMembers: Math.round(12480 * scale)
+    }
+  }, [filters])
+
+  if (!user) return null
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Sisa Hasil Usaha (SHU)</h1>
-          <p className="text-muted-foreground">
-            {isPetaniView ? 'Ringkasan SHU dan kontribusi usaha Anda' : 'Perhitungan dan pembagian SHU anggota'}
-          </p>
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center shadow-xl">
+            <Calculator className="h-6 w-6 text-emerald-500" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">National SHU Audit</h1>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+              Monitoring Agregat Surplus & Pembagian Hasil Lintas Koperasi • Tahun Buku 2023
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="gap-1">
-            <Calendar className="h-3 w-3" />
-            Tahun {shuData.tahun}
-          </Badge>
-          {!isPetaniView && (
-            <Button variant="outline">
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-          )}
+        <div className="flex flex-wrap gap-2">
+           <Button variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+            <FileText className="h-4 w-4 mr-2 text-rose-600" />
+            Audit Report
+          </Button>
+          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg">
+            <Download className="h-4 w-4 mr-2" />
+            Export Data
+          </Button>
         </div>
       </div>
 
-      {isPetaniView ? (
-        <>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>SHU Saya</CardDescription>
-                <CardTitle className="text-3xl text-primary">{formatCurrency(myShu.totalSHU)}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-1 text-xs text-emerald-500">
-                  <TrendingUp className="h-3 w-3" />
-                  +12% dari tahun lalu
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Kontribusi Simpanan</CardDescription>
-                <CardTitle className="text-3xl">{formatCurrency(myShu.shuSimpanan)}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">Dihitung dari partisipasi simpanan Anda</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Kontribusi Transaksi</CardDescription>
-                <CardTitle className="text-3xl">{formatCurrency(myShu.shuTransaksi)}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">Dihitung dari aktivitas transaksi usaha Anda</p>
-              </CardContent>
-            </Card>
-          </div>
+      {/* Kementerian Hierarchical Filter Bar */}
+      <KementerianFilterBar filters={filters} setFilters={setFilters} />
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calculator className="h-5 w-5" />
-                Cara SHU Anda Dihitung
-              </CardTitle>
-              <CardDescription>Penjelasan sederhana atas pembagian SHU pribadi Anda</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border bg-secondary/35 p-4">
-                <p className="text-sm font-medium">Simpanan Anda</p>
-                <p className="mt-2 text-2xl font-bold">{formatCurrency(myShu.simpanan)}</p>
-                <p className="mt-2 text-sm text-muted-foreground">Semakin aktif menyimpan, semakin besar porsi SHU dari kontribusi simpanan.</p>
+      {/* High-Density KPI Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[
+          { label: 'Total Surplus (SHU)', value: (stats.totalMargin / 1000000).toFixed(1), sub: 'Juta IDR', icon: TrendingUp, color: 'text-emerald-600' },
+          { label: 'Porsi Terdistribusi', value: (stats.distributedSHU / 1000000).toFixed(1), sub: 'Juta IDR', icon: Wallet, color: 'text-slate-900' },
+          { label: 'Basis Anggota', value: stats.activeMembers.toLocaleString(), sub: 'Penerima', icon: Users, color: 'text-blue-600' },
+          { label: 'Efficiency Ratio', value: '82.4%', sub: 'Nasional', icon: Activity, color: 'text-amber-600' },
+        ].map((s, i) => (
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center">
+                <s.icon className={`h-5 w-5 ${s.color}`} />
               </div>
-              <div className="rounded-2xl border bg-secondary/35 p-4">
-                <p className="text-sm font-medium">Transaksi Anda</p>
-                <p className="mt-2 text-2xl font-bold">{formatCurrency(myShu.transaksi)}</p>
-                <p className="mt-2 text-sm text-muted-foreground">Aktivitas usaha dan transaksi koperasi Anda ikut menentukan porsi SHU transaksi.</p>
+              <div>
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-xl font-black tracking-tighter ${s.color}`}>{s.value}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">{s.sub}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
+        ))}
+      </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <PieChart className="h-5 w-5" />
-                Alokasi SHU Koperasi
-              </CardTitle>
-              <CardDescription>Agar Anda bisa memahami porsi pembagian SHU koperasi secara umum.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {alokasi.map((item) => (
-                <div key={item.nama} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2">
-                      <div className={`h-3 w-3 rounded-full ${item.color}`} />
-                      <span>{item.nama}</span>
+      <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
+        <div className="space-y-6">
+           {/* Detailed Allocation Matrix */}
+           <Card className="border-none shadow-sm overflow-hidden">
+              <CardHeader className="p-6 border-b border-slate-50 bg-slate-50/50">
+                 <div className="flex items-center justify-between">
+                    <div>
+                       <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-widest">Matriks Alokasi Surplus Nasional</CardTitle>
+                       <CardDescription className="text-[10px] font-bold text-slate-400 uppercase mt-1">Distribusi surplus berdasarkan AD/ART kolektif</CardDescription>
                     </div>
-                    <span className="font-medium">{item.persentase}%</span>
-                  </div>
-                  <Progress value={item.persentase} className="h-2" />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </>
-      ) : (
-        <>
-          <div className="grid gap-4 md:grid-cols-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Total Pendapatan</CardDescription>
-                <CardTitle className="text-3xl">{formatCurrency(shuData.totalPendapatan)}</CardTitle>
+                    <Badge variant="outline" className="bg-white border-slate-200 text-[9px] font-black uppercase">LIVE AUDIT</Badge>
+                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-1 text-xs text-emerald-500">
-                  <TrendingUp className="h-3 w-3" />
-                  +18% dari tahun lalu
-                </div>
+              <CardContent className="p-6">
+                 <div className="grid gap-6 md:grid-cols-2">
+                    <div className="space-y-5">
+                       {alokasi.map((item) => (
+                          <div key={item.nama} className="space-y-2">
+                             <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tight">
+                                <div className="flex items-center gap-2">
+                                   <div className={`h-2.5 w-2.5 rounded-full ${item.color}`} />
+                                   <span className="text-slate-600">{item.nama}</span>
+                                </div>
+                                <span className="text-slate-900">{item.persentase}%</span>
+                             </div>
+                             <Progress value={item.persentase} className={`h-1.5 bg-slate-100 ${item.color.replace('bg-', '[&>div]:bg-')}`} />
+                             <p className="text-right text-[10px] font-bold text-slate-400">{formatCurrency(item.nilai * (filters.provinceId === 'all' ? 1 : 0.3))}</p>
+                          </div>
+                       ))}
+                    </div>
+                    <div className="bg-slate-900 rounded-3xl p-6 text-white flex flex-col justify-center relative overflow-hidden">
+                       <div className="absolute top-0 right-0 p-4 opacity-5">
+                          <PieChart className="h-32 w-32" />
+                       </div>
+                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Gross Revenue Pool</p>
+                       <p className="text-4xl font-black tracking-tighter mt-2">{formatCurrency(stats.totalRevenue)}</p>
+                       <div className="mt-6 space-y-3">
+                          <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                             <span className="text-[10px] font-bold text-slate-400 uppercase">Operating Costs</span>
+                             <span className="text-[11px] font-black text-rose-400">-{formatCurrency(stats.totalRevenue * 0.8)}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                             <span className="text-[10px] font-bold text-emerald-400 uppercase">Net Surplus (SHU)</span>
+                             <span className="text-[11px] font-black text-emerald-400">{formatCurrency(stats.totalMargin)}</span>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
               </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Total Biaya</CardDescription>
-                <CardTitle className="text-3xl">{formatCurrency(shuData.totalBiaya)}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">80% dari pendapatan</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Laba Kotor (SHU)</CardDescription>
-                <CardTitle className="text-3xl text-primary">{formatCurrency(shuData.labaKotor)}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">20% margin</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>SHU per Anggota (Avg)</CardDescription>
-                <CardTitle className="text-3xl text-emerald-500">
-                  {formatCurrency(Math.round(shuData.shuAnggota / pembagianSHU.length))}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Users className="h-3 w-3" />
-                  {pembagianSHU.length} anggota
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+           </Card>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            <Card className="lg:col-span-1">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PieChart className="h-5 w-5" />
-                  Alokasi SHU
-                </CardTitle>
-                <CardDescription>Pembagian sesuai AD/ART</CardDescription>
+           {/* Member Level Distribution Table */}
+           <Card className="border-none shadow-sm overflow-hidden">
+              <CardHeader className="p-6 border-b border-slate-50">
+                 <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-widest">Sample Distribusi Per Anggota</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {alokasi.map((item) => (
-                  <div key={item.nama} className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <div className={`h-3 w-3 rounded-full ${item.color}`} />
-                        <span>{item.nama}</span>
+              <CardContent className="p-0">
+                 <div className="overflow-x-auto">
+                    <Table>
+                       <TableHeader className="bg-slate-900">
+                          <TableRow className="hover:bg-slate-900 border-none">
+                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6">PENERIMA</TableHead>
+                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6">WILAYAH</TableHead>
+                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6 text-right">SIMPANAN</TableHead>
+                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6 text-right">TRANSAKSI</TableHead>
+                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6 text-right">TOTAL SHU</TableHead>
+                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6"></TableHead>
+                          </TableRow>
+                       </TableHeader>
+                       <TableBody>
+                          {filteredSHU.map((item) => (
+                             <TableRow key={item.nama} className="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
+                                <TableCell className="px-6 py-4">
+                                   <span className="text-[11px] font-black text-slate-900 uppercase tracking-tight">{item.nama}</span>
+                                </TableCell>
+                                <TableCell className="px-6 py-4">
+                                   <Badge variant="outline" className="text-[8px] font-black uppercase text-slate-400 border-slate-200">{item.region}</Badge>
+                                </TableCell>
+                                <TableCell className="px-6 py-4 text-right">
+                                   <span className="text-[10px] font-bold text-slate-500">{formatCurrency(item.simpanan)}</span>
+                                </TableCell>
+                                <TableCell className="px-6 py-4 text-right">
+                                   <span className="text-[10px] font-bold text-slate-500">{formatCurrency(item.transaksi)}</span>
+                                </TableCell>
+                                <TableCell className="px-6 py-4 text-right">
+                                   <span className="text-[11px] font-black text-emerald-600">{formatCurrency(item.totalSHU)}</span>
+                                </TableCell>
+                                <TableCell className="px-6 py-4 text-right">
+                                   <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 group-hover:text-slate-900">
+                                      <ArrowRight className="h-4 w-4" />
+                                   </Button>
+                                </TableCell>
+                             </TableRow>
+                          ))}
+                       </TableBody>
+                    </Table>
+                 </div>
+              </CardContent>
+           </Card>
+        </div>
+
+        {/* Audit & Compliance Panel */}
+        <div className="space-y-6">
+           <Card className="border-none shadow-xl bg-slate-950 text-white overflow-hidden">
+              <CardHeader className="p-5 border-b border-white/5 bg-slate-900/50">
+                 <div className="flex items-center justify-between">
+                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                       <ShieldAlert className="h-4 w-4 text-rose-500" /> SURPLUS FEED
+                    </CardTitle>
+                    <div className="flex items-center gap-1.5">
+                       <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-ping" />
+                       <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">LIVE AUDIT</span>
+                    </div>
+                 </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                 <div className="divide-y divide-white/5">
+                    {[
+                      { time: '14:25', action: 'Dividend Pool Generated', status: 'SUCCESS', region: 'Nasional' },
+                      { time: '14:12', action: 'Audit Kepatuhan Selesai', status: 'VERIFIED', region: 'Jawa Barat' },
+                      { time: '13:45', action: 'Deviasi Margin Terdeteksi', status: 'WARNING', region: 'Bali' },
+                      { time: '13:20', action: 'Settlement Transaksi Q4', status: 'PENDING', region: 'Sumatera' },
+                    ].map((log, i) => (
+                      <div key={i} className="p-5 hover:bg-white/5 transition-colors cursor-pointer group">
+                         <div className="flex items-center justify-between mb-2">
+                            <Badge className={`text-[8px] font-black uppercase px-1.5 h-4 border-none ${
+                              log.status === 'WARNING' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
+                            }`}>
+                               {log.status}
+                            </Badge>
+                            <span className="text-[9px] font-mono text-slate-600">{log.time}</span>
+                         </div>
+                         <p className="text-[11px] font-black text-slate-200 uppercase leading-tight group-hover:text-emerald-400 transition-colors">{log.action}</p>
+                         <p className="text-[9px] font-bold text-slate-500 uppercase mt-1">WILAYAH: {log.region}</p>
                       </div>
-                      <span className="font-medium">{item.persentase}%</span>
-                    </div>
-                    <Progress value={item.persentase} className="h-2" />
-                    <p className="text-right text-xs text-muted-foreground">{formatCurrency(item.nilai)}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calculator className="h-5 w-5" />
-                  Pembagian SHU Anggota
-                </CardTitle>
-                <CardDescription>Berdasarkan simpanan dan partisipasi transaksi</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nama Anggota</TableHead>
-                      <TableHead className="text-right">Simpanan</TableHead>
-                      <TableHead className="text-right">Transaksi</TableHead>
-                      <TableHead className="text-right">SHU Simpanan</TableHead>
-                      <TableHead className="text-right">SHU Transaksi</TableHead>
-                      <TableHead className="text-right">Total SHU</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pembagianSHU.map((anggota) => (
-                      <TableRow key={anggota.nama}>
-                        <TableCell className="font-medium">{anggota.nama}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(anggota.simpanan)}</TableCell>
-                        <TableCell className="text-right">{formatCurrency(anggota.transaksi)}</TableCell>
-                        <TableCell className="text-right text-blue-500">{formatCurrency(anggota.shuSimpanan)}</TableCell>
-                        <TableCell className="text-right text-amber-500">{formatCurrency(anggota.shuTransaksi)}</TableCell>
-                        <TableCell className="text-right font-bold text-emerald-500">{formatCurrency(anggota.totalSHU)}</TableCell>
-                      </TableRow>
                     ))}
-                  </TableBody>
-                </Table>
+                 </div>
+                 <div className="p-4 bg-white/5 border-t border-white/5 text-center">
+                    <Button variant="ghost" className="w-full text-[9px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-10">
+                       Buka Konsol Keuangan →
+                    </Button>
+                 </div>
               </CardContent>
-            </Card>
+           </Card>
+
+           <Card className="border-none shadow-sm bg-slate-50">
+              <CardHeader className="p-4 border-b border-slate-200">
+                 <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Indeks Kinerja Keuangan</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                 {[
+                   { label: 'Profitability Index', val: '1.24', trend: 'up' },
+                   { label: 'Capital Reserve', val: 'Rp 42.8M', trend: 'stable' },
+                   { label: 'Dividend Yield', val: '6.8%', trend: 'up' },
+                 ].map((h, i) => (
+                    <div key={i} className="flex items-center justify-between group">
+                       <span className="text-[10px] font-bold text-slate-500 uppercase">{h.label}</span>
+                       <div className="text-right">
+                          <p className="text-[10px] font-black text-slate-900 uppercase">{h.val}</p>
+                          {h.trend === 'up' ? (
+                             <div className="flex items-center justify-end gap-1 text-[8px] font-black text-emerald-600 uppercase">
+                                <TrendingUp className="h-2 w-2" /> 12%
+                             </div>
+                          ) : (
+                             <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">TARGET MET</span>
+                          )}
+                       </div>
+                    </div>
+                 ))}
+              </CardContent>
+           </Card>
+        </div>
+      </div>
+
+      {/* Global Financial Anomaly Banner */}
+      <Card className="bg-rose-600 border-none overflow-hidden relative shadow-2xl shadow-rose-100 group cursor-pointer">
+        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform duration-700">
+          <ShieldAlert className="h-32 w-32 text-white" />
+        </div>
+        <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-8 relative">
+          <div className="flex items-center gap-6">
+             <div className="h-14 w-14 rounded-2xl bg-white/20 border border-white/10 flex items-center justify-center shrink-0">
+                <DollarSign className="h-7 w-7 text-white animate-pulse" />
+             </div>
+             <div>
+                <div className="flex items-center gap-3">
+                   <Badge className="bg-white text-rose-600 font-black text-[9px] px-2 h-5 border-none">AUDIT ALERT</Badge>
+                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">Margin Variance Detect (>15%)</span>
+                </div>
+                <p className="text-white text-base font-black uppercase mt-2 tracking-tight">Perhatian: Terdeteksi deviasi margin operasional di regional Bali. Segera lakukan audit transaksi.</p>
+             </div>
           </div>
-        </>
-      )}
+          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-black text-[11px] uppercase tracking-widest px-8 rounded-xl shadow-xl transition-all">
+             Mulai Investigasi →
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   )
 }

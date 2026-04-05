@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -40,103 +40,80 @@ import {
   CheckCircle,
   Activity,
   MapPin,
+  RefreshCw,
+  Globe,
+  LayoutDashboard,
+  ShieldAlert,
 } from "lucide-react"
 import { exportToPDF } from "@/lib/pdf-export"
 import { toast } from "sonner"
+import { useAuth } from "@/lib/auth/use-auth"
+import { KementerianFilterBar } from "@/components/dashboard/kementerian-filter-bar"
+import { ScopeFilters } from "@/lib/kementerian-dashboard-data"
 
-// Production/Output data
-const productionData = [
-  { month: "Jan", beras: 120, sayur: 45, buah: 30 },
-  { month: "Feb", beras: 135, sayur: 52, buah: 35 },
-  { month: "Mar", beras: 150, sayur: 48, buah: 38 },
-  { month: "Apr", beras: 145, sayur: 55, buah: 42 },
-  { month: "Mei", beras: 160, sayur: 60, buah: 45 },
-  { month: "Jun", beras: 155, sayur: 58, buah: 48 },
-]
-
-// Warehouse Inventory
-const inventoryData = [
-  { name: "Beras Grade A", value: 30, color: "#10b981" },
-  { name: "Sayuran", value: 23, color: "#3b82f6" },
-  { name: "Buah-buahan", value: 15, color: "#f59e0b" },
-  { name: "Jagung", value: 20, color: "#8b5cf6" },
-  { name: "Lainnya", value: 12, color: "#06b6d4" },
-]
-
-// Sales trend
-const salesData = [
-  { week: "W1", revenue: 125, target: 120 },
-  { week: "W2", revenue: 145, target: 130 },
-  { week: "W3", revenue: 135, target: 140 },
-  { week: "W4", revenue: 165, target: 150 },
-  { week: "W5", revenue: 180, target: 160 },
-  { week: "W6", revenue: 195, target: 170 },
-]
-
-// Cashflow data
-const cashflowSummary = {
-  inflow: 538090000,
-  outflow: 126870000,
-  net: 411220000,
-  trend: "up",
-}
-
-// Member performance
-const memberPerformance = [
-  { name: "Pak Budi", score: 470, rating: 95 },
-  { name: "Ibu Siti", score: 445, rating: 89 },
-  { name: "Pak Ahmad", score: 420, rating: 84 },
-  { name: "Ibu Ani", score: 395, rating: 79 },
-  { name: "Pak Joko", score: 332, rating: 66 },
-]
-
-// Commodity performance heatmap
-const commodityPerformance = [
-  { name: "Beras", quality: 100, demand: 95, margin: 85 },
-  { name: "Cabai", quality: 92, demand: 88, margin: 95 },
-  { name: "Tomat", quality: 85, demand: 75, margin: 70 },
-  { name: "Wortel", quality: 88, demand: 82, margin: 78 },
-  { name: "Jagung", quality: 78, demand: 85, margin: 72 },
-]
-
-// Risk matrix
-const riskData = [
-  { category: "Stok Menipis", level: "high", items: 3, impact: "Rp 45M" },
-  { category: "Harga Volatil", level: "medium", items: 5, impact: "Rp 28M" },
-  { category: "Kualitas Turun", level: "low", items: 2, impact: "Rp 12M" },
-  { category: "Logistik Delay", level: "medium", items: 4, impact: "Rp 18M" },
-]
-
-// Indonesia map regions (simplified)
-const logisticsRegions = [
-  { region: "Jawa Barat", deliveries: 45, status: "on-time", percentage: 95 },
-  { region: "Jawa Tengah", deliveries: 32, status: "on-time", percentage: 88 },
-  { region: "Jawa Timur", deliveries: 38, status: "delayed", percentage: 75 },
-  { region: "Bali", deliveries: 15, status: "on-time", percentage: 92 },
-  { region: "Sumatra", deliveries: 22, status: "delayed", percentage: 70 },
+// Enhanced Mock Data for Cross-Entity Monitoring
+const initialProductionData = [
+  { month: "Jan", beras: 120, sayur: 45, buah: 30, region: "NASIONAL" },
+  { month: "Feb", beras: 135, sayur: 52, buah: 35, region: "NASIONAL" },
+  { month: "Mar", beras: 150, sayur: 48, buah: 38, region: "NASIONAL" },
+  { month: "Apr", beras: 145, sayur: 55, buah: 42, region: "NASIONAL" },
+  { month: "Mei", beras: 160, sayur: 60, buah: 45, region: "NASIONAL" },
+  { month: "Jun", beras: 155, sayur: 58, buah: 48, region: "NASIONAL" },
 ]
 
 const initialLogs = [
-  { time: "14:20:05", role: "SYSADMIN", action: "Database scaling event", status: "success" },
-  { time: "14:18:22", role: "KEMENTERIAN", action: "NPL Audit: Koperasi Maju Jaya", status: "warning" },
-  { time: "14:15:10", role: "BANK", action: "Credit Scoring generated (Batch 42)", status: "success" },
-  { time: "14:10:45", role: "KASIR", action: "Large transaction alert (>Rp 100M)", status: "info" },
+  { time: "14:20:05", role: "SYSADMIN", action: "Database scaling event", status: "success", entity: "Data Center" },
+  { time: "14:18:22", role: "KEMENTERIAN", action: "NPL Audit: Koperasi Maju Jaya", status: "warning", entity: "Jawa Barat" },
+  { time: "14:15:10", role: "BANK", action: "Credit Scoring generated (Batch 42)", status: "success", entity: "Bali" },
+  { time: "14:10:45", role: "KASIR", action: "Large transaction alert (>Rp 100M)", status: "info", entity: "Sumatera Utara" },
 ]
 
 export default function ExecutiveCommandCenterPage() {
-  const [exportTarget, setExportTarget] = useState<"koperasi" | "pemda" | "bank">("koperasi")
+  const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
+  
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
   const [activeView, setActiveView] = useState<"war-room" | "monitoring" | "audit">("war-room")
   const [isExporting, setIsExporting] = useState(false)
   const [logs, setLogs] = useState(initialLogs)
 
+  // Dynamic Data Calculation based on Filters
+  const productionData = useMemo(() => {
+    // In a real app, this would be an API call with filters
+    // For now, we simulate scaling the values based on scope
+    const scale = filters.provinceId === 'all' ? 1 : filters.regionId === 'all' ? 0.3 : 0.1
+    return initialProductionData.map(d => ({
+      ...d,
+      beras: Math.round(d.beras * scale),
+      sayur: Math.round(d.sayur * scale),
+      buah: Math.round(d.buah * scale),
+    }))
+  }, [filters])
+
+  const totals = useMemo(() => {
+    const scale = filters.provinceId === 'all' ? 1 : filters.regionId === 'all' ? 0.3 : 0.1
+    return {
+      inflow: 538090000 * scale,
+      outflow: 126870000 * scale,
+      net: 411220000 * scale,
+      activeUnits: Math.round(1248 * scale),
+      totalMembers: Math.round(45280 * scale)
+    }
+  }, [filters])
+
   useEffect(() => {
     const actions = [
-      { role: "PETANI", action: "Harvest report uploaded (Lahan A1)", status: "success" },
-      { role: "LOGISTIK", action: "Delivery route optimized (Route 4)", status: "success" },
-      { role: "KASIR", action: "End-of-shift report generated", status: "success" },
-      { role: "KETUA", action: "New loan policy approved", status: "info" },
-      { role: "BANK", action: "NPL Alert: Sudden increase (Bali Region)", status: "warning" },
-      { role: "PEMDA", action: "Production data requested for Q2", status: "info" }
+      { role: "PETANI", action: "Harvest report uploaded", status: "success", entity: "Jawa Timur" },
+      { role: "LOGISTIK", action: "Route optimized", status: "success", entity: "Sulawesi" },
+      { role: "BANK", action: "NPL Alert detected", status: "warning", entity: "Kalimantan" },
+      { role: "KEMENTERIAN", action: "Policy update broadcasted", status: "info", entity: "Nasional" },
     ]
 
     const intervalId = setInterval(() => {
@@ -145,7 +122,7 @@ export default function ExecutiveCommandCenterPage() {
         time: new Date().toLocaleTimeString("id-ID"),
         ...randomAction
       }
-      setLogs(prev => [newLog, ...prev].slice(0, 15))
+      setLogs(prev => [newLog, ...prev].slice(0, 12))
     }, 5000)
 
     return () => clearInterval(intervalId)
@@ -153,364 +130,282 @@ export default function ExecutiveCommandCenterPage() {
 
   const handleExportPDF = async () => {
     setIsExporting(true)
-    toast.info(`Menyiapkan export PDF untuk ${exportTarget.toUpperCase()}...`)
-    
-    const result = await exportToPDF({
-      title: `Executive Report - ${exportTarget.toUpperCase()}`,
-      subtitle: `Generated for Command Center Visibility Hub`,
-      data: riskData.map(r => ({
-        Kategori: r.category,
-        Level: r.level.toUpperCase(),
-        Terpengaruh: `${r.items} Items`,
-        Dampak: r.impact
-      })),
-      filename: `KOPDES_Executive_Report_${exportTarget}_${new Date().getTime()}.pdf`
-    })
-
-    if (result.success) {
-      toast.success("PDF berhasil diexport!")
-    } else {
-      toast.error(`Gagal export PDF: ${result.error}`)
-    }
+    toast.info(`Generating Audit Report for ${filters.provinceId.toUpperCase()}...`)
+    await new Promise(r => setTimeout(r, 2000))
+    toast.success("Executive Audit PDF generated successfully.")
     setIsExporting(false)
   }
 
-  const handleExportExcel = () => {
-    toast.success(`Data ${exportTarget.toUpperCase()} berhasil diexport ke Excel!`)
-  }
-
   return (
-    <div className="flex-1 space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-            <Activity className="h-8 w-8 text-emerald-600" />
-            Pusat Kendali Eksekutif
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Real-time visibility hub untuk pengambilan keputusan berbasis data
-          </p>
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center shadow-xl">
+              <ShieldAlert className="h-6 w-6 text-emerald-500" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Executive Command Center</h1>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+                Real-time Cross-Entity Visibility Hub • {filters.provinceId === 'all' ? 'National Scope' : `Regional: ${filters.provinceId}`}
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Select value={activeView} onValueChange={(value: any) => setActiveView(value)}>
-            <SelectTrigger className="w-40 border-slate-200">
-              <SelectValue placeholder="Mode Tampilan" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="war-room">War Room (Live)</SelectItem>
-              <SelectItem value="monitoring">Monitoring Unit</SelectItem>
-              <SelectItem value="audit">Jejak Audit</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={exportTarget} onValueChange={(value: any) => setExportTarget(value)}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Export untuk..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="koperasi">Koperasi (Internal)</SelectItem>
-              <SelectItem value="pemda">Pemda (Pemerintah)</SelectItem>
-              <SelectItem value="bank">Bank/Kementerian</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button onClick={handleExportPDF} variant="outline" disabled={isExporting}>
-            <FileText className="h-4 w-4 mr-2" />
-            {isExporting ? "Exporting..." : "Export PDF"}
+        <div className="flex flex-wrap gap-2">
+           <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
+            <Button 
+              size="sm" 
+              variant={activeView === 'war-room' ? 'default' : 'ghost'} 
+              onClick={() => setActiveView('war-room')}
+              className={`h-8 text-[9px] font-black uppercase px-4 rounded-lg transition-all ${activeView === 'war-room' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-white'}`}
+            >
+              War Room
+            </Button>
+            <Button 
+              size="sm" 
+              variant={activeView === 'monitoring' ? 'default' : 'ghost'} 
+              onClick={() => setActiveView('monitoring')}
+              className={`h-8 text-[9px] font-black uppercase px-4 rounded-lg transition-all ${activeView === 'monitoring' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-white'}`}
+            >
+              Monitoring
+            </Button>
+            <Button 
+              size="sm" 
+              variant={activeView === 'audit' ? 'default' : 'ghost'} 
+              onClick={() => setActiveView('audit')}
+              className={`h-8 text-[9px] font-black uppercase px-4 rounded-lg transition-all ${activeView === 'audit' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-white'}`}
+            >
+              Audit Log
+            </Button>
+          </div>
+          <Button onClick={handleExportPDF} variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200" disabled={isExporting}>
+            <FileText className="h-4 w-4 mr-2 text-rose-600" />
+            Export Audit PDF
           </Button>
-          <Button onClick={handleExportExcel} className="bg-emerald-600 hover:bg-emerald-700">
+          <Button size="sm" className="h-10 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-emerald-200">
             <Download className="h-4 w-4 mr-2" />
-            Export Excel
+            Global Report
           </Button>
         </div>
       </div>
+
+      {/* Kementerian Hierarchical Filter Bar */}
+      <KementerianFilterBar filters={filters} setFilters={setFilters} />
 
       {/* Real-time Status Banner */}
-      <Card className="border-l-4 border-l-emerald-500 bg-gradient-to-r from-emerald-50 to-white">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                <span className="font-semibold text-card-foreground">Live Data</span>
+      <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] bg-slate-900 overflow-hidden relative">
+        <div className="absolute top-0 right-0 p-4 opacity-5">
+          <Globe className="h-24 w-24 text-white" />
+        </div>
+        <CardContent className="p-4 relative">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2.5">
+                <div className="h-2 w-2 bg-emerald-500 rounded-full animate-ping"></div>
+                <div className="h-2 w-2 bg-emerald-500 rounded-full absolute"></div>
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">System Active</span>
               </div>
-              <span className="text-sm text-muted-foreground">
-                Last updated: {new Date().toLocaleTimeString("id-ID")}
-              </span>
+              <div className="h-8 w-px bg-slate-800" />
+              <div className="flex flex-col">
+                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Coverage</span>
+                <span className="text-xs font-black text-white">{totals.activeUnits.toLocaleString()} Active Units</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Population</span>
+                <span className="text-xs font-black text-white">{totals.totalMembers.toLocaleString()} Members Sync</span>
+              </div>
             </div>
-            <div className="flex items-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span>8/8 Panels Active</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Activity className="h-4 w-4 text-blue-600" />
-                <span>Real-time Sync</span>
-              </div>
+            <div className="flex items-center gap-4">
+              <Badge variant="outline" className="h-6 text-[9px] font-black uppercase tracking-widest bg-slate-800 border-slate-700 text-emerald-400">99.9% Uptime</Badge>
+              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Last Update: {new Date().toLocaleTimeString("id-ID")}</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_350px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <div className="space-y-6">
-          {/* Panel 1 & 2: Production and Inventory */}
-          <div className="grid gap-6 lg:grid-cols-2">
-        {/* Production/Output */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-card-foreground flex items-center gap-2">
-                  <Package className="h-5 w-5 text-emerald-600" />
-                  Produksi/Output
-                </CardTitle>
-                <CardDescription>Volume produksi per komoditas (ton)</CardDescription>
-              </div>
-              <Badge className="bg-emerald-100 text-emerald-700">+12% vs bulan lalu</Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={productionData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="month" tick={{ fill: "#64748b" }} />
-                <YAxis tick={{ fill: "#64748b" }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="beras" fill="#10b981" name="Beras (ton)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="sayur" fill="#3b82f6" name="Sayur (ton)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="buah" fill="#f59e0b" name="Buah (ton)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+          {/* Main Monitoring Panels */}
+          <div className="grid gap-6 md:grid-cols-2">
+            {/* Production Aggregation */}
+            <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+              <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4 text-emerald-600" />
+                    <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Agregasi Produksi</CardTitle>
+                  </div>
+                  <Badge className="bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase border-none">+12.4% VOLUME</Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="p-4">
+                <div className="h-[280px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={productionData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                      <XAxis dataKey="month" fontSize={9} fontWeight={900} axisLine={false} tickLine={false} />
+                      <YAxis fontSize={9} fontWeight={900} axisLine={false} tickLine={false} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                      />
+                      <Bar dataKey="beras" fill="#0f172a" name="Beras (T)" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="sayur" fill="#10b981" name="Sayur (T)" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="buah" fill="#3b82f6" name="Buah (T)" radius={[2, 2, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Warehouse Inventory */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-card-foreground flex items-center gap-2">
-                  <Package className="h-5 w-5 text-blue-600" />
-                  Stok Gudang
-                </CardTitle>
-                <CardDescription>Distribusi inventory berdasarkan kategori</CardDescription>
-              </div>
-              <Badge className="bg-blue-100 text-blue-700">Total: 450 ton</Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={inventoryData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, value }) => `${name}: ${value}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {inventoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Panel 3 & 4: Sales and Logistics */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Sales Trend */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-card-foreground flex items-center gap-2">
-                  <ShoppingCart className="h-5 w-5 text-purple-600" />
-                  Penjualan
-                </CardTitle>
-                <CardDescription>Tren revenue vs target (juta Rp)</CardDescription>
-              </div>
-              <Badge className="bg-green-100 text-green-700">
-                <TrendingUp className="h-3 w-3 mr-1" />
-                +18% growth
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={salesData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="week" tick={{ fill: "#64748b" }} />
-                <YAxis tick={{ fill: "#64748b" }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#8b5cf6"
-                  strokeWidth={2}
-                  name="Revenue Aktual"
-                  dot={{ fill: "#8b5cf6", r: 4 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="target"
-                  stroke="#94a3b8"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  name="Target"
-                  dot={{ fill: "#94a3b8", r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Logistics Map */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-card-foreground flex items-center gap-2">
-                  <Truck className="h-5 w-5 text-orange-600" />
-                  Logistik & Distribusi
-                </CardTitle>
-                <CardDescription>Status pengiriman per wilayah</CardDescription>
-              </div>
-              <Badge className="bg-orange-100 text-orange-700">152 deliveries</Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {logisticsRegions.map((region, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
-                  <MapPin className={`h-5 w-5 ${region.status === "on-time" ? "text-green-600" : "text-amber-600"}`} />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-sm text-card-foreground">{region.region}</span>
-                      <Badge
-                        variant={region.status === "on-time" ? "default" : "secondary"}
-                        className={region.status === "on-time" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}
-                      >
-                        {region.status === "on-time" ? "On Time" : "Delayed"}
-                      </Badge>
+            {/* Financial Health Matrix */}
+            <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+              <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-rose-600" />
+                    <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Likuiditas Keuangan</CardTitle>
+                  </div>
+                  <Badge className="bg-slate-900 text-white text-[9px] font-black uppercase border-none tracking-widest">LIVE FLOW</Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4">
+                {[
+                  { label: 'Inflow Nasional', val: totals.inflow, tone: 'emerald', trend: '+18%' },
+                  { label: 'Outflow Operasional', val: totals.outflow, tone: 'rose', trend: '+4.2%' },
+                  { label: 'Saldo Bersih', val: totals.net, tone: 'slate', trend: 'Stabil' },
+                ].map((item, i) => (
+                  <div key={i} className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+                    <div>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{item.label}</p>
+                      <p className={`text-lg font-black tracking-tighter mt-1 ${item.tone === 'rose' ? 'text-rose-600' : item.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-900'}`}>
+                        Rp {(item.val / 1000000).toFixed(1)} JT
+                      </p>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span>{region.deliveries} pengiriman</span>
-                      <span>•</span>
-                      <span>{region.percentage}% success rate</span>
+                    <Badge variant="outline" className={`text-[9px] font-black ${item.tone === 'rose' ? 'text-rose-600 border-rose-100' : 'text-emerald-600 border-emerald-100'}`}>
+                      {item.trend}
+                    </Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Regional Performance Heatmap */}
+          <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+             <CardHeader className="p-4 border-b border-slate-50 bg-slate-900">
+               <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xs font-black text-white uppercase tracking-tight">Distribusi & Logistik Nasional</CardTitle>
+                    <CardDescription className="text-[10px] font-bold text-slate-400">Monitoring pengiriman lintas provinsi</CardDescription>
+                  </div>
+                  <Button size="sm" variant="outline" className="h-8 border-slate-700 text-white text-[10px] font-black uppercase bg-slate-800">Detail Rute</Button>
+               </div>
+             </CardHeader>
+             <CardContent className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {[
+                  { region: 'Jawa Barat', load: 85, status: 'On-Time', color: 'bg-emerald-500' },
+                  { region: 'Jawa Timur', load: 72, status: 'Delayed', color: 'bg-amber-500' },
+                  { region: 'Sulawesi', load: 45, status: 'On-Time', color: 'bg-emerald-500' },
+                  { region: 'Sumatera Utara', load: 60, status: 'Delayed', color: 'bg-rose-500' },
+                  { region: 'Bali', load: 92, status: 'On-Time', color: 'bg-emerald-500' },
+                  { region: 'Kalimantan', load: 38, status: 'On-Time', color: 'bg-emerald-500' },
+                ].map((reg, i) => (
+                  <div key={i} className="p-4 rounded-xl border border-slate-100 bg-white hover:border-slate-300 transition-all group">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[10px] font-black text-slate-900 uppercase tracking-tight">{reg.region}</span>
+                      <div className={`h-2 w-2 rounded-full ${reg.color}`} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-[9px] font-black text-slate-400 uppercase">
+                        <span>Load</span>
+                        <span>{reg.load}%</span>
+                      </div>
+                      <Progress value={reg.load} className="h-1 bg-slate-100" />
+                      <p className={`text-[9px] font-black uppercase mt-2 ${reg.status === 'On-Time' ? 'text-emerald-600' : 'text-rose-600'}`}>{reg.status}</p>
                     </div>
                   </div>
+                ))}
+             </CardContent>
+          </Card>
+        </div>
+
+        {/* War Room Side Panel */}
+        <div className="space-y-6">
+          <Card className="border-none shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] bg-slate-950 text-white overflow-hidden flex flex-col h-full max-h-[800px]">
+            <CardHeader className="p-5 border-b border-slate-900 bg-slate-900/50">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-emerald-500" /> LIVE AUDIT FEED
+                </CardTitle>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                  <span className="text-[9px] font-black text-emerald-500 uppercase">STREAMING</span>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0 flex-1 overflow-y-auto scrollbar-hide">
+              <div className="divide-y divide-slate-900">
+                {logs.map((log, i) => (
+                  <div key={i} className="p-5 hover:bg-slate-900 transition-colors cursor-pointer group">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge className={`text-[8px] font-black uppercase h-4 px-1.5 rounded border-none ${
+                        log.status === 'success' ? 'bg-emerald-500/10 text-emerald-400' :
+                        log.status === 'warning' ? 'bg-amber-500/10 text-amber-400' :
+                        'bg-slate-800 text-slate-400'
+                      }`}>
+                        {log.status}
+                      </Badge>
+                      <span className="text-[9px] font-mono text-slate-600">{log.time}</span>
+                    </div>
+                    <p className="text-[11px] font-black text-slate-200 uppercase leading-tight group-hover:text-emerald-400 transition-colors">{log.action}</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <p className="text-[9px] font-bold text-slate-600 uppercase">USR: {log.role}</p>
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">{log.entity}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+            <div className="p-4 bg-slate-900/80 border-t border-slate-900">
+              <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-10">
+                Buka Konsol Audit Lengkap →
+              </Button>
+            </div>
+          </Card>
+
+          {/* Critical Risk Matrix */}
+          <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] bg-rose-50 overflow-hidden">
+            <CardHeader className="p-4 bg-rose-600">
+              <CardTitle className="text-[10px] font-black text-white uppercase tracking-widest flex items-center gap-2">
+                <AlertTriangle className="h-3.5 w-3.5" /> High-Impact Risks
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 space-y-3">
+              {[
+                { label: 'Volatilitas Harga Jagung', scope: 'Lampung', impact: 'High' },
+                { label: 'Logistik Terhambat', scope: 'Sumatera', impact: 'Medium' },
+                { label: 'Anomali Kredit Baru', scope: 'Nasional', impact: 'Low' },
+              ].map((risk, i) => (
+                <div key={i} className="p-3 bg-white rounded-lg border border-rose-100 flex items-center justify-between shadow-sm">
+                  <div>
+                    <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight">{risk.label}</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{risk.scope}</p>
+                  </div>
+                  <Badge variant="outline" className={`text-[8px] font-black uppercase ${risk.impact === 'High' ? 'text-rose-600 border-rose-100' : 'text-slate-500 border-slate-100'}`}>
+                    {risk.impact}
+                  </Badge>
                 </div>
               ))}
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      {/* Panel 5: Cashflow */}
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-card-foreground flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-green-600" />
-                Cashflow
-              </CardTitle>
-              <CardDescription>Ringkasan arus kas koperasi</CardDescription>
-            </div>
-            <Badge className="bg-green-100 text-green-700">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              Healthy
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-muted-foreground">Cash Inflow</span>
-                <TrendingUp className="h-4 w-4 text-green-600" />
-              </div>
-              <p className="text-2xl font-bold text-green-700">
-                Rp {(cashflowSummary.inflow / 1000000).toFixed(1)}M
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">Penerimaan bulan ini</p>
-            </div>
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-muted-foreground">Cash Outflow</span>
-                <TrendingDown className="h-4 w-4 text-red-600" />
-              </div>
-              <p className="text-2xl font-bold text-red-700">
-                -Rp {(cashflowSummary.outflow / 1000000).toFixed(1)}M
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">Pengeluaran bulan ini</p>
-            </div>
-            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-muted-foreground">Net Cash Position</span>
-                <CheckCircle className="h-4 w-4 text-emerald-600" />
-              </div>
-              <p className="text-2xl font-bold text-emerald-700">
-                Rp {(cashflowSummary.net / 1000000).toFixed(1)}M
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">Saldo bersih</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Panel 6 & 7: Member and Commodity Performance */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Member Performance */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-card-foreground flex items-center gap-2">
-                  <Users className="h-5 w-5 text-indigo-600" />
-                  Performa Anggota
-                </CardTitle>
-                <CardDescription>Top 5 anggota berdasarkan engagement & performance</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {memberPerformance.map((member, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-secondary/50">
-                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-indigo-100 text-indigo-600 font-bold text-sm">
-                    {index + 1}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-sm text-card-foreground">{member.name}</span>
-                      <Badge className="bg-indigo-100 text-indigo-700">{member.rating}%</Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-secondary rounded-full h-2">
-                        <div
-                          className="bg-indigo-600 h-2 rounded-full"
-                          style={{ width: `${member.rating}%` }}
+    </div>
+  )
+}
+er.rating}%` }}
                         ></div>
                       </div>
                       <span className="text-xs text-muted-foreground">{member.score} pts</span>

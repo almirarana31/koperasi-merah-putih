@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import {
   CheckCircle,
@@ -17,6 +17,8 @@ import {
   ShieldCheck,
   AlertTriangle,
   ArrowLeft,
+  Search,
+  Filter,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -34,13 +36,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from '@/components/ui/dialog'
 import {
   Alert,
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert'
+import { useAuth } from '@/lib/auth/use-auth'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
 interface VerifikasiItem {
   id: string
@@ -51,6 +55,8 @@ interface VerifikasiItem {
   status: 'pending' | 'approved' | 'ditolak'
   dokumen: Record<string, boolean>
   alamat: string
+  desa: string
+  koperasi: string
   alasanTolak?: string
   tanggalVerifikasi?: string
 }
@@ -63,13 +69,10 @@ const initialVerifikasiData: VerifikasiItem[] = [
     tipe: 'petani',
     tanggalDaftar: '2024-02-14',
     status: 'pending',
-    dokumen: {
-      ktp: true,
-      foto: true,
-      suratTanah: false,
-      skck: true,
-    },
-    alamat: 'Jl. Persawahan No. 8, Subang',
+    dokumen: { ktp: true, foto: true, suratTanah: false, skck: true },
+    alamat: 'Jl. Persawahan No. 8',
+    desa: 'SUKAMAJU',
+    koperasi: 'KOP. MAJU JAYA',
   },
   {
     id: 'V002',
@@ -78,13 +81,10 @@ const initialVerifikasiData: VerifikasiItem[] = [
     tipe: 'umkm',
     tanggalDaftar: '2024-02-13',
     status: 'pending',
-    dokumen: {
-      ktp: true,
-      foto: true,
-      suratUsaha: true,
-      npwp: true,
-    },
-    alamat: 'Jl. Pasar Baru No. 15, Bandung',
+    dokumen: { ktp: true, foto: true, suratUsaha: true, npwp: true },
+    alamat: 'Jl. Pasar Baru No. 15',
+    desa: 'DESA CIBIRU',
+    koperasi: 'KOP. MANDIRI',
   },
   {
     id: 'V003',
@@ -94,355 +94,260 @@ const initialVerifikasiData: VerifikasiItem[] = [
     tanggalDaftar: '2024-02-12',
     status: 'ditolak',
     alasanTolak: 'Foto KTP tidak jelas',
-    dokumen: {
-      ktp: false,
-      foto: true,
-      suratNelayan: true,
-    },
-    alamat: 'Jl. Pantai No. 3, Pelabuhan Ratu',
+    dokumen: { ktp: false, foto: true, suratNelayan: true },
+    alamat: 'Jl. Pantai No. 3',
+    desa: 'PELABUHAN RATU',
+    koperasi: 'KOP. BAHARI',
   },
 ]
 
-const initialRiwayatVerifikasi = [
-  { id: 'V004', nama: 'Pak Slamet Widodo', tanggal: '2024-02-10', status: 'approved' },
-  { id: 'V005', nama: 'Bu Sri Wahyuni', tanggal: '2024-02-08', status: 'approved' },
-  { id: 'V006', nama: 'Pak Ahmad Sudirman', tanggal: '2024-02-05', status: 'approved' },
-]
-
 export default function VerifikasiPage() {
+  const { user } = useAuth()
+  const isKementerian = user?.role === 'kementerian'
+
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  const [search, setSearch] = useState('')
   const [verifikasiData, setVerifikasiData] = useState<VerifikasiItem[]>(initialVerifikasiData)
-  const [riwayatVerifikasi, setRiwayatVerifikasi] = useState(initialRiwayatVerifikasi)
   const [selectedItem, setSelectedItem] = useState<VerifikasiItem | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [showRejectDialog, setShowRejectDialog] = useState(false)
   const [rejectReason, setRejectReason] = useState('')
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [openDialogId, setOpenDialogId] = useState<string | null>(null)
 
-  const pendingCount = verifikasiData.filter(v => v.status === 'pending').length
-  const rejectedCount = verifikasiData.filter(v => v.status === 'ditolak').length
-  const approvedThisMonth = riwayatVerifikasi.length + verifikasiData.filter(v => v.status === 'approved').length
+  // Cross-entity filtering logic
+  const filteredData = useMemo(() => {
+    return verifikasiData.filter(v => {
+      const matchesSearch = v.nama.toLowerCase().includes(search.toLowerCase()) || v.memberId.includes(search)
+      if (!isKementerian) return matchesSearch
 
-  // Handle approval
+      const matchesVillage = filters.villageId === 'all' || v.desa.toUpperCase().includes(filters.villageId.split('-').pop() || '')
+      // Simulated mapping for demo purposes
+      const matchesKop = filters.cooperativeId === 'all' || v.koperasi.toUpperCase().includes(filters.cooperativeId.split('-').pop() || '')
+      
+      return matchesSearch && matchesVillage && matchesKop
+    })
+  }, [verifikasiData, search, filters, isKementerian])
+
+  const pendingItems = filteredData.filter(v => v.status === 'pending')
+  const rejectedItems = filteredData.filter(v => v.status === 'ditolak')
+  const historyItems = filteredData.filter(v => v.status === 'approved')
+
   const handleApprove = async (item: VerifikasiItem) => {
     setIsProcessing(true)
-    
-    // Simulate Dukcapil verification API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    // Update the item status
-    setVerifikasiData(prev => 
-      prev.map(v => 
-        v.id === item.id 
-          ? { ...v, status: 'approved' as const, tanggalVerifikasi: new Date().toISOString().split('T')[0] }
-          : v
-      )
-    )
-    
-    // Add to history
-    setRiwayatVerifikasi(prev => [
-      { id: item.id, nama: item.nama, tanggal: new Date().toISOString().split('T')[0], status: 'approved' },
-      ...prev
-    ])
-    
+    await new Promise(r => setTimeout(r, 1500))
+    setVerifikasiData(prev => prev.map(v => v.id === item.id ? { ...v, status: 'approved', tanggalVerifikasi: new Date().toISOString() } : v))
     setIsProcessing(false)
     setOpenDialogId(null)
-    setSuccessMessage(`${item.nama} berhasil diverifikasi dan disetujui sebagai anggota koperasi.`)
-    
-    // Clear success message after 5 seconds
-    setTimeout(() => setSuccessMessage(null), 5000)
   }
 
-  // Handle rejection
   const handleReject = async (item: VerifikasiItem) => {
-    if (!rejectReason.trim()) return
-    
     setIsProcessing(true)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // Update the item status
-    setVerifikasiData(prev => 
-      prev.map(v => 
-        v.id === item.id 
-          ? { ...v, status: 'ditolak' as const, alasanTolak: rejectReason }
-          : v
-      )
-    )
-    
+    await new Promise(r => setTimeout(r, 1000))
+    setVerifikasiData(prev => prev.map(v => v.id === item.id ? { ...v, status: 'ditolak', alasanTolak: rejectReason } : v))
     setIsProcessing(false)
     setShowRejectDialog(false)
-    setRejectReason('')
     setOpenDialogId(null)
-    setSuccessMessage(`Pengajuan ${item.nama} telah ditolak. Notifikasi telah dikirim.`)
-    
-    // Clear success message after 5 seconds
-    setTimeout(() => setSuccessMessage(null), 5000)
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/anggota">
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Verifikasi KYC</h1>
-          <p className="text-sm text-muted-foreground">Verifikasi dokumen dan data anggota baru</p>
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild className="shrink-0 h-8 w-8">
+            <Link href="/anggota">
+              <ArrowLeft className="h-4 w-4 text-slate-600" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Verifikasi KYC Nasional</h1>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+              Otentikasi Identitas Anggota Lintas Entitas Koperasi
+            </p>
+          </div>
         </div>
+        {isKementerian && (
+          <Badge className="bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase border-none tracking-widest px-3 py-1">
+            Mode Supervisi Nasional
+          </Badge>
+        )}
       </div>
 
-      {/* Success Alert */}
-      {successMessage && (
-        <Alert className="border-emerald-500 bg-emerald-500/10">
-          <CheckCircle className="h-4 w-4 text-emerald-500" />
-          <AlertTitle className="text-emerald-600">Berhasil</AlertTitle>
-          <AlertDescription>{successMessage}</AlertDescription>
-        </Alert>
-      )}
+      {/* Kementerian Filter Suite */}
+      {isKementerian && <KementerianFilterBar filters={filters} setFilters={setFilters} search={search} setSearch={setSearch} />}
 
+      {/* Stats KPI */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Menunggu Verifikasi</CardDescription>
-            <CardTitle className="text-2xl sm:text-3xl text-amber-500">{pendingCount}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs text-amber-500">
-              <Clock className="h-3 w-3" />
-              Perlu ditinjau
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Ditolak</CardDescription>
-            <CardTitle className="text-2xl sm:text-3xl text-destructive">{rejectedCount}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs text-destructive">
-              <XCircle className="h-3 w-3" />
-              Perlu perbaikan
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Disetujui Bulan Ini</CardDescription>
-            <CardTitle className="text-2xl sm:text-3xl text-emerald-500">{approvedThisMonth}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs text-emerald-500">
-              <CheckCircle className="h-3 w-3" />
-              Terverifikasi
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Rata-rata Waktu</CardDescription>
-            <CardTitle className="text-2xl sm:text-3xl">2.5</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">Hari proses verifikasi</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'Menunggu Verifikasi', value: pendingItems.length, icon: Clock, tone: 'amber' },
+          { label: 'Ditolak / Perbaikan', value: rejectedItems.length, icon: XCircle, tone: 'rose' },
+          { label: 'Approved (Scope)', value: historyItems.length, icon: CheckCircle, tone: 'emerald' },
+          { label: 'SLA Rata-rata', value: '1.2H', icon: Activity, tone: 'slate' },
+        ].map((kpi, i) => (
+          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
+            <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</p>
+              <kpi.icon className={`h-3.5 w-3.5 ${kpi.tone === 'rose' ? 'text-rose-500' : kpi.tone === 'emerald' ? 'text-emerald-500' : kpi.tone === 'amber' ? 'text-amber-500' : 'text-slate-400'}`} />
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-2xl font-black text-slate-900 tracking-tighter">{kpi.value}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <Tabs defaultValue="pending">
-        <TabsList className="grid w-full grid-cols-3 sm:w-auto sm:inline-flex">
-          <TabsTrigger value="pending" className="gap-1 sm:gap-2 text-xs sm:text-sm">
-            <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Pending</span> ({pendingCount})
-          </TabsTrigger>
-          <TabsTrigger value="rejected" className="gap-1 sm:gap-2 text-xs sm:text-sm">
-            <XCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Ditolak</span> ({rejectedCount})
-          </TabsTrigger>
-          <TabsTrigger value="history" className="gap-1 sm:gap-2 text-xs sm:text-sm">
-            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Riwayat</span>
-          </TabsTrigger>
-        </TabsList>
+      {/* Main Content Tabs */}
+      <Tabs defaultValue="pending" className="w-full">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-2">
+          <TabsList className="bg-transparent h-auto p-0 flex gap-6">
+            {['pending', 'rejected', 'history'].map((tab) => (
+              <TabsTrigger 
+                key={tab} 
+                value={tab} 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-transparent h-10 px-0 text-[10px] font-black uppercase tracking-widest text-slate-400 data-[state=active]:text-slate-900"
+              >
+                {tab} ({tab === 'pending' ? pendingItems.length : tab === 'rejected' ? rejectedItems.length : historyItems.length})
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          
+          {!isKementerian && (
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+              <Input 
+                placeholder="Cari NAMA/NIK..." 
+                value={search} 
+                onChange={e => setSearch(e.target.value)}
+                className="pl-8 h-8 text-[10px] font-black uppercase tracking-widest border-slate-200" 
+              />
+            </div>
+          )}
+        </div>
 
-        <TabsContent value="pending" className="space-y-4 mt-4">
-          {verifikasiData.filter(v => v.status === 'pending').length === 0 ? (
-            <Card>
-              <CardContent className="py-8 text-center">
-                <CheckCircle className="mx-auto h-12 w-12 text-emerald-500 mb-3" />
-                <p className="text-muted-foreground">Semua pengajuan sudah diverifikasi</p>
-              </CardContent>
-            </Card>
+        <TabsContent value="pending" className="mt-6 space-y-4">
+          {pendingItems.length === 0 ? (
+            <div className="py-20 text-center bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
+              <ShieldCheck className="mx-auto h-12 w-12 text-slate-200 mb-4" />
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Antrian Verifikasi Bersih</p>
+            </div>
           ) : (
-            verifikasiData.filter(v => v.status === 'pending').map((item) => (
-              <Card key={item.id}>
-                <CardContent className="p-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
-                        <AvatarFallback className="bg-amber-500/10 text-amber-500 text-sm">
-                          {item.nama.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{item.nama}</p>
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                          <Badge variant="outline" className="text-xs capitalize">{item.tipe}</Badge>
-                          <span className="text-xs">Daftar: {item.tanggalDaftar}</span>
+            pendingItems.map((item) => (
+              <Card key={item.id} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="flex flex-col lg:flex-row lg:items-center">
+                    <div className="flex-1 p-5 border-r border-slate-50">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="h-12 w-12 rounded-lg border-2 border-white shadow-sm">
+                          <AvatarFallback className="bg-slate-900 text-white text-[10px] font-black">
+                            {item.nama.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.nama}</h3>
+                            <Badge variant="outline" className="text-[8px] font-black uppercase px-1.5 h-4 border-slate-200 text-slate-500">{item.tipe}</Badge>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
+                            <div className="flex items-center gap-1.5 text-slate-400">
+                              <MapPin className="h-3 w-3" />
+                              <span className="text-[9px] font-bold uppercase tracking-widest">{item.desa} • {item.koperasi}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-slate-400">
+                              <Clock className="h-3 w-3" />
+                              <span className="text-[9px] font-bold uppercase tracking-widest">Daftar: {item.tanggalDaftar}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 justify-between sm:justify-end">
-                      <div className="text-left sm:text-right">
-                        <p className="text-xs sm:text-sm font-medium">Dokumen</p>
-                        <div className="flex items-center gap-1 mt-1">
-                          {Object.entries(item.dokumen).map(([key, value]) => (
-                            <div
-                              key={key}
-                              className={`h-2 w-2 rounded-full ${value ? 'bg-emerald-500' : 'bg-destructive'}`}
-                              title={`${key}: ${value ? 'Lengkap' : 'Belum'}`}
-                            />
+                    
+                    <div className="bg-slate-50/50 p-5 lg:w-80 flex items-center justify-between gap-4">
+                      <div className="space-y-1.5">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Dokumen Fisik</p>
+                        <div className="flex gap-1">
+                          {Object.entries(item.dokumen).map(([key, val]) => (
+                            <div key={key} title={key} className={`h-1.5 w-6 rounded-full ${val ? 'bg-emerald-500' : 'bg-slate-200'}`} />
                           ))}
                         </div>
                       </div>
-                      <Dialog open={openDialogId === item.id} onOpenChange={(open) => setOpenDialogId(open ? item.id : null)}>
+                      
+                      <Dialog open={openDialogId === item.id} onOpenChange={open => setOpenDialogId(open ? item.id : null)}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm" onClick={() => setSelectedItem(item)}>
-                            <Eye className="mr-1 sm:mr-2 h-4 w-4" />
-                            <span className="hidden sm:inline">Review</span>
+                          <Button size="sm" className="h-9 bg-slate-900 text-white text-[10px] font-black uppercase px-6 tracking-widest hover:scale-105 transition-transform">
+                            Review
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle className="flex items-center gap-2">
-                              <ShieldCheck className="h-5 w-5 text-primary" />
-                              Review Verifikasi: {item.nama}
+                        <DialogContent className="max-w-xl bg-white border-none shadow-2xl rounded-none">
+                          <DialogHeader className="border-b border-slate-100 pb-4">
+                            <DialogTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                              <ShieldCheck className="h-4 w-4 text-emerald-500" /> Otentikasi KYC: {item.nama}
                             </DialogTitle>
-                            <DialogDescription>
-                              Periksa kelengkapan dokumen dan data anggota sebelum menyetujui
-                            </DialogDescription>
                           </DialogHeader>
-                          <div className="space-y-4 py-4">
-                            <div className="grid gap-4 sm:grid-cols-2">
-                              <div className="space-y-3">
-                                <h4 className="font-semibold text-sm">Data Anggota</h4>
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <User className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-muted-foreground">Nama:</span>
-                                    <span className="font-medium">{item.nama}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <CreditCard className="h-4 w-4 text-muted-foreground" />
-                                    <span className="text-muted-foreground">Tipe:</span>
-                                    <Badge variant="outline" className="capitalize">{item.tipe}</Badge>
-                                  </div>
-                                  <div className="flex items-start gap-2 text-sm">
-                                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                                    <span className="text-muted-foreground">Alamat:</span>
-                                    <span className="flex-1">{item.alamat}</span>
+                          
+                          <div className="py-6 space-y-6">
+                            <div className="grid grid-cols-2 gap-6">
+                              <div className="space-y-4">
+                                <div>
+                                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Profil Entitas</p>
+                                  <div className="mt-2 space-y-1">
+                                    <p className="text-xs font-black text-slate-900 uppercase">{item.nama}</p>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">{item.alamat}</p>
+                                    <p className="text-[10px] font-black text-emerald-600 uppercase mt-1">{item.koperasi}</p>
                                   </div>
                                 </div>
                               </div>
-                              <div className="space-y-3">
-                                <h4 className="font-semibold text-sm">Status Dokumen</h4>
+                              <div className="space-y-4">
+                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Validasi Dokumen</p>
                                 <div className="space-y-2">
-                                  {Object.entries(item.dokumen).map(([key, value]) => (
-                                    <div key={key} className="flex items-center justify-between text-sm">
-                                      <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                                      {value ? (
-                                        <Badge className="bg-emerald-500/10 text-emerald-500 text-xs">
-                                          <CheckCircle className="mr-1 h-3 w-3" />
-                                          Lengkap
-                                        </Badge>
-                                      ) : (
-                                        <Badge variant="destructive" className="text-xs">
-                                          <XCircle className="mr-1 h-3 w-3" />
-                                          Belum
-                                        </Badge>
-                                      )}
+                                  {Object.entries(item.dokumen).map(([k, v]) => (
+                                    <div key={k} className="flex items-center justify-between p-2 bg-slate-50 rounded border border-slate-100">
+                                      <span className="text-[9px] font-black uppercase text-slate-600">{k}</span>
+                                      {v ? <Check className="h-3 w-3 text-emerald-500" /> : <X className="h-3 w-3 text-rose-500" />}
                                     </div>
                                   ))}
                                 </div>
                               </div>
                             </div>
 
-                            {/* Dukcapil Verification Note */}
-                            <Alert>
-                              <AlertTriangle className="h-4 w-4" />
-                              <AlertTitle>Verifikasi Dukcapil</AlertTitle>
-                              <AlertDescription>
-                                Dengan menyetujui, data akan diverifikasi ke Dukcapil untuk memastikan kevalidan identitas.
-                              </AlertDescription>
-                            </Alert>
-                          </div>
-                          
-                          {/* Reject Dialog */}
-                          {showRejectDialog ? (
-                            <div className="space-y-4 border-t pt-4">
-                              <h4 className="font-semibold">Alasan Penolakan</h4>
-                              <Textarea
-                                placeholder="Masukkan alasan penolakan..."
-                                value={rejectReason}
-                                onChange={(e) => setRejectReason(e.target.value)}
-                                rows={3}
-                              />
-                              <div className="flex gap-2">
-                                <Button variant="outline" onClick={() => setShowRejectDialog(false)} className="flex-1">
-                                  Batal
-                                </Button>
-                                <Button 
-                                  variant="destructive" 
-                                  onClick={() => handleReject(item)}
-                                  disabled={!rejectReason.trim() || isProcessing}
-                                  className="flex-1"
-                                >
-                                  {isProcessing ? (
-                                    <>
-                                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                      Memproses...
-                                    </>
-                                  ) : (
-                                    <>
-                                      <X className="mr-2 h-4 w-4" />
-                                      Konfirmasi Tolak
-                                    </>
-                                  )}
-                                </Button>
+                            {showRejectDialog && (
+                              <div className="p-4 bg-rose-50 rounded-lg space-y-3">
+                                <Label className="text-[10px] font-black uppercase text-rose-700">Alasan Penolakan</Label>
+                                <Textarea 
+                                  className="text-xs border-rose-200 focus-visible:ring-rose-500" 
+                                  placeholder="Contoh: Foto KTP terpotong..."
+                                  value={rejectReason}
+                                  onChange={e => setRejectReason(e.target.value)}
+                                />
                               </div>
-                            </div>
-                          ) : (
-                            <DialogFooter className="flex-col sm:flex-row gap-2">
-                              <Button 
-                                variant="outline" 
-                                className="text-destructive border-destructive/50 hover:bg-destructive/10 w-full sm:w-auto"
-                                onClick={() => setShowRejectDialog(true)}
-                              >
-                                <X className="mr-2 h-4 w-4" />
-                                Tolak
-                              </Button>
-                              <Button 
-                                className="bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto"
-                                onClick={() => handleApprove(item)}
-                                disabled={isProcessing}
-                              >
-                                {isProcessing ? (
-                                  <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Memverifikasi...
-                                  </>
-                                ) : (
-                                  <>
-                                    <Check className="mr-2 h-4 w-4" />
-                                    Setujui
-                                  </>
-                                )}
-                              </Button>
-                            </DialogFooter>
-                          )}
+                            )}
+                          </div>
+
+                          <DialogFooter className="bg-slate-50 p-4 flex gap-3">
+                            {showRejectDialog ? (
+                              <>
+                                <Button variant="ghost" onClick={() => setShowRejectDialog(false)} className="text-[10px] font-black uppercase">Batal</Button>
+                                <Button variant="destructive" onClick={() => handleReject(item)} disabled={!rejectReason || isProcessing} className="text-[10px] font-black uppercase bg-rose-600">
+                                  {isProcessing ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <X className="h-3 w-3 mr-2" />}
+                                  Kirim Penolakan
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button variant="outline" onClick={() => setShowRejectDialog(true)} className="text-[10px] font-black uppercase border-slate-300 text-rose-600 h-10">TOLAK</Button>
+                                <Button onClick={() => handleApprove(item)} disabled={isProcessing} className="flex-1 bg-slate-900 text-white text-[10px] font-black uppercase h-10 tracking-widest">
+                                  {isProcessing ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <ShieldCheck className="h-3.5 w-3.5 mr-2 text-emerald-400" />}
+                                  SETUJUI KEANGGOTAAN
+                                </Button>
+                              </>
+                            )}
+                          </DialogFooter>
                         </DialogContent>
                       </Dialog>
                     </div>
@@ -453,11 +358,48 @@ export default function VerifikasiPage() {
           )}
         </TabsContent>
 
-        <TabsContent value="rejected" className="space-y-4 mt-4">
-          {verifikasiData.filter(v => v.status === 'ditolak').length === 0 ? (
-            <Card>
-              <CardContent className="py-8 text-center">
-                <CheckCircle className="mx-auto h-12 w-12 text-emerald-500 mb-3" />
+        <TabsContent value="rejected" className="mt-6 space-y-4">
+          {rejectedItems.map(item => (
+            <Card key={item.id} className="border-l-4 border-l-rose-500 border-none shadow-sm">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback className="bg-rose-50 text-rose-600 text-[10px] font-black">{item.nama[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-xs font-black uppercase text-slate-900">{item.nama}</p>
+                    <p className="text-[10px] font-bold text-rose-600 uppercase tracking-tight mt-0.5">Alasan: {item.alasanTolak}</p>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" className="h-8 text-[9px] font-black uppercase border-slate-200">Hubungi Pemohon</Button>
+              </CardContent>
+            </Card>
+          ))}
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-6 space-y-4">
+          {historyItems.map(item => (
+            <Card key={item.id} className="border-l-4 border-l-emerald-500 border-none shadow-sm">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback className="bg-emerald-50 text-emerald-600 text-[10px] font-black">{item.nama[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-xs font-black uppercase text-slate-900">{item.nama}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mt-0.5">Verified on: {item.tanggalVerifikasi?.split('T')[0]}</p>
+                  </div>
+                </div>
+                <Badge className="bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase border-none">COMPLETED</Badge>
+              </CardContent>
+            </Card>
+          ))}
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
+rald-500 mb-3" />
                 <p className="text-muted-foreground">Tidak ada pengajuan yang ditolak</p>
               </CardContent>
             </Card>
