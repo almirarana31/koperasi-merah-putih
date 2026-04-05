@@ -63,122 +63,100 @@ export default function LaporanPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="shrink-0 h-8 w-8 hover:bg-slate-100">
             <Link href="/keuangan">
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 text-slate-600" />
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Laporan Keuangan</h1>
-            <p className="text-muted-foreground">
-              Ringkasan dan analisis keuangan koperasi
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Laporan Keuangan</h1>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+              Analisis performa & audit keuangan nasional
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Select defaultValue="2024">
-            <SelectTrigger className="w-[120px]">
-              <Calendar className="mr-2 h-4 w-4" />
+            <SelectTrigger className="h-8 w-[100px] text-[10px] font-black uppercase tracking-widest border-slate-200">
+              <Calendar className="mr-2 h-3 w-3" />
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
+              <SelectItem value="2024" className="text-[10px] font-bold">2024</SelectItem>
+              <SelectItem value="2023" className="text-[10px] font-bold">2023</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Export PDF
+          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600">
+            <Download className="mr-2 h-3.5 w-3.5" />
+            Export Audit PDF
           </Button>
         </div>
       </div>
 
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Pemasukan</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-2xl text-emerald-500">
-              <TrendingUp className="h-5 w-5" />
-              {formatCurrency(totalPemasukan)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              +18% dari periode sebelumnya
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Pengeluaran</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-2xl text-red-500">
-              <TrendingDown className="h-5 w-5" />
-              {formatCurrency(totalPengeluaran)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              +8% dari periode sebelumnya
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Laba Kotor</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <FileText className="h-5 w-5 text-primary" />
-              {formatCurrency(labaKotor)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              Margin: {((labaKotor / totalPemasukan) * 100).toFixed(1)}%
-            </p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'Total Pemasukan', value: formatCurrency(totalPemasukan), sub: '+18% vs bln lalu', icon: TrendingUp, tone: 'emerald' },
+          { label: 'Total Pengeluaran', value: formatCurrency(totalPengeluaran), sub: '+8% vs bln lalu', icon: TrendingDown, tone: 'rose' },
+          { label: 'Laba Bersih (EBITDA)', value: formatCurrency(labaKotor), sub: `Margin: ${((labaKotor / totalPemasukan) * 100).toFixed(1)}%`, icon: FileText, tone: 'slate' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-400'}`} />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 tracking-tighter mt-1">{stat.value}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className={`text-[10px] font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
+                {stat.sub}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Charts */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Revenue vs Expense Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Pendapatan vs Pengeluaran</CardTitle>
-            <CardDescription>Perbandingan bulanan</CardDescription>
+        <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+          <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
+            <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Pendapatan vs Pengeluaran</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Analisis Komparatif Bulanan</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+          <CardContent className="p-4">
+            <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyRevenue}>
+                <BarChart data={monthlyRevenue} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                   <XAxis
                     dataKey="bulan"
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
+                    stroke="#94a3b8"
+                    fontSize={9}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
+                    stroke="#94a3b8"
+                    fontSize={9}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `${value / 1000000}jt`}
+                    tickFormatter={(value) => `${value / 1000000}M`}
                   />
                   <Tooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="rounded-lg border bg-background p-3 shadow-sm">
-                            <p className="font-medium">{label}</p>
-                            <div className="mt-2 space-y-1 text-sm">
-                              <p className="text-emerald-500">
-                                Pendapatan: {formatCurrency(payload[0].value as number)}
+                          <div className="rounded-none border-none bg-slate-900 p-2 shadow-xl">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
+                            <div className="space-y-0.5">
+                              <p className="text-[10px] font-black text-emerald-400">
+                                REV: {formatCurrency(payload[0].value as number)}
                               </p>
-                              <p className="text-red-500">
-                                Pengeluaran: {formatCurrency(payload[1].value as number)}
+                              <p className="text-[10px] font-black text-rose-400">
+                                EXP: {formatCurrency(payload[1].value as number)}
                               </p>
                             </div>
                           </div>
@@ -190,12 +168,14 @@ export default function LaporanPage() {
                   <Bar
                     dataKey="pendapatan"
                     fill="#10b981"
-                    radius={[4, 4, 0, 0]}
+                    radius={[2, 2, 0, 0]}
+                    barSize={20}
                   />
                   <Bar
                     dataKey="pengeluaran"
-                    fill="#06b6d4"
-                    radius={[4, 4, 0, 0]}
+                    fill="#0f172a"
+                    radius={[2, 2, 0, 0]}
+                    barSize={20}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -204,41 +184,38 @@ export default function LaporanPage() {
         </Card>
 
         {/* Cash Flow Trend */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Tren Saldo Kas</CardTitle>
-            <CardDescription>Perkembangan saldo bulanan</CardDescription>
+        <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+          <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
+            <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Tren Likuiditas Kas</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Proyeksi Saldo Akumulatif</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+          <CardContent className="p-4">
+            <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={cumulativeData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="hsl(var(--border))"
-                  />
+                <LineChart data={cumulativeData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis
                     dataKey="bulan"
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
+                    stroke="#94a3b8"
+                    fontSize={9}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
+                    stroke="#94a3b8"
+                    fontSize={9}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `${value / 1000000}jt`}
+                    tickFormatter={(value) => `${value / 1000000}M`}
                   />
                   <Tooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="rounded-lg border bg-background p-3 shadow-sm">
-                            <p className="font-medium">{label}</p>
-                            <p className="text-sm text-primary">
-                              Saldo: {formatCurrency(payload[0].value as number)}
+                          <div className="rounded-none border-none bg-slate-900 p-2 shadow-xl">
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
+                            <p className="text-[10px] font-black text-emerald-400">
+                              CASH: {formatCurrency(payload[0].value as number)}
                             </p>
                           </div>
                         )
@@ -247,11 +224,12 @@ export default function LaporanPage() {
                     }}
                   />
                   <Line
-                    type="monotone"
+                    type="stepAfter"
                     dataKey="saldo"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
-                    dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2 }}
+                    stroke="#0f172a"
+                    strokeWidth={3}
+                    dot={{ r: 3, fill: '#0f172a', strokeWidth: 0 }}
+                    activeDot={{ r: 5, strokeWidth: 0 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -261,57 +239,33 @@ export default function LaporanPage() {
       </div>
 
       {/* Report Types */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Jenis Laporan</CardTitle>
-          <CardDescription>
-            Pilih dan unduh laporan yang dibutuhkan
-          </CardDescription>
+      <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+        <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
+          <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Arsip Laporan Audit</CardTitle>
+          <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Pilih dokumen untuk diunduh</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <FileText className="h-5 w-5 text-primary" />
+            {[
+              { title: 'Neraca Saldo', sub: 'Balance Sheet', color: 'bg-slate-900' },
+              { title: 'Laba Rugi', sub: 'Income Statement', color: 'bg-emerald-600' },
+              { title: 'Arus Kas', sub: 'Cash Flow', color: 'bg-cyan-600' },
+            ].map((report, i) => (
+              <div key={i} className="flex items-center justify-between rounded border border-slate-100 p-4 hover:border-slate-200 transition-colors group">
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded shadow-sm ${report.color}`}>
+                    <FileText className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight">{report.title}</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{report.sub}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium">Neraca</p>
-                  <p className="text-xs text-muted-foreground">Balance Sheet</p>
-                </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-100 group-hover:text-slate-900 text-slate-400">
+                  <Download className="h-4 w-4" />
+                </Button>
               </div>
-              <Button variant="ghost" size="icon">
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
-                  <FileText className="h-5 w-5 text-emerald-500" />
-                </div>
-                <div>
-                  <p className="font-medium">Laba Rugi</p>
-                  <p className="text-xs text-muted-foreground">Income Statement</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon">
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
-                  <FileText className="h-5 w-5 text-blue-500" />
-                </div>
-                <div>
-                  <p className="font-medium">Arus Kas</p>
-                  <p className="text-xs text-muted-foreground">Cash Flow Statement</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon">
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
+            ))}
           </div>
         </CardContent>
       </Card>

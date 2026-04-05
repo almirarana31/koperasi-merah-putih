@@ -84,18 +84,18 @@ export function ExportButton({ title, filename, data, columns }: ExportButtonPro
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 border-slate-200" disabled={isExporting}>
+        <Button variant="outline" size="sm" className="h-8 border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900" disabled={isExporting}>
           <Download className="h-3.5 w-3.5 mr-2" />
           Export
           <ChevronDown className="h-3 w-3 ml-2 text-slate-400" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
-        <DropdownMenuItem onClick={handlePDF} className="cursor-pointer">
+        <DropdownMenuItem onClick={handlePDF} className="cursor-pointer text-[10px] font-black uppercase tracking-widest text-slate-600">
           <FileText className="h-4 w-4 mr-2 text-rose-600" />
           Format PDF
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleExcel} className="cursor-pointer">
+        <DropdownMenuItem onClick={handleExcel} className="cursor-pointer text-[10px] font-black uppercase tracking-widest text-slate-600">
           <FileSpreadsheet className="h-4 w-4 mr-2 text-emerald-600" />
           Format Excel
         </DropdownMenuItem>

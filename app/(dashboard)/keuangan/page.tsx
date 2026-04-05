@@ -109,9 +109,9 @@ export default function KeuanganPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Transaksi Keuangan</h1>
-          <p className="text-muted-foreground">
-            Kelola arus kas koperasi
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Transaksi Keuangan</h1>
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">
+            Monitoring Arus Kas & Portofolio Kredit Nasional
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -130,93 +130,53 @@ export default function KeuanganPage() {
               }))}
             />
           )}
-          <Button variant="outline" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
             <Link href="/keuangan/credit-scoring">
-              <TrendingUp className="mr-2 h-4 w-4" />
-              Credit Scoring
+              <TrendingUp className="mr-2 h-3.5 w-3.5" />
+              Scoring
             </Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
             <Link href="/keuangan/pinjaman">
-              <Wallet className="mr-2 h-4 w-4" />
-              Ajukan Pinjaman
+              <Wallet className="mr-2 h-3.5 w-3.5" />
+              Pinjaman
             </Link>
           </Button>
-          <Button variant="outline" asChild>
-            <Link href="/keuangan/simpan-pinjam">
-              <CreditCard className="mr-2 h-4 w-4" />
-              Simpan Pinjam
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
             <Link href="/keuangan/laporan">
-              <FileText className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-3.5 w-3.5" />
               Laporan
             </Link>
           </Button>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Catat Transaksi
+          <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
+            <Plus className="mr-2 h-3.5 w-3.5" />
+            Catat
           </Button>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <Wallet className="h-5 w-5 text-primary" />
+        {[
+          { label: 'Saldo Kas', value: formatCurrency(currentSaldo), icon: Wallet, tone: 'emerald' },
+          { label: 'Total Pemasukan', value: formatCurrency(totalKredit), icon: ArrowDownRight, tone: 'emerald' },
+          { label: 'Total Pengeluaran', value: formatCurrency(totalDebit), icon: ArrowUpRight, tone: 'rose' },
+          { label: 'Net Cashflow', value: formatCurrency(totalKredit - totalDebit), icon: TrendingUp, tone: 'emerald' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.tone === 'rose' ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                  <stat.icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-bold">{formatCurrency(currentSaldo)}</p>
-                <p className="text-xs text-muted-foreground">Saldo Kas</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
-                <ArrowDownRight className="h-5 w-5 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{formatCurrency(totalKredit)}</p>
-                <p className="text-xs text-muted-foreground">Total Pemasukan</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/10">
-                <ArrowUpRight className="h-5 w-5 text-red-500" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{formatCurrency(totalDebit)}</p>
-                <p className="text-xs text-muted-foreground">Total Pengeluaran</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
-                <TrendingUp className="h-5 w-5 text-blue-500" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">
-                  {formatCurrency(totalKredit - totalDebit)}
-                </p>
-                <p className="text-xs text-muted-foreground">Net Cashflow</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {isKementerian && (
@@ -303,6 +263,32 @@ export default function KeuanganPage() {
                       <span className="text-red-500">
                         -{formatCurrency(tx.debit)}
                       </span>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {tx.kredit > 0 ? (
+                      <span className="text-emerald-500">
+                        +{formatCurrency(tx.kredit)}
+                      </span>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right font-medium">
+                    {formatCurrency(tx.saldo)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+               </span>
                     ) : (
                       '-'
                     )}

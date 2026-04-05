@@ -157,45 +157,43 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen space-y-6 pb-24">
+    <div className="space-y-6 pb-24">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild className="shrink-0">
+          <Button variant="ghost" size="icon" asChild className="shrink-0 h-8 w-8 hover:bg-slate-100">
             <Link href="/anggota">
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 text-slate-600" />
             </Link>
           </Button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-primary">
-              Pendaftaran Anggota Baru
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Verifikasi identitas dengan KTP (e-KTP)
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Pendaftaran Anggota</h1>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+              Verifikasi identitas kependudukan nasional (e-KTP)
             </p>
           </div>
         </div>
-        <Badge variant="outline" className="w-fit">
-          <Shield className="mr-1 h-3 w-3" />
-          Terenkripsi & Aman
+        <Badge variant="outline" className="h-7 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600">
+          <Shield className="mr-1.5 h-3 w-3 text-emerald-500" />
+          End-to-End Encrypted
         </Badge>
       </div>
 
       {/* Progress Indicator */}
-      <Card>
-        <CardContent className="p-4">
+      <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+        <CardContent className="p-4 bg-slate-50/50">
           <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="font-medium">Progres Pendaftaran</span>
-              <span className="text-muted-foreground">{getStepProgress()}%</span>
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tahapan Onboarding</span>
+              <span className="text-[10px] font-black text-slate-900 tracking-tighter bg-white px-2 py-0.5 rounded border border-slate-100 shadow-sm">{getStepProgress()}% COMPLETE</span>
             </div>
-            <Progress value={getStepProgress()} className="h-2" />
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span className={step === 'upload' ? 'text-primary font-medium' : ''}>Upload</span>
-              <span className={step === 'scanning' ? 'text-primary font-medium' : ''}>Scan OCR</span>
-              <span className={step === 'review' ? 'text-primary font-medium' : ''}>Review</span>
-              <span className={step === 'verify' ? 'text-primary font-medium' : ''}>Verifikasi</span>
-              <span className={step === 'complete' ? 'text-primary font-medium' : ''}>Selesai</span>
+            <Progress value={getStepProgress()} className="h-1.5 bg-slate-200" />
+            <div className="flex justify-between text-[9px] font-black uppercase tracking-tighter text-slate-400">
+              <span className={step === 'upload' ? 'text-emerald-600' : ''}>01. UPLOAD</span>
+              <span className={step === 'scanning' ? 'text-emerald-600' : ''}>02. OCR SCAN</span>
+              <span className={step === 'review' ? 'text-emerald-600' : ''}>03. REVIEW</span>
+              <span className={step === 'verify' ? 'text-emerald-600' : ''}>04. VERIFY</span>
+              <span className={step === 'complete' ? 'text-emerald-600' : ''}>05. SUCCESS</span>
             </div>
           </div>
         </CardContent>
@@ -205,48 +203,50 @@ export default function OnboardingPage() {
       {step === 'upload' && (
         <div className="grid gap-6 lg:grid-cols-2">
           {/* KTP Upload */}
-          <Card className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-primary" />
-                Upload Foto KTP
-              </CardTitle>
-              <CardDescription>
-                Pastikan foto KTP terlihat jelas dan tidak terpotong
-              </CardDescription>
+          <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
+            <CardHeader className="p-4 pb-2">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded bg-slate-100">
+                  <CreditCard className="h-4 w-4 text-slate-900" />
+                </div>
+                <div>
+                  <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Kartu Identitas (KTP)</CardTitle>
+                  <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pastikan dokumen terbaca jelas</CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-4 space-y-4">
               {ktpImage ? (
-                <div className="relative">
+                <div className="relative group">
                   <img
                     src={ktpImage}
                     alt="KTP Preview"
-                    className="w-full rounded-lg border object-cover aspect-[16/10]"
+                    className="w-full rounded border border-slate-100 object-cover aspect-[16/10] shadow-sm"
                   />
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => setKtpImage(null)}
-                  >
-                    <RotateCcw className="mr-1 h-3 w-3" />
-                    Ganti
-                  </Button>
+                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="h-8 text-[10px] font-black uppercase tracking-widest"
+                      onClick={() => setKtpImage(null)}
+                    >
+                      <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+                      Ganti Foto
+                    </Button>
+                  </div>
                   <div className="absolute bottom-2 left-2">
-                    <Badge className="bg-primary">
+                    <Badge className="bg-emerald-500 text-white text-[9px] font-black uppercase border-none">
                       <CheckCircle2 className="mr-1 h-3 w-3" />
-                      Foto siap
+                      Ready
                     </Badge>
                   </div>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition-colors">
+                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-all">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
-                    <Upload className="w-10 h-10 mb-3 text-muted-foreground" />
-                    <p className="mb-2 text-sm text-muted-foreground">
-                      <span className="font-semibold">Klik untuk upload</span> atau drag & drop
-                    </p>
-                    <p className="text-xs text-muted-foreground">PNG, JPG (MAX. 5MB)</p>
+                    <Upload className="w-8 h-8 mb-3 text-slate-400" />
+                    <p className="mb-1 text-[10px] font-black text-slate-900 uppercase tracking-tight">Klik untuk unggah</p>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">atau seret file ke sini</p>
                   </div>
                   <input
                     type="file"
@@ -260,63 +260,66 @@ export default function OnboardingPage() {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1"
+                  size="sm"
+                  className="flex-1 h-9 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200"
                   onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
                 >
                   <Camera className="mr-2 h-4 w-4" />
-                  Ambil Foto
+                  Kamera
                 </Button>
-                <Button variant="outline" className="flex-1">
+                <Button variant="outline" size="sm" className="flex-1 h-9 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
                   <Upload className="mr-2 h-4 w-4" />
-                  Pilih File
+                  Galeri
                 </Button>
               </div>
             </CardContent>
           </Card>
 
           {/* Selfie Upload */}
-          <Card className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-primary" />
-                Foto Selfie dengan KTP
-              </CardTitle>
-              <CardDescription>
-                Ambil foto selfie sambil memegang KTP di samping wajah
-              </CardDescription>
+          <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
+            <CardHeader className="p-4 pb-2">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded bg-slate-100">
+                  <User className="h-4 w-4 text-slate-900" />
+                </div>
+                <div>
+                  <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Verifikasi Wajah (Liveness)</CardTitle>
+                  <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Selfie dengan memegang KTP</CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="p-4 space-y-4">
               {selfieImage ? (
-                <div className="relative">
+                <div className="relative group">
                   <img
                     src={selfieImage}
                     alt="Selfie Preview"
-                    className="w-full rounded-lg border object-cover aspect-[4/3]"
+                    className="w-full rounded border border-slate-100 object-cover aspect-[4/3] shadow-sm"
                   />
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => setSelfieImage(null)}
-                  >
-                    <RotateCcw className="mr-1 h-3 w-3" />
-                    Ganti
-                  </Button>
+                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="h-8 text-[10px] font-black uppercase tracking-widest"
+                      onClick={() => setSelfieImage(null)}
+                    >
+                      <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+                      Ganti Foto
+                    </Button>
+                  </div>
                   <div className="absolute bottom-2 left-2">
-                    <Badge className="bg-primary">
+                    <Badge className="bg-emerald-500 text-white text-[9px] font-black uppercase border-none">
                       <CheckCircle2 className="mr-1 h-3 w-3" />
-                      Foto siap
+                      Ready
                     </Badge>
                   </div>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50 transition-colors">
+                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-all">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
-                    <Smartphone className="w-10 h-10 mb-3 text-muted-foreground" />
-                    <p className="mb-2 text-sm text-muted-foreground">
-                      <span className="font-semibold">Foto selfie</span> dengan KTP
-                    </p>
-                    <p className="text-xs text-muted-foreground">Pastikan wajah & KTP terlihat jelas</p>
+                    <Smartphone className="w-8 h-8 mb-3 text-slate-400" />
+                    <p className="mb-1 text-[10px] font-black text-slate-900 uppercase tracking-tight">Ambil Foto Selfie</p>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Wajah & KTP harus sejajar</p>
                   </div>
                   <input
                     type="file"
@@ -328,66 +331,46 @@ export default function OnboardingPage() {
                 </label>
               )}
 
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" size="sm" className="w-full h-9 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
                 <Camera className="mr-2 h-4 w-4" />
-                Buka Kamera
+                Buka Kamera Depan
               </Button>
             </CardContent>
           </Card>
 
           {/* Tips */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-base">Tips untuk Hasil Scan Optimal</CardTitle>
+          <Card className="lg:col-span-2 border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] bg-slate-900 text-white">
+            <CardHeader className="p-4">
+              <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-400">Protokol Pemindaian Optimal</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 pt-0">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    1
+                {[
+                  { id: '01', title: 'Pencahayaan', desc: 'Hindari bayangan & silau flash' },
+                  { id: '02', title: 'Presisi', desc: 'Posisi KTP lurus dan simetris' },
+                  { id: '03', title: 'Resolusi', desc: 'Teks harus terbaca tajam' },
+                  { id: '04', title: 'Komposisi', desc: 'Seluruh KTP masuk dalam frame' },
+                ].map((tip) => (
+                  <div key={tip.id} className="flex items-start gap-3">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-slate-800 text-[10px] font-black text-emerald-400 border border-slate-700">
+                      {tip.id}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-tight text-white">{tip.title}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{tip.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-sm">Pencahayaan Baik</p>
-                    <p className="text-xs text-muted-foreground">Hindari bayangan & silau</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    2
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">Posisi Lurus</p>
-                    <p className="text-xs text-muted-foreground">KTP tidak miring/terbalik</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    3
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">Fokus Jelas</p>
-                    <p className="text-xs text-muted-foreground">Teks harus terbaca jelas</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    4
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">Tidak Terpotong</p>
-                    <p className="text-xs text-muted-foreground">Seluruh KTP masuk frame</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="p-4 bg-slate-800/50">
               <Button
-                className="w-full sm:w-auto ml-auto"
+                className="w-full sm:w-auto ml-auto bg-emerald-500 hover:bg-emerald-600 text-white border-none text-[10px] font-black uppercase tracking-widest h-9"
                 disabled={!ktpImage}
                 onClick={simulateOCR}
               >
-                Lanjut Scan OCR
-                <ArrowRight className="ml-2 h-4 w-4" />
+                Eksekusi Scan OCR
+                <ArrowRight className="ml-2 h-3.5 w-3.5" />
               </Button>
             </CardFooter>
           </Card>
@@ -396,23 +379,26 @@ export default function OnboardingPage() {
 
       {/* Step: Scanning */}
       {step === 'scanning' && (
-        <Card>
-          <CardContent className="py-16">
+        <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
+          <CardContent className="py-20 bg-slate-50/30">
             <div className="flex flex-col items-center justify-center text-center space-y-6">
               <div className="relative">
-                <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Loader2 className="h-12 w-12 text-primary animate-spin" />
+                <div className="h-20 w-20 rounded-lg bg-slate-100 flex items-center justify-center border border-slate-200 shadow-inner">
+                  <Loader2 className="h-8 w-8 text-slate-900 animate-spin" />
+                </div>
+                <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1 rounded-full border-4 border-white">
+                  <Shield className="h-3 w-3" />
                 </div>
               </div>
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold">Memproses KTP...</h3>
-                <p className="text-muted-foreground max-w-md">
-                  Sistem sedang membaca data dari foto KTP Anda menggunakan teknologi OCR
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">Sistem Sedang Memproses Dokumen</h3>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-xs mx-auto">
+                  Algoritma OCR sedang mengekstrak data identitas dari Kartu Kependudukan Anda
                 </p>
               </div>
-              <div className="w-full max-w-xs space-y-2">
-                <Progress value={66} className="h-2" />
-                <p className="text-sm text-muted-foreground">Mengekstrak data identitas...</p>
+              <div className="w-full max-w-xs space-y-3">
+                <Progress value={66} className="h-1 bg-slate-200" />
+                <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest animate-pulse">Menganalisis NIK & Bio-Data...</p>
               </div>
             </div>
           </CardContent>
@@ -422,185 +408,185 @@ export default function OnboardingPage() {
       {/* Step: Review */}
       {step === 'review' && extractedData && (
         <div className="space-y-6">
-          <Alert>
-            <Eye className="h-4 w-4" />
-            <AlertTitle>Periksa Data Hasil OCR</AlertTitle>
-            <AlertDescription>
-              Pastikan semua data berikut sesuai dengan KTP Anda. Anda dapat mengedit jika ada kesalahan.
+          <Alert className="bg-slate-900 border-none rounded-none border-l-4 border-emerald-500 text-white py-4 shadow-lg">
+            <Eye className="h-4 w-4 text-emerald-500" />
+            <AlertTitle className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Verifikasi Hasil Ekstraksi</AlertTitle>
+            <AlertDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">
+              Periksa kembali presisi data yang diekstrak. Koreksi manual diizinkan untuk akurasi 100%.
             </AlertDescription>
           </Alert>
 
           <div className="grid gap-6 lg:grid-cols-3">
             {/* KTP Preview */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Foto KTP</CardTitle>
+            <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] h-fit">
+              <CardHeader className="p-4">
+                <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Referansi Dokumen</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 pt-0">
                 {ktpImage && (
                   <img
                     src={ktpImage}
                     alt="KTP"
-                    className="w-full rounded-lg border object-cover"
+                    className="w-full rounded border border-slate-100 object-cover shadow-sm"
                   />
                 )}
               </CardContent>
             </Card>
 
             {/* Extracted Data */}
-            <Card className="lg:col-span-2">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+            <Card className="lg:col-span-2 border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
+              <CardHeader className="p-4 border-b border-slate-50 flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle>Data Hasil Ekstraksi</CardTitle>
-                  <CardDescription>Verifikasi dan edit bila diperlukan</CardDescription>
+                  <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Database Hasil Ekstraksi</CardTitle>
+                  <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sinkronisasi data sistem & fisik</CardDescription>
                 </div>
                 <Button
                   variant={editMode ? 'default' : 'outline'}
                   size="sm"
+                  className="h-8 text-[9px] font-black uppercase tracking-widest"
                   onClick={() => setEditMode(!editMode)}
                 >
-                  {editMode ? 'Selesai Edit' : 'Edit Data'}
+                  {editMode ? 'Simpan' : 'Edit Manual'}
                 </Button>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="nik">NIK</Label>
+              <CardContent className="p-4 space-y-6">
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nomor Induk Kependudukan (NIK)</Label>
                     <Input
-                      id="nik"
                       value={extractedData.nik}
                       onChange={(e) => updateField('nik', e.target.value)}
                       disabled={!editMode}
-                      className="font-mono"
+                      className="font-mono text-xs font-black bg-slate-50/50 border-slate-100 h-9 tracking-widest"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="nama">Nama Lengkap</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nama Lengkap (Sesuai KTP)</Label>
                     <Input
-                      id="nama"
                       value={extractedData.nama}
                       onChange={(e) => updateField('nama', e.target.value)}
                       disabled={!editMode}
+                      className="text-xs font-black uppercase bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="tempatLahir">Tempat Lahir</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tempat Lahir</Label>
                     <Input
-                      id="tempatLahir"
                       value={extractedData.tempatLahir}
                       onChange={(e) => updateField('tempatLahir', e.target.value)}
                       disabled={!editMode}
+                      className="text-xs font-black uppercase bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="tanggalLahir">Tanggal Lahir</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tanggal Lahir</Label>
                     <Input
-                      id="tanggalLahir"
                       value={extractedData.tanggalLahir}
                       onChange={(e) => updateField('tanggalLahir', e.target.value)}
                       disabled={!editMode}
+                      className="text-xs font-black bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="jenisKelamin">Jenis Kelamin</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis Kelamin</Label>
                     <Input
-                      id="jenisKelamin"
                       value={extractedData.jenisKelamin}
                       onChange={(e) => updateField('jenisKelamin', e.target.value)}
                       disabled={!editMode}
+                      className="text-xs font-black uppercase bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="pekerjaan">Pekerjaan</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pekerjaan</Label>
                     <Input
-                      id="pekerjaan"
                       value={extractedData.pekerjaan}
                       onChange={(e) => updateField('pekerjaan', e.target.value)}
                       disabled={!editMode}
+                      className="text-xs font-black uppercase bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
                 </div>
 
-                <Separator />
+                <div className="p-4 bg-slate-900 rounded-lg space-y-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Alamat Domisili Tetap</Label>
+                    <Input
+                      value={extractedData.alamat}
+                      onChange={(e) => updateField('alamat', e.target.value)}
+                      disabled={!editMode}
+                      className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="alamat">Alamat</Label>
-                  <Input
-                    id="alamat"
-                    value={extractedData.alamat}
-                    onChange={(e) => updateField('alamat', e.target.value)}
-                    disabled={!editMode}
-                  />
-                </div>
+                  <div className="grid gap-4 sm:grid-cols-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">RT</Label>
+                      <Input
+                        value={extractedData.rt}
+                        onChange={(e) => updateField('rt', e.target.value)}
+                        disabled={!editMode}
+                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">RW</Label>
+                      <Input
+                        value={extractedData.rw}
+                        onChange={(e) => updateField('rw', e.target.value)}
+                        disabled={!editMode}
+                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                      />
+                    </div>
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Kelurahan/Desa</Label>
+                      <Input
+                        value={extractedData.kelurahan}
+                        onChange={(e) => updateField('kelurahan', e.target.value)}
+                        disabled={!editMode}
+                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                      />
+                    </div>
+                  </div>
 
-                <div className="grid gap-4 sm:grid-cols-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="rt">RT</Label>
-                    <Input
-                      id="rt"
-                      value={extractedData.rt}
-                      onChange={(e) => updateField('rt', e.target.value)}
-                      disabled={!editMode}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="rw">RW</Label>
-                    <Input
-                      id="rw"
-                      value={extractedData.rw}
-                      onChange={(e) => updateField('rw', e.target.value)}
-                      disabled={!editMode}
-                    />
-                  </div>
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="kelurahan">Kelurahan/Desa</Label>
-                    <Input
-                      id="kelurahan"
-                      value={extractedData.kelurahan}
-                      onChange={(e) => updateField('kelurahan', e.target.value)}
-                      disabled={!editMode}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="kecamatan">Kecamatan</Label>
-                    <Input
-                      id="kecamatan"
-                      value={extractedData.kecamatan}
-                      onChange={(e) => updateField('kecamatan', e.target.value)}
-                      disabled={!editMode}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="kabupaten">Kabupaten/Kota</Label>
-                    <Input
-                      id="kabupaten"
-                      value={extractedData.kabupaten}
-                      onChange={(e) => updateField('kabupaten', e.target.value)}
-                      disabled={!editMode}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="provinsi">Provinsi</Label>
-                    <Input
-                      id="provinsi"
-                      value={extractedData.provinsi}
-                      onChange={(e) => updateField('provinsi', e.target.value)}
-                      disabled={!editMode}
-                    />
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Kecamatan</Label>
+                      <Input
+                        value={extractedData.kecamatan}
+                        onChange={(e) => updateField('kecamatan', e.target.value)}
+                        disabled={!editMode}
+                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Kabupaten/Kota</Label>
+                      <Input
+                        value={extractedData.kabupaten}
+                        onChange={(e) => updateField('kabupaten', e.target.value)}
+                        disabled={!editMode}
+                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Provinsi</Label>
+                      <Input
+                        value={extractedData.provinsi}
+                        onChange={(e) => updateField('provinsi', e.target.value)}
+                        disabled={!editMode}
+                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex flex-col sm:flex-row gap-3 pt-6">
-                <Button variant="outline" onClick={() => setStep('upload')} className="w-full sm:w-auto">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Kembali
+              <CardFooter className="p-4 bg-slate-50/50 flex flex-col sm:flex-row gap-3">
+                <Button variant="outline" size="sm" onClick={() => setStep('upload')} className="w-full sm:w-auto text-[10px] font-black uppercase border-slate-200">
+                  <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+                  Ganti Dokumen
                 </Button>
-                <Button onClick={handleVerify} className="w-full sm:w-auto sm:ml-auto">
-                  Verifikasi dengan Dukcapil
-                  <Shield className="ml-2 h-4 w-4" />
+                <Button onClick={handleVerify} className="w-full sm:w-auto sm:ml-auto bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase h-9 tracking-widest">
+                  Verifikasi Dukcapil Nasional
+                  <Shield className="ml-2 h-3.5 w-3.5 text-emerald-500" />
                 </Button>
               </CardFooter>
             </Card>
@@ -610,47 +596,46 @@ export default function OnboardingPage() {
 
       {/* Step: Verify */}
       {step === 'verify' && (
-        <Card>
-          <CardContent className="py-16">
+        <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
+          <CardContent className="py-20 bg-slate-50/30">
             <div className="flex flex-col items-center justify-center text-center space-y-6">
               {verificationStatus === 'verifying' && (
                 <>
                   <div className="relative">
-                    <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Shield className="h-12 w-12 text-primary animate-pulse" />
+                    <div className="h-20 w-20 rounded-full bg-slate-900 flex items-center justify-center shadow-lg border-4 border-white">
+                      <Shield className="h-8 w-8 text-emerald-500 animate-pulse" />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-xl font-semibold">Memverifikasi dengan Dukcapil...</h3>
-                    <p className="text-muted-foreground max-w-md">
-                      Sistem sedang mencocokkan data NIK dengan database Kependudukan Nasional
+                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">Menghubungi Server Kependudukan</h3>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-xs mx-auto">
+                      Sinkronisasi NIK dengan Basis Data Nasional KOPDES x Dukcapil
                     </p>
                   </div>
-                  <div className="w-full max-w-xs space-y-2">
-                    <Progress value={50} className="h-2" />
-                    <p className="text-sm text-muted-foreground">Menghubungi server Dukcapil...</p>
+                  <div className="w-full max-w-xs space-y-3">
+                    <Progress value={50} className="h-1 bg-slate-200" />
+                    <p className="text-[9px] font-black text-slate-900 uppercase tracking-widest animate-pulse">Requesting Secure Token...</p>
                   </div>
                 </>
               )}
 
               {verificationStatus === 'failed' && (
                 <>
-                  <div className="h-24 w-24 rounded-full bg-destructive/10 flex items-center justify-center">
-                    <AlertCircle className="h-12 w-12 text-destructive" />
+                  <div className="h-20 w-20 rounded-full bg-rose-50 flex items-center justify-center border-4 border-white shadow-lg">
+                    <AlertCircle className="h-8 w-8 text-rose-500" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-destructive">Verifikasi Gagal</h3>
-                    <p className="text-muted-foreground max-w-md">
-                      Data NIK tidak ditemukan atau tidak cocok dengan database Dukcapil.
-                      Silakan periksa kembali data Anda.
+                    <h3 className="text-sm font-black text-rose-600 uppercase tracking-tight">Otentikasi Gagal</h3>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-xs mx-auto">
+                      Data NIK tidak sinkron dengan Database Nasional. Periksa kembali NIK atau pastikan KTP adalah e-KTP asli.
                     </p>
                   </div>
-                  <div className="flex gap-3">
-                    <Button variant="outline" onClick={() => setStep('review')}>
-                      <ArrowLeft className="mr-2 h-4 w-4" />
-                      Periksa Data
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setStep('review')} className="text-[10px] font-black uppercase border-slate-200">
+                      <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+                      Koreksi Data
                     </Button>
-                    <Button onClick={handleVerify}>
+                    <Button size="sm" onClick={handleVerify} className="bg-slate-900 text-white text-[10px] font-black uppercase">
                       Coba Lagi
                     </Button>
                   </div>
@@ -664,86 +649,97 @@ export default function OnboardingPage() {
       {/* Step: Complete */}
       {step === 'complete' && extractedData && (
         <div className="space-y-6">
-          <Card className="border-primary/50 bg-primary/5">
-            <CardContent className="py-10">
+          <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] bg-emerald-500 text-white overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-8 opacity-10">
+              <Shield className="h-32 w-32" />
+            </div>
+            <CardContent className="py-12 relative">
               <div className="flex flex-col items-center justify-center text-center space-y-4">
-                <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center">
-                  <CheckCircle2 className="h-10 w-10 text-primary" />
+                <div className="h-16 w-16 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/50">
+                  <CheckCircle2 className="h-8 w-8 text-white" />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-bold text-primary">Verifikasi Berhasil!</h3>
-                  <p className="text-muted-foreground max-w-md">
-                    Data identitas Anda telah berhasil diverifikasi dengan Dukcapil.
-                    Akun koperasi Anda siap digunakan.
+                <div className="space-y-1">
+                  <h3 className="text-2xl font-black uppercase tracking-tight">Verifikasi Tervalidasi</h3>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-100 opacity-80">
+                    Identitas Anda telah diakui oleh Sistem Digital Koperasi Merah Putih
                   </p>
                 </div>
-                <Badge className="bg-primary text-lg px-4 py-2">
-                  <FileCheck className="mr-2 h-4 w-4" />
-                  Status: Terverifikasi
+                <Badge className="bg-white text-emerald-600 text-[10px] font-black uppercase border-none px-4 py-1 tracking-widest mt-2">
+                  <FileCheck className="mr-1.5 h-3.5 w-3.5" />
+                  STATUS: VERIFIED
                 </Badge>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Ringkasan Data Anggota</CardTitle>
-              <CardDescription>Informasi yang terdaftar di sistem koperasi</CardDescription>
+          <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+            <CardHeader className="p-4 bg-slate-50/50 border-b border-slate-100">
+              <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sertifikat Digital Anggota</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <User className="h-5 w-5 text-muted-foreground" />
+            <CardContent className="p-6">
+              <div className="grid gap-8 sm:grid-cols-2">
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 rounded bg-slate-100">
+                      <User className="h-4 w-4 text-slate-900" />
+                    </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Nama Lengkap</p>
-                      <p className="font-medium">{extractedData.nama}</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nama Lengkap</p>
+                      <p className="text-xs font-black uppercase text-slate-900 mt-0.5">{extractedData.nama}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 rounded bg-slate-100">
+                      <CreditCard className="h-4 w-4 text-slate-900" />
+                    </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">NIK</p>
-                      <p className="font-medium font-mono">{extractedData.nik}</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nomor NIK</p>
+                      <p className="text-xs font-black font-mono text-slate-900 mt-0.5 tracking-tighter">{extractedData.nik}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 rounded bg-slate-100">
+                      <Calendar className="h-4 w-4 text-slate-900" />
+                    </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Tanggal Lahir</p>
-                      <p className="font-medium">{extractedData.tempatLahir}, {extractedData.tanggalLahir}</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Data Kelahiran</p>
+                      <p className="text-xs font-black uppercase text-slate-900 mt-0.5">{extractedData.tempatLahir}, {extractedData.tanggalLahir}</p>
                     </div>
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="p-2 rounded bg-slate-100">
+                      <MapPin className="h-4 w-4 text-slate-900" />
+                    </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Alamat</p>
-                      <p className="font-medium">
-                        {extractedData.alamat}, RT {extractedData.rt}/RW {extractedData.rw}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {extractedData.kelurahan}, {extractedData.kecamatan}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {extractedData.kabupaten}, {extractedData.provinsi}
-                      </p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Koordinat Domisili</p>
+                      <div className="mt-1 space-y-1">
+                        <p className="text-xs font-black uppercase text-slate-900 leading-tight">
+                          {extractedData.alamat}, RT {extractedData.rt}/RW {extractedData.rw}
+                        </p>
+                        <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
+                          {extractedData.kelurahan}, {extractedData.kecamatan}
+                        </p>
+                        <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
+                          {extractedData.kabupaten}, {extractedData.provinsi}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col sm:flex-row gap-3">
-              <Button variant="outline" asChild className="w-full sm:w-auto">
+            <CardFooter className="p-4 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
+              <Button variant="outline" size="sm" asChild className="w-full sm:w-auto text-[10px] font-black uppercase border-slate-200">
                 <Link href="/anggota">
-                  Lihat Daftar Anggota
+                  Kembali ke Dashboard
                 </Link>
               </Button>
-              <Button asChild className="w-full sm:w-auto sm:ml-auto">
+              <Button asChild size="sm" className="w-full sm:w-auto sm:ml-auto bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase h-9 tracking-widest">
                 <Link href="/keuangan/simpan-pinjam">
-                  Ajukan Pinjaman
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  Aktifkan Layanan Finansial
+                  <ArrowRight className="ml-2 h-3.5 w-3.5" />
                 </Link>
               </Button>
             </CardFooter>

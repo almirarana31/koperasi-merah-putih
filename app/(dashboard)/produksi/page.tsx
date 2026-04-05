@@ -373,9 +373,9 @@ export default function ProduksiPage() {
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Ringkasan Produksi Wilayah</h1>
-            <p className="text-muted-foreground">
-              Tampilan agregat untuk pemantauan wilayah. Detail individu anggota tidak ditampilkan pada role ini.
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Ringkasan Produksi Wilayah</h1>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">
+              Pemantauan output komoditas strategis nasional
             </p>
           </div>
           <div className="flex gap-2">
@@ -393,10 +393,10 @@ export default function ProduksiPage() {
               }))}
             />
             {canRoute('/produksi/agregasi') && (
-              <Button variant="outline" asChild>
+              <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
                 <Link href="/produksi/agregasi">
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  Buka Agregasi Detail
+                  <BarChart3 className="mr-2 h-3.5 w-3.5" />
+                  Agregasi
                 </Link>
               </Button>
             )}
@@ -404,35 +404,26 @@ export default function ProduksiPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Wilayah dipantau</p>
-              <p className="mt-2 text-3xl font-bold">{regionalSummaries.length}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Produksi tercatat</p>
-              <p className="mt-2 text-3xl font-bold">{totalHarvestVolume.toLocaleString()} ton</p>
-              <p className="mt-1 text-xs text-primary">Akumulasi pekan ini</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Komoditas dominan</p>
-              <p className="mt-2 text-3xl font-bold">Padi</p>
-              <p className="mt-1 text-xs text-muted-foreground">Kontributor volume terbesar</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Arah tren</p>
-              <p className="mt-2 flex items-center gap-2 text-3xl font-bold text-primary">
-                <TrendingUp className="h-6 w-6" />
-                Positif
-              </p>
-            </CardContent>
-          </Card>
+          {[
+            { label: 'Wilayah Dipantau', value: regionalSummaries.length.toLocaleString('id-ID'), icon: MapPin, tone: 'slate' },
+            { label: 'Produksi Tercatat', value: `${totalHarvestVolume.toLocaleString('id-ID')} ton`, icon: Package, tone: 'emerald' },
+            { label: 'Komoditas Utama', value: 'Padi', icon: Leaf, tone: 'emerald' },
+            { label: 'Tren Produksi', value: 'Positif', icon: TrendingUp, tone: 'emerald' },
+          ].map((stat, i) => (
+            <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.tone === 'emerald' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-600'}`}>
+                    <stat.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {isKementerian && (
@@ -448,21 +439,21 @@ export default function ProduksiPage() {
 
         <div className="grid gap-4 lg:grid-cols-3">
           {regionalSummaries.map((item) => (
-            <Card key={item.area} className="border-border/80 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg">{item.area}</CardTitle>
-                <CardDescription>{item.commodity}</CardDescription>
+            <Card key={item.area} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden transition-all hover:border-emerald-200">
+              <CardHeader className="p-4 pb-3 border-b border-slate-50">
+                <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.area}</CardTitle>
+                <CardDescription className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">{item.commodity}</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="rounded-xl bg-secondary/35 p-3">
-                  <p className="text-sm text-muted-foreground">Volume agregat</p>
-                  <p className="mt-1 text-2xl font-bold">{item.volume}</p>
+              <CardContent className="p-4 space-y-3">
+                <div className="rounded-xl bg-slate-50 p-3">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Volume Agregat</p>
+                  <p className="mt-1 text-2xl font-black text-slate-900 tracking-tighter">{item.volume}</p>
                 </div>
-                <div className="rounded-xl bg-secondary/35 p-3">
-                  <p className="text-sm text-muted-foreground">Perubahan</p>
-                  <p className="mt-1 text-lg font-semibold text-primary">{item.change}</p>
+                <div className="rounded-xl bg-emerald-50 p-3">
+                  <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Pertumbuhan</p>
+                  <p className="mt-1 text-lg font-black text-emerald-700 tracking-tight">{item.change}</p>
                 </div>
-                <p className="text-sm text-muted-foreground">{item.insight}</p>
+                <p className="text-[10px] text-slate-500 font-bold uppercase leading-relaxed leading-tight">{item.insight}</p>
               </CardContent>
             </Card>
           ))}
