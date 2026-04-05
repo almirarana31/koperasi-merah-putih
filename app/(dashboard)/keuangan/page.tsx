@@ -288,29 +288,3 @@ export default function KeuanganPage() {
     </div>
   )
 }
-               </span>
-                    ) : (
-                      '-'
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {tx.kredit > 0 ? (
-                      <span className="text-emerald-500">
-                        +{formatCurrency(tx.kredit)}
-                      </span>
-                    ) : (
-                      '-'
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right font-medium">
-                    {formatCurrency(tx.saldo)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}

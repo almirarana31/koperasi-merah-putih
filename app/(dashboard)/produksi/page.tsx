@@ -10,6 +10,8 @@ import {
   ClipboardList,
   Eye,
   Filter,
+  Leaf,
+  MapPin,
   MoreHorizontal,
   Package,
   Plus,

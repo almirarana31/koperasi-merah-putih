@@ -13,6 +13,7 @@ import {
   Phone,
   MapPin,
   Users,
+  Activity,
   CheckCircle2,
   AlertCircle,
   TrendingUp,
