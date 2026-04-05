@@ -335,7 +335,7 @@ export default function SHUPage() {
              <div>
                 <div className="flex items-center gap-3">
                    <Badge className="bg-white text-rose-600 font-black text-[9px] px-2 h-5 border-none">AUDIT ALERT</Badge>
-                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">Margin Variance Detect (>15%)</span>
+                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">Margin Variance Detect (&gt;15%)</span>
                 </div>
                 <p className="text-white text-base font-black uppercase mt-2 tracking-tight">Perhatian: Terdeteksi deviasi margin operasional di regional Bali. Segera lakukan audit transaksi.</p>
              </div>

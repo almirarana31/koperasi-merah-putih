@@ -16,6 +16,7 @@ import {
   Loader2,
   ShieldCheck,
   AlertTriangle,
+  Activity,
   ArrowLeft,
   Search,
   Filter,
@@ -394,65 +395,6 @@ export default function VerifikasiPage() {
               </CardContent>
             </Card>
           ))}
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
-}
-rald-500 mb-3" />
-                <p className="text-muted-foreground">Tidak ada pengajuan yang ditolak</p>
-              </CardContent>
-            </Card>
-          ) : (
-            verifikasiData.filter(v => v.status === 'ditolak').map((item) => (
-              <Card key={item.id} className="border-destructive/50">
-                <CardContent className="p-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
-                        <AvatarFallback className="bg-destructive/10 text-destructive text-sm">
-                          {item.nama.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{item.nama}</p>
-                        <p className="text-sm text-destructive">Alasan: {item.alasanTolak}</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm" className="w-full sm:w-auto">Hubungi</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </TabsContent>
-
-        <TabsContent value="history" className="mt-4">
-          <Card>
-            <CardContent className="p-0">
-              {riwayatVerifikasi.length === 0 ? (
-                <div className="py-8 text-center">
-                  <Clock className="mx-auto h-12 w-12 text-muted-foreground/50 mb-3" />
-                  <p className="text-muted-foreground">Belum ada riwayat verifikasi</p>
-                </div>
-              ) : (
-                <div className="divide-y">
-                  {riwayatVerifikasi.map((item) => (
-                    <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 p-4">
-                      <div className="flex items-center gap-3">
-                        <CheckCircle className="h-5 w-5 text-emerald-500 shrink-0" />
-                        <div>
-                          <p className="font-medium">{item.nama}</p>
-                          <p className="text-xs sm:text-sm text-muted-foreground">{item.tanggal}</p>
-                        </div>
-                      </div>
-                      <Badge className="bg-emerald-500/10 text-emerald-500 w-fit">Disetujui</Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>

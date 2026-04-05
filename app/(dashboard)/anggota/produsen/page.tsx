@@ -65,9 +65,10 @@ export default function ProdusenPage() {
       const matchType = filterType === 'semua' || p.tipe === filterType
       
       // Hierarchical Filtering Logic
-      const matchProvince = filters.provinceId === 'all' || p.provinsi?.toUpperCase() === filters.provinceId.toUpperCase()
+      const matchProvince =
+        filters.provinceId === 'all' || p.alamat?.toUpperCase().includes(filters.provinceId.toUpperCase())
       const matchRegion = filters.regionId === 'all' || 
-        p.kabupaten?.toUpperCase().includes(filters.regionId.toUpperCase()) || 
+        p.alamat?.toUpperCase().includes(filters.regionId.toUpperCase()) || 
         p.kecamatan?.toUpperCase().includes(filters.regionId.toUpperCase())
       const matchVillage = filters.villageId === 'all' || p.desa?.toUpperCase() === filters.villageId.toUpperCase()
       
@@ -227,7 +228,7 @@ export default function ProdusenPage() {
                     <MapPin className="h-3 w-3 text-slate-400 group-hover/loc:text-rose-600 transition-colors" />
                   </div>
                   <p className="text-[10px] font-bold text-slate-600 uppercase leading-relaxed tracking-tight">
-                    {producer.desa}, {producer.kecamatan}, {producer.kabupaten}
+                    {producer.desa}, {producer.kecamatan}
                   </p>
                 </div>
                 <div className="flex items-center gap-2.5 group/phone">

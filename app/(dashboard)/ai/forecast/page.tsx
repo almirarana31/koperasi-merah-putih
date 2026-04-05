@@ -319,7 +319,7 @@ export default function ForecastPage() {
              <div>
                 <div className="flex items-center gap-3">
                    <Badge className="bg-white text-rose-600 font-black text-[9px] px-2 h-5 border-none">PREDICTIVE ALERT</Badge>
-                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">Supply-Demand Mismatch Forecast (>20%)</span>
+                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">Supply-Demand Mismatch Forecast (&gt;20%)</span>
                 </div>
                 <p className="text-white text-base font-black uppercase mt-2 tracking-tight">Perhatian: AI memprediksi kelangkaan stok Cabai Merah di wilayah Sumatera Utara dalam 14 hari ke depan.</p>
              </div>

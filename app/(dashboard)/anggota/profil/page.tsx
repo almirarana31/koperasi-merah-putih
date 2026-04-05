@@ -47,6 +47,13 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
@@ -276,12 +283,12 @@ export default function MemberProfilPage() {
     commodityId: 'all',
   })
 
+  if (!user || !roleConfig) return null
+
   // When ministry, they can explore other profiles
   const activeProfileId = isKementerian ? (selectedUserId || user.id) : user.id
   const preset = ACCOUNT_PRESETS[activeProfileId] ?? fallbackPreset(user)
   const scoreTone = scoreToneClass(preset.scoreTone)
-
-  if (!user || !roleConfig) return null
 
   const member = members.find((item) => item.nama === user.name)
   const linkedLoans = loans.filter((item) => item.memberNama === user.name || item.memberId === member?.id)
