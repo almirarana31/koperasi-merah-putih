@@ -71,24 +71,24 @@ export default function LaporanPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Laporan Keuangan</h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+            <h1 className="text-2xl font-semibold  text-slate-900 ">Laporan Keuangan</h1>
+            <p className="text-xs font-bold text-slate-500   mt-1">
               Analisis performa & audit keuangan nasional
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Select defaultValue="2024">
-            <SelectTrigger className="h-8 w-[100px] text-[10px] font-black uppercase tracking-widest border-slate-200">
+            <SelectTrigger className="h-8 w-[100px] text-xs font-semibold   border-slate-200">
               <Calendar className="mr-2 h-3 w-3" />
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="2024" className="text-[10px] font-bold">2024</SelectItem>
-              <SelectItem value="2023" className="text-[10px] font-bold">2023</SelectItem>
+              <SelectItem value="2024" className="text-xs font-bold">2024</SelectItem>
+              <SelectItem value="2023" className="text-xs font-bold">2023</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600">
+          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600">
             <Download className="mr-2 h-3.5 w-3.5" />
             Export Audit PDF
           </Button>
@@ -105,13 +105,13 @@ export default function LaporanPage() {
           <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
                 <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-400'}`} />
               </div>
-              <CardTitle className="text-2xl font-black text-slate-900 tracking-tighter mt-1">{stat.value}</CardTitle>
+              <CardTitle className="text-2xl font-semibold text-slate-900  mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className={`text-[10px] font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
+              <p className={`text-xs font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
                 {stat.sub}
               </p>
             </CardContent>
@@ -124,8 +124,8 @@ export default function LaporanPage() {
         {/* Revenue vs Expense Chart */}
         <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
           <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
-            <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Pendapatan vs Pengeluaran</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Analisis Komparatif Bulanan</CardDescription>
+            <CardTitle className="text-xs font-semibold text-slate-900  ">Pendapatan vs Pengeluaran</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500   mt-0.5">Analisis Komparatif Bulanan</CardDescription>
           </CardHeader>
           <CardContent className="p-4">
             <div className="h-[250px]">
@@ -150,12 +150,12 @@ export default function LaporanPage() {
                       if (active && payload && payload.length) {
                         return (
                           <div className="rounded-none border-none bg-slate-900 p-2 shadow-xl">
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
+                            <p className="text-xs font-semibold text-slate-400   mb-1">{label}</p>
                             <div className="space-y-0.5">
-                              <p className="text-[10px] font-black text-emerald-400">
+                              <p className="text-xs font-semibold text-emerald-400">
                                 REV: {formatCurrency(payload[0].value as number)}
                               </p>
-                              <p className="text-[10px] font-black text-rose-400">
+                              <p className="text-xs font-semibold text-rose-400">
                                 EXP: {formatCurrency(payload[1].value as number)}
                               </p>
                             </div>
@@ -186,8 +186,8 @@ export default function LaporanPage() {
         {/* Cash Flow Trend */}
         <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
           <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
-            <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Tren Likuiditas Kas</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Proyeksi Saldo Akumulatif</CardDescription>
+            <CardTitle className="text-xs font-semibold text-slate-900  ">Tren Likuiditas Kas</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500   mt-0.5">Proyeksi Saldo Akumulatif</CardDescription>
           </CardHeader>
           <CardContent className="p-4">
             <div className="h-[250px]">
@@ -213,8 +213,8 @@ export default function LaporanPage() {
                       if (active && payload && payload.length) {
                         return (
                           <div className="rounded-none border-none bg-slate-900 p-2 shadow-xl">
-                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</p>
-                            <p className="text-[10px] font-black text-emerald-400">
+                            <p className="text-xs font-semibold text-slate-400   mb-1">{label}</p>
+                            <p className="text-xs font-semibold text-emerald-400">
                               CASH: {formatCurrency(payload[0].value as number)}
                             </p>
                           </div>
@@ -241,8 +241,8 @@ export default function LaporanPage() {
       {/* Report Types */}
       <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
         <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
-          <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Arsip Laporan Audit</CardTitle>
-          <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Pilih dokumen untuk diunduh</CardDescription>
+          <CardTitle className="text-xs font-semibold text-slate-900  ">Arsip Laporan Audit</CardTitle>
+          <CardDescription className="text-xs font-bold text-slate-500   mt-0.5">Pilih dokumen untuk diunduh</CardDescription>
         </CardHeader>
         <CardContent className="p-4">
           <div className="grid gap-4 md:grid-cols-3">
@@ -257,8 +257,8 @@ export default function LaporanPage() {
                     <FileText className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight">{report.title}</p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{report.sub}</p>
+                    <p className="text-sm font-semibold text-slate-900  ">{report.title}</p>
+                    <p className="text-xs font-bold text-slate-400  ">{report.sub}</p>
                   </div>
                 </div>
                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-100 group-hover:text-slate-900 text-slate-400">

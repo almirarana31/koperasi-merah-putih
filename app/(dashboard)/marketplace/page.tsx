@@ -227,7 +227,7 @@ export default function MarketplacePage() {
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="font-semibold text-card-foreground">{order.orderNumber}</h3>
-                          <Badge variant="outline" className="border-primary text-primary uppercase">
+                          <Badge variant="outline" className="border-primary text-primary ">
                             {order.channel}
                           </Badge>
                           <Badge

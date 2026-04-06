@@ -116,18 +116,18 @@ export default function PinjamanPage() {
             <Wallet className="h-6 w-6 text-emerald-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">National Credit Hub</h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+            <h1 className="text-2xl font-semibold  text-slate-900 ">National Credit Hub</h1>
+            <p className="text-xs font-bold text-slate-500   mt-1">
               Monitoring Agregat Pembiayaan & Risiko Kredit • {stats.count} Aplikasi Aktif
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-           <Button variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+           <Button variant="outline" size="sm" className="h-10 text-xs font-semibold   text-slate-600 border-slate-200">
             <FileText className="h-4 w-4 mr-2 text-rose-600" />
             NPL Report
           </Button>
-          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200">
+          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold   px-6 shadow-lg shadow-slate-200">
             <Download className="h-4 w-4 mr-2" />
             Audit PDF
           </Button>
@@ -151,10 +151,10 @@ export default function PinjamanPage() {
                 <s.icon className={`h-5 w-5 ${s.color}`} />
               </div>
               <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                <p className="text-xs font-semibold text-slate-400  ">{s.label}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-xl font-black tracking-tighter ${s.color}`}>{s.value}</span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">{s.sub}</span>
+                  <span className={`text-xl font-semibold  ${s.color}`}>{s.value}</span>
+                  <span className="text-xs font-bold text-slate-500 ">{s.sub}</span>
                 </div>
               </div>
             </CardContent>
@@ -174,10 +174,10 @@ export default function PinjamanPage() {
                          placeholder="CARI NAMA PEMOHON ATAU TRX ID..."
                          value={search}
                          onChange={(e) => setSearch(e.target.value)}
-                         className="pl-9 bg-white border-slate-200 h-11 text-[11px] font-bold uppercase tracking-wider focus:ring-slate-900"
+                         className="pl-9 bg-white border-slate-200 h-11 text-sm font-bold   focus:ring-slate-900"
                        />
                     </div>
-                    <Button variant="outline" className="h-11 border-slate-200 bg-white font-black text-[10px] uppercase tracking-widest px-6 shadow-sm">
+                    <Button variant="outline" className="h-11 border-slate-200 bg-white font-semibold text-xs   px-6 shadow-sm">
                        <Filter className="h-4 w-4 mr-2" /> Opsi Lanjut
                     </Button>
                  </div>
@@ -194,43 +194,43 @@ export default function PinjamanPage() {
                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                           <div className="space-y-1">
                              <div className="flex items-center gap-3">
-                                <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.borrowerName}</h3>
-                                <Badge className={`h-5 text-[8px] font-black uppercase px-2 rounded border-none ${status.className}`}>
+                                <h3 className="text-sm font-semibold text-slate-900  ">{item.borrowerName}</h3>
+                                <Badge className={`h-5 text-xs font-semibold  px-2 rounded border-none ${status.className}`}>
                                    {status.label}
                                 </Badge>
                              </div>
                              <div className="flex items-center gap-4 mt-2">
                                 <div className="flex items-center gap-1.5">
                                    <MapPin className="h-3 w-3 text-slate-400" />
-                                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{item.village}</span>
+                                   <span className="text-xs font-bold text-slate-500  ">{item.village}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                    <Activity className="h-3 w-3 text-emerald-500" />
-                                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{item.commodity}</span>
+                                   <span className="text-xs font-bold text-slate-500  ">{item.commodity}</span>
                                 </div>
-                                <span className="text-[9px] font-mono font-bold text-slate-400 uppercase">#{item.id}</span>
+                                <span className="text-xs font-mono font-bold text-slate-400 ">#{item.id}</span>
                              </div>
                           </div>
                           
                           <div className="grid grid-cols-3 gap-3">
                              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center justify-center min-w-[80px]">
-                                <span className="text-[8px] font-black text-slate-400 uppercase">NOMINAL</span>
-                                <span className="text-[11px] font-black text-slate-900 mt-0.5">{formatCurrency(item.amount)}</span>
+                                <span className="text-xs font-semibold text-slate-400 ">NOMINAL</span>
+                                <span className="text-sm font-semibold text-slate-900 mt-0.5">{formatCurrency(item.amount)}</span>
                              </div>
                              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center justify-center min-w-[60px]">
-                                <span className="text-[8px] font-black text-slate-400 uppercase">TENOR</span>
-                                <span className="text-[11px] font-black text-slate-900 mt-0.5">{item.tenor}M</span>
+                                <span className="text-xs font-semibold text-slate-400 ">TENOR</span>
+                                <span className="text-sm font-semibold text-slate-900 mt-0.5">{item.tenor}M</span>
                              </div>
                              <div className="p-2.5 rounded-xl bg-slate-900 text-white flex flex-col items-center justify-center min-w-[60px] shadow-lg">
-                                <span className="text-[8px] font-black text-slate-500 uppercase">SCORE</span>
-                                <span className="text-[11px] font-black text-emerald-400 mt-0.5">{item.score}</span>
+                                <span className="text-xs font-semibold text-slate-500 ">SCORE</span>
+                                <span className="text-sm font-semibold text-emerald-400 mt-0.5">{item.score}</span>
                              </div>
                           </div>
                        </div>
 
                        <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between group-hover:bg-slate-100 transition-colors">
-                          <p className="text-[10px] font-bold text-slate-600 italic tracking-tight leading-relaxed">"{item.recommendation}"</p>
-                          <Button variant="ghost" size="sm" className="h-8 text-[9px] font-black uppercase text-slate-900 hover:bg-white shadow-sm transition-all shrink-0 ml-4">
+                          <p className="text-xs font-bold text-slate-600 italic  leading-relaxed">"{item.recommendation}"</p>
+                          <Button variant="ghost" size="sm" className="h-8 text-xs font-semibold  text-slate-900 hover:bg-white shadow-sm transition-all shrink-0 ml-4">
                              DETAIL AUDIT <ArrowRight className="ml-1 h-3.5 w-3.5" />
                           </Button>
                        </div>
@@ -246,12 +246,12 @@ export default function PinjamanPage() {
            <Card className="border-none shadow-xl bg-slate-950 text-white overflow-hidden">
               <CardHeader className="p-5 border-b border-white/5 bg-slate-900/50">
                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    <CardTitle className="text-xs font-semibold   flex items-center gap-2">
                        <BarChart3 className="h-4 w-4 text-emerald-500" /> CREDIT FEED
                     </CardTitle>
                     <div className="flex items-center gap-1.5">
                        <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                       <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">LIVE DATA</span>
+                       <span className="text-xs font-semibold text-emerald-500  ">LIVE DATA</span>
                     </div>
                  </div>
               </CardHeader>
@@ -265,20 +265,20 @@ export default function PinjamanPage() {
                     ].map((log, i) => (
                       <div key={i} className="p-5 hover:bg-white/5 transition-colors cursor-pointer group">
                          <div className="flex items-center justify-between mb-2">
-                            <Badge className={`text-[8px] font-black uppercase px-1.5 h-4 border-none ${
+                            <Badge className={`text-xs font-semibold  px-1.5 h-4 border-none ${
                               log.status === 'WARN' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
                             }`}>
                                {log.status}
                             </Badge>
-                            <span className="text-[9px] font-mono text-slate-600">{log.time}</span>
+                            <span className="text-xs font-mono text-slate-600">{log.time}</span>
                          </div>
-                         <p className="text-[11px] font-black text-slate-200 uppercase leading-tight group-hover:text-emerald-400 transition-colors">{log.action}</p>
-                         <p className="text-[9px] font-bold text-slate-500 uppercase mt-1 tracking-tighter">REGION: {log.borrower}</p>
+                         <p className="text-sm font-semibold text-slate-200  leading-tight group-hover:text-emerald-400 transition-colors">{log.action}</p>
+                         <p className="text-xs font-bold text-slate-500  mt-1 ">REGION: {log.borrower}</p>
                       </div>
                     ))}
                  </div>
                  <div className="p-4 bg-white/5 border-t border-white/5 text-center">
-                    <Button variant="ghost" className="w-full text-[9px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-10">
+                    <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-white   h-10">
                        Buka Konsol Kredit →
                     </Button>
                  </div>
@@ -287,7 +287,7 @@ export default function PinjamanPage() {
 
            <Card className="border-none shadow-sm bg-slate-50">
               <CardHeader className="p-4 border-b border-slate-200">
-                 <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Analisis Risiko Nasional</CardTitle>
+                 <CardTitle className="text-xs font-semibold   text-slate-900">Analisis Risiko Nasional</CardTitle>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                  {[
@@ -296,15 +296,15 @@ export default function PinjamanPage() {
                    { label: 'Konsentrasi Sektor', val: 'PADI', status: 'Tinggi' },
                  ].map((h, i) => (
                     <div key={i} className="flex items-center justify-between group">
-                       <span className="text-[10px] font-bold text-slate-500 uppercase">{h.label}</span>
+                       <span className="text-xs font-bold text-slate-500 ">{h.label}</span>
                        <div className="text-right">
-                          <p className="text-[10px] font-black text-slate-900 uppercase group-hover:text-emerald-600 transition-colors">{h.val}</p>
-                          <p className="text-[8px] font-bold text-slate-400 uppercase">{h.status}</p>
+                          <p className="text-xs font-semibold text-slate-900  group-hover:text-emerald-600 transition-colors">{h.val}</p>
+                          <p className="text-xs font-bold text-slate-400 ">{h.status}</p>
                        </div>
                     </div>
                  ))}
                  <div className="pt-2">
-                    <Button className="w-full h-10 bg-white border border-slate-200 text-slate-900 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 shadow-sm rounded-xl">
+                    <Button className="w-full h-10 bg-white border border-slate-200 text-slate-900 font-semibold text-xs   hover:bg-slate-50 shadow-sm rounded-xl">
                        Lihat Heatmap Risiko
                     </Button>
                  </div>
@@ -325,13 +325,13 @@ export default function PinjamanPage() {
              </div>
              <div>
                 <div className="flex items-center gap-3">
-                   <Badge className="bg-white text-rose-600 font-black text-[9px] px-2 h-5 border-none">SYSTEM ALERT</Badge>
-                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">High Volatility Detected (Kredit Musim Tanam)</span>
+                   <Badge className="bg-white text-rose-600 font-semibold text-xs px-2 h-5 border-none">SYSTEM ALERT</Badge>
+                   <span className="text-xs font-semibold text-rose-100  ">High Volatility Detected (Kredit Musim Tanam)</span>
                 </div>
-                <p className="text-white text-base font-black uppercase mt-2 tracking-tight">Perhatian: Terjadi lonjakan pengajuan pinjaman di Jawa Timur. Perketat verifikasi scoring.</p>
+                <p className="text-white text-base font-semibold  mt-2 ">Perhatian: Terjadi lonjakan pengajuan pinjaman di Jawa Timur. Perketat verifikasi scoring.</p>
              </div>
           </div>
-          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-black text-[11px] uppercase tracking-widest px-8 rounded-xl shadow-xl transition-all">
+          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-semibold text-sm   px-8 rounded-xl shadow-xl transition-all">
              Audit Regional →
           </Button>
         </CardContent>

@@ -144,18 +144,18 @@ export default function KonsultasiPage() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">
+            <h1 className="text-2xl font-semibold  text-slate-900 ">
               STRATEGIC CONSULTATION HUB
             </h1>
-            <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+            <p className="text-xs font-bold  text-slate-500 ">
               PUSAT KONSULTASI STRATEGIS & INTELEJEN AI NASIONAL
             </p>
           </div>
           <div className="flex gap-2">
-            <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-[10px] font-black text-emerald-700">
+            <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-xs font-semibold text-emerald-700">
               AI ENGINE: ACTIVE
             </Badge>
-            <Badge variant="outline" className="border-slate-300 bg-slate-50 text-[10px] font-black text-slate-700 uppercase">
+            <Badge variant="outline" className="border-slate-300 bg-slate-50 text-xs font-semibold text-slate-700 ">
               REFRESH: 60S
             </Badge>
           </div>
@@ -171,13 +171,13 @@ export default function KonsultasiPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                <span className={`text-[9px] font-black uppercase ${stat.trend.startsWith('+') ? 'text-emerald-600' : stat.trend.startsWith('-') ? 'text-rose-600' : 'text-slate-500'}`}>
+                <span className={`text-xs font-semibold  ${stat.trend.startsWith('+') ? 'text-emerald-600' : stat.trend.startsWith('-') ? 'text-rose-600' : 'text-slate-500'}`}>
                   {stat.trend}
                 </span>
               </div>
               <div className="mt-2">
-                <p className="text-[9px] font-black tracking-widest text-slate-500 uppercase">{stat.label}</p>
-                <p className="text-xl font-black tracking-tight text-slate-900">{stat.value}</p>
+                <p className="text-xs font-semibold  text-slate-500 ">{stat.label}</p>
+                <p className="text-xl font-semibold  text-slate-900">{stat.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -189,7 +189,7 @@ export default function KonsultasiPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
             <Scale className="h-4 w-4 text-slate-900" />
-            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">STRATEGIC KNOWLEDGE BASE</h2>
+            <h2 className="text-xs font-semibold  text-slate-900 ">STRATEGIC KNOWLEDGE BASE</h2>
           </div>
           
           <div className="grid gap-3">
@@ -198,10 +198,10 @@ export default function KonsultasiPage() {
                 <div className={`h-1 w-full ${group.priority === 'CRITICAL' ? 'bg-rose-600' : group.priority === 'HIGH' ? 'bg-amber-500' : 'bg-blue-500'}`} />
                 <CardHeader className="py-3 px-4 bg-slate-50/50">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-[10px] font-black tracking-widest text-slate-900 uppercase">
+                    <CardTitle className="text-xs font-semibold  text-slate-900 ">
                       {group.kategori}
                     </CardTitle>
-                    <Badge className={`text-[8px] font-black ${group.priority === 'CRITICAL' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'}`}>
+                    <Badge className={`text-xs font-semibold ${group.priority === 'CRITICAL' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'}`}>
                       {group.priority}
                     </Badge>
                   </div>
@@ -217,7 +217,7 @@ export default function KonsultasiPage() {
                         <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-slate-100 group-hover:bg-emerald-100 transition-colors">
                           <Lightbulb className="h-2.5 w-2.5 text-slate-600 group-hover:text-emerald-600" />
                         </div>
-                        <span className="text-[10px] font-bold leading-tight text-slate-700 group-hover:text-slate-900">
+                        <span className="text-xs font-bold leading-tight text-slate-700 group-hover:text-slate-900">
                           {q.toUpperCase()}
                         </span>
                       </div>
@@ -233,7 +233,7 @@ export default function KonsultasiPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
             <History className="h-4 w-4 text-slate-900" />
-            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">LIVE STRATEGIC AUDIT</h2>
+            <h2 className="text-xs font-semibold  text-slate-900 ">LIVE STRATEGIC AUDIT</h2>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -243,15 +243,15 @@ export default function KonsultasiPage() {
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-black tracking-tighter text-emerald-600">{cons.region}</span>
-                        <span className="text-[8px] font-bold text-slate-400">•</span>
-                        <span className="text-[9px] font-black tracking-tighter text-slate-500">{cons.coop}</span>
+                        <span className="text-xs font-semibold  text-emerald-600">{cons.region}</span>
+                        <span className="text-xs font-bold text-slate-400">•</span>
+                        <span className="text-xs font-semibold  text-slate-500">{cons.coop}</span>
                       </div>
-                      <CardTitle className="text-[11px] font-black leading-tight text-slate-900 uppercase">
+                      <CardTitle className="text-sm font-semibold leading-tight text-slate-900 ">
                         {cons.topik}
                       </CardTitle>
                     </div>
-                    <Badge className={`text-[8px] font-black ${
+                    <Badge className={`text-xs font-semibold ${
                       cons.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-700' : 
                       cons.status === 'ADVISORY' ? 'bg-blue-100 text-blue-700' : 
                       'bg-amber-100 text-amber-700'
@@ -262,7 +262,7 @@ export default function KonsultasiPage() {
                 </CardHeader>
                 <CardContent className="p-4 space-y-3">
                   <div className="rounded border border-slate-100 bg-slate-50/50 p-3">
-                    <p className="text-[10px] font-bold leading-relaxed text-slate-700 uppercase italic">
+                    <p className="text-xs font-bold leading-relaxed text-slate-700  italic">
                       " {cons.jawaban} "
                     </p>
                   </div>
@@ -271,11 +271,11 @@ export default function KonsultasiPage() {
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-1">
                         <ShieldAlert className={`h-3 w-3 ${cons.impact === 'CRITICAL' ? 'text-rose-600' : 'text-slate-400'}`} />
-                        <span className="text-[8px] font-black text-slate-500 uppercase">IMPACT: {cons.impact}</span>
+                        <span className="text-xs font-semibold text-slate-500 ">IMPACT: {cons.impact}</span>
                       </div>
-                      <span className="text-[8px] font-black text-slate-400">{cons.time}</span>
+                      <span className="text-xs font-semibold text-slate-400">{cons.time}</span>
                     </div>
-                    <Button variant="ghost" size="sm" className="h-6 text-[8px] font-black uppercase tracking-widest hover:text-emerald-600">
+                    <Button variant="ghost" size="sm" className="h-6 text-xs font-semibold   hover:text-emerald-600">
                       AUDIT DETAIL
                     </Button>
                   </div>
@@ -290,10 +290,10 @@ export default function KonsultasiPage() {
                 <BrainCircuit className="h-5 w-5 text-slate-400" />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-900 uppercase">KONSULTASI STRATEGIS BARU</p>
-                <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">HUBUNGKAN AI DENGAN PARAMETER KEBIJAKAN TERBARU</p>
+                <p className="text-xs font-semibold text-slate-900 ">KONSULTASI STRATEGIS BARU</p>
+                <p className="text-xs font-bold text-slate-500 mt-1 ">HUBUNGKAN AI DENGAN PARAMETER KEBIJAKAN TERBARU</p>
               </div>
-              <Button size="sm" className="bg-slate-900 hover:bg-slate-800 text-[9px] font-black uppercase tracking-widest">
+              <Button size="sm" className="bg-slate-900 hover:bg-slate-800 text-xs font-semibold  ">
                 LAUNCH STRATEGY SIMULATOR
               </Button>
             </CardContent>

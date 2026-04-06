@@ -94,7 +94,7 @@ export default function PickupPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Jadwal Pickup</h1>
+          <h1 className="text-2xl font-bold ">Jadwal Pickup</h1>
           <p className="text-muted-foreground">Jadwal pengambilan dari produsen</p>
         </div>
         <Button>

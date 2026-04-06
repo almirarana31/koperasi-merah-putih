@@ -95,7 +95,7 @@ export default function SupplyDemandForecastKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="flex items-center gap-2 text-3xl font-black tracking-tighter text-slate-900 uppercase">
+            <h1 className="flex items-center gap-2 text-3xl font-semibold  text-slate-900 ">
               <BrainCircuit className="h-8 w-8 text-[var(--dashboard-secondary)]" />
               Supply & Demand Intelligence
             </h1>
@@ -137,7 +137,7 @@ export default function SupplyDemandForecastKementerianPage() {
                 </div>
                 <Badge className="border-none bg-slate-100 text-slate-600">{item.label}</Badge>
               </div>
-              <p className="mt-4 text-3xl font-black tracking-tighter text-slate-950">{item.value}</p>
+              <p className="mt-4 text-3xl font-semibold  text-slate-950">{item.value}</p>
             </CardContent>
           </Card>
         ))}
@@ -223,7 +223,7 @@ export default function SupplyDemandForecastKementerianPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-sm font-black uppercase text-slate-900">{commodity.name}</h3>
+                    <h3 className="text-sm font-semibold  text-slate-900">{commodity.name}</h3>
                     <p className="mt-1 text-xs font-medium text-slate-500">{commodity.recommendation}</p>
                   </div>
                   <Badge className={critical ? 'bg-[var(--dashboard-primary)] text-white' : 'bg-[var(--dashboard-secondary)] text-white'}>
@@ -233,16 +233,16 @@ export default function SupplyDemandForecastKementerianPage() {
 
                 <div className="mt-4 grid grid-cols-3 gap-3">
                   <div className="rounded-xl bg-white p-3">
-                    <p className="text-[10px] font-black uppercase text-slate-400">Supply</p>
-                    <p className="mt-1 text-lg font-black text-slate-900">{commodity.supply} T</p>
+                    <p className="text-xs font-semibold  text-slate-400">Supply</p>
+                    <p className="mt-1 text-lg font-semibold text-slate-900">{commodity.supply} T</p>
                   </div>
                   <div className="rounded-xl bg-white p-3">
-                    <p className="text-[10px] font-black uppercase text-slate-400">Demand</p>
-                    <p className="mt-1 text-lg font-black text-slate-900">{commodity.demand} T</p>
+                    <p className="text-xs font-semibold  text-slate-400">Demand</p>
+                    <p className="mt-1 text-lg font-semibold text-slate-900">{commodity.demand} T</p>
                   </div>
                   <div className="rounded-xl bg-white p-3">
-                    <p className="text-[10px] font-black uppercase text-slate-400">Gap</p>
-                    <p className={`mt-1 text-lg font-black ${critical ? 'text-[var(--dashboard-primary)]' : 'text-[var(--dashboard-secondary)]'}`}>
+                    <p className="text-xs font-semibold  text-slate-400">Gap</p>
+                    <p className={`mt-1 text-lg font-semibold ${critical ? 'text-[var(--dashboard-primary)]' : 'text-[var(--dashboard-secondary)]'}`}>
                       {commodity.gap > 0 ? '+' : ''}
                       {commodity.gap} T
                     </p>
@@ -251,10 +251,10 @@ export default function SupplyDemandForecastKementerianPage() {
 
                 <div className="mt-4 flex items-center justify-between gap-4">
                   <div className="flex-1">
-                    <p className="mb-2 text-[10px] font-black uppercase text-slate-400">Confidence</p>
+                    <p className="mb-2 text-xs font-semibold  text-slate-400">Confidence</p>
                     <Progress value={commodity.confidence} className="h-2" />
                   </div>
-                  <span className="text-sm font-black text-slate-900">{commodity.confidence}%</span>
+                  <span className="text-sm font-semibold text-slate-900">{commodity.confidence}%</span>
                 </div>
               </div>
             )

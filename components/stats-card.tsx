@@ -28,14 +28,14 @@ export function StatsCard({
         <div className="flex items-center justify-between gap-2">
           <div className="space-y-0.5 sm:space-y-1 min-w-0 flex-1">
             <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
-            <p className="text-lg sm:text-2xl font-bold tracking-tight truncate">{value}</p>
+            <p className="text-lg sm:text-2xl font-bold  truncate">{value}</p>
             {description && (
-              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{description}</p>
+              <p className="text-xs sm:text-xs text-muted-foreground truncate">{description}</p>
             )}
             {trend && (
               <p
                 className={cn(
-                  'text-[10px] sm:text-xs font-medium',
+                  'text-xs sm:text-xs font-medium',
                   trend.isPositive ? 'text-emerald-500' : 'text-red-500'
                 )}
               >

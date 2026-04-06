@@ -109,7 +109,7 @@ export function KopdesBottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex min-w-0 flex-col items-center justify-center rounded-full px-3 py-2 text-[11px] font-semibold transition-all ${
+              className={`flex min-w-0 flex-col items-center justify-center rounded-full px-3 py-2 text-sm font-semibold transition-all ${
                 isActive
                   ? 'bg-primary/10 text-primary'
                   : 'text-muted-foreground hover:text-foreground'

@@ -82,7 +82,7 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full bg-secondary/75 hover:bg-secondary">
               <Bell className="h-5 w-5 text-muted-foreground" />
-              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
                 8
               </span>
               <span className="absolute -top-1 -right-1 flex h-3 w-3">

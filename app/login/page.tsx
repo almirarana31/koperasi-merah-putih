@@ -198,7 +198,7 @@ export default function LoginPage() {
   const SelectedIcon = selectedOption.icon
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f8f9fa] px-4 py-4 sm:px-6 lg:px-8 lg:py-5">
+    <div className="app-shell relative min-h-screen overflow-hidden bg-[#f8f9fa] px-4 py-4 sm:px-6 lg:px-8 lg:py-5">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(145,0,15,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(184,25,31,0.05),transparent_24%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(120,113,108,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.06)_1px,transparent_1px)] [background-size:32px_32px]" />
 

@@ -145,8 +145,8 @@ export default function AnggotaPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Manajemen Anggota</h1>
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">
+          <h1 className="text-2xl font-semibold  text-slate-900 ">Manajemen Anggota</h1>
+          <p className="text-xs font-bold text-slate-500   mt-1">
             Kelola database anggota produsen dan pembeli Nasional
           </p>
         </div>
@@ -167,25 +167,25 @@ export default function AnggotaPage() {
               }))}
             />
           )}
-          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
             <Link href="/anggota/onboarding">
               <CreditCard className="mr-2 h-3.5 w-3.5" />
               Onboarding
             </Link>
           </Button>
-          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
             <Link href="/anggota/verifikasi">
               <CheckCircle2 className="mr-2 h-3.5 w-3.5" />
               KYC
             </Link>
           </Button>
-          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
             <Link href="/anggota/profil">
               <Users className="mr-2 h-3.5 w-3.5" />
               Profil
             </Link>
           </Button>
-          <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest" asChild>
+          <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold  " asChild>
             <Link href="/anggota/tambah">
               <Plus className="mr-2 h-3.5 w-3.5" />
               Tambah
@@ -205,13 +205,13 @@ export default function AnggotaPage() {
           <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
                 <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-400'}`} />
               </div>
-              <CardTitle className="text-2xl font-black text-slate-900 tracking-tighter mt-1">{stat.value}</CardTitle>
+              <CardTitle className="text-2xl font-semibold text-slate-900  mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className={`text-[10px] font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
+              <p className={`text-xs font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
                 {stat.sub}
               </p>
             </CardContent>
@@ -280,8 +280,8 @@ export default function AnggotaPage() {
         <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">Database Anggota</CardTitle>
-              <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+              <CardTitle className="text-sm font-semibold text-slate-900  ">Database Anggota</CardTitle>
+              <CardDescription className="text-xs font-bold text-slate-500   mt-0.5">
                 Menampilkan {filteredMembers.length} record sesuai filter aktif
               </CardDescription>
             </div>
@@ -291,13 +291,13 @@ export default function AnggotaPage() {
           <Table>
             <TableHeader className="bg-slate-50/50">
               <TableRow className="border-slate-100">
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase h-10 px-4">Anggota</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase h-10">ID Anggota</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase h-10">Peran</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase h-10">Lokasi</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase h-10">Komoditas</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase h-10 text-right">Simpanan</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase h-10">Status</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-400  h-10 px-4">Anggota</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-400  h-10">ID Anggota</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-400  h-10">Peran</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-400  h-10">Lokasi</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-400  h-10">Komoditas</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-400  h-10 text-right">Simpanan</TableHead>
+                <TableHead className="text-xs font-semibold text-slate-400  h-10">Status</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -307,13 +307,13 @@ export default function AnggotaPage() {
                   <TableCell className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8 border-none bg-slate-100">
-                        <AvatarFallback className="bg-slate-100 text-slate-600 text-[10px] font-black uppercase">
+                        <AvatarFallback className="bg-slate-100 text-slate-600 text-xs font-semibold ">
                           {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-black text-xs text-slate-900 leading-none group-hover:text-emerald-600 transition-colors uppercase">{member.name}</p>
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">
+                        <p className="font-semibold text-xs text-slate-900 leading-none group-hover:text-emerald-600 transition-colors ">{member.name}</p>
+                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mt-1  ">
                           <Phone className="h-2.5 w-2.5" />
                           {member.phone}
                         </div>
@@ -322,12 +322,12 @@ export default function AnggotaPage() {
                   </TableCell>
                   <TableCell className="text-xs font-mono font-bold text-slate-500">{member.memberNumber}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize text-[9px] font-black px-1.5 py-0 border-slate-200 text-slate-600 uppercase">
+                    <Badge variant="outline" className="capitalize text-xs font-semibold px-1.5 py-0 border-slate-200 text-slate-600 ">
                       {member.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="text-[10px] font-bold uppercase tracking-tight">
+                    <div className="text-xs font-bold  ">
                       <p className="text-slate-900 truncate max-w-[120px]">{member.group}</p>
                       <div className="flex items-center gap-1 text-slate-400 mt-0.5">
                         <MapPin className="h-2.5 w-2.5" />
@@ -336,16 +336,16 @@ export default function AnggotaPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className="text-[9px] font-black uppercase bg-slate-100 text-slate-600 border-none">
+                    <Badge variant="secondary" className="text-xs font-semibold  bg-slate-100 text-slate-600 border-none">
                       {member.mainCommodity}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right text-xs font-black text-slate-900">
+                  <TableCell className="text-right text-xs font-semibold text-slate-900">
                     {formatCurrency(member.financial.savings)}
                   </TableCell>
                   <TableCell>
                     <Badge 
-                      className={`text-[9px] font-black uppercase px-1.5 py-0 border-none ${
+                      className={`text-xs font-semibold  px-1.5 py-0 border-none ${
                         member.status === 'active' ? 'bg-emerald-100 text-emerald-700' :
                         member.status === 'pending' ? 'bg-amber-100 text-amber-700' :
                         'bg-slate-100 text-slate-500'
@@ -362,10 +362,10 @@ export default function AnggotaPage() {
                         </Button>
                       </DropdownMenuTrigger>
                        <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem onClick={() => handleViewMember(member)} className="cursor-pointer text-[10px] font-black uppercase tracking-widest text-slate-600">
+                        <DropdownMenuItem onClick={() => handleViewMember(member)} className="cursor-pointer text-xs font-semibold   text-slate-600">
                           <Eye className="mr-2 h-3.5 w-3.5" /> PROFIL
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleEditMember(member)} className="cursor-pointer text-[10px] font-black uppercase tracking-widest text-slate-600">
+                        <DropdownMenuItem onClick={() => handleEditMember(member)} className="cursor-pointer text-xs font-semibold   text-slate-600">
                           <Pencil className="mr-2 h-3.5 w-3.5" /> EDIT
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -375,7 +375,7 @@ export default function AnggotaPage() {
                               handleDeleteMember(member.id)
                             }
                           }}
-                          className="text-rose-600 cursor-pointer text-[10px] font-black uppercase tracking-widest"
+                          className="text-rose-600 cursor-pointer text-xs font-semibold  "
                         >
                           <Trash2 className="mr-2 h-3.5 w-3.5" /> HAPUS
                         </DropdownMenuItem>

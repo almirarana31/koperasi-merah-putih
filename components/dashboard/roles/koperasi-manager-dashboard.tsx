@@ -45,7 +45,7 @@ export function KoperasiManagerDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950 drop-shadow-sm">Kendali Operasional Koperasi</h2>
+        <h2 className="text-2xl font-semibold  text-slate-950 drop-shadow-sm">Kendali Operasional Koperasi</h2>
         <p className="text-slate-700 text-sm font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Kelola anggota, produksi, dan cashflow unit Anda hari ini.</p>
       </div>
 
@@ -63,13 +63,13 @@ export function KoperasiManagerDashboard() {
                 <div className={`p-2 rounded-xl ${kpi.bg} ${kpi.color}`}>
                   <kpi.icon className="h-5 w-5" />
                 </div>
-                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest border-slate-200 bg-slate-50">
+                <Badge variant="outline" className="text-xs font-semibold   border-slate-200 bg-slate-50">
                   {kpi.change}
                 </Badge>
               </div>
               <div className="mt-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] drop-shadow-sm">{kpi.title}</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">{kpi.value}</p>
+                <p className="text-xs font-semibold text-slate-400   drop-shadow-sm">{kpi.title}</p>
+                <p className="text-3xl font-semibold mt-1 text-slate-950 drop-shadow-sm ">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -80,8 +80,8 @@ export function KoperasiManagerDashboard() {
         {/* Growth Chart */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Pertumbuhan Anggota</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Tren penambahan & keaktifan anggota 5 bulan terakhir.</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Pertumbuhan Anggota</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 ">Tren penambahan & keaktifan anggota 5 bulan terakhir.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full mt-4">
@@ -114,8 +114,8 @@ export function KoperasiManagerDashboard() {
         {/* Action Items List */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-3 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Tugas Perlu Tindakan</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Daftar verifikasi dan persetujuan mendesak.</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Tugas Perlu Tindakan</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 ">Daftar verifikasi dan persetujuan mendesak.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-slate-100">
@@ -126,18 +126,18 @@ export function KoperasiManagerDashboard() {
               ].map((item, idx) => (
                 <div key={idx} className="p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
                   <div className="flex justify-between items-start">
-                    <Badge className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${item.status === 'Urgent' ? 'bg-rose-600 text-white shadow-lg shadow-rose-200' : 'bg-slate-100 text-slate-500'}`}>
+                    <Badge className={`text-xs font-semibold  px-2 py-0.5 rounded-full ${item.status === 'Urgent' ? 'bg-rose-600 text-white shadow-lg shadow-rose-200' : 'bg-slate-100 text-slate-500'}`}>
                       {item.status}
                     </Badge>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{item.time}</span>
+                    <span className="text-xs font-bold text-slate-400  ">{item.time}</span>
                   </div>
-                  <p className="text-sm font-black mt-3 text-slate-900 group-hover:text-rose-600 transition-colors uppercase tracking-tight">{item.title}</p>
+                  <p className="text-sm font-semibold mt-3 text-slate-900 group-hover:text-rose-600 transition-colors  ">{item.title}</p>
                   <p className="text-xs font-bold text-slate-500 mt-1 line-clamp-1">{item.desc}</p>
                 </div>
               ))}
             </div>
             <div className="p-3 bg-slate-50/30">
-              <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all" asChild>
+              <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-white   transition-all" asChild>
                 <Link href="/anggota/verifikasi">Lihat Semua Tugas <ChevronRight className="ml-1 h-3 w-3" /></Link>
               </Button>
             </div>
@@ -155,7 +155,7 @@ export function KoperasiManagerDashboard() {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-bold">AI Forecast</p>
-                <p className="text-[11px] text-muted-foreground">Prediksi stok 30 hari.</p>
+                <p className="text-sm text-muted-foreground">Prediksi stok 30 hari.</p>
               </div>
               <ArrowRight className="h-4 w-4 text-emerald-600 transition-transform group-hover:translate-x-1" />
             </CardContent>
@@ -169,7 +169,7 @@ export function KoperasiManagerDashboard() {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-bold">Laporan Keuangan</p>
-                <p className="text-[11px] text-muted-foreground">Monitor P&L & Cashflow.</p>
+                <p className="text-sm text-muted-foreground">Monitor P&L & Cashflow.</p>
               </div>
               <ArrowRight className="h-4 w-4 text-blue-600 transition-transform group-hover:translate-x-1" />
             </CardContent>
@@ -183,7 +183,7 @@ export function KoperasiManagerDashboard() {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-bold">Basis Data Anggota</p>
-                <p className="text-[11px] text-muted-foreground">Profil & behavior tani.</p>
+                <p className="text-sm text-muted-foreground">Profil & behavior tani.</p>
               </div>
               <ArrowRight className="h-4 w-4 text-stone-600 transition-transform group-hover:translate-x-1" />
             </CardContent>

@@ -40,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} app-theme font-sans antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>

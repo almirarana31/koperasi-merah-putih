@@ -46,7 +46,7 @@ function renderMessage(text: string) {
   const parts = text.split(/(\*\*[^*]+\*\*)/g)
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={index} className="text-slate-900 font-black">{part.slice(2, -2)}</strong>
+      return <strong key={index} className="text-slate-900 font-semibold">{part.slice(2, -2)}</strong>
     }
     return part
   })
@@ -120,18 +120,18 @@ export default function AssistantPage() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase leading-none">
+            <h1 className="text-2xl font-semibold  text-slate-900  leading-none">
               AI COMMAND HUB
             </h1>
-            <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase mt-2">
+            <p className="text-xs font-bold  text-slate-500  mt-2">
               PUSAT KOMANDO STRATEGIS & ASISTEN PENGAMBILAN KEPUTUSAN NASIONAL
             </p>
           </div>
           <div className="flex gap-2">
-            <Badge variant="outline" className="border-slate-300 bg-slate-50 text-[10px] font-black text-slate-700 uppercase">
+            <Badge variant="outline" className="border-slate-300 bg-slate-50 text-xs font-semibold text-slate-700 ">
               Uptime: 24/7/365
             </Badge>
-            <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-[10px] font-black text-emerald-700">
+            <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-xs font-semibold text-emerald-700">
               V.3.5.2-LATEST
             </Badge>
           </div>
@@ -148,11 +148,11 @@ export default function AssistantPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <CardTitle className="text-[11px] font-black tracking-widest text-slate-900 uppercase">
+                  <CardTitle className="text-sm font-semibold  text-slate-900 ">
                     KOPDES SMART STRATEGIST
                   </CardTitle>
                 </div>
-                <Button variant="ghost" size="sm" className="h-7 text-[8px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900">
+                <Button variant="ghost" size="sm" className="h-7 text-xs font-semibold   text-slate-400 hover:text-slate-900">
                   <History className="mr-1.5 h-3 w-3" /> SESSION LOGS
                 </Button>
               </div>
@@ -165,17 +165,17 @@ export default function AssistantPage() {
                     <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                       <div className={`max-w-[85%] group`}>
                         <div className="flex items-center gap-2 mb-1 px-1">
-                          <span className={`text-[8px] font-black uppercase tracking-widest ${message.type === 'user' ? 'text-slate-500' : 'text-emerald-600'}`}>
+                          <span className={`text-xs font-semibold   ${message.type === 'user' ? 'text-slate-500' : 'text-emerald-600'}`}>
                             {message.type === 'user' ? 'COMMANDER' : 'AI.STRATEGIST'}
                           </span>
-                          <span className="text-[8px] font-bold text-slate-300">{message.time}</span>
+                          <span className="text-xs font-bold text-slate-300">{message.time}</span>
                         </div>
                         <div className={`rounded-xl p-4 shadow-sm border ${
                           message.type === 'user' 
                           ? 'bg-slate-900 text-slate-50 border-slate-800' 
                           : 'bg-white text-slate-700 border-slate-100'
                         }`}>
-                          <div className="whitespace-pre-wrap text-[11px] font-bold leading-relaxed tracking-tight uppercase">
+                          <div className="whitespace-pre-wrap text-sm font-bold leading-relaxed  ">
                             {renderMessage(message.message)}
                           </div>
                         </div>
@@ -187,11 +187,11 @@ export default function AssistantPage() {
                     <div className="flex justify-start">
                       <div className="max-w-[85%]">
                         <div className="flex items-center gap-2 mb-1 px-1">
-                          <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">AI.STRATEGIST</span>
+                          <span className="text-xs font-semibold   text-emerald-600">AI.STRATEGIST</span>
                         </div>
                         <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-4 border border-slate-100">
                           <Loader className="h-3 w-3 animate-spin text-emerald-600" />
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Processing Data Matrices...</span>
+                          <span className="text-xs font-semibold text-slate-400  ">Processing Data Matrices...</span>
                         </div>
                       </div>
                     </div>
@@ -209,7 +209,7 @@ export default function AssistantPage() {
                       onChange={(event) => setInput(event.target.value.toUpperCase())}
                       onKeyPress={(event) => event.key === 'Enter' && handleSend()}
                       disabled={loading}
-                      className="h-10 pl-10 border-slate-200 bg-white text-[10px] font-black tracking-widest uppercase focus-visible:ring-emerald-500"
+                      className="h-10 pl-10 border-slate-200 bg-white text-xs font-semibold   focus-visible:ring-emerald-500"
                     />
                   </div>
                   <Button onClick={handleSend} disabled={loading} className="bg-slate-900 hover:bg-slate-800 h-10 w-10 p-0 shrink-0">
@@ -223,7 +223,7 @@ export default function AssistantPage() {
                       key={question}
                       variant="outline"
                       size="sm"
-                      className="h-6 text-[8px] font-black uppercase tracking-tighter border-slate-200 bg-white hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
+                      className="h-6 text-xs font-semibold   border-slate-200 bg-white hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
                       onClick={() => setInput(question)}
                     >
                       {question}
@@ -241,7 +241,7 @@ export default function AssistantPage() {
             <CardHeader className="py-3 px-4 bg-slate-50 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Zap className="h-3.5 w-3.5 text-amber-500" />
-                <CardTitle className="text-[10px] font-black tracking-widest text-slate-900 uppercase">
+                <CardTitle className="text-xs font-semibold  text-slate-900 ">
                   ENGINE PERFORMANCE
                 </CardTitle>
               </div>
@@ -251,9 +251,9 @@ export default function AssistantPage() {
                 <div key={stat.label} className="flex items-center justify-between p-2 bg-slate-50/50 rounded border border-slate-50">
                   <div className="flex items-center gap-2">
                     <stat.icon className={`h-3.5 w-3.5 ${stat.color}`} />
-                    <span className="text-[9px] font-black text-slate-500 uppercase">{stat.label}</span>
+                    <span className="text-xs font-semibold text-slate-500 ">{stat.label}</span>
                   </div>
-                  <span className="text-[11px] font-black text-slate-900">{stat.value}</span>
+                  <span className="text-sm font-semibold text-slate-900">{stat.value}</span>
                 </div>
               ))}
             </CardContent>
@@ -263,7 +263,7 @@ export default function AssistantPage() {
             <CardHeader className="py-3 px-4 bg-slate-50 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Search className="h-3.5 w-3.5 text-blue-500" />
-                <CardTitle className="text-[10px] font-black tracking-widest text-slate-900 uppercase">
+                <CardTitle className="text-xs font-semibold  text-slate-900 ">
                   ACTIVE DATA STREAMS
                 </CardTitle>
               </div>
@@ -277,17 +277,17 @@ export default function AssistantPage() {
                 { label: 'GLOBAL_MARKET_TICKER', status: 'DELAYED', color: 'bg-rose-500' },
               ].map((stream) => (
                 <div key={stream.label} className="flex items-center justify-between p-2 bg-slate-50/30 rounded">
-                  <span className="text-[9px] font-black text-slate-700 tracking-tighter uppercase">{stream.label}</span>
+                  <span className="text-xs font-semibold text-slate-700  ">{stream.label}</span>
                   <div className="flex items-center gap-1.5">
                     <div className={`h-1.5 w-1.5 rounded-full ${stream.color}`} />
-                    <span className="text-[8px] font-black text-slate-400 uppercase">{stream.status}</span>
+                    <span className="text-xs font-semibold text-slate-400 ">{stream.status}</span>
                   </div>
                 </div>
               ))}
 
               <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
-                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest px-1">KNOWLEDGE BASE STATUS</p>
-                <Badge className="w-full justify-between py-1.5 bg-slate-900 text-white font-black text-[9px]">
+                <p className="text-xs font-semibold text-slate-400   px-1">KNOWLEDGE BASE STATUS</p>
+                <Badge className="w-full justify-between py-1.5 bg-slate-900 text-white font-semibold text-xs">
                   <span>LAST FULL SYNC</span>
                   <span>TODAY 04:00 AM</span>
                 </Badge>

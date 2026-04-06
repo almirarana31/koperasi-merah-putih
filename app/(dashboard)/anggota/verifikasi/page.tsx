@@ -168,14 +168,14 @@ export default function VerifikasiPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Verifikasi KYC Nasional</h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+            <h1 className="text-2xl font-semibold  text-slate-900 ">Verifikasi KYC Nasional</h1>
+            <p className="text-xs font-bold text-slate-500   mt-1">
               Otentikasi Identitas Anggota Lintas Entitas Koperasi
             </p>
           </div>
         </div>
         {isKementerian && (
-          <Badge className="bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase border-none tracking-widest px-3 py-1">
+          <Badge className="bg-emerald-100 text-emerald-700 text-xs font-semibold  border-none  px-3 py-1">
             Mode Supervisi Nasional
           </Badge>
         )}
@@ -194,11 +194,11 @@ export default function VerifikasiPage() {
         ].map((kpi, i) => (
           <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</p>
+              <p className="text-xs font-semibold text-slate-400  ">{kpi.label}</p>
               <kpi.icon className={`h-3.5 w-3.5 ${kpi.tone === 'rose' ? 'text-rose-500' : kpi.tone === 'emerald' ? 'text-emerald-500' : kpi.tone === 'amber' ? 'text-amber-500' : 'text-slate-400'}`} />
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-2xl font-black text-slate-900 tracking-tighter">{kpi.value}</p>
+              <p className="text-2xl font-semibold text-slate-900 ">{kpi.value}</p>
             </CardContent>
           </Card>
         ))}
@@ -212,7 +212,7 @@ export default function VerifikasiPage() {
               <TabsTrigger 
                 key={tab} 
                 value={tab} 
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-transparent h-10 px-0 text-[10px] font-black uppercase tracking-widest text-slate-400 data-[state=active]:text-slate-900"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-slate-900 data-[state=active]:bg-transparent h-10 px-0 text-xs font-semibold   text-slate-400 data-[state=active]:text-slate-900"
               >
                 {tab} ({tab === 'pending' ? pendingItems.length : tab === 'rejected' ? rejectedItems.length : historyItems.length})
               </TabsTrigger>
@@ -226,7 +226,7 @@ export default function VerifikasiPage() {
                 placeholder="Cari NAMA/NIK..." 
                 value={search} 
                 onChange={e => setSearch(e.target.value)}
-                className="pl-8 h-8 text-[10px] font-black uppercase tracking-widest border-slate-200" 
+                className="pl-8 h-8 text-xs font-semibold   border-slate-200" 
               />
             </div>
           )}
@@ -236,7 +236,7 @@ export default function VerifikasiPage() {
           {pendingItems.length === 0 ? (
             <div className="py-20 text-center bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
               <ShieldCheck className="mx-auto h-12 w-12 text-slate-200 mb-4" />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Antrian Verifikasi Bersih</p>
+              <p className="text-xs font-semibold text-slate-400  ">Antrian Verifikasi Bersih</p>
             </div>
           ) : (
             pendingItems.map((item) => (
@@ -246,23 +246,23 @@ export default function VerifikasiPage() {
                     <div className="flex-1 p-5 border-r border-slate-50">
                       <div className="flex items-center gap-4">
                         <Avatar className="h-12 w-12 rounded-lg border-2 border-white shadow-sm">
-                          <AvatarFallback className="bg-slate-900 text-white text-[10px] font-black">
+                          <AvatarFallback className="bg-slate-900 text-white text-xs font-semibold">
                             {item.nama.split(' ').map(n => n[0]).join('').slice(0, 2)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.nama}</h3>
-                            <Badge variant="outline" className="text-[8px] font-black uppercase px-1.5 h-4 border-slate-200 text-slate-500">{item.tipe}</Badge>
+                            <h3 className="text-sm font-semibold text-slate-900  ">{item.nama}</h3>
+                            <Badge variant="outline" className="text-xs font-semibold  px-1.5 h-4 border-slate-200 text-slate-500">{item.tipe}</Badge>
                           </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
                             <div className="flex items-center gap-1.5 text-slate-400">
                               <MapPin className="h-3 w-3" />
-                              <span className="text-[9px] font-bold uppercase tracking-widest">{item.desa} • {item.koperasi}</span>
+                              <span className="text-xs font-bold  ">{item.desa} • {item.koperasi}</span>
                             </div>
                             <div className="flex items-center gap-1.5 text-slate-400">
                               <Clock className="h-3 w-3" />
-                              <span className="text-[9px] font-bold uppercase tracking-widest">Daftar: {item.tanggalDaftar}</span>
+                              <span className="text-xs font-bold  ">Daftar: {item.tanggalDaftar}</span>
                             </div>
                           </div>
                         </div>
@@ -271,7 +271,7 @@ export default function VerifikasiPage() {
                     
                     <div className="bg-slate-50/50 p-5 lg:w-80 flex items-center justify-between gap-4">
                       <div className="space-y-1.5">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Dokumen Fisik</p>
+                        <p className="text-xs font-semibold text-slate-400  ">Dokumen Fisik</p>
                         <div className="flex gap-1">
                           {Object.entries(item.dokumen).map(([key, val]) => (
                             <div key={key} title={key} className={`h-1.5 w-6 rounded-full ${val ? 'bg-emerald-500' : 'bg-slate-200'}`} />
@@ -281,13 +281,13 @@ export default function VerifikasiPage() {
                       
                       <Dialog open={openDialogId === item.id} onOpenChange={open => setOpenDialogId(open ? item.id : null)}>
                         <DialogTrigger asChild>
-                          <Button size="sm" className="h-9 bg-slate-900 text-white text-[10px] font-black uppercase px-6 tracking-widest hover:scale-105 transition-transform">
+                          <Button size="sm" className="h-9 bg-slate-900 text-white text-xs font-semibold  px-6  hover:scale-105 transition-transform">
                             Review
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-xl bg-white border-none shadow-2xl rounded-none">
                           <DialogHeader className="border-b border-slate-100 pb-4">
-                            <DialogTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                            <DialogTitle className="text-sm font-semibold   flex items-center gap-2">
                               <ShieldCheck className="h-4 w-4 text-emerald-500" /> Otentikasi KYC: {item.nama}
                             </DialogTitle>
                           </DialogHeader>
@@ -296,20 +296,20 @@ export default function VerifikasiPage() {
                             <div className="grid grid-cols-2 gap-6">
                               <div className="space-y-4">
                                 <div>
-                                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Profil Entitas</p>
+                                  <p className="text-xs font-semibold text-slate-400  ">Profil Entitas</p>
                                   <div className="mt-2 space-y-1">
-                                    <p className="text-xs font-black text-slate-900 uppercase">{item.nama}</p>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tight">{item.alamat}</p>
-                                    <p className="text-[10px] font-black text-emerald-600 uppercase mt-1">{item.koperasi}</p>
+                                    <p className="text-xs font-semibold text-slate-900 ">{item.nama}</p>
+                                    <p className="text-xs font-bold text-slate-500  ">{item.alamat}</p>
+                                    <p className="text-xs font-semibold text-emerald-600  mt-1">{item.koperasi}</p>
                                   </div>
                                 </div>
                               </div>
                               <div className="space-y-4">
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Validasi Dokumen</p>
+                                <p className="text-xs font-semibold text-slate-400  ">Validasi Dokumen</p>
                                 <div className="space-y-2">
                                   {Object.entries(item.dokumen).map(([k, v]) => (
                                     <div key={k} className="flex items-center justify-between p-2 bg-slate-50 rounded border border-slate-100">
-                                      <span className="text-[9px] font-black uppercase text-slate-600">{k}</span>
+                                      <span className="text-xs font-semibold  text-slate-600">{k}</span>
                                       {v ? <Check className="h-3 w-3 text-emerald-500" /> : <X className="h-3 w-3 text-rose-500" />}
                                     </div>
                                   ))}
@@ -319,7 +319,7 @@ export default function VerifikasiPage() {
 
                             {showRejectDialog && (
                               <div className="p-4 bg-rose-50 rounded-lg space-y-3">
-                                <Label className="text-[10px] font-black uppercase text-rose-700">Alasan Penolakan</Label>
+                                <Label className="text-xs font-semibold  text-rose-700">Alasan Penolakan</Label>
                                 <Textarea 
                                   className="text-xs border-rose-200 focus-visible:ring-rose-500" 
                                   placeholder="Contoh: Foto KTP terpotong..."
@@ -333,16 +333,16 @@ export default function VerifikasiPage() {
                           <DialogFooter className="bg-slate-50 p-4 flex gap-3">
                             {showRejectDialog ? (
                               <>
-                                <Button variant="ghost" onClick={() => setShowRejectDialog(false)} className="text-[10px] font-black uppercase">Batal</Button>
-                                <Button variant="destructive" onClick={() => handleReject(item)} disabled={!rejectReason || isProcessing} className="text-[10px] font-black uppercase bg-rose-600">
+                                <Button variant="ghost" onClick={() => setShowRejectDialog(false)} className="text-xs font-semibold ">Batal</Button>
+                                <Button variant="destructive" onClick={() => handleReject(item)} disabled={!rejectReason || isProcessing} className="text-xs font-semibold  bg-rose-600">
                                   {isProcessing ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <X className="h-3 w-3 mr-2" />}
                                   Kirim Penolakan
                                 </Button>
                               </>
                             ) : (
                               <>
-                                <Button variant="outline" onClick={() => setShowRejectDialog(true)} className="text-[10px] font-black uppercase border-slate-300 text-rose-600 h-10">TOLAK</Button>
-                                <Button onClick={() => handleApprove(item)} disabled={isProcessing} className="flex-1 bg-slate-900 text-white text-[10px] font-black uppercase h-10 tracking-widest">
+                                <Button variant="outline" onClick={() => setShowRejectDialog(true)} className="text-xs font-semibold  border-slate-300 text-rose-600 h-10">TOLAK</Button>
+                                <Button onClick={() => handleApprove(item)} disabled={isProcessing} className="flex-1 bg-slate-900 text-white text-xs font-semibold  h-10 ">
                                   {isProcessing ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <ShieldCheck className="h-3.5 w-3.5 mr-2 text-emerald-400" />}
                                   SETUJUI KEANGGOTAAN
                                 </Button>
@@ -365,14 +365,14 @@ export default function VerifikasiPage() {
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-rose-50 text-rose-600 text-[10px] font-black">{item.nama[0]}</AvatarFallback>
+                    <AvatarFallback className="bg-rose-50 text-rose-600 text-xs font-semibold">{item.nama[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-xs font-black uppercase text-slate-900">{item.nama}</p>
-                    <p className="text-[10px] font-bold text-rose-600 uppercase tracking-tight mt-0.5">Alasan: {item.alasanTolak}</p>
+                    <p className="text-xs font-semibold  text-slate-900">{item.nama}</p>
+                    <p className="text-xs font-bold text-rose-600   mt-0.5">Alasan: {item.alasanTolak}</p>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="h-8 text-[9px] font-black uppercase border-slate-200">Hubungi Pemohon</Button>
+                <Button variant="outline" size="sm" className="h-8 text-xs font-semibold  border-slate-200">Hubungi Pemohon</Button>
               </CardContent>
             </Card>
           ))}
@@ -384,14 +384,14 @@ export default function VerifikasiPage() {
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-emerald-50 text-emerald-600 text-[10px] font-black">{item.nama[0]}</AvatarFallback>
+                    <AvatarFallback className="bg-emerald-50 text-emerald-600 text-xs font-semibold">{item.nama[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-xs font-black uppercase text-slate-900">{item.nama}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mt-0.5">Verified on: {item.tanggalVerifikasi?.split('T')[0]}</p>
+                    <p className="text-xs font-semibold  text-slate-900">{item.nama}</p>
+                    <p className="text-xs font-bold text-slate-400   mt-0.5">Verified on: {item.tanggalVerifikasi?.split('T')[0]}</p>
                   </div>
                 </div>
-                <Badge className="bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase border-none">COMPLETED</Badge>
+                <Badge className="bg-emerald-100 text-emerald-700 text-xs font-semibold  border-none">COMPLETED</Badge>
               </CardContent>
             </Card>
           ))}

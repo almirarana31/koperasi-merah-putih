@@ -57,7 +57,7 @@ export default function TambahAnggotaPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Tambah Anggota Baru</h1>
+          <h1 className="text-2xl font-bold ">Tambah Anggota Baru</h1>
           <p className="text-muted-foreground">
             Daftarkan anggota baru ke koperasi
           </p>

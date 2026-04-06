@@ -81,12 +81,12 @@ export default function AgregasiPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Agregasi Komoditas</h1>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+          <h1 className="text-2xl font-semibold  text-slate-900 ">Agregasi Komoditas</h1>
+          <p className="text-xs font-bold text-slate-500   mt-1">
             Monitoring pengumpulan hasil panen kolektif nasional
           </p>
         </div>
-        <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
+        <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold  ">
           <Plus className="mr-2 h-3.5 w-3.5" />
           Buat Agregasi Baru
         </Button>
@@ -103,19 +103,19 @@ export default function AgregasiPage() {
           <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
                 <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-400'}`} />
               </div>
-              <CardTitle className="text-2xl font-black text-slate-900 tracking-tighter mt-1">{stat.value}</CardTitle>
+              <CardTitle className="text-2xl font-semibold text-slate-900  mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
               {stat.label === 'Total Terkumpul' ? (
                 <div className="space-y-1.5">
                   <Progress value={(totalTerkumpul / totalTarget) * 100} className="h-1 bg-slate-100" />
-                  <p className="text-[10px] font-bold text-emerald-600">{stat.sub}</p>
+                  <p className="text-xs font-bold text-emerald-600">{stat.sub}</p>
                 </div>
               ) : (
-                <p className={`text-[10px] font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
+                <p className={`text-xs font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
                   {stat.sub}
                 </p>
               )}
@@ -126,7 +126,7 @@ export default function AgregasiPage() {
 
       {/* Agregasi List */}
       <div className="space-y-4">
-        <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Daftar Batch Pengumpulan</h2>
+        <h2 className="text-xs font-semibold text-slate-400   px-1">Daftar Batch Pengumpulan</h2>
         {agregasiData.map((agregasi) => {
           const progress = (agregasi.terkumpul / agregasi.target) * 100
           
@@ -142,30 +142,30 @@ export default function AgregasiPage() {
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">{agregasi.komoditas}</h3>
-                            <Badge className={`text-[9px] font-black uppercase px-1.5 py-0 border-none ${
+                            <h3 className="text-sm font-semibold text-slate-900   group-hover:text-emerald-600 transition-colors">{agregasi.komoditas}</h3>
+                            <Badge className={`text-xs font-semibold  px-1.5 py-0 border-none ${
                               agregasi.status === 'selesai' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                             }`}>
                               {agregasi.status === 'selesai' ? 'CLOSED' : 'OPEN'}
                             </Badge>
                           </div>
                           <div className="flex items-center gap-2 mt-1">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">BUYER:</p>
-                            <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight">{agregasi.buyer}</p>
+                            <p className="text-xs font-bold text-slate-400  ">BUYER:</p>
+                            <p className="text-xs font-semibold text-slate-900  ">{agregasi.buyer}</p>
                           </div>
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-1 shrink-0">
                         <div className="flex items-center gap-1.5 text-slate-400">
                           <Calendar className="h-3 w-3" />
-                          <p className="text-[9px] font-black uppercase tracking-widest">Deadline Pengiriman</p>
+                          <p className="text-xs font-semibold  ">Deadline Pengiriman</p>
                         </div>
-                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{agregasi.deadline}</p>
+                        <p className="text-xs font-semibold text-slate-900  ">{agregasi.deadline}</p>
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tight">
+                      <div className="flex items-center justify-between text-xs font-semibold  ">
                         <span className="text-slate-400">Pencapaian Volume</span>
                         <span className="text-slate-900">
                           {agregasi.terkumpul.toLocaleString()} / {agregasi.target.toLocaleString()} {agregasi.satuan.toUpperCase()}
@@ -173,15 +173,15 @@ export default function AgregasiPage() {
                       </div>
                       <Progress value={progress} className="h-1.5 bg-slate-100" />
                       <div className="flex justify-between items-center">
-                         <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{progress.toFixed(0)}% Kapasitas Terisi</p>
+                         <p className="text-xs font-bold text-slate-500  ">{progress.toFixed(0)}% Kapasitas Terisi</p>
                          <div className="flex items-center gap-3">
                             <div className="flex items-center gap-1.5">
                               <Users className="h-3 w-3 text-slate-400" />
-                              <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{agregasi.kontributor} PRODUSEN</span>
+                              <span className="text-xs font-semibold text-slate-600  ">{agregasi.kontributor} PRODUSEN</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                               <Warehouse className="h-3 w-3 text-slate-400" />
-                              <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{agregasi.gudang.toUpperCase()}</span>
+                              <span className="text-xs font-semibold text-slate-600  ">{agregasi.gudang.toUpperCase()}</span>
                             </div>
                          </div>
                       </div>
@@ -189,14 +189,14 @@ export default function AgregasiPage() {
                   </div>
 
                   <div className="lg:w-56 bg-slate-50 p-6 flex flex-col items-center justify-center border-t lg:border-t-0 lg:border-l border-slate-100">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Nilai Batch Aktif</p>
-                    <p className="text-2xl font-black text-slate-900 tracking-tighter">
+                    <p className="text-xs font-semibold text-slate-400   mb-1">Nilai Batch Aktif</p>
+                    <p className="text-2xl font-semibold text-slate-900 ">
                       Rp {((agregasi.terkumpul * agregasi.hargaTarget) / 1000000).toFixed(1)} JT
                     </p>
-                    <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5">
+                    <p className="text-xs font-bold text-emerald-600   mt-0.5">
                       Target: Rp {agregasi.hargaTarget.toLocaleString()}/{agregasi.satuan}
                     </p>
-                    <Button variant="outline" size="sm" className="mt-6 w-full h-8 text-[9px] font-black uppercase tracking-widest border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900">
+                    <Button variant="outline" size="sm" className="mt-6 w-full h-8 text-xs font-semibold   border-slate-200 text-slate-600 hover:bg-white hover:text-slate-900">
                       Kelola Kontribusi
                       <ArrowRight className="ml-2 h-3.5 w-3.5" />
                     </Button>

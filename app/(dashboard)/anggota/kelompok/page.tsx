@@ -108,12 +108,12 @@ export default function KelompokTaniPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Kelompok Tani Nasional</h1>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+          <h1 className="text-2xl font-semibold  text-slate-900 ">Kelompok Tani Nasional</h1>
+          <p className="text-xs font-bold text-slate-500   mt-1">
             Supervisi dan Monitoring Kelompok Produsen Lintas Wilayah
           </p>
         </div>
-        <Button size="sm" className="h-10 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200">
+        <Button size="sm" className="h-10 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold   px-6 shadow-lg shadow-slate-200">
           <Plus className="mr-2 h-4 w-4" />
           Registrasi Kelompok
         </Button>
@@ -132,12 +132,12 @@ export default function KelompokTaniPage() {
         ].map((stat, i) => (
           <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
               <stat.icon className="h-3.5 w-3.5 text-slate-400" />
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-2xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
-              <p className="text-[10px] font-bold text-slate-500 uppercase mt-1 tracking-widest">{stat.sub}</p>
+              <p className="text-2xl font-semibold text-slate-900 ">{stat.value}</p>
+              <p className="text-xs font-bold text-slate-500  mt-1 ">{stat.sub}</p>
             </CardContent>
           </Card>
         ))}
@@ -147,7 +147,7 @@ export default function KelompokTaniPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         {filteredKelompok.length === 0 ? (
           <div className="lg:col-span-2 py-20 text-center bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tidak ada kelompok ditemukan dalam scope ini</p>
+            <p className="text-xs font-semibold text-slate-400  ">Tidak ada kelompok ditemukan dalam scope ini</p>
           </div>
         ) : (
           filteredKelompok.map((kelompok) => (
@@ -156,16 +156,16 @@ export default function KelompokTaniPage() {
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">
+                      <h3 className="text-sm font-semibold text-slate-900   group-hover:text-emerald-600 transition-colors">
                         {kelompok.nama}
                       </h3>
-                      <Badge className={`text-[8px] font-black uppercase border-none px-1.5 h-4 ${kelompok.status === 'aktif' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                      <Badge className={`text-xs font-semibold  border-none px-1.5 h-4 ${kelompok.status === 'aktif' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
                         {kelompok.status}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">KETUA:</p>
-                      <p className="text-[9px] font-black text-slate-900 uppercase tracking-tight">{kelompok.ketua}</p>
+                      <p className="text-xs font-bold text-slate-400  ">KETUA:</p>
+                      <p className="text-xs font-semibold text-slate-900  ">{kelompok.ketua}</p>
                     </div>
                   </div>
                   <Link href={`/anggota/kelompok/${kelompok.id}`}>
@@ -180,32 +180,32 @@ export default function KelompokTaniPage() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-slate-600">
                       <MapPin className="h-3.5 w-3.5 text-slate-400" />
-                      <span className="text-[10px] font-black uppercase tracking-tight">{kelompok.desa} • {kelompok.koperasi}</span>
+                      <span className="text-xs font-semibold  ">{kelompok.desa} • {kelompok.koperasi}</span>
                     </div>
                     <div className="flex items-center gap-2 text-slate-600">
                       <Users className="h-3.5 w-3.5 text-slate-400" />
-                      <span className="text-[10px] font-black uppercase tracking-tight">{kelompok.anggota} ANGGOTA</span>
+                      <span className="text-xs font-semibold  ">{kelompok.anggota} ANGGOTA</span>
                     </div>
                     {kelompok.luasTotal > 0 && (
                       <div className="flex items-center gap-2 text-slate-600">
                         <Leaf className="h-3.5 w-3.5 text-slate-400" />
-                        <span className="text-[10px] font-black uppercase tracking-tight">{kelompok.luasTotal} HA LAHAN</span>
+                        <span className="text-xs font-semibold  ">{kelompok.luasTotal} HA LAHAN</span>
                       </div>
                     )}
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">KOMODITAS UTAMA</p>
+                      <p className="text-xs font-semibold text-slate-400   mb-1.5">KOMODITAS UTAMA</p>
                       <div className="flex flex-wrap gap-1">
                         {kelompok.komoditas.map((k, i) => (
-                          <Badge key={i} variant="outline" className="text-[8px] font-black uppercase border-slate-200 text-slate-600 bg-white">
+                          <Badge key={i} variant="outline" className="text-xs font-semibold  border-slate-200 text-slate-600 bg-white">
                             {k}
                           </Badge>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-tight mb-1.5">
+                      <div className="flex items-center justify-between text-xs font-semibold   mb-1.5">
                         <span className="text-slate-400">OUTPUT PRODUKSI</span>
                         <span className="text-emerald-600">{kelompok.produksi}%</span>
                       </div>

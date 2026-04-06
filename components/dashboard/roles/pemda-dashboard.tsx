@@ -42,7 +42,7 @@ export function PemdaDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950 drop-shadow-sm">Monitoring Daerah (Kabupaten)</h2>
+        <h2 className="text-2xl font-semibold  text-slate-950 drop-shadow-sm">Monitoring Daerah (Kabupaten)</h2>
         <p className="text-slate-700 text-sm font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Pantau produksi agregat dan pergerakan komoditas lintas wilayah.</p>
       </div>
 
@@ -59,14 +59,14 @@ export function PemdaDashboard() {
                 <div className={`p-2 rounded-xl ${kpi.bg} ${kpi.color}`}>
                   <kpi.icon className="h-5 w-5" />
                 </div>
-                <div className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-tight ${kpi.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                <div className={`flex items-center gap-1 text-xs font-semibold   ${kpi.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
                   {kpi.trend === 'up' ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                   {kpi.change}
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] drop-shadow-sm">{kpi.title}</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">{kpi.value}</p>
+                <p className="text-xs font-semibold text-slate-400   drop-shadow-sm">{kpi.title}</p>
+                <p className="text-3xl font-semibold mt-1 text-slate-950 drop-shadow-sm ">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -77,8 +77,8 @@ export function PemdaDashboard() {
         {/* Regional Production Chart */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Produksi Per Kecamatan</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Perbandingan hasil panen utama antar wilayah.</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Produksi Per Kecamatan</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 ">Perbandingan hasil panen utama antar wilayah.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full mt-4">
@@ -91,7 +91,7 @@ export function PemdaDashboard() {
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }} 
                     cursor={{ fill: '#f8fafc' }}
                   />
-                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', paddingBottom: '20px' }} />
+                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', textTransform: '', paddingBottom: '20px' }} />
                   <Bar dataKey="beras" name="Beras" fill="#3b82f6" radius={[4, 4, 0, 0]} isAnimationActive={false} />
                   <Bar dataKey="cabai" name="Cabai" fill="#be0817" radius={[4, 4, 0, 0]} isAnimationActive={false} />
                 </BarChart>
@@ -103,8 +103,8 @@ export function PemdaDashboard() {
         {/* Top Performing Cooperatives */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-3 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Koperasi Unggulan</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Berdasarkan volume & kepatuhan.</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Koperasi Unggulan</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 ">Berdasarkan volume & kepatuhan.</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-slate-100">
@@ -116,18 +116,18 @@ export function PemdaDashboard() {
               ].map((kop, idx) => (
                 <div key={idx} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
                   <div className="flex flex-col">
-                    <span className="text-sm font-black text-slate-900 group-hover:text-rose-600 transition-colors uppercase tracking-tight">{kop.name}</span>
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{kop.area}</span>
+                    <span className="text-sm font-semibold text-slate-900 group-hover:text-rose-600 transition-colors  ">{kop.name}</span>
+                    <span className="text-xs font-bold text-slate-400  ">{kop.area}</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-black text-emerald-600">{kop.volume}</p>
-                    <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 h-4 border-slate-200 text-slate-500 mt-1">{kop.status}</Badge>
+                    <p className="text-sm font-semibold text-emerald-600">{kop.volume}</p>
+                    <Badge variant="outline" className="text-xs font-semibold  px-1.5 h-4 border-slate-200 text-slate-500 mt-1">{kop.status}</Badge>
                   </div>
                 </div>
               ))}
             </div>
             <div className="p-3 bg-slate-50/30">
-              <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all" asChild>
+              <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-white   transition-all" asChild>
                 <Link href="/produksi/agregasi">Detail Wilayah →</Link>
               </Button>
             </div>

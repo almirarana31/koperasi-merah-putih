@@ -44,7 +44,7 @@ export function KetuaDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950 drop-shadow-sm">Pengawasan Strategis Ketua Koperasi</h2>
+        <h2 className="text-2xl font-semibold  text-slate-950 drop-shadow-sm">Pengawasan Strategis Ketua Koperasi</h2>
         <p className="text-slate-700 text-sm font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Monitor kinerja unit, risiko, dan ambil keputusan strategis.</p>
       </div>
 
@@ -62,11 +62,11 @@ export function KetuaDashboard() {
                 <div className={`p-2 rounded-xl ${kpi.bg} ${kpi.color}`}>
                   <kpi.icon className="h-5 w-5" />
                 </div>
-                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.change}</div>
+                <div className="text-xs font-semibold text-slate-400  ">{kpi.change}</div>
               </div>
               <div className="mt-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] drop-shadow-sm">{kpi.title}</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">{kpi.value}</p>
+                <p className="text-xs font-semibold text-slate-400   drop-shadow-sm">{kpi.title}</p>
+                <p className="text-3xl font-semibold mt-1 text-slate-950 drop-shadow-sm ">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -77,8 +77,8 @@ export function KetuaDashboard() {
         {/* Unit Performance Chart */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Kinerja Lintas Unit Kerja</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Perbandingan profitabilitas dan skor kesehatan unit.</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Kinerja Lintas Unit Kerja</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 ">Perbandingan profitabilitas dan skor kesehatan unit.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full mt-4">
@@ -91,7 +91,7 @@ export function KetuaDashboard() {
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }} 
                     cursor={{ fill: '#f8fafc' }}
                   />
-                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', paddingBottom: '20px' }} />
+                  <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', textTransform: '', paddingBottom: '20px' }} />
                   <Bar dataKey="profit" name="Profit (Juta)" fill="#be0817" radius={[4, 4, 0, 0]} isAnimationActive={false} />
                   <Bar dataKey="health" name="Skor Kesehatan" fill="#10b981" radius={[4, 4, 0, 0]} isAnimationActive={false} />
                 </BarChart>
@@ -103,7 +103,7 @@ export function KetuaDashboard() {
         {/* Executive Approval List */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-3 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Persetujuan Eksekutif</CardTitle>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Persetujuan Eksekutif</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-slate-100">
@@ -115,16 +115,16 @@ export function KetuaDashboard() {
               ].map((app, idx) => (
                 <div key={idx} className="flex flex-col p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
                   <div className="flex justify-between items-start">
-                    <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 h-4 border-rose-200 text-rose-600 bg-rose-50">{app.type}</Badge>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{app.time}</span>
+                    <Badge variant="outline" className="text-xs font-semibold  px-1.5 h-4 border-rose-200 text-rose-600 bg-rose-50">{app.type}</Badge>
+                    <span className="text-xs font-bold text-slate-400  ">{app.time}</span>
                   </div>
-                  <p className="text-sm font-black mt-3 text-slate-900 group-hover:text-rose-600 transition-colors uppercase tracking-tight">{app.title}</p>
-                  <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-widest">Diajukan oleh: {app.user}</p>
+                  <p className="text-sm font-semibold mt-3 text-slate-900 group-hover:text-rose-600 transition-colors  ">{app.title}</p>
+                  <p className="text-xs font-bold text-slate-500 mt-1  ">Diajukan oleh: {app.user}</p>
                 </div>
               ))}
             </div>
             <div className="p-3 bg-slate-50/30">
-              <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all" asChild>
+              <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-white   transition-all" asChild>
                 <Link href="/command-center">Buka Pusat Kendali →</Link>
               </Button>
             </div>
@@ -140,11 +140,11 @@ export function KetuaDashboard() {
               <Zap className="h-6 w-6 text-rose-600" />
             </div>
             <div>
-              <p className="text-[11px] font-black text-rose-900 uppercase tracking-widest">AI Strategy: Ekspansi Komoditas</p>
+              <p className="text-sm font-semibold text-rose-900  ">AI Strategy: Ekspansi Komoditas</p>
               <p className="text-xs text-slate-600 font-bold mt-0.5 leading-tight">Potensi profit naik 12% jika koperasi menambah kuota serapan jagung di wilayah Timur.</p>
             </div>
           </div>
-          <Button size="sm" variant="outline" className="w-full sm:w-auto h-10 px-6 font-black text-[10px] uppercase tracking-widest border-rose-200 text-rose-700 hover:bg-rose-50 shadow-sm" asChild>
+          <Button size="sm" variant="outline" className="w-full sm:w-auto h-10 px-6 font-semibold text-xs   border-rose-200 text-rose-700 hover:bg-rose-50 shadow-sm" asChild>
             <Link href="/ai/analisis-pasar">Lihat Analisis Pasar</Link>
           </Button>
         </CardContent>

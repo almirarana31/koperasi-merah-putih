@@ -80,7 +80,7 @@ export default function SimpanPinjamPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Simpan Pinjam</h1>
+            <h1 className="text-2xl font-bold ">Simpan Pinjam</h1>
             <p className="text-muted-foreground">
               Kelola simpanan dan pinjaman anggota
             </p>

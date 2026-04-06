@@ -57,7 +57,7 @@ const ENTRY_ROLES: EntryRole[] = [
 
 export default function LandingPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f8f9fa] text-slate-950">
+    <div className="app-shell relative min-h-screen overflow-hidden bg-[#f8f9fa] text-slate-950">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(145,0,15,0.08),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(184,25,31,0.05),transparent_28%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(120,113,108,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.06)_1px,transparent_1px)] [background-size:32px_32px]" />
 

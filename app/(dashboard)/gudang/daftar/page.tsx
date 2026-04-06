@@ -85,18 +85,18 @@ export default function DaftarGudangPage() {
             <Warehouse className="h-6 w-6 text-emerald-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">National Inventory Hub</h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+            <h1 className="text-2xl font-semibold  text-slate-900 ">National Inventory Hub</h1>
+            <p className="text-xs font-bold text-slate-500   mt-1">
               Monitoring Agregat Kapasitas Penyimpanan • {stats.count} Titik Strategis Terdaftar
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-           <Button variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+           <Button variant="outline" size="sm" className="h-10 text-xs font-semibold   text-slate-600 border-slate-200">
             <ShieldAlert className="h-4 w-4 mr-2 text-rose-600" />
             Stock Audit
           </Button>
-          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200">
+          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold   px-6 shadow-lg shadow-slate-200">
             <Download className="h-4 w-4 mr-2" />
             Inventory PDF
           </Button>
@@ -120,10 +120,10 @@ export default function DaftarGudangPage() {
                 <s.icon className={`h-5 w-5 ${s.color}`} />
               </div>
               <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                <p className="text-xs font-semibold text-slate-400  ">{s.label}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-xl font-black tracking-tighter ${s.color}`}>{s.value}</span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">{s.sub}</span>
+                  <span className={`text-xl font-semibold  ${s.color}`}>{s.value}</span>
+                  <span className="text-xs font-bold text-slate-500 ">{s.sub}</span>
                 </div>
               </div>
             </CardContent>
@@ -141,11 +141,11 @@ export default function DaftarGudangPage() {
                 placeholder="CARI NAMA GUDANG ATAU ALAMAT..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 bg-white border-slate-200 h-11 text-[11px] font-bold uppercase tracking-wider focus:ring-slate-900"
+                className="pl-9 bg-white border-slate-200 h-11 text-sm font-bold   focus:ring-slate-900"
               />
             </div>
             {!isKementerian && (
-              <Button className="h-11 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest px-6 shadow-lg">
+              <Button className="h-11 bg-slate-900 text-white font-semibold text-xs   px-6 shadow-lg">
                 <Plus className="h-4 w-4 mr-2" /> TAMBAH GUDANG
               </Button>
             )}
@@ -170,12 +170,12 @@ export default function DaftarGudangPage() {
                          <Warehouse className="h-5 w-5" />
                        </div>
                        <div className="min-w-0">
-                          <CardTitle className="text-xs font-black text-slate-900 uppercase truncate leading-tight tracking-tight max-w-[140px]">
+                          <CardTitle className="text-xs font-semibold text-slate-900  truncate leading-tight  max-w-[140px]">
                             {warehouse.nama}
                           </CardTitle>
                           <div className="flex items-center gap-1.5 mt-1">
                              <MapPin className="h-2.5 w-2.5 text-slate-400" />
-                             <span className="text-[9px] font-bold text-slate-400 uppercase truncate max-w-[120px]">{warehouse.alamat}</span>
+                             <span className="text-xs font-bold text-slate-400  truncate max-w-[120px]">{warehouse.alamat}</span>
                           </div>
                        </div>
                     </div>
@@ -185,12 +185,12 @@ export default function DaftarGudangPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-1.5 pt-2">
-                    <Badge className={`h-5 text-[8px] font-black uppercase px-2 rounded border-none ${
+                    <Badge className={`h-5 text-xs font-semibold  px-2 rounded border-none ${
                       warehouse.tipe === 'cold-storage' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'
                     }`}>
                       {warehouse.tipe}
                     </Badge>
-                    <Badge className={`h-5 text-[8px] font-black uppercase px-2 rounded border-none ${
+                    <Badge className={`h-5 text-xs font-semibold  px-2 rounded border-none ${
                       warehouse.status === 'aktif' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
                     }`}>
                       {warehouse.status}
@@ -201,14 +201,14 @@ export default function DaftarGudangPage() {
                     <div className="flex items-center justify-between p-3 rounded-xl bg-blue-50/50 border border-blue-100">
                        <div className="flex items-center gap-2">
                          <Thermometer className="h-4 w-4 text-blue-600" />
-                         <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Core Temp</span>
+                         <span className="text-xs font-semibold text-blue-400  ">Core Temp</span>
                        </div>
-                       <span className="text-xl font-black text-blue-700 tracking-tighter">{warehouse.suhu}°C</span>
+                       <span className="text-xl font-semibold text-blue-700 ">{warehouse.suhu}°C</span>
                     </div>
                   )}
 
                   <div className="space-y-2.5 pt-2">
-                     <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest">
+                     <div className="flex items-center justify-between text-xs font-semibold  ">
                         <span className="text-slate-400">Load Factor</span>
                         <span className={usagePercent > 85 ? 'text-rose-600' : 'text-slate-900'}>{usagePercent}%</span>
                      </div>
@@ -222,21 +222,21 @@ export default function DaftarGudangPage() {
 
                   <div className="grid grid-cols-2 gap-3 pt-2">
                     <div className="p-3 rounded-xl bg-slate-900 text-white flex flex-col items-center justify-center shadow-lg">
-                       <p className="text-lg font-black tracking-tighter">{(warehouse.kapasitasTerpakai / 1000).toFixed(1)}</p>
-                       <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-0.5">TON TERPAKAI</p>
+                       <p className="text-lg font-semibold ">{(warehouse.kapasitasTerpakai / 1000).toFixed(1)}</p>
+                       <p className="text-xs font-semibold text-slate-500   mt-0.5">TON TERPAKAI</p>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center justify-center">
-                       <p className="text-lg font-black text-slate-900 tracking-tighter">
+                       <p className="text-lg font-semibold text-slate-900 ">
                          {((warehouse.kapasitas - warehouse.kapasitasTerpakai) / 1000).toFixed(1)}
                        </p>
-                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-0.5">TON VACANT</p>
+                       <p className="text-xs font-semibold text-slate-400   mt-0.5">TON VACANT</p>
                     </div>
                   </div>
                </div>
                
                <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 group-hover:bg-slate-900 transition-colors flex items-center justify-between">
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-500">System Sync: OK</span>
-                  <Button variant="ghost" className="h-6 px-2 text-[9px] font-black text-slate-900 group-hover:text-white uppercase tracking-tight">
+                  <span className="text-xs font-semibold text-slate-400   group-hover:text-slate-500">System Sync: OK</span>
+                  <Button variant="ghost" className="h-6 px-2 text-xs font-semibold text-slate-900 group-hover:text-white  ">
                     LIHAT AUDIT <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                </div>
@@ -251,15 +251,15 @@ export default function DaftarGudangPage() {
             <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-6 text-slate-300">
               <Warehouse className="h-10 w-10" />
             </div>
-            <h3 className="text-xl font-black text-slate-900 uppercase">Gudang Tidak Ditemukan</h3>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2">Silakan sesuaikan filter wilayah atau kata kunci pencarian.</p>
+            <h3 className="text-xl font-semibold text-slate-900 ">Gudang Tidak Ditemukan</h3>
+            <p className="text-xs font-bold text-slate-500   mt-2">Silakan sesuaikan filter wilayah atau kata kunci pencarian.</p>
             <Button 
               variant="link" 
               onClick={() => {
                 setSearch('')
                 setFilters({ provinceId: 'all', regionId: 'all', villageId: 'all', cooperativeId: 'all', commodityId: 'all' })
               }}
-              className="mt-6 text-[10px] font-black uppercase text-emerald-600"
+              className="mt-6 text-xs font-semibold  text-emerald-600"
             >
               Reset Semua Filter
             </Button>
@@ -279,13 +279,13 @@ export default function DaftarGudangPage() {
              </div>
              <div>
                 <div className="flex items-center gap-3">
-                   <Badge className="bg-white text-rose-600 font-black text-[9px] px-2 h-5 border-none">CRITICAL CAPACITY</Badge>
-                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">Usage Exceeds 92% (Jawa Barat)</span>
+                   <Badge className="bg-white text-rose-600 font-semibold text-xs px-2 h-5 border-none">CRITICAL CAPACITY</Badge>
+                   <span className="text-xs font-semibold text-rose-100  ">Usage Exceeds 92% (Jawa Barat)</span>
                 </div>
-                <p className="text-white text-base font-black uppercase mt-2 tracking-tight">Anomali Terdeteksi: Kapasitas penyimpanan di regional Jawa Barat mendekati batas kritis.</p>
+                <p className="text-white text-base font-semibold  mt-2 ">Anomali Terdeteksi: Kapasitas penyimpanan di regional Jawa Barat mendekati batas kritis.</p>
              </div>
           </div>
-          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-black text-[11px] uppercase tracking-widest px-8 rounded-xl shadow-xl">
+          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-semibold text-sm   px-8 rounded-xl shadow-xl">
              Relokasi Stok →
           </Button>
         </CardContent>

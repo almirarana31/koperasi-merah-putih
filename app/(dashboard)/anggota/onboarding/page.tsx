@@ -167,13 +167,13 @@ export default function OnboardingPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Pendaftaran Anggota</h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+            <h1 className="text-2xl font-semibold  text-slate-900 ">Pendaftaran Anggota</h1>
+            <p className="text-xs font-bold text-slate-500   mt-1">
               Verifikasi identitas kependudukan nasional (e-KTP)
             </p>
           </div>
         </div>
-        <Badge variant="outline" className="h-7 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600">
+        <Badge variant="outline" className="h-7 text-xs font-semibold   border-slate-200 text-slate-600">
           <Shield className="mr-1.5 h-3 w-3 text-emerald-500" />
           End-to-End Encrypted
         </Badge>
@@ -184,11 +184,11 @@ export default function OnboardingPage() {
         <CardContent className="p-4 bg-slate-50/50">
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tahapan Onboarding</span>
-              <span className="text-[10px] font-black text-slate-900 tracking-tighter bg-white px-2 py-0.5 rounded border border-slate-100 shadow-sm">{getStepProgress()}% COMPLETE</span>
+              <span className="text-xs font-semibold text-slate-400  ">Tahapan Onboarding</span>
+              <span className="text-xs font-semibold text-slate-900  bg-white px-2 py-0.5 rounded border border-slate-100 shadow-sm">{getStepProgress()}% COMPLETE</span>
             </div>
             <Progress value={getStepProgress()} className="h-1.5 bg-slate-200" />
-            <div className="flex justify-between text-[9px] font-black uppercase tracking-tighter text-slate-400">
+            <div className="flex justify-between text-xs font-semibold   text-slate-400">
               <span className={step === 'upload' ? 'text-emerald-600' : ''}>01. UPLOAD</span>
               <span className={step === 'scanning' ? 'text-emerald-600' : ''}>02. OCR SCAN</span>
               <span className={step === 'review' ? 'text-emerald-600' : ''}>03. REVIEW</span>
@@ -210,8 +210,8 @@ export default function OnboardingPage() {
                   <CreditCard className="h-4 w-4 text-slate-900" />
                 </div>
                 <div>
-                  <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Kartu Identitas (KTP)</CardTitle>
-                  <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Pastikan dokumen terbaca jelas</CardDescription>
+                  <CardTitle className="text-xs font-semibold text-slate-900  ">Kartu Identitas (KTP)</CardTitle>
+                  <CardDescription className="text-xs font-bold text-slate-500  ">Pastikan dokumen terbaca jelas</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -227,7 +227,7 @@ export default function OnboardingPage() {
                     <Button
                       variant="secondary"
                       size="sm"
-                      className="h-8 text-[10px] font-black uppercase tracking-widest"
+                      className="h-8 text-xs font-semibold  "
                       onClick={() => setKtpImage(null)}
                     >
                       <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
@@ -235,7 +235,7 @@ export default function OnboardingPage() {
                     </Button>
                   </div>
                   <div className="absolute bottom-2 left-2">
-                    <Badge className="bg-emerald-500 text-white text-[9px] font-black uppercase border-none">
+                    <Badge className="bg-emerald-500 text-white text-xs font-semibold  border-none">
                       <CheckCircle2 className="mr-1 h-3 w-3" />
                       Ready
                     </Badge>
@@ -245,8 +245,8 @@ export default function OnboardingPage() {
                 <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-all">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
                     <Upload className="w-8 h-8 mb-3 text-slate-400" />
-                    <p className="mb-1 text-[10px] font-black text-slate-900 uppercase tracking-tight">Klik untuk unggah</p>
-                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">atau seret file ke sini</p>
+                    <p className="mb-1 text-xs font-semibold text-slate-900  ">Klik untuk unggah</p>
+                    <p className="text-xs font-bold text-slate-500  ">atau seret file ke sini</p>
                   </div>
                   <input
                     type="file"
@@ -261,13 +261,13 @@ export default function OnboardingPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 h-9 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200"
+                  className="flex-1 h-9 text-xs font-semibold   text-slate-600 border-slate-200"
                   onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
                 >
                   <Camera className="mr-2 h-4 w-4" />
                   Kamera
                 </Button>
-                <Button variant="outline" size="sm" className="flex-1 h-9 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+                <Button variant="outline" size="sm" className="flex-1 h-9 text-xs font-semibold   text-slate-600 border-slate-200">
                   <Upload className="mr-2 h-4 w-4" />
                   Galeri
                 </Button>
@@ -283,8 +283,8 @@ export default function OnboardingPage() {
                   <User className="h-4 w-4 text-slate-900" />
                 </div>
                 <div>
-                  <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Verifikasi Wajah (Liveness)</CardTitle>
-                  <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Selfie dengan memegang KTP</CardDescription>
+                  <CardTitle className="text-xs font-semibold text-slate-900  ">Verifikasi Wajah (Liveness)</CardTitle>
+                  <CardDescription className="text-xs font-bold text-slate-500  ">Selfie dengan memegang KTP</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -300,7 +300,7 @@ export default function OnboardingPage() {
                     <Button
                       variant="secondary"
                       size="sm"
-                      className="h-8 text-[10px] font-black uppercase tracking-widest"
+                      className="h-8 text-xs font-semibold  "
                       onClick={() => setSelfieImage(null)}
                     >
                       <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
@@ -308,7 +308,7 @@ export default function OnboardingPage() {
                     </Button>
                   </div>
                   <div className="absolute bottom-2 left-2">
-                    <Badge className="bg-emerald-500 text-white text-[9px] font-black uppercase border-none">
+                    <Badge className="bg-emerald-500 text-white text-xs font-semibold  border-none">
                       <CheckCircle2 className="mr-1 h-3 w-3" />
                       Ready
                     </Badge>
@@ -318,8 +318,8 @@ export default function OnboardingPage() {
                 <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-slate-200 rounded-lg cursor-pointer bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-all">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 px-4 text-center">
                     <Smartphone className="w-8 h-8 mb-3 text-slate-400" />
-                    <p className="mb-1 text-[10px] font-black text-slate-900 uppercase tracking-tight">Ambil Foto Selfie</p>
-                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Wajah & KTP harus sejajar</p>
+                    <p className="mb-1 text-xs font-semibold text-slate-900  ">Ambil Foto Selfie</p>
+                    <p className="text-xs font-bold text-slate-500  ">Wajah & KTP harus sejajar</p>
                   </div>
                   <input
                     type="file"
@@ -331,7 +331,7 @@ export default function OnboardingPage() {
                 </label>
               )}
 
-              <Button variant="outline" size="sm" className="w-full h-9 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+              <Button variant="outline" size="sm" className="w-full h-9 text-xs font-semibold   text-slate-600 border-slate-200">
                 <Camera className="mr-2 h-4 w-4" />
                 Buka Kamera Depan
               </Button>
@@ -341,7 +341,7 @@ export default function OnboardingPage() {
           {/* Tips */}
           <Card className="lg:col-span-2 border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] bg-slate-900 text-white">
             <CardHeader className="p-4">
-              <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-400">Protokol Pemindaian Optimal</CardTitle>
+              <CardTitle className="text-xs font-semibold   text-slate-400">Protokol Pemindaian Optimal</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -352,12 +352,12 @@ export default function OnboardingPage() {
                   { id: '04', title: 'Komposisi', desc: 'Seluruh KTP masuk dalam frame' },
                 ].map((tip) => (
                   <div key={tip.id} className="flex items-start gap-3">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-slate-800 text-[10px] font-black text-emerald-400 border border-slate-700">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-slate-800 text-xs font-semibold text-emerald-400 border border-slate-700">
                       {tip.id}
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-tight text-white">{tip.title}</p>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{tip.desc}</p>
+                      <p className="text-xs font-semibold   text-white">{tip.title}</p>
+                      <p className="text-xs font-bold text-slate-400   mt-0.5">{tip.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -365,7 +365,7 @@ export default function OnboardingPage() {
             </CardContent>
             <CardFooter className="p-4 bg-slate-800/50">
               <Button
-                className="w-full sm:w-auto ml-auto bg-emerald-500 hover:bg-emerald-600 text-white border-none text-[10px] font-black uppercase tracking-widest h-9"
+                className="w-full sm:w-auto ml-auto bg-emerald-500 hover:bg-emerald-600 text-white border-none text-xs font-semibold   h-9"
                 disabled={!ktpImage}
                 onClick={simulateOCR}
               >
@@ -391,14 +391,14 @@ export default function OnboardingPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">Sistem Sedang Memproses Dokumen</h3>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-xs mx-auto">
+                <h3 className="text-sm font-semibold text-slate-900  ">Sistem Sedang Memproses Dokumen</h3>
+                <p className="text-xs font-bold text-slate-500   max-w-xs mx-auto">
                   Algoritma OCR sedang mengekstrak data identitas dari Kartu Kependudukan Anda
                 </p>
               </div>
               <div className="w-full max-w-xs space-y-3">
                 <Progress value={66} className="h-1 bg-slate-200" />
-                <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest animate-pulse">Menganalisis NIK & Bio-Data...</p>
+                <p className="text-xs font-semibold text-emerald-600   animate-pulse">Menganalisis NIK & Bio-Data...</p>
               </div>
             </div>
           </CardContent>
@@ -410,8 +410,8 @@ export default function OnboardingPage() {
         <div className="space-y-6">
           <Alert className="bg-slate-900 border-none rounded-none border-l-4 border-emerald-500 text-white py-4 shadow-lg">
             <Eye className="h-4 w-4 text-emerald-500" />
-            <AlertTitle className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Verifikasi Hasil Ekstraksi</AlertTitle>
-            <AlertDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">
+            <AlertTitle className="text-xs font-semibold   text-emerald-500">Verifikasi Hasil Ekstraksi</AlertTitle>
+            <AlertDescription className="text-xs font-bold   text-slate-400 mt-1">
               Periksa kembali presisi data yang diekstrak. Koreksi manual diizinkan untuk akurasi 100%.
             </AlertDescription>
           </Alert>
@@ -420,7 +420,7 @@ export default function OnboardingPage() {
             {/* KTP Preview */}
             <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] h-fit">
               <CardHeader className="p-4">
-                <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Referansi Dokumen</CardTitle>
+                <CardTitle className="text-xs font-semibold text-slate-400  ">Referansi Dokumen</CardTitle>
               </CardHeader>
               <CardContent className="p-4 pt-0">
                 {ktpImage && (
@@ -437,13 +437,13 @@ export default function OnboardingPage() {
             <Card className="lg:col-span-2 border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
               <CardHeader className="p-4 border-b border-slate-50 flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tight">Database Hasil Ekstraksi</CardTitle>
-                  <CardDescription className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sinkronisasi data sistem & fisik</CardDescription>
+                  <CardTitle className="text-xs font-semibold text-slate-900  ">Database Hasil Ekstraksi</CardTitle>
+                  <CardDescription className="text-xs font-bold text-slate-500  ">Sinkronisasi data sistem & fisik</CardDescription>
                 </div>
                 <Button
                   variant={editMode ? 'default' : 'outline'}
                   size="sm"
-                  className="h-8 text-[9px] font-black uppercase tracking-widest"
+                  className="h-8 text-xs font-semibold  "
                   onClick={() => setEditMode(!editMode)}
                 >
                   {editMode ? 'Simpan' : 'Edit Manual'}
@@ -452,139 +452,139 @@ export default function OnboardingPage() {
               <CardContent className="p-4 space-y-6">
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nomor Induk Kependudukan (NIK)</Label>
+                    <Label className="text-xs font-semibold text-slate-400  ">Nomor Induk Kependudukan (NIK)</Label>
                     <Input
                       value={extractedData.nik}
                       onChange={(e) => updateField('nik', e.target.value)}
                       disabled={!editMode}
-                      className="font-mono text-xs font-black bg-slate-50/50 border-slate-100 h-9 tracking-widest"
+                      className="font-mono text-xs font-semibold bg-slate-50/50 border-slate-100 h-9 "
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Nama Lengkap (Sesuai KTP)</Label>
+                    <Label className="text-xs font-semibold text-slate-400  ">Nama Lengkap (Sesuai KTP)</Label>
                     <Input
                       value={extractedData.nama}
                       onChange={(e) => updateField('nama', e.target.value)}
                       disabled={!editMode}
-                      className="text-xs font-black uppercase bg-slate-50/50 border-slate-100 h-9"
+                      className="text-xs font-semibold  bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tempat Lahir</Label>
+                    <Label className="text-xs font-semibold text-slate-400  ">Tempat Lahir</Label>
                     <Input
                       value={extractedData.tempatLahir}
                       onChange={(e) => updateField('tempatLahir', e.target.value)}
                       disabled={!editMode}
-                      className="text-xs font-black uppercase bg-slate-50/50 border-slate-100 h-9"
+                      className="text-xs font-semibold  bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tanggal Lahir</Label>
+                    <Label className="text-xs font-semibold text-slate-400  ">Tanggal Lahir</Label>
                     <Input
                       value={extractedData.tanggalLahir}
                       onChange={(e) => updateField('tanggalLahir', e.target.value)}
                       disabled={!editMode}
-                      className="text-xs font-black bg-slate-50/50 border-slate-100 h-9"
+                      className="text-xs font-semibold bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis Kelamin</Label>
+                    <Label className="text-xs font-semibold text-slate-400  ">Jenis Kelamin</Label>
                     <Input
                       value={extractedData.jenisKelamin}
                       onChange={(e) => updateField('jenisKelamin', e.target.value)}
                       disabled={!editMode}
-                      className="text-xs font-black uppercase bg-slate-50/50 border-slate-100 h-9"
+                      className="text-xs font-semibold  bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pekerjaan</Label>
+                    <Label className="text-xs font-semibold text-slate-400  ">Pekerjaan</Label>
                     <Input
                       value={extractedData.pekerjaan}
                       onChange={(e) => updateField('pekerjaan', e.target.value)}
                       disabled={!editMode}
-                      className="text-xs font-black uppercase bg-slate-50/50 border-slate-100 h-9"
+                      className="text-xs font-semibold  bg-slate-50/50 border-slate-100 h-9"
                     />
                   </div>
                 </div>
 
                 <div className="p-4 bg-slate-900 rounded-lg space-y-4">
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Alamat Domisili Tetap</Label>
+                    <Label className="text-xs font-semibold text-slate-500  ">Alamat Domisili Tetap</Label>
                     <Input
                       value={extractedData.alamat}
                       onChange={(e) => updateField('alamat', e.target.value)}
                       disabled={!editMode}
-                      className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                      className="text-xs font-semibold  bg-slate-800 border-slate-700 text-white h-9"
                     />
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-4">
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">RT</Label>
+                      <Label className="text-xs font-semibold text-slate-500  ">RT</Label>
                       <Input
                         value={extractedData.rt}
                         onChange={(e) => updateField('rt', e.target.value)}
                         disabled={!editMode}
-                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                        className="text-xs font-semibold  bg-slate-800 border-slate-700 text-white h-9"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">RW</Label>
+                      <Label className="text-xs font-semibold text-slate-500  ">RW</Label>
                       <Input
                         value={extractedData.rw}
                         onChange={(e) => updateField('rw', e.target.value)}
                         disabled={!editMode}
-                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                        className="text-xs font-semibold  bg-slate-800 border-slate-700 text-white h-9"
                       />
                     </div>
                     <div className="space-y-1.5 sm:col-span-2">
-                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Kelurahan/Desa</Label>
+                      <Label className="text-xs font-semibold text-slate-500  ">Kelurahan/Desa</Label>
                       <Input
                         value={extractedData.kelurahan}
                         onChange={(e) => updateField('kelurahan', e.target.value)}
                         disabled={!editMode}
-                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                        className="text-xs font-semibold  bg-slate-800 border-slate-700 text-white h-9"
                       />
                     </div>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Kecamatan</Label>
+                      <Label className="text-xs font-semibold text-slate-500  ">Kecamatan</Label>
                       <Input
                         value={extractedData.kecamatan}
                         onChange={(e) => updateField('kecamatan', e.target.value)}
                         disabled={!editMode}
-                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                        className="text-xs font-semibold  bg-slate-800 border-slate-700 text-white h-9"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Kabupaten/Kota</Label>
+                      <Label className="text-xs font-semibold text-slate-500  ">Kabupaten/Kota</Label>
                       <Input
                         value={extractedData.kabupaten}
                         onChange={(e) => updateField('kabupaten', e.target.value)}
                         disabled={!editMode}
-                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                        className="text-xs font-semibold  bg-slate-800 border-slate-700 text-white h-9"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Provinsi</Label>
+                      <Label className="text-xs font-semibold text-slate-500  ">Provinsi</Label>
                       <Input
                         value={extractedData.provinsi}
                         onChange={(e) => updateField('provinsi', e.target.value)}
                         disabled={!editMode}
-                        className="text-xs font-black uppercase bg-slate-800 border-slate-700 text-white h-9"
+                        className="text-xs font-semibold  bg-slate-800 border-slate-700 text-white h-9"
                       />
                     </div>
                   </div>
                 </div>
               </CardContent>
               <CardFooter className="p-4 bg-slate-50/50 flex flex-col sm:flex-row gap-3">
-                <Button variant="outline" size="sm" onClick={() => setStep('upload')} className="w-full sm:w-auto text-[10px] font-black uppercase border-slate-200">
+                <Button variant="outline" size="sm" onClick={() => setStep('upload')} className="w-full sm:w-auto text-xs font-semibold  border-slate-200">
                   <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
                   Ganti Dokumen
                 </Button>
-                <Button onClick={handleVerify} className="w-full sm:w-auto sm:ml-auto bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase h-9 tracking-widest">
+                <Button onClick={handleVerify} className="w-full sm:w-auto sm:ml-auto bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold  h-9 ">
                   Verifikasi Dukcapil Nasional
                   <Shield className="ml-2 h-3.5 w-3.5 text-emerald-500" />
                 </Button>
@@ -607,14 +607,14 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">Menghubungi Server Kependudukan</h3>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-xs mx-auto">
+                    <h3 className="text-sm font-semibold text-slate-900  ">Menghubungi Server Kependudukan</h3>
+                    <p className="text-xs font-bold text-slate-500   max-w-xs mx-auto">
                       Sinkronisasi NIK dengan Basis Data Nasional KOPDES x Dukcapil
                     </p>
                   </div>
                   <div className="w-full max-w-xs space-y-3">
                     <Progress value={50} className="h-1 bg-slate-200" />
-                    <p className="text-[9px] font-black text-slate-900 uppercase tracking-widest animate-pulse">Requesting Secure Token...</p>
+                    <p className="text-xs font-semibold text-slate-900   animate-pulse">Requesting Secure Token...</p>
                   </div>
                 </>
               )}
@@ -625,17 +625,17 @@ export default function OnboardingPage() {
                     <AlertCircle className="h-8 w-8 text-rose-500" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-sm font-black text-rose-600 uppercase tracking-tight">Otentikasi Gagal</h3>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest max-w-xs mx-auto">
+                    <h3 className="text-sm font-semibold text-rose-600  ">Otentikasi Gagal</h3>
+                    <p className="text-xs font-bold text-slate-500   max-w-xs mx-auto">
                       Data NIK tidak sinkron dengan Database Nasional. Periksa kembali NIK atau pastikan KTP adalah e-KTP asli.
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setStep('review')} className="text-[10px] font-black uppercase border-slate-200">
+                    <Button variant="outline" size="sm" onClick={() => setStep('review')} className="text-xs font-semibold  border-slate-200">
                       <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
                       Koreksi Data
                     </Button>
-                    <Button size="sm" onClick={handleVerify} className="bg-slate-900 text-white text-[10px] font-black uppercase">
+                    <Button size="sm" onClick={handleVerify} className="bg-slate-900 text-white text-xs font-semibold ">
                       Coba Lagi
                     </Button>
                   </div>
@@ -659,12 +659,12 @@ export default function OnboardingPage() {
                   <CheckCircle2 className="h-8 w-8 text-white" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-black uppercase tracking-tight">Verifikasi Tervalidasi</h3>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-100 opacity-80">
+                  <h3 className="text-2xl font-semibold  ">Verifikasi Tervalidasi</h3>
+                  <p className="text-xs font-bold   text-emerald-100 opacity-80">
                     Identitas Anda telah diakui oleh Sistem Digital Koperasi Merah Putih
                   </p>
                 </div>
-                <Badge className="bg-white text-emerald-600 text-[10px] font-black uppercase border-none px-4 py-1 tracking-widest mt-2">
+                <Badge className="bg-white text-emerald-600 text-xs font-semibold  border-none px-4 py-1  mt-2">
                   <FileCheck className="mr-1.5 h-3.5 w-3.5" />
                   STATUS: VERIFIED
                 </Badge>
@@ -674,7 +674,7 @@ export default function OnboardingPage() {
 
           <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
             <CardHeader className="p-4 bg-slate-50/50 border-b border-slate-100">
-              <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sertifikat Digital Anggota</CardTitle>
+              <CardTitle className="text-xs font-semibold text-slate-400  ">Sertifikat Digital Anggota</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               <div className="grid gap-8 sm:grid-cols-2">
@@ -684,8 +684,8 @@ export default function OnboardingPage() {
                       <User className="h-4 w-4 text-slate-900" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nama Lengkap</p>
-                      <p className="text-xs font-black uppercase text-slate-900 mt-0.5">{extractedData.nama}</p>
+                      <p className="text-xs font-semibold text-slate-400  ">Nama Lengkap</p>
+                      <p className="text-xs font-semibold  text-slate-900 mt-0.5">{extractedData.nama}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -693,8 +693,8 @@ export default function OnboardingPage() {
                       <CreditCard className="h-4 w-4 text-slate-900" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Nomor NIK</p>
-                      <p className="text-xs font-black font-mono text-slate-900 mt-0.5 tracking-tighter">{extractedData.nik}</p>
+                      <p className="text-xs font-semibold text-slate-400  ">Nomor NIK</p>
+                      <p className="text-xs font-semibold font-mono text-slate-900 mt-0.5 ">{extractedData.nik}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -702,8 +702,8 @@ export default function OnboardingPage() {
                       <Calendar className="h-4 w-4 text-slate-900" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Data Kelahiran</p>
-                      <p className="text-xs font-black uppercase text-slate-900 mt-0.5">{extractedData.tempatLahir}, {extractedData.tanggalLahir}</p>
+                      <p className="text-xs font-semibold text-slate-400  ">Data Kelahiran</p>
+                      <p className="text-xs font-semibold  text-slate-900 mt-0.5">{extractedData.tempatLahir}, {extractedData.tanggalLahir}</p>
                     </div>
                   </div>
                 </div>
@@ -713,15 +713,15 @@ export default function OnboardingPage() {
                       <MapPin className="h-4 w-4 text-slate-900" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Koordinat Domisili</p>
+                      <p className="text-xs font-semibold text-slate-400  ">Koordinat Domisili</p>
                       <div className="mt-1 space-y-1">
-                        <p className="text-xs font-black uppercase text-slate-900 leading-tight">
+                        <p className="text-xs font-semibold  text-slate-900 leading-tight">
                           {extractedData.alamat}, RT {extractedData.rt}/RW {extractedData.rw}
                         </p>
-                        <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
+                        <p className="text-xs font-bold  text-slate-500 ">
                           {extractedData.kelurahan}, {extractedData.kecamatan}
                         </p>
-                        <p className="text-[10px] font-bold uppercase text-slate-500 tracking-widest">
+                        <p className="text-xs font-bold  text-slate-500 ">
                           {extractedData.kabupaten}, {extractedData.provinsi}
                         </p>
                       </div>
@@ -731,12 +731,12 @@ export default function OnboardingPage() {
               </div>
             </CardContent>
             <CardFooter className="p-4 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
-              <Button variant="outline" size="sm" asChild className="w-full sm:w-auto text-[10px] font-black uppercase border-slate-200">
+              <Button variant="outline" size="sm" asChild className="w-full sm:w-auto text-xs font-semibold  border-slate-200">
                 <Link href="/anggota">
                   Kembali ke Dashboard
                 </Link>
               </Button>
-              <Button asChild size="sm" className="w-full sm:w-auto sm:ml-auto bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase h-9 tracking-widest">
+              <Button asChild size="sm" className="w-full sm:w-auto sm:ml-auto bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold  h-9 ">
                 <Link href="/keuangan/simpan-pinjam">
                   Aktifkan Layanan Finansial
                   <ArrowRight className="ml-2 h-3.5 w-3.5" />

@@ -43,7 +43,7 @@ export function BankDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950 drop-shadow-sm">Analisis Pembiayaan & Risiko</h2>
+        <h2 className="text-2xl font-semibold  text-slate-950 drop-shadow-sm">Analisis Pembiayaan & Risiko</h2>
         <p className="text-slate-700 text-sm font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Monitor kelayakan kredit anggota dan performa portfolio pinjaman.</p>
       </div>
 
@@ -61,14 +61,14 @@ export function BankDashboard() {
                 <div className={`p-2 rounded-xl ${kpi.bg} ${kpi.color}`}>
                   <kpi.icon className="h-5 w-5" />
                 </div>
-                <div className={`flex items-center gap-1 text-[10px] font-black uppercase tracking-tight ${kpi.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                <div className={`flex items-center gap-1 text-xs font-semibold   ${kpi.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
                   {kpi.trend === 'up' ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                   {kpi.change}
                 </div>
               </div>
               <div className="mt-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] drop-shadow-sm">{kpi.title}</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">{kpi.value}</p>
+                <p className="text-xs font-semibold text-slate-400   drop-shadow-sm">{kpi.title}</p>
+                <p className="text-3xl font-semibold mt-1 text-slate-950 drop-shadow-sm ">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -79,8 +79,8 @@ export function BankDashboard() {
         {/* Risk Profile Chart */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Profil Risiko Portfolio</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Distribusi profil risiko seluruh peminjam.</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Profil Risiko Portfolio</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 ">Distribusi profil risiko seluruh peminjam.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
             <div className="h-[220px] flex items-center justify-center relative">
@@ -105,8 +105,8 @@ export function BankDashboard() {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-2xl font-black text-slate-900 tracking-tighter">742</span>
-                <span className="text-[8px] font-black text-slate-400 uppercase">Avg Score</span>
+                <span className="text-2xl font-semibold text-slate-900 ">742</span>
+                <span className="text-xs font-semibold text-slate-400 ">Avg Score</span>
               </div>
             </div>
             <div className="space-y-2 mt-6">
@@ -114,9 +114,9 @@ export function BankDashboard() {
                 <div key={item.name} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-[10px] font-black text-slate-600 uppercase tracking-tight">{item.name}</span>
+                    <span className="text-xs font-semibold text-slate-600  ">{item.name}</span>
                   </div>
-                  <span className="text-xs font-black text-slate-900">{item.value}%</span>
+                  <span className="text-xs font-semibold text-slate-900">{item.value}%</span>
                 </div>
               ))}
             </div>
@@ -127,10 +127,10 @@ export function BankDashboard() {
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between bg-slate-50/50 border-b border-slate-100 py-3">
             <div>
-              <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Pengajuan Pinjaman Terbaru</CardTitle>
-              <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Menunggu review analis kredit.</CardDescription>
+              <CardTitle className="text-sm font-semibold   text-slate-900">Pengajuan Pinjaman Terbaru</CardTitle>
+              <CardDescription className="text-xs font-bold text-slate-500 ">Menunggu review analis kredit.</CardDescription>
             </div>
-            <Button size="sm" variant="ghost" className="h-8 text-[10px] font-black text-rose-600 hover:bg-rose-50 uppercase tracking-widest" asChild>
+            <Button size="sm" variant="ghost" className="h-8 text-xs font-semibold text-rose-600 hover:bg-rose-50  " asChild>
               <Link href="/keuangan/pinjaman">Semua Pengajuan →</Link>
             </Button>
           </CardHeader>
@@ -144,15 +144,15 @@ export function BankDashboard() {
               ].map((loan, idx) => (
                 <div key={idx} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
                   <div className="flex flex-col">
-                    <span className="text-sm font-black text-slate-900 group-hover:text-rose-600 transition-colors uppercase tracking-tight">{loan.name}</span>
+                    <span className="text-sm font-semibold text-slate-900 group-hover:text-rose-600 transition-colors  ">{loan.name}</span>
                     <div className="flex items-center gap-2 mt-1.5">
-                      <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 h-4 border-slate-200 text-slate-500">Score: {loan.score}</Badge>
-                      <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full ${loan.bg} ${loan.color}`}>{loan.status}</span>
+                      <Badge variant="outline" className="text-xs font-semibold  px-1.5 h-4 border-slate-200 text-slate-500">Score: {loan.score}</Badge>
+                      <span className={`text-xs font-semibold  px-1.5 py-0.5 rounded-full ${loan.bg} ${loan.color}`}>{loan.status}</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-black text-slate-900">{loan.amount}</p>
-                    <p className="text-[9px] text-slate-400 uppercase font-black mt-1 tracking-widest">Investasi Modal</p>
+                    <p className="text-sm font-semibold text-slate-900">{loan.amount}</p>
+                    <p className="text-xs text-slate-400  font-semibold mt-1 ">Investasi Modal</p>
                   </div>
                 </div>
               ))}

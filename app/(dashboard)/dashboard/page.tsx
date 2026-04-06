@@ -50,7 +50,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-5 pb-8">
+    <div className="page-shell pb-8">
       <div className="px-1">
         <p className="text-sm font-medium text-slate-600">Selamat datang kembali,</p>
         <h1 className="mt-1 text-[2rem] font-semibold leading-tight text-slate-950 sm:text-[2.15rem]">

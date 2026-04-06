@@ -42,7 +42,7 @@ export function LogistikDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950 drop-shadow-sm">Koordinasi Logistik & Armada</h2>
+        <h2 className="text-2xl font-semibold  text-slate-950 drop-shadow-sm">Koordinasi Logistik & Armada</h2>
         <p className="text-slate-700 text-sm font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Monitor pengiriman, utilisasi armada, dan status gudang.</p>
       </div>
 
@@ -59,13 +59,13 @@ export function LogistikDashboard() {
                 <div className={`p-2 rounded-xl ${kpi.bg} ${kpi.color}`}>
                   <kpi.icon className="h-5 w-5" />
                 </div>
-                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest border-slate-200 bg-slate-50">
+                <Badge variant="outline" className="text-xs font-semibold   border-slate-200 bg-slate-50">
                   {kpi.change}
                 </Badge>
               </div>
               <div className="mt-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] drop-shadow-sm">{kpi.title}</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">{kpi.value}</p>
+                <p className="text-xs font-semibold text-slate-400   drop-shadow-sm">{kpi.title}</p>
+                <p className="text-3xl font-semibold mt-1 text-slate-950 drop-shadow-sm ">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -76,8 +76,8 @@ export function LogistikDashboard() {
         {/* Delivery Chart */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Volume Pengiriman Harian</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Total paket & komoditas terkirim minggu ini.</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Volume Pengiriman Harian</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 ">Total paket & komoditas terkirim minggu ini.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[280px] w-full mt-4">
@@ -100,7 +100,7 @@ export function LogistikDashboard() {
         {/* Tracking List */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-3 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Pelacakan Live</CardTitle>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Pelacakan Live</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-slate-100">
@@ -115,18 +115,18 @@ export function LogistikDashboard() {
                     <MapPin className="h-4 w-4" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black text-slate-900 truncate uppercase tracking-tight group-hover:text-rose-600 transition-colors">{ship.dest}</p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{ship.id}</p>
+                    <p className="text-xs font-semibold text-slate-900 truncate   group-hover:text-rose-600 transition-colors">{ship.dest}</p>
+                    <p className="text-xs font-bold text-slate-400  ">{ship.id}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] font-black text-blue-600 uppercase">{ship.status}</p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase">{ship.time}</p>
+                    <p className="text-xs font-semibold text-blue-600 ">{ship.status}</p>
+                    <p className="text-xs font-bold text-slate-400 ">{ship.time}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="p-3 bg-slate-50/30">
-              <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all" asChild>
+              <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-white   transition-all" asChild>
                 <Link href="/logistik">Monitor Semua Armada →</Link>
               </Button>
             </div>
@@ -142,11 +142,11 @@ export function LogistikDashboard() {
               <Zap className="h-6 w-6 text-rose-600" />
             </div>
             <div>
-              <p className="text-[11px] font-black text-rose-900 uppercase tracking-widest">AI Insight: Optimasi Rute Baru</p>
+              <p className="text-sm font-semibold text-rose-900  ">AI Insight: Optimasi Rute Baru</p>
               <p className="text-xs text-slate-600 font-bold mt-0.5 leading-tight">3 rute pickup dapat digabung untuk menghemat BBM hingga 15%.</p>
             </div>
           </div>
-          <Button size="sm" variant="outline" className="w-full sm:w-auto h-10 px-6 font-black text-[10px] uppercase tracking-widest border-rose-200 text-rose-700 hover:bg-rose-50 shadow-sm" asChild>
+          <Button size="sm" variant="outline" className="w-full sm:w-auto h-10 px-6 font-semibold text-xs   border-rose-200 text-rose-700 hover:bg-rose-50 shadow-sm" asChild>
             <Link href="/ai/optimasi-rute">Terapkan Rekomendasi</Link>
           </Button>
         </CardContent>

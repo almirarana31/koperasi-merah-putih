@@ -70,7 +70,7 @@ export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDeta
                   {Math.round(cooperative.overallScore)}
                 </span>
                 <Badge
-                  className={`text-[10px] font-medium ${
+                  className={`text-xs font-medium ${
                     cooperative.overallHealth === 'good'
                       ? 'bg-emerald-500'
                       : cooperative.overallHealth === 'warning'
@@ -145,7 +145,7 @@ export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDeta
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="text-xs font-semibold text-slate-900">{alert.title}</p>
-                          <Badge variant="outline" className="h-4 px-1 text-[10px] font-medium">
+                          <Badge variant="outline" className="h-4 px-1 text-xs font-medium">
                             {alert.type}
                           </Badge>
                         </div>
@@ -190,7 +190,7 @@ export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDeta
                         <TableCell className="text-right">
                           <Badge
                             variant="outline"
-                            className={`h-4 px-1 text-[10px] font-medium ${
+                            className={`h-4 px-1 text-xs font-medium ${
                               ratio.status === 'Sehat' || ratio.status === 'Sangat sehat'
                                 ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
                                 : 'border-amber-200 bg-amber-50 text-amber-700'

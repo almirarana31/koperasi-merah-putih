@@ -102,18 +102,18 @@ export default function SHUPage() {
             <Calculator className="h-6 w-6 text-emerald-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">National SHU Audit</h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+            <h1 className="text-2xl font-semibold  text-slate-900 ">National SHU Audit</h1>
+            <p className="text-xs font-bold text-slate-500   mt-1">
               Monitoring Agregat Surplus & Pembagian Hasil Lintas Koperasi • Tahun Buku 2023
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-           <Button variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+           <Button variant="outline" size="sm" className="h-10 text-xs font-semibold   text-slate-600 border-slate-200">
             <FileText className="h-4 w-4 mr-2 text-rose-600" />
             Audit Report
           </Button>
-          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg">
+          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold   px-6 shadow-lg">
             <Download className="h-4 w-4 mr-2" />
             Export Data
           </Button>
@@ -137,10 +137,10 @@ export default function SHUPage() {
                 <s.icon className={`h-5 w-5 ${s.color}`} />
               </div>
               <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                <p className="text-xs font-semibold text-slate-400  ">{s.label}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-xl font-black tracking-tighter ${s.color}`}>{s.value}</span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">{s.sub}</span>
+                  <span className={`text-xl font-semibold  ${s.color}`}>{s.value}</span>
+                  <span className="text-xs font-bold text-slate-500 ">{s.sub}</span>
                 </div>
               </div>
             </CardContent>
@@ -155,10 +155,10 @@ export default function SHUPage() {
               <CardHeader className="p-6 border-b border-slate-50 bg-slate-50/50">
                  <div className="flex items-center justify-between">
                     <div>
-                       <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-widest">Matriks Alokasi Surplus Nasional</CardTitle>
-                       <CardDescription className="text-[10px] font-bold text-slate-400 uppercase mt-1">Distribusi surplus berdasarkan AD/ART kolektif</CardDescription>
+                       <CardTitle className="text-xs font-semibold text-slate-900  ">Matriks Alokasi Surplus Nasional</CardTitle>
+                       <CardDescription className="text-xs font-bold text-slate-400  mt-1">Distribusi surplus berdasarkan AD/ART kolektif</CardDescription>
                     </div>
-                    <Badge variant="outline" className="bg-white border-slate-200 text-[9px] font-black uppercase">LIVE AUDIT</Badge>
+                    <Badge variant="outline" className="bg-white border-slate-200 text-xs font-semibold ">LIVE AUDIT</Badge>
                  </div>
               </CardHeader>
               <CardContent className="p-6">
@@ -166,7 +166,7 @@ export default function SHUPage() {
                     <div className="space-y-5">
                        {alokasi.map((item) => (
                           <div key={item.nama} className="space-y-2">
-                             <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tight">
+                             <div className="flex items-center justify-between text-xs font-semibold  ">
                                 <div className="flex items-center gap-2">
                                    <div className={`h-2.5 w-2.5 rounded-full ${item.color}`} />
                                    <span className="text-slate-600">{item.nama}</span>
@@ -174,7 +174,7 @@ export default function SHUPage() {
                                 <span className="text-slate-900">{item.persentase}%</span>
                              </div>
                              <Progress value={item.persentase} className={`h-1.5 bg-slate-100 ${item.color.replace('bg-', '[&>div]:bg-')}`} />
-                             <p className="text-right text-[10px] font-bold text-slate-400">{formatCurrency(item.nilai * (filters.provinceId === 'all' ? 1 : 0.3))}</p>
+                             <p className="text-right text-xs font-bold text-slate-400">{formatCurrency(item.nilai * (filters.provinceId === 'all' ? 1 : 0.3))}</p>
                           </div>
                        ))}
                     </div>
@@ -182,16 +182,16 @@ export default function SHUPage() {
                        <div className="absolute top-0 right-0 p-4 opacity-5">
                           <PieChart className="h-32 w-32" />
                        </div>
-                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Gross Revenue Pool</p>
-                       <p className="text-4xl font-black tracking-tighter mt-2">{formatCurrency(stats.totalRevenue)}</p>
+                       <p className="text-xs font-semibold text-slate-500  ">Gross Revenue Pool</p>
+                       <p className="text-4xl font-semibold  mt-2">{formatCurrency(stats.totalRevenue)}</p>
                        <div className="mt-6 space-y-3">
                           <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                             <span className="text-[10px] font-bold text-slate-400 uppercase">Operating Costs</span>
-                             <span className="text-[11px] font-black text-rose-400">-{formatCurrency(stats.totalRevenue * 0.8)}</span>
+                             <span className="text-xs font-bold text-slate-400 ">Operating Costs</span>
+                             <span className="text-sm font-semibold text-rose-400">-{formatCurrency(stats.totalRevenue * 0.8)}</span>
                           </div>
                           <div className="flex items-center justify-between">
-                             <span className="text-[10px] font-bold text-emerald-400 uppercase">Net Surplus (SHU)</span>
-                             <span className="text-[11px] font-black text-emerald-400">{formatCurrency(stats.totalMargin)}</span>
+                             <span className="text-xs font-bold text-emerald-400 ">Net Surplus (SHU)</span>
+                             <span className="text-sm font-semibold text-emerald-400">{formatCurrency(stats.totalMargin)}</span>
                           </div>
                        </div>
                     </div>
@@ -202,38 +202,38 @@ export default function SHUPage() {
            {/* Member Level Distribution Table */}
            <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="p-6 border-b border-slate-50">
-                 <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-widest">Sample Distribusi Per Anggota</CardTitle>
+                 <CardTitle className="text-xs font-semibold text-slate-900  ">Sample Distribusi Per Anggota</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                  <div className="overflow-x-auto">
                     <Table>
                        <TableHeader className="bg-slate-900">
                           <TableRow className="hover:bg-slate-900 border-none">
-                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6">PENERIMA</TableHead>
-                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6">WILAYAH</TableHead>
-                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6 text-right">SIMPANAN</TableHead>
-                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6 text-right">TRANSAKSI</TableHead>
-                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6 text-right">TOTAL SHU</TableHead>
-                             <TableHead className="h-10 text-[9px] font-black text-slate-400 uppercase tracking-widest px-6"></TableHead>
+                             <TableHead className="h-10 text-xs font-semibold text-slate-400   px-6">PENERIMA</TableHead>
+                             <TableHead className="h-10 text-xs font-semibold text-slate-400   px-6">WILAYAH</TableHead>
+                             <TableHead className="h-10 text-xs font-semibold text-slate-400   px-6 text-right">SIMPANAN</TableHead>
+                             <TableHead className="h-10 text-xs font-semibold text-slate-400   px-6 text-right">TRANSAKSI</TableHead>
+                             <TableHead className="h-10 text-xs font-semibold text-slate-400   px-6 text-right">TOTAL SHU</TableHead>
+                             <TableHead className="h-10 text-xs font-semibold text-slate-400   px-6"></TableHead>
                           </TableRow>
                        </TableHeader>
                        <TableBody>
                           {filteredSHU.map((item) => (
                              <TableRow key={item.nama} className="border-b border-slate-50 hover:bg-slate-50 transition-colors group">
                                 <TableCell className="px-6 py-4">
-                                   <span className="text-[11px] font-black text-slate-900 uppercase tracking-tight">{item.nama}</span>
+                                   <span className="text-sm font-semibold text-slate-900  ">{item.nama}</span>
                                 </TableCell>
                                 <TableCell className="px-6 py-4">
-                                   <Badge variant="outline" className="text-[8px] font-black uppercase text-slate-400 border-slate-200">{item.region}</Badge>
+                                   <Badge variant="outline" className="text-xs font-semibold  text-slate-400 border-slate-200">{item.region}</Badge>
                                 </TableCell>
                                 <TableCell className="px-6 py-4 text-right">
-                                   <span className="text-[10px] font-bold text-slate-500">{formatCurrency(item.simpanan)}</span>
+                                   <span className="text-xs font-bold text-slate-500">{formatCurrency(item.simpanan)}</span>
                                 </TableCell>
                                 <TableCell className="px-6 py-4 text-right">
-                                   <span className="text-[10px] font-bold text-slate-500">{formatCurrency(item.transaksi)}</span>
+                                   <span className="text-xs font-bold text-slate-500">{formatCurrency(item.transaksi)}</span>
                                 </TableCell>
                                 <TableCell className="px-6 py-4 text-right">
-                                   <span className="text-[11px] font-black text-emerald-600">{formatCurrency(item.totalSHU)}</span>
+                                   <span className="text-sm font-semibold text-emerald-600">{formatCurrency(item.totalSHU)}</span>
                                 </TableCell>
                                 <TableCell className="px-6 py-4 text-right">
                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 group-hover:text-slate-900">
@@ -254,12 +254,12 @@ export default function SHUPage() {
            <Card className="border-none shadow-xl bg-slate-950 text-white overflow-hidden">
               <CardHeader className="p-5 border-b border-white/5 bg-slate-900/50">
                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    <CardTitle className="text-xs font-semibold   flex items-center gap-2">
                        <ShieldAlert className="h-4 w-4 text-rose-500" /> SURPLUS FEED
                     </CardTitle>
                     <div className="flex items-center gap-1.5">
                        <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-ping" />
-                       <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">LIVE AUDIT</span>
+                       <span className="text-xs font-semibold text-emerald-500  ">LIVE AUDIT</span>
                     </div>
                  </div>
               </CardHeader>
@@ -273,20 +273,20 @@ export default function SHUPage() {
                     ].map((log, i) => (
                       <div key={i} className="p-5 hover:bg-white/5 transition-colors cursor-pointer group">
                          <div className="flex items-center justify-between mb-2">
-                            <Badge className={`text-[8px] font-black uppercase px-1.5 h-4 border-none ${
+                            <Badge className={`text-xs font-semibold  px-1.5 h-4 border-none ${
                               log.status === 'WARNING' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
                             }`}>
                                {log.status}
                             </Badge>
-                            <span className="text-[9px] font-mono text-slate-600">{log.time}</span>
+                            <span className="text-xs font-mono text-slate-600">{log.time}</span>
                          </div>
-                         <p className="text-[11px] font-black text-slate-200 uppercase leading-tight group-hover:text-emerald-400 transition-colors">{log.action}</p>
-                         <p className="text-[9px] font-bold text-slate-500 uppercase mt-1">WILAYAH: {log.region}</p>
+                         <p className="text-sm font-semibold text-slate-200  leading-tight group-hover:text-emerald-400 transition-colors">{log.action}</p>
+                         <p className="text-xs font-bold text-slate-500  mt-1">WILAYAH: {log.region}</p>
                       </div>
                     ))}
                  </div>
                  <div className="p-4 bg-white/5 border-t border-white/5 text-center">
-                    <Button variant="ghost" className="w-full text-[9px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-10">
+                    <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-white   h-10">
                        Buka Konsol Keuangan →
                     </Button>
                  </div>
@@ -295,7 +295,7 @@ export default function SHUPage() {
 
            <Card className="border-none shadow-sm bg-slate-50">
               <CardHeader className="p-4 border-b border-slate-200">
-                 <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Indeks Kinerja Keuangan</CardTitle>
+                 <CardTitle className="text-xs font-semibold   text-slate-900">Indeks Kinerja Keuangan</CardTitle>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                  {[
@@ -304,15 +304,15 @@ export default function SHUPage() {
                    { label: 'Dividend Yield', val: '6.8%', trend: 'up' },
                  ].map((h, i) => (
                     <div key={i} className="flex items-center justify-between group">
-                       <span className="text-[10px] font-bold text-slate-500 uppercase">{h.label}</span>
+                       <span className="text-xs font-bold text-slate-500 ">{h.label}</span>
                        <div className="text-right">
-                          <p className="text-[10px] font-black text-slate-900 uppercase">{h.val}</p>
+                          <p className="text-xs font-semibold text-slate-900 ">{h.val}</p>
                           {h.trend === 'up' ? (
-                             <div className="flex items-center justify-end gap-1 text-[8px] font-black text-emerald-600 uppercase">
+                             <div className="flex items-center justify-end gap-1 text-xs font-semibold text-emerald-600 ">
                                 <TrendingUp className="h-2 w-2" /> 12%
                              </div>
                           ) : (
-                             <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">TARGET MET</span>
+                             <span className="text-xs font-semibold text-slate-400  ">TARGET MET</span>
                           )}
                        </div>
                     </div>
@@ -334,13 +334,13 @@ export default function SHUPage() {
              </div>
              <div>
                 <div className="flex items-center gap-3">
-                   <Badge className="bg-white text-rose-600 font-black text-[9px] px-2 h-5 border-none">AUDIT ALERT</Badge>
-                   <span className="text-[10px] font-black text-rose-100 uppercase tracking-widest">Margin Variance Detect (&gt;15%)</span>
+                   <Badge className="bg-white text-rose-600 font-semibold text-xs px-2 h-5 border-none">AUDIT ALERT</Badge>
+                   <span className="text-xs font-semibold text-rose-100  ">Margin Variance Detect (&gt;15%)</span>
                 </div>
-                <p className="text-white text-base font-black uppercase mt-2 tracking-tight">Perhatian: Terdeteksi deviasi margin operasional di regional Bali. Segera lakukan audit transaksi.</p>
+                <p className="text-white text-base font-semibold  mt-2 ">Perhatian: Terdeteksi deviasi margin operasional di regional Bali. Segera lakukan audit transaksi.</p>
              </div>
           </div>
-          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-black text-[11px] uppercase tracking-widest px-8 rounded-xl shadow-xl transition-all">
+          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-semibold text-sm   px-8 rounded-xl shadow-xl transition-all">
              Mulai Investigasi →
           </Button>
         </CardContent>

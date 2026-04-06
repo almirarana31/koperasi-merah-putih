@@ -74,7 +74,7 @@ export default function MarketAnalysisKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase flex items-center gap-2">
+            <h1 className="text-3xl font-semibold  text-slate-900  flex items-center gap-2">
               <BarChart3 className="h-8 w-8 text-slate-900" />
               National Market & Competitor Intelligence
             </h1>
@@ -101,19 +101,19 @@ export default function MarketAnalysisKementerianPage() {
           <Card key={trend.metrik} className="border-l-4 border-l-slate-900 shadow-sm">
             <CardHeader className="pb-2 p-4">
               <div className="flex items-center justify-between mb-1">
-                <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-500">{trend.metrik}</CardDescription>
+                <CardDescription className="text-xs font-semibold   text-slate-500">{trend.metrik}</CardDescription>
                 {trend.tren === 'up' ? (
                   <TrendingUp className="h-4 w-4 text-emerald-500" />
                 ) : (
                   <TrendingDown className="h-4 w-4 text-rose-500" />
                 )}
               </div>
-              <CardTitle className={`text-2xl font-black ${trend.tren === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
+              <CardTitle className={`text-2xl font-semibold ${trend.tren === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>
                 {trend.perubahan}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-[10px] font-bold text-slate-400 uppercase leading-tight italic">
+              <p className="text-xs font-bold text-slate-400  leading-tight italic">
                 "{trend.insight}"
               </p>
             </CardContent>
@@ -125,8 +125,8 @@ export default function MarketAnalysisKementerianPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2 border-2 shadow-sm">
           <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-sm font-black uppercase tracking-tighter text-slate-900">Market Share Dominance (vs. Corporate Aggregators)</CardTitle>
-            <CardDescription className="text-[10px] font-bold uppercase text-slate-500">KOPDES performance vs Private Sector Competitors</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Market Share Dominance (vs. Corporate Aggregators)</CardTitle>
+            <CardDescription className="text-xs font-bold  text-slate-500">KOPDES performance vs Private Sector Competitors</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <ResponsiveContainer width="100%" height={300}>
@@ -136,9 +136,9 @@ export default function MarketAnalysisKementerianPage() {
                 <YAxis tick={{ fill: "#64748b", fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: "#0f172a", border: "none", borderRadius: "8px", color: "#fff" }}
-                  itemStyle={{ fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }}
+                  itemStyle={{ fontSize: "10px", fontWeight: "600", textTransform: "" }}
                 />
-                <Legend iconType="rect" wrapperStyle={{ paddingTop: "20px", fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }} />
+                <Legend iconType="rect" wrapperStyle={{ paddingTop: "20px", fontSize: "10px", fontWeight: "600", textTransform: "" }} />
                 <Line type="monotone" dataKey="kementerian" stroke="#0f172a" strokeWidth={4} dot={{ r: 6 }} name="KOPDES (MINISTRY)" />
                 <Line type="monotone" dataKey="corpA" stroke="#3b82f6" strokeWidth={2} name="CORPORATE A" />
                 <Line type="monotone" dataKey="corpB" stroke="#f59e0b" strokeWidth={2} name="CORPORATE B" />
@@ -150,7 +150,7 @@ export default function MarketAnalysisKementerianPage() {
 
         <Card className="border-2 shadow-sm bg-slate-900 text-white">
           <CardHeader className="border-b border-slate-800">
-            <CardTitle className="text-sm font-black uppercase tracking-tighter flex items-center gap-2">
+            <CardTitle className="text-sm font-semibold   flex items-center gap-2">
               <Target className="h-4 w-4 text-emerald-400" />
               Strategic Market Targets
             </CardTitle>
@@ -158,25 +158,25 @@ export default function MarketAnalysisKementerianPage() {
           <CardContent className="p-6 space-y-4">
             <div className="space-y-3">
               <div className="p-3 bg-slate-800 rounded border border-slate-700">
-                <p className="text-[10px] font-black text-emerald-400 uppercase mb-1">Target 1: Organic Premium</p>
+                <p className="text-xs font-semibold text-emerald-400  mb-1">Target 1: Organic Premium</p>
                 <p className="text-xs font-medium text-slate-300">
                   Global demand for Organic certification is surging <span className="text-white font-bold">+45%</span>. AI suggests shifting 20% of cooperative land to Organic Tier-1.
                 </p>
               </div>
               <div className="p-3 bg-slate-800 rounded border border-slate-700">
-                <p className="text-[10px] font-black text-blue-400 uppercase mb-1">Target 2: Regional Hubs</p>
+                <p className="text-xs font-semibold text-blue-400  mb-1">Target 2: Regional Hubs</p>
                 <p className="text-xs font-medium text-slate-300">
                   <span className="text-white font-bold">East Java</span> market share is currently dominated by Corp B. Recommend aggressive pricing subsidies for local KUDs.
                 </p>
               </div>
               <div className="p-3 bg-slate-800 rounded border border-slate-700">
-                <p className="text-[10px] font-black text-amber-400 uppercase mb-1">Target 3: Export Supply</p>
+                <p className="text-xs font-semibold text-amber-400  mb-1">Target 3: Export Supply</p>
                 <p className="text-xs font-medium text-slate-300">
                   Middle-East demand for <span className="text-white font-bold">Processed Vegetables</span> is unmet. Opportunity for cooperative-based canning facilities.
                 </p>
               </div>
             </div>
-            <Button className="w-full bg-emerald-500 text-slate-900 font-black text-[10px] uppercase h-10 hover:bg-emerald-600">
+            <Button className="w-full bg-emerald-500 text-slate-900 font-semibold text-xs  h-10 hover:bg-emerald-600">
               DOWNLOAD STRATEGY BRIEF
             </Button>
           </CardContent>
@@ -186,8 +186,8 @@ export default function MarketAnalysisKementerianPage() {
       {/* Seasonal Analysis Section */}
       <Card className="border-2 shadow-sm">
         <CardHeader className="border-b bg-slate-50/50">
-          <CardTitle className="text-sm font-black uppercase tracking-tighter text-slate-900">National Seasonal Demand & Production Cycles</CardTitle>
-          <CardDescription className="text-[10px] font-bold uppercase text-slate-500">Analyzing category performance trends over 6 months</CardDescription>
+          <CardTitle className="text-sm font-semibold   text-slate-900">National Seasonal Demand & Production Cycles</CardTitle>
+          <CardDescription className="text-xs font-bold  text-slate-500">Analyzing category performance trends over 6 months</CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <ResponsiveContainer width="100%" height={300}>
@@ -197,9 +197,9 @@ export default function MarketAnalysisKementerianPage() {
               <YAxis tick={{ fill: "#64748b", fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
               <Tooltip 
                 contentStyle={{ backgroundColor: "#0f172a", border: "none", borderRadius: "8px", color: "#fff" }}
-                itemStyle={{ fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }}
+                itemStyle={{ fontSize: "10px", fontWeight: "600", textTransform: "" }}
               />
-              <Legend iconType="rect" wrapperStyle={{ paddingTop: "20px", fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }} />
+              <Legend iconType="rect" wrapperStyle={{ paddingTop: "20px", fontSize: "10px", fontWeight: "600", textTransform: "" }} />
               <Bar dataKey="paddy" fill="#0f172a" name="PADDY/RICE" radius={[2, 2, 0, 0]} />
               <Bar dataKey="meat" fill="#3b82f6" name="MEAT/LIVESTOCK" radius={[2, 2, 0, 0]} />
               <Bar dataKey="vegetable" fill="#10b981" name="VEGETABLES" radius={[2, 2, 0, 0]} />
@@ -217,18 +217,18 @@ export default function MarketAnalysisKementerianPage() {
           </div>
           <div className="p-6 flex-1 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-black uppercase tracking-tighter">AI Executive Summary: Market Sentiment</h3>
-              <Badge className="bg-white text-slate-900 font-black">ACTIONABLE INTELLIGENCE</Badge>
+              <h3 className="text-lg font-semibold  ">AI Executive Summary: Market Sentiment</h3>
+              <Badge className="bg-white text-slate-900 font-semibold">ACTIONABLE INTELLIGENCE</Badge>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="p-3 bg-slate-800 rounded border border-slate-700">
-                <p className="text-[10px] font-black text-amber-400 uppercase mb-1">Critical Insight</p>
+                <p className="text-xs font-semibold text-amber-400  mb-1">Critical Insight</p>
                 <p className="text-xs font-medium text-slate-300">
                   <span className="text-white font-bold">Vegetable Demand</span> is predicted to surge 75% in the next 60 days. Current cooperative production is only at 60% capacity. AI recommends triggering emergency production incentives.
                 </p>
               </div>
               <div className="p-3 bg-slate-800 rounded border border-slate-700">
-                <p className="text-[10px] font-black text-emerald-400 uppercase mb-1">Competitive Edge</p>
+                <p className="text-xs font-semibold text-emerald-400  mb-1">Competitive Edge</p>
                 <p className="text-xs font-medium text-slate-300">
                   KOPDES logistics efficiency is <span className="text-white font-bold">14% higher</span> than Corp A. Use this margin advantage to secure long-term contracts with Hotel & Restaurant chains.
                 </p>

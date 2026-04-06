@@ -49,7 +49,7 @@ export function PetaniDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950 drop-shadow-sm">Pusat Kerja Petani</h2>
+        <h2 className="text-2xl font-semibold  text-slate-950 drop-shadow-sm">Pusat Kerja Petani</h2>
         <p className="text-slate-700 text-sm font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Pantau panen, harga pasar, dan layanan keuangan Anda.</p>
       </div>
 
@@ -61,38 +61,38 @@ export function PetaniDashboard() {
           </div>
           <CardContent className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Badge className="bg-emerald-600 hover:bg-emerald-700 font-black text-[10px] uppercase tracking-wider">Panen Aktif</Badge>
-              <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Update: 15 menit lalu</span>
+              <Badge className="bg-emerald-600 hover:bg-emerald-700 font-semibold text-xs  ">Panen Aktif</Badge>
+              <span className="text-xs text-slate-500 font-semibold  ">Update: 15 menit lalu</span>
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Estimasi Hasil Panen</p>
+                <p className="text-xs font-semibold text-slate-400  ">Estimasi Hasil Panen</p>
                 <div className="flex items-baseline gap-2 mt-1">
-                  <p className="text-4xl font-black text-slate-950 tracking-tighter">2.9 <span className="text-xl">Ton</span></p>
-                  <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <p className="text-4xl font-semibold text-slate-950 ">2.9 <span className="text-xl">Ton</span></p>
+                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
                     <ArrowUpRight className="h-3 w-3" /> +12%
                   </span>
                 </div>
                 <p className="text-xs font-bold text-slate-600 mt-2">Komoditas: Cabai Merah (Lahan A1)</p>
               </div>
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-tight text-slate-900">
+                <div className="flex items-center justify-between text-sm font-semibold   text-slate-900">
                   <span>Kesiapan Panen</span>
-                  <span className="font-black text-emerald-700">85%</span>
+                  <span className="font-semibold text-emerald-700">85%</span>
                 </div>
                 <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner border border-slate-200">
                   <div className="h-full bg-emerald-500 w-[85%] rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]" />
                 </div>
-                <p className="text-[10px] text-slate-500 font-bold leading-tight italic">
+                <p className="text-xs text-slate-500 font-bold leading-tight italic">
                   *AI memprediksi panen optimal dalam 4 hari berdasarkan cuaca & kelembaban.
                 </p>
               </div>
             </div>
             <div className="mt-6 flex gap-3">
-              <Button className="rounded-xl h-10 px-6 font-black text-[11px] uppercase tracking-widest bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200" asChild>
+              <Button className="rounded-xl h-10 px-6 font-semibold text-sm   bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200" asChild>
                 <Link href="/produksi">Catat Aktivitas Panen</Link>
               </Button>
-              <Button variant="outline" className="rounded-xl h-10 px-6 font-black text-[11px] uppercase tracking-widest border-emerald-200 text-emerald-700 hover:bg-emerald-50 shadow-sm" asChild>
+              <Button variant="outline" className="rounded-xl h-10 px-6 font-semibold text-sm   border-emerald-200 text-emerald-700 hover:bg-emerald-50 shadow-sm" asChild>
                 <Link href="/assistant">Tanya AI Tani</Link>
               </Button>
             </div>
@@ -103,16 +103,16 @@ export function PetaniDashboard() {
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Harga Pasar</CardTitle>
+              <CardTitle className="text-xs font-semibold   text-slate-400">Harga Pasar</CardTitle>
               <ShoppingCart className="h-4 w-4 text-primary" />
             </div>
           </CardHeader>
           <CardContent className="p-6 space-y-4">
             <div>
-              <p className="text-3xl font-black text-slate-950 tracking-tighter">Rp 14.500 <span className="text-xs font-bold text-slate-400">/kg</span></p>
+              <p className="text-3xl font-semibold text-slate-950 ">Rp 14.500 <span className="text-xs font-bold text-slate-400">/kg</span></p>
               <div className="flex items-center gap-1.5 mt-1">
                 <TrendingUp className="h-3 w-3 text-emerald-600" />
-                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tight">Naik 6% hari ini</span>
+                <span className="text-xs font-semibold text-emerald-600  ">Naik 6% hari ini</span>
               </div>
             </div>
             <div className="h-[80px] w-full">
@@ -128,7 +128,7 @@ export function PetaniDashboard() {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-            <Button variant="ghost" size="sm" className="w-full text-[10px] font-black text-primary group uppercase tracking-widest hover:bg-rose-50" asChild>
+            <Button variant="ghost" size="sm" className="w-full text-xs font-semibold text-primary group   hover:bg-rose-50" asChild>
               <Link href="/pasar/harga">
                 Lihat Komoditas <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-1" />
               </Link>
@@ -150,11 +150,11 @@ export function PetaniDashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="p-3 rounded-xl border border-primary/10 bg-white/50 space-y-1">
-              <p className="text-xs font-bold text-primary uppercase">Strategi Jual</p>
+              <p className="text-xs font-bold text-primary ">Strategi Jual</p>
               <p className="text-sm font-medium leading-tight">Tahan panen 3 hari lagi untuk potensi harga +Rp 1.200/kg.</p>
             </div>
             <div className="p-3 rounded-xl border border-blue-100 bg-blue-50/30 space-y-1">
-              <p className="text-xs font-bold text-blue-600 uppercase">Peringatan Cuaca</p>
+              <p className="text-xs font-bold text-blue-600 ">Peringatan Cuaca</p>
               <p className="text-sm font-medium leading-tight">Hujan lebat diprediksi besok sore. Pastikan drainase lahan A1 aman.</p>
             </div>
             <Button variant="link" className="px-0 text-xs font-bold" asChild>
@@ -199,7 +199,7 @@ export function PetaniDashboard() {
                 <Wallet className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sisa Plafon Pinjaman</p>
+                <p className="text-xs font-bold text-muted-foreground  ">Sisa Plafon Pinjaman</p>
                 <p className="text-xl font-bold">Rp 12.500.000</p>
               </div>
             </div>
@@ -215,7 +215,7 @@ export function PetaniDashboard() {
                 <Calendar className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Simpanan Pokok & Wajib</p>
+                <p className="text-xs font-bold text-muted-foreground  ">Simpanan Pokok & Wajib</p>
                 <p className="text-xl font-bold">Rp 4.250.000</p>
               </div>
             </div>

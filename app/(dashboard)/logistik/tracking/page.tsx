@@ -88,18 +88,18 @@ export default function TrackingPage() {
             <Truck className="h-6 w-6 text-emerald-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">National Logistics Tracking</h1>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+            <h1 className="text-2xl font-semibold  text-slate-900 ">National Logistics Tracking</h1>
+            <p className="text-xs font-bold text-slate-500   mt-1">
               Real-time Fleet Monitoring & Supply Chain Visibility • {stats.activeCount} Units Underway
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-           <Button variant="outline" size="sm" className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200">
+           <Button variant="outline" size="sm" className="h-10 text-xs font-semibold   text-slate-600 border-slate-200">
             <ShieldAlert className="h-4 w-4 mr-2 text-rose-600" />
             Delay Alerts
           </Button>
-          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200">
+          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold   px-6 shadow-lg shadow-slate-200">
             <Download className="h-4 w-4 mr-2" />
             Logistic PDF
           </Button>
@@ -123,10 +123,10 @@ export default function TrackingPage() {
                 <s.icon className={`h-5 w-5 ${s.color}`} />
               </div>
               <div>
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                <p className="text-xs font-semibold text-slate-400  ">{s.label}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-xl font-black tracking-tighter ${s.color}`}>{s.value}</span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">{s.sub}</span>
+                  <span className={`text-xl font-semibold  ${s.color}`}>{s.value}</span>
+                  <span className="text-xs font-bold text-slate-500 ">{s.sub}</span>
                 </div>
               </div>
             </CardContent>
@@ -146,13 +146,13 @@ export default function TrackingPage() {
                     <div className="h-20 w-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6">
                        <Navigation className="h-10 w-10 text-emerald-500 animate-pulse" />
                     </div>
-                    <h3 className="text-xl font-black text-white uppercase tracking-[0.2em]">Peta Logistik Nasional</h3>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2 max-w-sm mx-auto">
+                    <h3 className="text-xl font-semibold text-white  ">Peta Logistik Nasional</h3>
+                    <p className="text-xs font-bold text-slate-500   mt-2 max-w-sm mx-auto">
                        Integrasi satelit real-time untuk pemantauan rute dan optimasi distribusi armada lintas wilayah.
                     </p>
                     <div className="mt-8 flex flex-wrap justify-center gap-3">
-                       <Badge className="bg-blue-600 text-white font-black text-[9px] uppercase tracking-widest h-6 border-none">32 TRANSIT</Badge>
-                       <Badge className="bg-amber-600 text-white font-black text-[9px] uppercase tracking-widest h-6 border-none">12 PICKUP</Badge>
+                       <Badge className="bg-blue-600 text-white font-semibold text-xs   h-6 border-none">32 TRANSIT</Badge>
+                       <Badge className="bg-amber-600 text-white font-semibold text-xs   h-6 border-none">12 PICKUP</Badge>
                     </div>
                  </div>
               </div>
@@ -167,10 +167,10 @@ export default function TrackingPage() {
               <div className="absolute bottom-6 left-6 flex items-center gap-4 bg-slate-950/80 p-3 rounded-2xl border border-white/10 backdrop-blur-md">
                  <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-                    <span className="text-[9px] font-black text-white uppercase tracking-widest">Live Feed Active</span>
+                    <span className="text-xs font-semibold text-white  ">Live Feed Active</span>
                  </div>
                  <div className="h-4 w-px bg-slate-800" />
-                 <span className="text-[9px] font-black text-slate-500 uppercase">Last Sync: {new Date().toLocaleTimeString()}</span>
+                 <span className="text-xs font-semibold text-slate-500 ">Last Sync: {new Date().toLocaleTimeString()}</span>
               </div>
            </Card>
 
@@ -187,13 +187,13 @@ export default function TrackingPage() {
                                 <Truck className="h-6 w-6" />
                              </div>
                              <div className="min-w-0">
-                                <CardTitle className="text-xs font-black text-slate-900 uppercase truncate leading-tight tracking-tight">
+                                <CardTitle className="text-xs font-semibold text-slate-900  truncate leading-tight ">
                                    {shipment.nomorResi}
                                 </CardTitle>
-                                <p className="text-[10px] font-bold text-slate-500 uppercase mt-1 truncate max-w-[140px]">{order?.buyerNama}</p>
+                                <p className="text-xs font-bold text-slate-500  mt-1 truncate max-w-[140px]">{order?.buyerNama}</p>
                              </div>
                           </div>
-                          <Badge className={`h-5 text-[8px] font-black uppercase px-2 rounded border-none ${
+                          <Badge className={`h-5 text-xs font-semibold  px-2 rounded border-none ${
                             shipment.status === 'transit' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
                           }`}>
                             {shipment.status === 'transit' ? 'IN TRANSIT' : 'PICKUP'}
@@ -207,8 +207,8 @@ export default function TrackingPage() {
                                 <Phone className="h-3 w-3 text-slate-400" />
                              </div>
                              <div>
-                                <p className="text-[9px] font-black text-slate-900 tracking-widest">{shipment.driver}</p>
-                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">{shipment.noHpDriver}</p>
+                                <p className="text-xs font-semibold text-slate-900 ">{shipment.driver}</p>
+                                <p className="text-xs font-bold text-slate-400  ">{shipment.noHpDriver}</p>
                              </div>
                           </div>
                           <div className="flex items-center gap-2.5">
@@ -216,14 +216,14 @@ export default function TrackingPage() {
                                 <Activity className="h-3 w-3 text-slate-400" />
                              </div>
                              <div>
-                                <p className="text-[9px] font-black text-slate-900 tracking-widest">{shipment.platNomor}</p>
-                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">{shipment.kendaraan}</p>
+                                <p className="text-xs font-semibold text-slate-900 ">{shipment.platNomor}</p>
+                                <p className="text-xs font-bold text-slate-400  ">{shipment.kendaraan}</p>
                              </div>
                           </div>
                        </div>
 
                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                          <div className="flex items-center justify-between mb-3 text-[9px] font-black uppercase tracking-widest text-slate-400">
+                          <div className="flex items-center justify-between mb-3 text-xs font-semibold   text-slate-400">
                              <span>Rute Optimal</span>
                              <Clock className="h-3 w-3" />
                           </div>
@@ -241,10 +241,10 @@ export default function TrackingPage() {
                                 </div>
                              ))}
                           </div>
-                          <p className="mt-3 text-[9px] font-bold text-slate-600 uppercase">ETA: {formatDate(shipment.tanggalBerangkat)}</p>
+                          <p className="mt-3 text-xs font-bold text-slate-600 ">ETA: {formatDate(shipment.tanggalBerangkat)}</p>
                        </div>
 
-                       <Button className="w-full h-10 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-slate-800 transition-all shadow-lg">
+                       <Button className="w-full h-10 bg-slate-900 text-white font-semibold text-xs   rounded-xl hover:bg-slate-800 transition-all shadow-lg">
                          BUKA KONSOL KOMUNIKASI
                        </Button>
                     </CardContent>
@@ -259,12 +259,12 @@ export default function TrackingPage() {
            <Card className="border-none shadow-xl bg-slate-950 text-white overflow-hidden">
               <CardHeader className="p-5 border-b border-white/5 bg-slate-900/50">
                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2">
+                    <CardTitle className="text-xs font-semibold   flex items-center gap-2">
                        <Activity className="h-4 w-4 text-emerald-500" /> LOGISTIK FEED
                     </CardTitle>
                     <div className="flex items-center gap-1.5">
                        <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-ping" />
-                       <span className="text-[9px] font-black text-emerald-500 uppercase">SYNCING</span>
+                       <span className="text-xs font-semibold text-emerald-500 ">SYNCING</span>
                     </div>
                  </div>
               </CardHeader>
@@ -278,20 +278,20 @@ export default function TrackingPage() {
                     ].map((log, i) => (
                       <div key={i} className="p-5 hover:bg-white/5 transition-colors cursor-pointer">
                          <div className="flex items-center justify-between mb-2">
-                            <Badge className={`text-[8px] font-black uppercase px-1.5 h-4 border-none ${
+                            <Badge className={`text-xs font-semibold  px-1.5 h-4 border-none ${
                               log.status === 'WARNING' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
                             }`}>
                                {log.status}
                             </Badge>
-                            <span className="text-[9px] font-mono text-slate-600">{log.time}</span>
+                            <span className="text-xs font-mono text-slate-600">{log.time}</span>
                          </div>
-                         <p className="text-[11px] font-black text-slate-200 uppercase leading-tight">{log.action}</p>
-                         <p className="text-[9px] font-bold text-slate-500 uppercase mt-1">ID UNIT: {log.unit}</p>
+                         <p className="text-sm font-semibold text-slate-200  leading-tight">{log.action}</p>
+                         <p className="text-xs font-bold text-slate-500  mt-1">ID UNIT: {log.unit}</p>
                       </div>
                     ))}
                  </div>
                  <div className="p-4 bg-white/5 border-t border-white/5">
-                    <Button variant="ghost" className="w-full text-[9px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-10">
+                    <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-white   h-10">
                        Buka Pusat Logistik →
                     </Button>
                  </div>
@@ -300,7 +300,7 @@ export default function TrackingPage() {
 
            <Card className="border-none shadow-sm bg-slate-50">
               <CardHeader className="p-4 border-b border-slate-200">
-                 <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Health Check: Fleet</CardTitle>
+                 <CardTitle className="text-xs font-semibold   text-slate-900">Health Check: Fleet</CardTitle>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                  {[
@@ -309,10 +309,10 @@ export default function TrackingPage() {
                    { label: 'Cloud Sync', val: 'Active', status: 'Live' },
                  ].map((h, i) => (
                     <div key={i} className="flex items-center justify-between">
-                       <span className="text-[10px] font-bold text-slate-500 uppercase">{h.label}</span>
+                       <span className="text-xs font-bold text-slate-500 ">{h.label}</span>
                        <div className="text-right">
-                          <p className="text-[10px] font-black text-slate-900 uppercase">{h.val}</p>
-                          <p className="text-[8px] font-bold text-emerald-600 uppercase">{h.status}</p>
+                          <p className="text-xs font-semibold text-slate-900 ">{h.val}</p>
+                          <p className="text-xs font-bold text-emerald-600 ">{h.status}</p>
                        </div>
                     </div>
                  ))}
@@ -327,8 +327,8 @@ export default function TrackingPage() {
             <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-6 text-slate-300">
               <Truck className="h-10 w-10" />
             </div>
-            <h3 className="text-xl font-black text-slate-900 uppercase">Tidak Ada Pengiriman Aktif</h3>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2 max-w-sm mx-auto">
+            <h3 className="text-xl font-semibold text-slate-900 ">Tidak Ada Pengiriman Aktif</h3>
+            <p className="text-xs font-bold text-slate-500   mt-2 max-w-sm mx-auto">
               Saat ini tidak ada armada yang sedang beroperasi di wilayah yang dipilih.
             </p>
             <Button 
@@ -337,7 +337,7 @@ export default function TrackingPage() {
                 setSearch('')
                 setFilters({ provinceId: 'all', regionId: 'all', villageId: 'all', cooperativeId: 'all', commodityId: 'all' })
               }}
-              className="mt-6 text-[10px] font-black uppercase text-emerald-600"
+              className="mt-6 text-xs font-semibold  text-emerald-600"
             >
               Lihat Seluruh Nasional
             </Button>

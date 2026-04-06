@@ -42,7 +42,7 @@ export function SysadminDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950 drop-shadow-sm">Pusat Kontrol Sistem & Platform</h2>
+        <h2 className="text-2xl font-semibold  text-slate-950 drop-shadow-sm">Pusat Kontrol Sistem & Platform</h2>
         <p className="text-slate-700 text-sm font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Monitor stabilitas, audit akses, dan performa lintas modul.</p>
       </div>
 
@@ -59,11 +59,11 @@ export function SysadminDashboard() {
                 <div className={`p-2 rounded-xl ${kpi.bg} ${kpi.color}`}>
                   <kpi.icon className="h-5 w-5" />
                 </div>
-                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.change}</div>
+                <div className="text-xs font-semibold text-slate-400  ">{kpi.change}</div>
               </div>
               <div className="mt-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] drop-shadow-sm">{kpi.title}</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">{kpi.value}</p>
+                <p className="text-xs font-semibold text-slate-400   drop-shadow-sm">{kpi.title}</p>
+                <p className="text-3xl font-semibold mt-1 text-slate-950 drop-shadow-sm ">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -74,17 +74,17 @@ export function SysadminDashboard() {
         {/* Module Performance */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Kesehatan Modul Platform</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Uptime dan responsivitas per layanan inti.</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Kesehatan Modul Platform</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 ">Uptime dan responsivitas per layanan inti.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
             <div className="space-y-6">
               {systemHealth.map((module) => (
                 <div key={module.module} className="space-y-2">
-                  <div className="flex justify-between items-center text-[11px] font-black uppercase tracking-tight">
+                  <div className="flex justify-between items-center text-sm font-semibold  ">
                     <div className="flex items-center gap-2">
                       <span className="text-slate-900">{module.module} Service</span>
-                      <Badge variant="outline" className="text-[9px] h-4 font-black border-slate-200 text-slate-500 uppercase">Latency: {module.latency}</Badge>
+                      <Badge variant="outline" className="text-xs h-4 font-semibold border-slate-200 text-slate-500 ">Latency: {module.latency}</Badge>
                     </div>
                     <span className="text-emerald-600">{module.status}% Uptime</span>
                   </div>
@@ -100,7 +100,7 @@ export function SysadminDashboard() {
         {/* System Alerts & Audits */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-3 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Audit Log Terbaru</CardTitle>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Audit Log Terbaru</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-slate-100">
@@ -113,14 +113,14 @@ export function SysadminDashboard() {
                 <div key={idx} className="flex items-start gap-3 p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
                   <div className="mt-1.5 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black text-slate-900 truncate uppercase tracking-tight group-hover:text-rose-600 transition-colors">{log.user} performed {log.action}</p>
-                    <p className="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-widest">Target: {log.target} • {log.time}</p>
+                    <p className="text-xs font-semibold text-slate-900 truncate   group-hover:text-rose-600 transition-colors">{log.user} performed {log.action}</p>
+                    <p className="text-xs font-bold text-slate-400 mt-0.5  ">Target: {log.target} • {log.time}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="p-3 bg-slate-50/30">
-              <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all" asChild>
+              <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-white   transition-all" asChild>
                 <Link href="/command-center">Buka Konsol Kendali →</Link>
               </Button>
             </div>

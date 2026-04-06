@@ -94,7 +94,7 @@ export function HarvestScheduleView({ open, onOpenChange }: DialogOpenProps) {
           {view === 'Month' ? (
             <div className="grid grid-cols-7 gap-px bg-slate-200 dark:bg-slate-800 border rounded-xl overflow-hidden shadow-sm">
               {days.map(day => (
-                <div key={day} className="bg-white dark:bg-slate-900 p-2 text-center text-[10px] font-bold uppercase text-slate-400">
+                <div key={day} className="bg-white dark:bg-slate-900 p-2 text-center text-xs font-bold  text-slate-400">
                   {day}
                 </div>
               ))}
@@ -111,7 +111,7 @@ export function HarvestScheduleView({ open, onOpenChange }: DialogOpenProps) {
                     </span>
                     <div className="mt-1 space-y-1">
                       {dayEvents.map(event => (
-                        <div key={event.id} className={`${event.color} text-white text-[9px] px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 cursor-pointer truncate`}>
+                        <div key={event.id} className={`${event.color} text-white text-xs px-1.5 py-0.5 rounded shadow-sm flex items-center gap-1 cursor-pointer truncate`}>
                           <Sprout className="h-2 w-2" />
                           {event.title}
                         </div>
@@ -139,14 +139,14 @@ export function HarvestScheduleView({ open, onOpenChange }: DialogOpenProps) {
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="border-none shadow-sm bg-white dark:bg-slate-900">
               <CardContent className="p-4">
-                <h4 className="text-xs font-bold uppercase text-slate-400 mb-3">Upcoming Highlights</h4>
+                <h4 className="text-xs font-bold  text-slate-400 mb-3">Upcoming Highlights</h4>
                 <div className="space-y-3">
                   {harvestEvents.slice(0, 3).map(event => (
                     <div key={event.id} className="flex items-center gap-3 p-2 rounded-lg border border-slate-100 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-900/50 transition-colors cursor-pointer group">
                       <div className={`w-1 h-8 rounded-full ${event.color}`} />
                       <div className="flex-1">
                         <p className="text-sm font-semibold group-hover:text-emerald-600 transition-colors">{event.title}</p>
-                        <div className="flex items-center gap-3 mt-0.5 text-[10px] text-muted-foreground">
+                        <div className="flex items-center gap-3 mt-0.5 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1"><CalendarIcon className="h-2.5 w-2.5" /> {event.date}</span>
                           <span className="flex items-center gap-1"><MapPin className="h-2.5 w-2.5" /> {event.location}</span>
                         </div>
@@ -160,7 +160,7 @@ export function HarvestScheduleView({ open, onOpenChange }: DialogOpenProps) {
             
             <Card className="border-none shadow-sm bg-white dark:bg-slate-900">
               <CardContent className="p-4">
-                <h4 className="text-xs font-bold uppercase text-slate-400 mb-3">Schedule Legend</h4>
+                <h4 className="text-xs font-bold  text-slate-400 mb-3">Schedule Legend</h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex items-center gap-2 text-xs">
                     <div className="w-3 h-3 rounded-full bg-emerald-500" />

@@ -14,7 +14,7 @@ export function KopdesLayout({ children }: KopdesLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="app-shell min-h-screen bg-background">
       <div className="pointer-events-none fixed inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top_left,rgba(190,8,23,0.06),transparent_48%),radial-gradient(circle_at_top_right,rgba(255,255,255,0.95),transparent_34%)]" />
       <KopdesSidebarCustom open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

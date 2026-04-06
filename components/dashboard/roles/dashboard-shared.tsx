@@ -21,7 +21,7 @@ export function DashboardLinks() {
             </div>
             <div className="flex-1">
               <p className="text-sm font-bold">Laporan Agregat Lengkap</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">Analisis mendalam per sektor komoditas.</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Analisis mendalam per sektor komoditas.</p>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
           </CardContent>
@@ -35,7 +35,7 @@ export function DashboardLinks() {
             </div>
             <div className="flex-1">
               <p className="text-sm font-bold">Asisten AI Digital</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">Tanya data operasional via chat.</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Tanya data operasional via chat.</p>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
           </CardContent>
@@ -49,7 +49,7 @@ export function DashboardLinks() {
             </div>
             <div className="flex-1">
               <p className="text-sm font-bold">Pusat Data Produksi</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">Pantau hasil panen wilayah.</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Pantau hasil panen wilayah.</p>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1" />
           </CardContent>

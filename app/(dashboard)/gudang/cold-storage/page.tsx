@@ -73,19 +73,19 @@ export default function ColdStorageKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase flex items-center gap-2 leading-none">
+            <h1 className="text-2xl font-semibold  text-slate-900  flex items-center gap-2 leading-none">
               <Snowflake className="h-6 w-6 text-slate-900" />
               National Cold-Storage Monitoring
             </h1>
-            <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase mt-2">
+            <p className="text-xs font-bold  text-slate-500  mt-2">
               MONITORING SUHU DAN INTEGRITAS RANTAI DINGIN KOMODITAS SEGAR NASIONAL
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="font-black border-2 text-[9px] uppercase h-8 tracking-widest border-slate-200 px-3">
+            <Button variant="outline" className="font-semibold border-2 text-xs  h-8  border-slate-200 px-3">
               <Activity className="mr-1.5 h-3.5 w-3.5 text-emerald-600" /> REAL-TIME SENSORS
             </Button>
-            <Button className="bg-slate-900 font-black text-[9px] uppercase h-8 tracking-widest px-3">
+            <Button className="bg-slate-900 font-semibold text-xs  h-8  px-3">
               <Zap className="mr-1.5 h-3.5 w-3.5 text-amber-400" /> ENERGY AUDIT
             </Button>
           </div>
@@ -98,16 +98,16 @@ export default function ColdStorageKementerianPage() {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Card className="border-none shadow-sm">
           <CardContent className="p-4">
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">ACTIVE FACILITIES</p>
-            <CardTitle className="text-xl font-black text-slate-900">{processedData.units.length}</CardTitle>
-            <p className="text-[8px] font-black text-slate-400 uppercase mt-1">NATIONAL COOLING NETWORK</p>
+            <p className="text-xs font-semibold   text-slate-500 mb-1">ACTIVE FACILITIES</p>
+            <CardTitle className="text-xl font-semibold text-slate-900">{processedData.units.length}</CardTitle>
+            <p className="text-xs font-semibold text-slate-400  mt-1">NATIONAL COOLING NETWORK</p>
           </CardContent>
         </Card>
 
         <Card className="border-none shadow-sm">
           <CardContent className="p-4">
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">AGGREGATE OCCUPANCY</p>
-            <CardTitle className="text-xl font-black text-slate-900">
+            <p className="text-xs font-semibold   text-slate-500 mb-1">AGGREGATE OCCUPANCY</p>
+            <CardTitle className="text-xl font-semibold text-slate-900">
               {((processedData.totalTerpakai / processedData.totalKapasitas) * 100).toFixed(1)}%
             </CardTitle>
             <Progress value={(processedData.totalTerpakai / processedData.totalKapasitas) * 100} className="h-1 bg-blue-100 mt-2" />
@@ -116,9 +116,9 @@ export default function ColdStorageKementerianPage() {
 
         <Card className="border-none shadow-sm">
           <CardContent className="p-4">
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">THERMAL COMPLIANCE</p>
-            <CardTitle className="text-xl font-black text-emerald-600">{processedData.normalCount}</CardTitle>
-            <div className="flex items-center gap-1 text-[8px] font-black text-emerald-600 uppercase mt-1">
+            <p className="text-xs font-semibold   text-slate-500 mb-1">THERMAL COMPLIANCE</p>
+            <CardTitle className="text-xl font-semibold text-emerald-600">{processedData.normalCount}</CardTitle>
+            <div className="flex items-center gap-1 text-xs font-semibold text-emerald-600  mt-1">
               <CheckCircle2 className="h-2 w-2" /> STABILIZED LOAD
             </div>
           </CardContent>
@@ -126,9 +126,9 @@ export default function ColdStorageKementerianPage() {
 
         <Card className="border-none shadow-sm">
           <CardContent className="p-4">
-            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">ANOMALY ALERTS</p>
-            <CardTitle className="text-xl font-black text-rose-600">{processedData.warningCount}</CardTitle>
-            <p className="text-[8px] font-black text-rose-600 uppercase mt-1 tracking-tighter">REQUIRES IMMEDIATE CHECK</p>
+            <p className="text-xs font-semibold   text-slate-500 mb-1">ANOMALY ALERTS</p>
+            <CardTitle className="text-xl font-semibold text-rose-600">{processedData.warningCount}</CardTitle>
+            <p className="text-xs font-semibold text-rose-600  mt-1 ">REQUIRES IMMEDIATE CHECK</p>
           </CardContent>
         </Card>
       </div>
@@ -138,7 +138,7 @@ export default function ColdStorageKementerianPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
             <Warehouse className="h-4 w-4 text-slate-900" />
-            <h3 className="text-xs font-black uppercase tracking-widest text-slate-900">STRATEGIC COOLING NODES</h3>
+            <h3 className="text-xs font-semibold   text-slate-900">STRATEGIC COOLING NODES</h3>
           </div>
           
           <div className="grid gap-4 md:grid-cols-2">
@@ -148,11 +148,11 @@ export default function ColdStorageKementerianPage() {
                 <CardHeader className="p-4 bg-slate-50/30 border-b border-slate-100">
                   <div className="flex justify-between items-start">
                     <div>
-                      <Badge className="bg-slate-900 text-white font-black text-[8px] uppercase mb-1 h-4 px-1.5">{unit.id}</Badge>
-                      <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tighter leading-none">{unit.nama}</CardTitle>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">{unit.cooperative}</p>
+                      <Badge className="bg-slate-900 text-white font-semibold text-xs  mb-1 h-4 px-1.5">{unit.id}</Badge>
+                      <CardTitle className="text-sm font-semibold text-slate-900   leading-none">{unit.nama}</CardTitle>
+                      <p className="text-xs font-bold text-slate-400   mt-1.5">{unit.cooperative}</p>
                     </div>
-                    <Badge className={`text-[8px] font-black uppercase h-4 px-1.5 border-0 ${unit.status === 'normal' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                    <Badge className={`text-xs font-semibold  h-4 px-1.5 border-0 ${unit.status === 'normal' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
                       {unit.status}
                     </Badge>
                   </div>
@@ -162,21 +162,21 @@ export default function ColdStorageKementerianPage() {
                     <div className="p-2.5 bg-blue-50/50 border border-blue-100 rounded-lg flex items-center gap-3 group-hover:bg-white transition-colors">
                       <Thermometer className="h-5 w-5 text-blue-600" />
                       <div>
-                        <p className="text-[7px] font-black text-blue-400 uppercase leading-none mb-1">THERMAL</p>
-                        <p className="text-xs font-black text-blue-900 leading-none">{unit.suhuAktual}°C</p>
+                        <p className="text-[7px] font-semibold text-blue-400  leading-none mb-1">THERMAL</p>
+                        <p className="text-xs font-semibold text-blue-900 leading-none">{unit.suhuAktual}°C</p>
                       </div>
                     </div>
                     <div className="p-2.5 bg-cyan-50/50 border border-cyan-100 rounded-lg flex items-center gap-3 group-hover:bg-white transition-colors">
                       <Droplets className="h-5 w-5 text-cyan-600" />
                       <div>
-                        <p className="text-[7px] font-black text-cyan-400 uppercase leading-none mb-1">HUMIDITY</p>
-                        <p className="text-xs font-black text-cyan-900 leading-none">{unit.kelembaban}%</p>
+                        <p className="text-[7px] font-semibold text-cyan-400  leading-none mb-1">HUMIDITY</p>
+                        <p className="text-xs font-semibold text-cyan-900 leading-none">{unit.kelembaban}%</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <div className="flex justify-between text-[8px] font-black uppercase text-slate-400 tracking-widest">
+                    <div className="flex justify-between text-xs font-semibold  text-slate-400 ">
                       <span>OCCUPANCY</span>
                       <span className="text-slate-900">{unit.terpakai} / {unit.kapasitas} KG</span>
                     </div>
@@ -184,12 +184,12 @@ export default function ColdStorageKementerianPage() {
                   </div>
 
                   <div className="pt-3 border-t border-dashed border-slate-100">
-                    <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2.5">STORED INVENTORY</p>
+                    <p className="text-xs font-semibold text-slate-400   mb-2.5">STORED INVENTORY</p>
                     <div className="space-y-1.5">
                       {unit.items.map((item, idx) => (
-                        <div key={idx} className="flex justify-between items-center text-[9px] font-bold text-slate-600 uppercase">
+                        <div key={idx} className="flex justify-between items-center text-xs font-bold text-slate-600 ">
                           <span>{item.nama}</span>
-                          <span className="text-slate-400 font-black tracking-tighter">{item.jumlah} {item.satuan}</span>
+                          <span className="text-slate-400 font-semibold ">{item.jumlah} {item.satuan}</span>
                         </div>
                       ))}
                     </div>
@@ -204,7 +204,7 @@ export default function ColdStorageKementerianPage() {
         <div className="space-y-6">
           <Card className="border-none shadow-sm overflow-hidden bg-white">
             <CardHeader className="bg-rose-50/50 border-b border-rose-100 p-4">
-              <CardTitle className="text-[10px] font-black uppercase tracking-widest text-rose-900 flex items-center gap-2 leading-none">
+              <CardTitle className="text-xs font-semibold   text-rose-900 flex items-center gap-2 leading-none">
                 <AlertTriangle className="h-4 w-4 text-rose-600" /> CRITICAL EXPIRY WATCH
               </CardTitle>
             </CardHeader>
@@ -213,22 +213,22 @@ export default function ColdStorageKementerianPage() {
                 {expiringItems.map((item, idx) => (
                   <div key={idx} className="p-4 hover:bg-slate-50 transition-colors">
                     <div className="flex justify-between items-start mb-1.5">
-                      <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight leading-none">{item.nama}</p>
-                      <Badge className="text-[8px] font-black text-rose-700 bg-rose-100 h-4 px-1.5 border-0 uppercase">{item.sisaHari} DAYS LEFT</Badge>
+                      <p className="text-xs font-semibold text-slate-900   leading-none">{item.nama}</p>
+                      <Badge className="text-xs font-semibold text-rose-700 bg-rose-100 h-4 px-1.5 border-0 ">{item.sisaHari} DAYS LEFT</Badge>
                     </div>
-                    <div className="flex items-center gap-1.5 text-[8px] font-bold text-slate-400 uppercase tracking-tighter">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400  ">
                       <MapPin className="h-2.5 w-2.5 text-slate-300" /> {item.lokasi} • {item.node}
                     </div>
                     <div className="mt-3 flex gap-1.5">
-                      <Button variant="outline" className="h-7 flex-1 font-black text-[8px] uppercase border-2 border-slate-200">TRACING</Button>
-                      <Button className="h-7 flex-1 font-black text-[8px] uppercase bg-slate-900">MARKET PUSH</Button>
+                      <Button variant="outline" className="h-7 flex-1 font-semibold text-xs  border-2 border-slate-200">TRACING</Button>
+                      <Button className="h-7 flex-1 font-semibold text-xs  bg-slate-900">MARKET PUSH</Button>
                     </div>
                   </div>
                 ))}
               </div>
             </CardContent>
             <div className="p-3 bg-slate-50 border-t border-slate-100">
-              <Button variant="ghost" className="w-full h-7 text-[9px] font-black text-slate-500 hover:text-slate-900 uppercase tracking-widest">
+              <Button variant="ghost" className="w-full h-7 text-xs font-semibold text-slate-500 hover:text-slate-900  ">
                 VIEW ALL EXPIRING STOCKS
               </Button>
             </div>
@@ -239,25 +239,25 @@ export default function ColdStorageKementerianPage() {
               <ShieldCheck className="h-24 w-24 text-emerald-400" />
             </div>
             <div className="space-y-4 relative z-10">
-              <h3 className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 leading-none border-b border-slate-800 pb-3">
+              <h3 className="text-sm font-semibold   flex items-center gap-2 leading-none border-b border-slate-800 pb-3">
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
                 AI INTEGRITY AUDIT
               </h3>
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <p className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">EFFICIENCY METRIC</p>
-                  <p className="text-[10px] font-bold text-slate-300 leading-relaxed uppercase">
-                    NATIONAL POWER CONSUMPTION IS <span className="text-white font-black">12% BELOW</span> LAST YEAR THROUGH AI CYCLING.
+                  <p className="text-xs font-semibold text-emerald-400  ">EFFICIENCY METRIC</p>
+                  <p className="text-xs font-bold text-slate-300 leading-relaxed ">
+                    NATIONAL POWER CONSUMPTION IS <span className="text-white font-semibold">12% BELOW</span> LAST YEAR THROUGH AI CYCLING.
                   </p>
                 </div>
                 <div className="space-y-1.5">
-                  <p className="text-[8px] font-black text-amber-400 uppercase tracking-widest">WASTE PREVENTION</p>
-                  <p className="text-[10px] font-bold text-slate-300 leading-relaxed uppercase">
-                    AI PREVENTED <span className="text-white font-black">1.4 TONS</span> OF WASTE THIS MONTH BY TRIGGERING EARLY PUSH.
+                  <p className="text-xs font-semibold text-amber-400  ">WASTE PREVENTION</p>
+                  <p className="text-xs font-bold text-slate-300 leading-relaxed ">
+                    AI PREVENTED <span className="text-white font-semibold">1.4 TONS</span> OF WASTE THIS MONTH BY TRIGGERING EARLY PUSH.
                   </p>
                 </div>
               </div>
-              <Button className="w-full bg-emerald-500 text-slate-900 font-black text-[9px] uppercase h-9 hover:bg-emerald-400 mt-2 transition-all">
+              <Button className="w-full bg-emerald-500 text-slate-900 font-semibold text-xs  h-9 hover:bg-emerald-400 mt-2 transition-all">
                 ACCESS FULL NETWORK TELEMETRY
               </Button>
             </div>

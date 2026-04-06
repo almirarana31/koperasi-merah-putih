@@ -60,19 +60,19 @@ export default function TraceabilityKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase flex items-center gap-2 leading-none">
+            <h1 className="text-2xl font-semibold  text-slate-900  flex items-center gap-2 leading-none">
               <QrCode className="h-6 w-6 text-slate-900" />
               National Traceability Audit
             </h1>
-            <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase mt-2">
+            <p className="text-xs font-bold  text-slate-500  mt-2">
               AUDIT DIGITAL ASAL-USUL DAN RANTAI PASOK KOMODITAS DARI HULU KE HILIR
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="font-black border-2 text-[9px] uppercase h-8 tracking-widest border-slate-200 px-3">
+            <Button variant="outline" className="font-semibold border-2 text-xs  h-8  border-slate-200 px-3">
               <FileText className="mr-1.5 h-3.5 w-3.5" /> BATCH CERTIFICATE
             </Button>
-            <Button className="bg-slate-900 font-black text-[9px] uppercase h-8 tracking-widest px-3">
+            <Button className="bg-slate-900 font-semibold text-xs  h-8  px-3">
               <Zap className="mr-1.5 h-3.5 w-3.5 text-amber-400" /> VERIFY BLOCKCHAIN
             </Button>
           </div>
@@ -84,7 +84,7 @@ export default function TraceabilityKementerianPage() {
       {/* Global Search Tool */}
       <Card className="border-none shadow-sm overflow-hidden bg-white">
         <CardHeader className="bg-slate-900 text-white pb-4">
-          <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 leading-none">
+          <CardTitle className="text-xs font-semibold   flex items-center gap-2 leading-none">
             <Search className="h-4 w-4 text-emerald-400" /> GLOBAL BATCH EXPLORER
           </CardTitle>
         </CardHeader>
@@ -96,13 +96,13 @@ export default function TraceabilityKementerianPage() {
                 placeholder="ENTER NATIONAL BATCH ID (E.G., BP-2024-001)..."
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value.toUpperCase())}
-                className="pl-10 font-black border-2 border-slate-100 h-11 text-base uppercase focus-visible:ring-emerald-500"
+                className="pl-10 font-semibold border-2 border-slate-100 h-11 text-base  focus-visible:ring-emerald-500"
               />
             </div>
-            <Button className="h-11 px-8 font-black uppercase tracking-widest bg-slate-900 hover:bg-slate-800" onClick={() => setShowResult(true)}>
+            <Button className="h-11 px-8 font-semibold   bg-slate-900 hover:bg-slate-800" onClick={() => setShowResult(true)}>
               EXECUTE TRACE
             </Button>
-            <Button variant="outline" className="h-11 px-6 font-black uppercase border-2 border-slate-200 hover:bg-slate-50">
+            <Button variant="outline" className="h-11 px-6 font-semibold  border-2 border-slate-200 hover:bg-slate-50">
               <QrCode className="mr-2 h-4 w-4" /> SCAN QR
             </Button>
           </div>
@@ -120,19 +120,19 @@ export default function TraceabilityKementerianPage() {
                     <Package className="h-6 w-6 text-emerald-400" />
                   </div>
                   <div>
-                    <Badge className="bg-slate-900 text-white font-black mb-1 uppercase tracking-tighter h-4 px-1.5 text-[8px]">VERIFIED BATCH</Badge>
-                    <CardTitle className="text-xl font-black text-slate-900 uppercase leading-none tracking-tighter">{traceData.batchCode}</CardTitle>
-                    <p className="text-[9px] font-bold text-slate-400 mt-1.5 uppercase tracking-widest">{traceData.komoditas}</p>
+                    <Badge className="bg-slate-900 text-white font-semibold mb-1   h-4 px-1.5 text-xs">VERIFIED BATCH</Badge>
+                    <CardTitle className="text-xl font-semibold text-slate-900  leading-none ">{traceData.batchCode}</CardTitle>
+                    <p className="text-xs font-bold text-slate-400 mt-1.5  ">{traceData.komoditas}</p>
                   </div>
                 </div>
                 <div className="flex gap-8">
                   <div className="text-right">
-                    <p className="text-[8px] font-black text-slate-400 uppercase mb-1 tracking-widest">STANDARD</p>
-                    <Badge className="bg-emerald-600 text-white font-black h-5 text-[9px] uppercase px-2 border-0">GRADE {traceData.grade}</Badge>
+                    <p className="text-xs font-semibold text-slate-400  mb-1 ">STANDARD</p>
+                    <Badge className="bg-emerald-600 text-white font-semibold h-5 text-xs  px-2 border-0">GRADE {traceData.grade}</Badge>
                   </div>
                   <div className="text-right">
-                    <p className="text-[8px] font-black text-slate-400 uppercase mb-1 tracking-widest">VOLUME</p>
-                    <p className="text-lg font-black text-slate-900 leading-none">{traceData.jumlah}</p>
+                    <p className="text-xs font-semibold text-slate-400  mb-1 ">VOLUME</p>
+                    <p className="text-lg font-semibold text-slate-900 leading-none">{traceData.jumlah}</p>
                   </div>
                 </div>
               </CardHeader>
@@ -154,10 +154,10 @@ export default function TraceabilityKementerianPage() {
                         <div className="flex items-start justify-between">
                           <div>
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">STEP {step.step}</span>
-                              <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-tighter leading-none">{step.title}</CardTitle>
+                              <span className="text-xs font-semibold text-slate-400   leading-none">STEP {step.step}</span>
+                              <CardTitle className="text-xs font-semibold text-slate-900   leading-none">{step.title}</CardTitle>
                             </div>
-                            <div className="flex items-center gap-4 text-[8px] font-black text-slate-400 uppercase tracking-tighter mt-1.5">
+                            <div className="flex items-center gap-4 text-xs font-semibold text-slate-400   mt-1.5">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-2.5 w-2.5" /> {step.date}
                               </span>
@@ -166,7 +166,7 @@ export default function TraceabilityKementerianPage() {
                               </span>
                             </div>
                           </div>
-                          <Badge className="bg-emerald-50 text-emerald-700 font-black text-[8px] uppercase h-4 px-1.5 border-emerald-100 border leading-none">
+                          <Badge className="bg-emerald-50 text-emerald-700 font-semibold text-xs  h-4 px-1.5 border-emerald-100 border leading-none">
                             <CheckCircle2 className="mr-1 h-2 w-2" /> AUDITED
                           </Badge>
                         </div>
@@ -175,8 +175,8 @@ export default function TraceabilityKementerianPage() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {step.details.map((detail, detailIdx) => (
                             <div key={detailIdx}>
-                              <p className="text-[7px] font-black text-slate-400 uppercase mb-0.5 tracking-tighter leading-none">{detail.label}</p>
-                              <p className="text-[10px] font-bold text-slate-700 uppercase leading-tight truncate">{detail.value}</p>
+                              <p className="text-[7px] font-semibold text-slate-400  mb-0.5  leading-none">{detail.label}</p>
+                              <p className="text-xs font-bold text-slate-700  leading-tight truncate">{detail.value}</p>
                             </div>
                           ))}
                         </div>
@@ -192,23 +192,23 @@ export default function TraceabilityKementerianPage() {
           <div className="space-y-6">
             <Card className="border-none shadow-sm bg-white overflow-hidden">
               <CardHeader className="border-b border-slate-100 bg-slate-900 text-white p-4">
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 leading-none">
+                <CardTitle className="text-xs font-semibold   flex items-center gap-2 leading-none">
                   <ShieldCheck className="h-4 w-4 text-emerald-400" /> DIGITAL INTEGRITY
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-5 space-y-4">
                 <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[8px] font-black uppercase tracking-widest">
+                  <div className="flex items-center justify-between text-xs font-semibold  ">
                     <span className="text-slate-400">NODE VALIDATION</span>
                     <span className="text-emerald-600">SECURE</span>
                   </div>
                   <Progress value={100} className="h-1 bg-slate-100" />
                 </div>
                 <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                  <p className="text-[8px] font-black text-slate-400 uppercase mb-1.5 tracking-widest leading-none">BLOCKCHAIN HASH</p>
-                  <p className="text-[9px] font-mono break-all text-slate-500 leading-relaxed uppercase">0X7A250D5630B4CF539739DF2C5DACB4C659F2488D</p>
+                  <p className="text-xs font-semibold text-slate-400  mb-1.5  leading-none">BLOCKCHAIN HASH</p>
+                  <p className="text-xs font-mono break-all text-slate-500 leading-relaxed ">0X7A250D5630B4CF539739DF2C5DACB4C659F2488D</p>
                 </div>
-                <Button className="w-full bg-slate-900 font-black text-[9px] uppercase h-9 hover:bg-slate-800 transition-all tracking-widest">
+                <Button className="w-full bg-slate-900 font-semibold text-xs  h-9 hover:bg-slate-800 transition-all ">
                   EXPLORE LEDGER
                 </Button>
               </CardContent>
@@ -216,29 +216,29 @@ export default function TraceabilityKementerianPage() {
 
             <Card className="border-none shadow-sm overflow-hidden bg-white">
               <CardHeader className="border-b border-slate-100 bg-slate-50 p-4">
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 leading-none text-slate-900">
+                <CardTitle className="text-xs font-semibold   flex items-center gap-2 leading-none text-slate-900">
                   <BarChart3 className="h-4 w-4 text-slate-400" /> BATCH STATISTICS
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0 divide-y divide-slate-100">
                 <div className="p-4 hover:bg-slate-50/50 transition-colors">
-                  <p className="text-[8px] font-black text-slate-400 uppercase mb-2 tracking-widest">NETWORK NODES TRAVERSED</p>
+                  <p className="text-xs font-semibold text-slate-400  mb-2 ">NETWORK NODES TRAVERSED</p>
                   <div className="flex justify-between items-center">
-                    <p className="text-xl font-black text-slate-900 leading-none">08</p>
+                    <p className="text-xl font-semibold text-slate-900 leading-none">08</p>
                     <Globe className="h-5 w-5 text-slate-200" />
                   </div>
                 </div>
                 <div className="p-4 hover:bg-slate-50/50 transition-colors">
-                  <p className="text-[8px] font-black text-slate-400 uppercase mb-2 tracking-widest">TOTAL TRANSIT TIME</p>
+                  <p className="text-xs font-semibold text-slate-400  mb-2 ">TOTAL TRANSIT TIME</p>
                   <div className="flex justify-between items-center">
-                    <p className="text-xl font-black text-slate-900 leading-none">22.4H</p>
+                    <p className="text-xl font-semibold text-slate-900 leading-none">22.4H</p>
                     <History className="h-5 w-5 text-slate-200" />
                   </div>
                 </div>
                 <div className="p-4 hover:bg-slate-50/50 transition-colors">
-                  <p className="text-[8px] font-black text-slate-400 uppercase mb-2 tracking-widest">CARBON FOOTPRINT</p>
+                  <p className="text-xs font-semibold text-slate-400  mb-2 ">CARBON FOOTPRINT</p>
                   <div className="flex justify-between items-center">
-                    <p className="text-xl font-black text-slate-900 leading-none">1.2 KG</p>
+                    <p className="text-xl font-semibold text-slate-900 leading-none">1.2 KG</p>
                     <Leaf className="h-5 w-5 text-slate-200" />
                   </div>
                 </div>
@@ -249,11 +249,11 @@ export default function TraceabilityKementerianPage() {
               <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Zap className="h-12 w-12" />
               </div>
-              <h4 className="text-[10px] font-black uppercase tracking-widest mb-2 leading-none border-b border-emerald-200 pb-2">AI VERIFICATION INSIGHT</h4>
-              <p className="text-[10px] font-bold text-emerald-800 leading-relaxed uppercase tracking-tight">
-                MODEL ANALYSIS CONFIRMS BATCH <span className="text-emerald-900 font-black underline decoration-emerald-400/50 underline-offset-2">BP-2024-001</span> IS 100% COMPLIANT WITH PREMIUM IR64 STANDARDS. GEOGRAPHICAL ORIGIN CONFIRMED VIA SATELLITE HARVEST DATA.
+              <h4 className="text-xs font-semibold   mb-2 leading-none border-b border-emerald-200 pb-2">AI VERIFICATION INSIGHT</h4>
+              <p className="text-xs font-bold text-emerald-800 leading-relaxed  ">
+                MODEL ANALYSIS CONFIRMS BATCH <span className="text-emerald-900 font-semibold underline decoration-emerald-400/50 underline-offset-2">BP-2024-001</span> IS 100% COMPLIANT WITH PREMIUM IR64 STANDARDS. GEOGRAPHICAL ORIGIN CONFIRMED VIA SATELLITE HARVEST DATA.
               </p>
-              <Button variant="link" className="p-0 h-auto text-[9px] font-black uppercase text-emerald-900 flex items-center gap-1.5 mt-4 hover:no-underline hover:text-emerald-700">
+              <Button variant="link" className="p-0 h-auto text-xs font-semibold  text-emerald-900 flex items-center gap-1.5 mt-4 hover:no-underline hover:text-emerald-700">
                 VIEW SATELLITE PROOF <ExternalLink className="h-2.5 w-2.5" />
               </Button>
             </Card>

@@ -45,7 +45,7 @@ export function KasirDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2 px-1">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950 drop-shadow-sm">Operasional Kasir Harian</h2>
+        <h2 className="text-2xl font-semibold  text-slate-950 drop-shadow-sm">Operasional Kasir Harian</h2>
         <p className="text-slate-700 text-sm font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">Fokus pada transaksi, pembayaran, dan aliran order harian.</p>
       </div>
 
@@ -53,33 +53,33 @@ export function KasirDashboard() {
         {/* Main Stats */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardContent className="p-6">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Total Kas Masuk (Hari Ini)</p>
-            <p className="text-3xl font-black mt-2 text-[var(--dashboard-secondary)] tracking-tighter">Rp 52.450.000</p>
+            <p className="text-xs font-semibold text-slate-400  ">Total Kas Masuk (Hari Ini)</p>
+            <p className="text-3xl font-semibold mt-2 text-[var(--dashboard-secondary)] ">Rp 52.450.000</p>
             <div className="flex items-center gap-2 mt-2">
-              <span className="text-[10px] font-black bg-[var(--dashboard-secondary)]/10 text-[var(--dashboard-secondary)] px-2 py-0.5 rounded-full uppercase">+18% dari kemarin</span>
+              <span className="text-xs font-semibold bg-[var(--dashboard-secondary)]/10 text-[var(--dashboard-secondary)] px-2 py-0.5 rounded-full ">+18% dari kemarin</span>
             </div>
             <div className="mt-6 flex gap-2">
               <Button 
                 size="sm" 
-                className="flex-1 rounded-xl bg-[var(--dashboard-secondary)] font-black text-[10px] uppercase tracking-widest text-white shadow-md shadow-slate-200 hover:bg-[#394B54]"
+                className="flex-1 rounded-xl bg-[var(--dashboard-secondary)] font-semibold text-xs   text-white shadow-md shadow-slate-200 hover:bg-[#394B54]"
                 onClick={() => setIsRecordDialogOpen(true)}
               >
                 Input Transaksi
               </Button>
-              <Button size="sm" variant="outline" className="flex-1 rounded-xl font-black text-[10px] uppercase tracking-widest border-slate-200 hover:bg-slate-50">Cetak Shift</Button>
+              <Button size="sm" variant="outline" className="flex-1 rounded-xl font-semibold text-xs   border-slate-200 hover:bg-slate-50">Cetak Shift</Button>
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardContent className="p-6">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Order Menunggu Pembayaran</p>
-            <p className="text-3xl font-black mt-2 text-amber-600 tracking-tighter">18 PO</p>
+            <p className="text-xs font-semibold text-slate-400  ">Order Menunggu Pembayaran</p>
+            <p className="text-3xl font-semibold mt-2 text-amber-600 ">18 PO</p>
             <div className="flex items-center gap-2 mt-2">
-              <span className="text-[10px] font-black bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full uppercase">Total Rp 12.8jt</span>
+              <span className="text-xs font-semibold bg-amber-50 text-amber-600 px-2 py-0.5 rounded-full ">Total Rp 12.8jt</span>
             </div>
             <div className="mt-6">
-              <Button size="sm" variant="secondary" className="w-full rounded-xl font-black text-[10px] uppercase tracking-widest bg-amber-100 text-amber-700 hover:bg-amber-200 border-none shadow-sm" asChild>
+              <Button size="sm" variant="secondary" className="w-full rounded-xl font-semibold text-xs   bg-amber-100 text-amber-700 hover:bg-amber-200 border-none shadow-sm" asChild>
                 <Link href="/pasar">Proses Order Sekarang</Link>
               </Button>
             </div>
@@ -89,14 +89,14 @@ export function KasirDashboard() {
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardContent className="p-6">
               <div className="mt-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Status Stok Kritis</p>
-                <p className="text-3xl font-black mt-1 text-slate-950 drop-shadow-sm tracking-tighter">4 Item</p>
+                <p className="text-xs font-semibold text-slate-400  ">Status Stok Kritis</p>
+                <p className="text-3xl font-semibold mt-1 text-slate-950 drop-shadow-sm ">4 Item</p>
               </div>
             <div className="flex items-center gap-2 mt-2">
-              <span className="text-[10px] font-black bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full uppercase tracking-tight">Butuh restock segera</span>
+              <span className="text-xs font-semibold bg-rose-50 text-rose-600 px-2 py-0.5 rounded-full  ">Butuh restock segera</span>
             </div>
             <div className="mt-6">
-              <Button size="sm" variant="ghost" className="w-full rounded-xl font-black text-[10px] uppercase tracking-widest text-rose-600 hover:bg-rose-50" asChild>
+              <Button size="sm" variant="ghost" className="w-full rounded-xl font-semibold text-xs   text-rose-600 hover:bg-rose-50" asChild>
                 <Link href="/gudang">Cek Inventori →</Link>
               </Button>
             </div>
@@ -108,8 +108,8 @@ export function KasirDashboard() {
         {/* Transaction Chart */}
         <Card className="border-slate-200 bg-white shadow-sm">
           <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Aliran Transaksi Per Jam</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Jumlah transaksi yang diproses hari ini.</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Aliran Transaksi Per Jam</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 ">Jumlah transaksi yang diproses hari ini.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[280px] w-full mt-4">
@@ -136,7 +136,7 @@ export function KasirDashboard() {
         {/* Recent Transactions List */}
         <Card className="border-slate-200 bg-white shadow-sm overflow-hidden">
           <CardHeader className="pb-3 bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900">Transaksi Terbaru</CardTitle>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Transaksi Terbaru</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-slate-100">
@@ -148,18 +148,18 @@ export function KasirDashboard() {
               ].map((trx, idx) => (
                 <div key={idx} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group cursor-pointer">
                   <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-900 uppercase group-hover:text-rose-600 transition-colors">{trx.user}</span>
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{trx.id}</span>
+                    <span className="text-xs font-semibold text-slate-900  group-hover:text-rose-600 transition-colors">{trx.user}</span>
+                    <span className="text-xs font-bold text-slate-400  ">{trx.id}</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-black text-slate-900">{trx.amount}</p>
-                    <p className="text-[9px] font-bold text-slate-400 uppercase">{trx.time}</p>
+                    <p className="text-sm font-semibold text-slate-900">{trx.amount}</p>
+                    <p className="text-xs font-bold text-slate-400 ">{trx.time}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="p-3 bg-slate-50/30">
-              <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all" asChild>
+              <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-rose-600 hover:bg-white   transition-all" asChild>
                 <Link href="/keuangan/pembayaran">Riwayat Lengkap →</Link>
               </Button>
             </div>
@@ -175,11 +175,11 @@ export function KasirDashboard() {
               <Zap className="h-6 w-6 text-rose-600" />
             </div>
             <div>
-              <p className="text-[11px] font-black text-rose-900 uppercase tracking-widest">AI Insight: Prediksi Lonjakan Permintaan</p>
+              <p className="text-sm font-semibold text-rose-900  ">AI Insight: Prediksi Lonjakan Permintaan</p>
               <p className="text-xs text-slate-600 font-bold mt-0.5 leading-tight">Permintaan beras diprediksi naik 25% untuk shift besok pagi.</p>
             </div>
           </div>
-          <Button size="sm" variant="outline" className="w-full sm:w-auto h-10 px-6 font-black text-[10px] uppercase tracking-widest border-rose-200 text-rose-700 hover:bg-rose-50 shadow-sm" asChild>
+          <Button size="sm" variant="outline" className="w-full sm:w-auto h-10 px-6 font-semibold text-xs   border-rose-200 text-rose-700 hover:bg-rose-50 shadow-sm" asChild>
             <Link href="/ai/supply-demand">Lihat Rekomendasi Stok</Link>
           </Button>
         </CardContent>

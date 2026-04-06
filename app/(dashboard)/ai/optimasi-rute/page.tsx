@@ -70,7 +70,7 @@ export default function RouteOptimizationKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black tracking-tighter text-slate-900 uppercase flex items-center gap-2">
+            <h1 className="text-3xl font-semibold  text-slate-900  flex items-center gap-2">
               <Navigation className="h-8 w-8 text-slate-900" />
               National Logistics Optimizer
             </h1>
@@ -95,13 +95,13 @@ export default function RouteOptimizationKementerianPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="border-l-4 border-l-slate-900 shadow-sm">
           <CardHeader className="pb-2">
-            <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-500">Monthly Cost Savings</CardDescription>
-            <CardTitle className="text-2xl font-black text-slate-900">
+            <CardDescription className="text-xs font-semibold   text-slate-500">Monthly Cost Savings</CardDescription>
+            <CardTitle className="text-2xl font-semibold text-slate-900">
               Rp {processedData.totalSavings.toLocaleString()}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge className="bg-emerald-500 text-slate-900 font-black text-[10px] uppercase">
+            <Badge className="bg-emerald-500 text-slate-900 font-semibold text-xs ">
               <TrendingDown className="mr-1 h-3 w-3" /> -22% Cost Reduction
             </Badge>
           </CardContent>
@@ -109,33 +109,33 @@ export default function RouteOptimizationKementerianPage() {
 
         <Card className="border-l-4 border-l-blue-500 shadow-sm">
           <CardHeader className="pb-2">
-            <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-500">Transit Time Reduction</CardDescription>
-            <CardTitle className="text-2xl font-black text-slate-900">
+            <CardDescription className="text-xs font-semibold   text-slate-500">Transit Time Reduction</CardDescription>
+            <CardTitle className="text-2xl font-semibold text-slate-900">
               {processedData.totalHours.toFixed(1)} <span className="text-sm font-bold text-slate-400">HRS</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-[10px] font-black text-slate-500 uppercase">Faster Delivery Cycles</p>
+            <p className="text-xs font-semibold text-slate-500 ">Faster Delivery Cycles</p>
           </CardContent>
         </Card>
 
         <Card className="border-l-4 border-l-emerald-500 shadow-sm">
           <CardHeader className="pb-2">
-            <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-500">Optimized Routes</CardDescription>
-            <CardTitle className="text-2xl font-black text-slate-900">{processedData.activeRoutes}</CardTitle>
+            <CardDescription className="text-xs font-semibold   text-slate-500">Optimized Routes</CardDescription>
+            <CardTitle className="text-2xl font-semibold text-slate-900">{processedData.activeRoutes}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-[10px] font-black text-emerald-600 uppercase">Active Network Health: 100%</p>
+            <p className="text-xs font-semibold text-emerald-600 ">Active Network Health: 100%</p>
           </CardContent>
         </Card>
 
         <Card className="border-l-4 border-l-amber-500 shadow-sm">
           <CardHeader className="pb-2">
-            <CardDescription className="text-[10px] font-black uppercase tracking-widest text-slate-500">Carbon Reduction</CardDescription>
-            <CardTitle className="text-2xl font-black text-slate-900">14.2 <span className="text-sm font-bold text-slate-400">TONS</span></CardTitle>
+            <CardDescription className="text-xs font-semibold   text-slate-500">Carbon Reduction</CardDescription>
+            <CardTitle className="text-2xl font-semibold text-slate-900">14.2 <span className="text-sm font-bold text-slate-400">TONS</span></CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-[10px] font-black text-amber-600 uppercase">Estimated CO2 Saved</p>
+            <p className="text-xs font-semibold text-amber-600 ">Estimated CO2 Saved</p>
           </CardContent>
         </Card>
       </div>
@@ -143,35 +143,35 @@ export default function RouteOptimizationKementerianPage() {
       {/* Optimized Routes Table */}
       <Card className="border-2 shadow-sm overflow-hidden">
         <CardHeader className="border-b bg-slate-50/50">
-          <CardTitle className="text-sm font-black uppercase tracking-tighter text-slate-900">National Route Efficiency Matrix</CardTitle>
+          <CardTitle className="text-sm font-semibold   text-slate-900">National Route Efficiency Matrix</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/50 border-b">
-                  <th className="p-4 text-[10px] font-black uppercase text-slate-500">Strategic Route</th>
-                  <th className="p-4 text-[10px] font-black uppercase text-slate-500">Distance</th>
-                  <th className="p-4 text-[10px] font-black uppercase text-slate-500">Before (H)</th>
-                  <th className="p-4 text-[10px] font-black uppercase text-slate-500">After (H)</th>
-                  <th className="p-4 text-[10px] font-black uppercase text-slate-500 text-right">Cost Reduction</th>
-                  <th className="p-4 text-[10px] font-black uppercase text-slate-500 text-right">Efficiency %</th>
+                  <th className="p-4 text-xs font-semibold  text-slate-500">Strategic Route</th>
+                  <th className="p-4 text-xs font-semibold  text-slate-500">Distance</th>
+                  <th className="p-4 text-xs font-semibold  text-slate-500">Before (H)</th>
+                  <th className="p-4 text-xs font-semibold  text-slate-500">After (H)</th>
+                  <th className="p-4 text-xs font-semibold  text-slate-500 text-right">Cost Reduction</th>
+                  <th className="p-4 text-xs font-semibold  text-slate-500 text-right">Efficiency %</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {processedData.optimizations.map((route, idx) => (
                   <tr key={idx} className="hover:bg-slate-50 transition-colors">
                     <td className="p-4">
-                      <p className="text-xs font-black text-slate-900 uppercase">{route.rute}</p>
+                      <p className="text-xs font-semibold text-slate-900 ">{route.rute}</p>
                     </td>
                     <td className="p-4 text-xs font-bold text-slate-700">{route.jarak} KM</td>
                     <td className="p-4 text-xs font-bold text-slate-400">{route.waktuSebelum}</td>
-                    <td className="p-4 text-xs font-black text-emerald-600">{route.waktuSesudah}</td>
-                    <td className="p-4 text-right text-xs font-black text-slate-900">
+                    <td className="p-4 text-xs font-semibold text-emerald-600">{route.waktuSesudah}</td>
+                    <td className="p-4 text-right text-xs font-semibold text-slate-900">
                       -Rp {route.penghematan.toLocaleString()}
                     </td>
                     <td className="p-4 text-right">
-                      <Badge className="bg-slate-900 text-white font-black text-[10px]">
+                      <Badge className="bg-slate-900 text-white font-semibold text-xs">
                         {route.efisiensi}%
                       </Badge>
                     </td>
@@ -187,8 +187,8 @@ export default function RouteOptimizationKementerianPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2 border-2 shadow-sm">
           <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-sm font-black uppercase tracking-tighter text-slate-900">Cost Variance vs. Departure Time</CardTitle>
-            <CardDescription className="text-[10px] font-bold uppercase text-slate-500">Optimizing dispatch windows to avoid congestion costs</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Cost Variance vs. Departure Time</CardTitle>
+            <CardDescription className="text-xs font-bold  text-slate-500">Optimizing dispatch windows to avoid congestion costs</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <ResponsiveContainer width="100%" height={300}>
@@ -198,10 +198,10 @@ export default function RouteOptimizationKementerianPage() {
                 <YAxis tick={{ fill: "#64748b", fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: "#0f172a", border: "none", borderRadius: "8px", color: "#fff" }}
-                  itemStyle={{ fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }}
+                  itemStyle={{ fontSize: "10px", fontWeight: "600", textTransform: "" }}
                   formatter={(value: number) => `Rp ${value.toLocaleString()}`}
                 />
-                <Legend iconType="rect" wrapperStyle={{ paddingTop: "20px", fontSize: "10px", fontWeight: "900", textTransform: "uppercase" }} />
+                <Legend iconType="rect" wrapperStyle={{ paddingTop: "20px", fontSize: "10px", fontWeight: "600", textTransform: "" }} />
                 <Bar dataKey="biayaSebelum" fill="#cbd5e1" name="BEFORE OPTIMIZATION" radius={[2, 2, 0, 0]} />
                 <Bar dataKey="biayaSesudah" fill="#0f172a" name="AFTER OPTIMIZATION" radius={[2, 2, 0, 0]} />
               </BarChart>
@@ -211,8 +211,8 @@ export default function RouteOptimizationKementerianPage() {
 
         <Card className="border-2 shadow-sm">
           <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-sm font-black uppercase tracking-tighter text-slate-900">Optimized Transit Logic</CardTitle>
-            <CardDescription className="text-[10px] font-bold uppercase text-slate-500">Sequential stop-point intelligence</CardDescription>
+            <CardTitle className="text-sm font-semibold   text-slate-900">Optimized Transit Logic</CardTitle>
+            <CardDescription className="text-xs font-bold  text-slate-500">Sequential stop-point intelligence</CardDescription>
           </CardHeader>
           <CardContent className="p-4">
             <div className="relative space-y-4">
@@ -222,10 +222,10 @@ export default function RouteOptimizationKementerianPage() {
                   <div className="absolute left-2.5 h-3 w-3 rounded-full bg-slate-900 border-2 border-white ring-2 ring-slate-100 group-hover:scale-125 transition-transform" />
                   <div className="flex-1 p-2 bg-slate-50 rounded border group-hover:border-slate-900 transition-colors">
                     <div className="flex justify-between items-start">
-                      <p className="text-[10px] font-black text-slate-900 uppercase">{point.nama}</p>
-                      <span className="text-[9px] font-bold text-slate-400">{point.waktu}</span>
+                      <p className="text-xs font-semibold text-slate-900 ">{point.nama}</p>
+                      <span className="text-xs font-bold text-slate-400">{point.waktu}</span>
                     </div>
-                    <Badge variant="outline" className="text-[8px] font-black uppercase border-slate-300 h-4">
+                    <Badge variant="outline" className="text-xs font-semibold  border-slate-300 h-4">
                       {point.status}
                     </Badge>
                   </div>
@@ -236,11 +236,11 @@ export default function RouteOptimizationKementerianPage() {
               <div className="flex items-center gap-2 p-3 bg-slate-900 text-white rounded-lg">
                 <Truck className="h-4 w-4 text-emerald-400" />
                 <div>
-                  <p className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">Fleet Recommendation</p>
-                  <p className="text-[11px] font-bold">Deploy 2 Large Freight Units (Consolidated)</p>
+                  <p className="text-xs font-semibold  text-slate-400 leading-none mb-1">Fleet Recommendation</p>
+                  <p className="text-sm font-bold">Deploy 2 Large Freight Units (Consolidated)</p>
                 </div>
               </div>
-              <Button className="w-full font-black text-[10px] uppercase bg-slate-900">
+              <Button className="w-full font-semibold text-xs  bg-slate-900">
                 DISPATCH INSTRUCTION
               </Button>
             </div>
@@ -256,14 +256,14 @@ export default function RouteOptimizationKementerianPage() {
           </div>
           <div className="p-6 flex-1 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-black uppercase tracking-tighter">AI Network Optimization Summary</h3>
-              <Badge className="bg-emerald-500 text-slate-900 font-black">EFFICIENCY GAIN: +23.4%</Badge>
+              <h3 className="text-lg font-semibold  ">AI Network Optimization Summary</h3>
+              <Badge className="bg-emerald-500 text-slate-900 font-semibold">EFFICIENCY GAIN: +23.4%</Badge>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="p-3 bg-slate-800 rounded border border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
                   <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                  <p className="text-[10px] font-black text-slate-400 uppercase">Operational Integrity</p>
+                  <p className="text-xs font-semibold text-slate-400 ">Operational Integrity</p>
                 </div>
                 <p className="text-xs font-medium text-slate-300">
                   Consolidation logic successful. Estimated reduction of <span className="text-white font-bold">1,200KM</span> deadhead mileage across the filter scope this month.
@@ -272,7 +272,7 @@ export default function RouteOptimizationKementerianPage() {
               <div className="p-3 bg-slate-800 rounded border border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
                   <Fuel className="h-4 w-4 text-blue-400" />
-                  <p className="text-[10px] font-black text-slate-400 uppercase">Resource Audit</p>
+                  <p className="text-xs font-semibold text-slate-400 ">Resource Audit</p>
                 </div>
                 <p className="text-xs font-medium text-slate-300">
                    Fuel efficiency index improved by <span className="text-white font-bold">18.5%</span> through dynamic dispatching during non-peak congestion windows.

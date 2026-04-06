@@ -139,13 +139,13 @@ export default function RencanaTanamPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Rencana Produksi Nasional</h1>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+          <h1 className="text-2xl font-semibold  text-slate-900 ">Rencana Produksi Nasional</h1>
+          <p className="text-xs font-bold text-slate-500   mt-1">
             Orkestrasi Musim Tanam dan Proyeksi Hasil Panen Lintas Wilayah
           </p>
         </div>
         {!isPetani && (
-          <Button size="sm" className="h-10 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200">
+          <Button size="sm" className="h-10 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold   px-6 shadow-lg shadow-slate-200">
             <Plus className="mr-2 h-4 w-4" />
             Buat Rencana Strategis
           </Button>
@@ -165,12 +165,12 @@ export default function RencanaTanamPage() {
         ].map((stat, i) => (
           <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
               <stat.icon className={`h-3.5 w-3.5 ${stat.tone === 'rose' ? 'text-rose-500' : 'text-slate-400'}`} />
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-2xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
-              <p className={`text-[10px] font-bold uppercase mt-1 tracking-widest ${stat.tone === 'rose' ? 'text-rose-600' : 'text-slate-500'}`}>{stat.sub}</p>
+              <p className="text-2xl font-semibold text-slate-900 ">{stat.value}</p>
+              <p className={`text-xs font-bold  mt-1  ${stat.tone === 'rose' ? 'text-rose-600' : 'text-slate-500'}`}>{stat.sub}</p>
             </CardContent>
           </Card>
         ))}
@@ -178,15 +178,15 @@ export default function RencanaTanamPage() {
 
       {/* Local Filter: Musim */}
       <div className="flex bg-white p-2 rounded-xl border border-slate-100 shadow-sm w-fit gap-2">
-        <span className="flex items-center px-3 text-[9px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-100">Filter Musim</span>
+        <span className="flex items-center px-3 text-xs font-semibold text-slate-400   border-r border-slate-100">Filter Musim</span>
         <Select value={filterMusim} onValueChange={setFilterMusim}>
-          <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[160px] text-[10px] font-black uppercase px-2 focus:ring-0">
+          <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[160px] text-xs font-semibold  px-2 focus:ring-0">
             <SelectValue placeholder="Pilih Musim" />
           </SelectTrigger>
           <SelectContent className="bg-slate-900 border-slate-800 text-white">
-            <SelectItem value="semua" className="text-[10px] font-black uppercase">SEMUA MUSIM</SelectItem>
+            <SelectItem value="semua" className="text-xs font-semibold ">SEMUA MUSIM</SelectItem>
             {musimOptions.map((musim) => (
-              <SelectItem key={musim} value={musim} className="text-[10px] font-black uppercase">
+              <SelectItem key={musim} value={musim} className="text-xs font-semibold ">
                 {musim}
               </SelectItem>
             ))}
@@ -206,18 +206,18 @@ export default function RencanaTanamPage() {
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">
+                      <h3 className="text-sm font-semibold text-slate-900   group-hover:text-emerald-600 transition-colors">
                         {rencana.komoditas}
                       </h3>
-                      <Badge variant="outline" className="text-[8px] font-black uppercase border-slate-200 text-slate-500 h-4">{rencana.varietas}</Badge>
+                      <Badge variant="outline" className="text-xs font-semibold  border-slate-200 text-slate-500 h-4">{rencana.varietas}</Badge>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">PELAKSANA:</p>
-                      <p className="text-[9px] font-black text-slate-900 uppercase tracking-tight">{rencana.kelompok}</p>
+                      <p className="text-xs font-bold text-slate-400  ">PELAKSANA:</p>
+                      <p className="text-xs font-semibold text-slate-900  ">{rencana.kelompok}</p>
                     </div>
                   </div>
                 </div>
-                <Badge className={`text-[9px] font-black uppercase border-none px-2 h-5 ${rencana.status === 'berjalan' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                <Badge className={`text-xs font-semibold  border-none px-2 h-5 ${rencana.status === 'berjalan' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
                   {rencana.status === 'berjalan' ? 'ON-GOING' : 'SCHEDULED'}
                 </Badge>
               </div>
@@ -225,21 +225,21 @@ export default function RencanaTanamPage() {
             <CardContent className="p-4">
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">AREA</p>
-                  <p className="text-xs font-black text-slate-900 mt-1">{rencana.luasHa} HA</p>
+                  <p className="text-xs font-semibold text-slate-400  ">AREA</p>
+                  <p className="text-xs font-semibold text-slate-900 mt-1">{rencana.luasHa} HA</p>
                 </div>
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">MUSIM</p>
-                  <p className="text-xs font-black text-slate-900 mt-1">{rencana.musim}</p>
+                  <p className="text-xs font-semibold text-slate-400  ">MUSIM</p>
+                  <p className="text-xs font-semibold text-slate-900 mt-1">{rencana.musim}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
-                  <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">EST. HASIL</p>
-                  <p className="text-xs font-black text-emerald-700 mt-1">{rencana.estimasiHasil}</p>
+                  <p className="text-xs font-semibold text-emerald-600  ">EST. HASIL</p>
+                  <p className="text-xs font-semibold text-emerald-700 mt-1">{rencana.estimasiHasil}</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tight">
+                <div className="flex items-center justify-between text-xs font-semibold  ">
                   <div className="flex items-center gap-1.5 text-slate-400">
                     <Calendar className="h-3 w-3" />
                     <span>{rencana.tanggalMulai} — {rencana.tanggalPanen}</span>
@@ -252,9 +252,9 @@ export default function RencanaTanamPage() {
               <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-50">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-3 w-3 text-slate-400" />
-                  <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{rencana.desa} • {rencana.koperasi}</span>
+                  <span className="text-xs font-semibold text-slate-500  ">{rencana.desa} • {rencana.koperasi}</span>
                 </div>
-                <Button variant="ghost" size="sm" className="h-8 text-[9px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100">
+                <Button variant="ghost" size="sm" className="h-8 text-xs font-semibold   text-slate-600 hover:bg-slate-100">
                   Detail Rencana
                   <ChevronRight className="ml-1.5 h-3.5 w-3.5" />
                 </Button>

@@ -109,8 +109,8 @@ export default function KeuanganPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Transaksi Keuangan</h1>
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-1">
+          <h1 className="text-2xl font-semibold  text-slate-900 ">Transaksi Keuangan</h1>
+          <p className="text-xs font-bold text-slate-500   mt-1">
             Monitoring Arus Kas & Portofolio Kredit Nasional
           </p>
         </div>
@@ -130,25 +130,25 @@ export default function KeuanganPage() {
               }))}
             />
           )}
-          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
             <Link href="/keuangan/credit-scoring">
               <TrendingUp className="mr-2 h-3.5 w-3.5" />
               Scoring
             </Link>
           </Button>
-          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
             <Link href="/keuangan/pinjaman">
               <Wallet className="mr-2 h-3.5 w-3.5" />
               Pinjaman
             </Link>
           </Button>
-          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black uppercase tracking-widest text-slate-600" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
             <Link href="/keuangan/laporan">
               <FileText className="mr-2 h-3.5 w-3.5" />
               Laporan
             </Link>
           </Button>
-          <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
+          <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold  ">
             <Plus className="mr-2 h-3.5 w-3.5" />
             Catat
           </Button>
@@ -170,8 +170,8 @@ export default function KeuanganPage() {
                   <stat.icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                  <p className="text-xl font-semibold text-slate-900 ">{stat.value}</p>
+                  <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
                 </div>
               </div>
             </CardContent>

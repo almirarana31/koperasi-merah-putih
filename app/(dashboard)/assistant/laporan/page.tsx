@@ -96,14 +96,14 @@ export default function LaporanOtomatisPage() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black tracking-tighter text-slate-900 uppercase">
+            <h1 className="text-2xl font-semibold  text-slate-900 ">
               NATIONAL REPORTING CENTER
             </h1>
-            <p className="text-[10px] font-bold tracking-widest text-slate-500 uppercase">
+            <p className="text-xs font-bold  text-slate-500 ">
               GENERASI LAPORAN OTOMATIS BERBASIS AI & AUDIT REAL-TIME
             </p>
           </div>
-          <Button className="bg-slate-900 hover:bg-slate-800 text-[9px] font-black uppercase tracking-widest h-8 px-4">
+          <Button className="bg-slate-900 hover:bg-slate-800 text-xs font-semibold   h-8 px-4">
             <Plus className="mr-2 h-3.5 w-3.5" /> NEW AUTOMATION
           </Button>
         </div>
@@ -121,8 +121,8 @@ export default function LaporanOtomatisPage() {
                   <stat.icon className={`h-4 w-4 ${stat.color}`} />
                 </div>
                 <div>
-                  <p className="text-[9px] font-black tracking-widest text-slate-500 uppercase">{stat.label}</p>
-                  <p className="text-lg font-black tracking-tight text-slate-900">{stat.value}</p>
+                  <p className="text-xs font-semibold  text-slate-500 ">{stat.label}</p>
+                  <p className="text-lg font-semibold  text-slate-900">{stat.value}</p>
                 </div>
               </div>
             </CardContent>
@@ -135,7 +135,7 @@ export default function LaporanOtomatisPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
             <History className="h-4 w-4 text-slate-900" />
-            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">ACTIVE AUTOMATIONS</h2>
+            <h2 className="text-xs font-semibold  text-slate-900 ">ACTIVE AUTOMATIONS</h2>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -149,15 +149,15 @@ export default function LaporanOtomatisPage() {
                         <FileText className="h-3 w-3 text-white" />
                       </div>
                       <div className="space-y-1">
-                        <CardTitle className="text-[11px] font-black tracking-widest text-slate-900 uppercase leading-tight">
+                        <CardTitle className="text-sm font-semibold  text-slate-900  leading-tight">
                           {item.nama}
                         </CardTitle>
-                        <CardDescription className="text-[9px] font-bold text-slate-500 uppercase leading-relaxed max-w-md">
+                        <CardDescription className="text-xs font-bold text-slate-500  leading-relaxed max-w-md">
                           {item.deskripsi}
                         </CardDescription>
                       </div>
                     </div>
-                    <Badge className="text-[8px] font-black bg-emerald-100 text-emerald-700 tracking-widest uppercase">
+                    <Badge className="text-xs font-semibold bg-emerald-100 text-emerald-700  ">
                       {item.status}
                     </Badge>
                   </div>
@@ -165,29 +165,29 @@ export default function LaporanOtomatisPage() {
                 <CardContent className="p-4 pt-2">
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-3 bg-slate-50 rounded border border-slate-100 mb-4">
                     <div>
-                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">FREQUENCY</p>
-                      <p className="text-[10px] font-black text-slate-900 mt-0.5 uppercase">{item.frekuensi}</p>
+                      <p className="text-xs font-semibold text-slate-400  ">FREQUENCY</p>
+                      <p className="text-xs font-semibold text-slate-900 mt-0.5 ">{item.frekuensi}</p>
                     </div>
                     <div>
-                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">TEMPLATE</p>
-                      <p className="text-[10px] font-black text-slate-900 mt-0.5 uppercase">{item.template}</p>
+                      <p className="text-xs font-semibold text-slate-400  ">TEMPLATE</p>
+                      <p className="text-xs font-semibold text-slate-900 mt-0.5 ">{item.template}</p>
                     </div>
                     <div className="lg:col-span-2">
-                      <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">DISTRIBUTION</p>
-                      <p className="text-[10px] font-black text-slate-900 mt-0.5 truncate uppercase">{item.recipients}</p>
+                      <p className="text-xs font-semibold text-slate-400  ">DISTRIBUTION</p>
+                      <p className="text-xs font-semibold text-slate-900 mt-0.5 truncate ">{item.recipients}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between border-t border-slate-100 pt-3">
                     <div className="flex items-center gap-2">
                       <Clock className="h-3 w-3 text-slate-400" />
-                      <span className="text-[9px] font-black text-slate-400 uppercase">LAST GENERATED: {item.lastGenerated}</span>
+                      <span className="text-xs font-semibold text-slate-400 ">LAST GENERATED: {item.lastGenerated}</span>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="h-7 text-[8px] font-black uppercase tracking-widest border-slate-200">
+                      <Button size="sm" variant="outline" className="h-7 text-xs font-semibold   border-slate-200">
                         <Download className="mr-1.5 h-3 w-3" /> EXPORT PDF
                       </Button>
-                      <Button size="sm" variant="outline" className="h-7 text-[8px] font-black uppercase tracking-widest border-slate-200">
+                      <Button size="sm" variant="outline" className="h-7 text-xs font-semibold   border-slate-200">
                         <Mail className="mr-1.5 h-3 w-3" /> PUSH NOW
                       </Button>
                       <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-slate-400 hover:text-slate-900">
@@ -205,7 +205,7 @@ export default function LaporanOtomatisPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
             <Filter className="h-4 w-4 text-slate-900" />
-            <h2 className="text-xs font-black tracking-widest text-slate-900 uppercase">SYSTEM TEMPLATES</h2>
+            <h2 className="text-xs font-semibold  text-slate-900 ">SYSTEM TEMPLATES</h2>
           </div>
 
           <div className="grid gap-3">
@@ -217,8 +217,8 @@ export default function LaporanOtomatisPage() {
                       <template.icon className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-[10px] font-black tracking-widest text-slate-900 uppercase">{template.nama}</CardTitle>
-                      <CardDescription className="text-[8px] font-bold text-slate-500 uppercase">{template.deskripsi}</CardDescription>
+                      <CardTitle className="text-xs font-semibold  text-slate-900 ">{template.nama}</CardTitle>
+                      <CardDescription className="text-xs font-bold text-slate-500 ">{template.deskripsi}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
@@ -227,11 +227,11 @@ export default function LaporanOtomatisPage() {
                     {template.sections.map((section) => (
                       <div key={section} className="flex items-center gap-2">
                         <div className="h-1 w-1 rounded-full bg-emerald-500" />
-                        <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">{section}</span>
+                        <span className="text-xs font-semibold text-slate-600  ">{section}</span>
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full h-8 text-[9px] font-black uppercase tracking-widest border-slate-200" variant="outline">
+                  <Button className="w-full h-8 text-xs font-semibold   border-slate-200" variant="outline">
                     DEPLOY TEMPLATE
                   </Button>
                 </CardContent>
@@ -244,18 +244,18 @@ export default function LaporanOtomatisPage() {
               <FileText className="h-24 w-24" />
             </div>
             <CardHeader className="p-6">
-              <CardTitle className="text-[12px] font-black tracking-widest uppercase">CUSTOM REPORT BUILDER</CardTitle>
-              <CardDescription className="text-[9px] font-bold text-slate-400 uppercase">CONSTRUCT ADVANCED AUDIT PARAMETERS</CardDescription>
+              <CardTitle className="text-sm font-semibold  ">CUSTOM REPORT BUILDER</CardTitle>
+              <CardDescription className="text-xs font-bold text-slate-400 ">CONSTRUCT ADVANCED AUDIT PARAMETERS</CardDescription>
             </CardHeader>
             <CardContent className="p-6 pt-0 space-y-4">
               <div className="space-y-3">
                 <div className="space-y-1">
-                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">QUERY DATA SOURCE</p>
-                  <div className="flex gap-2 p-2 bg-slate-800 rounded border border-slate-700 text-[10px] font-bold">
+                  <p className="text-xs font-semibold text-slate-400  ">QUERY DATA SOURCE</p>
+                  <div className="flex gap-2 p-2 bg-slate-800 rounded border border-slate-700 text-xs font-bold">
                     SELECT national_kpi FROM kopdes_audit WHERE anomaly_score {'>'} 0.85
                   </div>
                 </div>
-                <Button className="w-full bg-emerald-500 hover:bg-emerald-400 text-white text-[9px] font-black uppercase tracking-widest h-9">
+                <Button className="w-full bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-semibold   h-9">
                   GENERATE CUSTOM QUERY
                 </Button>
               </div>

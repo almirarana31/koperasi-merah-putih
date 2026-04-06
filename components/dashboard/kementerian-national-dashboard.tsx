@@ -279,7 +279,7 @@ export function KementerianNationalDashboard() {
                 }`}>
                   <kpi.icon className="h-4 w-4" />
                 </div>
-                <Badge className={`text-[10px] font-medium ${
+                <Badge className={`text-xs font-medium ${
                   kpi.tone === 'primary'
                     ? 'bg-[var(--dashboard-primary)]/10 text-[var(--dashboard-primary)]'
                     : kpi.tone === 'tertiary'
@@ -308,10 +308,10 @@ export function KementerianNationalDashboard() {
               <CardDescription className="text-xs text-slate-500">Korelasi anggota baru vs produksi beras secara agregat</CardDescription>
             </div>
             <div className="flex gap-4">
-              <div className="flex items-center gap-1.5 text-[10px] font-medium text-[var(--dashboard-secondary)]">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--dashboard-secondary)]">
                 <div className="h-2 w-2 rounded-full bg-[var(--dashboard-secondary)]" /> Anggota
               </div>
-              <div className="flex items-center gap-1.5 text-[10px] font-medium text-[var(--dashboard-primary)]">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--dashboard-primary)]">
                 <div className="h-2 w-2 rounded-full bg-[var(--dashboard-primary)]" /> Risiko
               </div>
             </div>
@@ -348,7 +348,7 @@ export function KementerianNationalDashboard() {
             <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <ShieldAlert className="h-4 w-4 text-rose-600" /> Early warning
             </CardTitle>
-            <Badge variant="destructive" className="h-5 rounded-full px-2 text-[10px] font-medium">3 kritis</Badge>
+            <Badge variant="destructive" className="h-5 rounded-full px-2 text-xs font-medium">3 kritis</Badge>
           </CardHeader>
           <CardContent className="p-0 flex-1 overflow-y-auto">
             <div className="divide-y divide-slate-100">
@@ -361,11 +361,11 @@ export function KementerianNationalDashboard() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <p className="truncate text-sm font-semibold text-slate-900">{alert.title}</p>
-                        <span className="whitespace-nowrap text-[10px] text-slate-400">2 jam lalu</span>
+                        <span className="whitespace-nowrap text-xs text-slate-400">2 jam lalu</span>
                       </div>
                       <p className="mt-1 text-xs font-medium leading-tight text-slate-500 line-clamp-2">{alert.message}</p>
                       <div className="mt-2 flex items-center gap-2">
-                        <span className="rounded bg-rose-50 px-1.5 py-0.5 text-[10px] font-medium text-rose-700">{alert.scopeLabel}</span>
+                        <span className="rounded bg-rose-50 px-1.5 py-0.5 text-xs font-medium text-rose-700">{alert.scopeLabel}</span>
                         <ChevronRight className="h-3 w-3 text-slate-300 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
@@ -416,11 +416,11 @@ export function KementerianNationalDashboard() {
                     <TableCell className="px-4 py-3">
                       <div className="min-w-[140px]">
                         <p className="truncate text-sm font-semibold text-slate-900 transition-colors group-hover:text-rose-600">{row.label}</p>
-                        <p className="text-[10px] text-slate-400">{row.village}</p>
+                        <p className="text-xs text-slate-400">{row.village}</p>
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge className={`h-5 px-1.5 text-[10px] font-medium ${healthBadgeClass(row.overallHealth)}`}>
+                      <Badge className={`h-5 px-1.5 text-xs font-medium ${healthBadgeClass(row.overallHealth)}`}>
                         {row.overallHealth}
                       </Badge>
                     </TableCell>
@@ -477,7 +477,7 @@ export function KementerianNationalDashboard() {
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                   <span className="text-lg font-semibold text-slate-900">1,248</span>
-                  <span className="text-[10px] font-medium text-slate-400">Unit</span>
+                  <span className="text-xs font-medium text-slate-400">Unit</span>
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-1.5 mt-2">
@@ -489,7 +489,7 @@ export function KementerianNationalDashboard() {
                   <div key={i} className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 p-2 shadow-[0_8px_18px_-18px_rgba(15,23,42,0.18)]">
                     <div className="flex items-center gap-2">
                       <div className={`h-2 w-2 rounded-full ${item.color}`} />
-                      <span className="text-[11px] font-medium text-slate-600">{item.label}</span>
+                      <span className="text-sm font-medium text-slate-600">{item.label}</span>
                     </div>
                     <span className="text-sm font-semibold text-slate-900">{item.count}</span>
                   </div>

@@ -110,14 +110,14 @@ export function PlanDetailDialog({ open, onOpenChange, plan }: PlanDetailDialogP
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-slate-400" />
                     <div>
-                      <p className="text-[10px] uppercase text-muted-foreground font-semibold">Started</p>
+                      <p className="text-xs  text-muted-foreground font-semibold">Started</p>
                       <p className="text-sm font-medium">{details.startDate}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-slate-400" />
                     <div>
-                      <p className="text-[10px] uppercase text-muted-foreground font-semibold">Exp. Harvest</p>
+                      <p className="text-xs  text-muted-foreground font-semibold">Exp. Harvest</p>
                       <p className="text-sm font-medium">{details.expectedHarvest}</p>
                     </div>
                   </div>
@@ -180,7 +180,7 @@ export function PlanDetailDialog({ open, onOpenChange, plan }: PlanDetailDialogP
                     <p className={`text-sm font-semibold ${activity.status === 'Completed' ? '' : 'text-slate-500'}`}>
                       {activity.title}
                     </p>
-                    <Badge variant="secondary" className="text-[10px] h-5">
+                    <Badge variant="secondary" className="text-xs h-5">
                       {activity.date}
                     </Badge>
                   </div>

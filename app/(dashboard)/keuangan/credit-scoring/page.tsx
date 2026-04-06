@@ -291,7 +291,7 @@ export default function CreditScoringPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">Credit Scoring</h1>
+            <h1 className="text-xl sm:text-2xl font-bold ">Credit Scoring</h1>
             <p className="text-sm text-muted-foreground">
               Analisis kelayakan kredit anggota koperasi
             </p>
@@ -439,7 +439,7 @@ export default function CreditScoringPage() {
                         <div>
                           <p className="font-medium text-sm">{member.nama}</p>
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Badge variant="outline" className="text-[10px] capitalize">{member.tipe}</Badge>
+                            <Badge variant="outline" className="text-xs capitalize">{member.tipe}</Badge>
                             {member.kycVerified && <ShieldCheck className="h-3 w-3 text-emerald-500" />}
                           </div>
                         </div>
@@ -448,7 +448,7 @@ export default function CreditScoringPage() {
                         <p className={`text-lg font-bold ${getScoreColor(member.creditScore)}`}>
                           {member.creditScore}
                         </p>
-                        <Badge className={`${scoreBadge.color} text-white text-[10px]`}>
+                        <Badge className={`${scoreBadge.color} text-white text-xs`}>
                           {scoreBadge.label}
                         </Badge>
                       </div>

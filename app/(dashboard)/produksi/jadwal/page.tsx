@@ -126,8 +126,8 @@ export default function JadwalPanenPage() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 uppercase">Logistik Panen Nasional</h1>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+          <h1 className="text-2xl font-semibold  text-slate-900 ">Logistik Panen Nasional</h1>
+          <p className="text-xs font-bold text-slate-500   mt-1">
             Sinkronisasi Jadwal Penjemputan Hasil Bumi Lintas Entitas
           </p>
         </div>
@@ -146,12 +146,12 @@ export default function JadwalPanenPage() {
         ].map((stat, i) => (
           <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
             <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
               <stat.icon className="h-3.5 w-3.5 text-slate-400" />
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-2xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
-              <p className="text-[10px] font-bold text-slate-500 uppercase mt-1 tracking-widest">{stat.sub}</p>
+              <p className="text-2xl font-semibold text-slate-900 ">{stat.value}</p>
+              <p className="text-xs font-bold text-slate-500  mt-1 ">{stat.sub}</p>
             </CardContent>
           </Card>
         ))}
@@ -161,7 +161,7 @@ export default function JadwalPanenPage() {
       <div className="space-y-8 relative">
         {filteredJadwal.length === 0 ? (
           <div className="py-20 text-center bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tidak ada jadwal dalam scope filter ini</p>
+            <p className="text-xs font-semibold text-slate-400  ">Tidak ada jadwal dalam scope filter ini</p>
           </div>
         ) : (
           filteredJadwal.map((jadwal, index) => {
@@ -183,12 +183,12 @@ export default function JadwalPanenPage() {
                 <div className="space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-3">
-                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{jadwal.hari}, {jadwal.tanggal}</h3>
-                      {isToday && <Badge className="bg-emerald-500 text-white text-[8px] font-black uppercase border-none">HARI INI</Badge>}
+                      <h3 className="text-sm font-semibold text-slate-900  ">{jadwal.hari}, {jadwal.tanggal}</h3>
+                      {isToday && <Badge className="bg-emerald-500 text-white text-xs font-semibold  border-none">HARI INI</Badge>}
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-3 w-3 text-slate-400" />
-                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{jadwal.desa} • {jadwal.koperasi}</span>
+                      <span className="text-xs font-semibold text-slate-500  ">{jadwal.desa} • {jadwal.koperasi}</span>
                     </div>
                   </div>
 
@@ -201,15 +201,15 @@ export default function JadwalPanenPage() {
                               <Leaf className="h-5 w-5 text-slate-900" />
                             </div>
                             <div className="space-y-1">
-                              <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.komoditas}</p>
+                              <p className="text-xs font-semibold text-slate-900  ">{item.komoditas}</p>
                               <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-1.5">
                                   <User className="h-3 w-3 text-slate-400" />
-                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.produsen}</span>
+                                  <span className="text-xs font-bold text-slate-500  ">{item.produsen}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                   <MapPin className="h-3 w-3 text-slate-400" />
-                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{item.lokasi}</span>
+                                  <span className="text-xs font-bold text-slate-500  ">{item.lokasi}</span>
                                 </div>
                               </div>
                             </div>
@@ -217,8 +217,8 @@ export default function JadwalPanenPage() {
                           
                           <div className="flex items-center justify-between sm:justify-end gap-8 bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-lg border sm:border-none border-slate-100">
                             <div className="text-left sm:text-right">
-                              <p className="text-sm font-black text-emerald-600 tracking-tighter">{item.estimasi.toUpperCase()}</p>
-                              <div className="flex items-center gap-1.5 text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5 sm:justify-end">
+                              <p className="text-sm font-semibold text-emerald-600 ">{item.estimasi.toUpperCase()}</p>
+                              <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400   mt-0.5 sm:justify-end">
                                 <Clock className="h-3 w-3" />
                                 {item.waktu}
                               </div>
