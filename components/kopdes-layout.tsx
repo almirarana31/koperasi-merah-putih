@@ -15,7 +15,7 @@ export function KopdesLayout({ children }: KopdesLayoutProps) {
 
   return (
     <div className="app-shell min-h-screen bg-background">
-      <div className="pointer-events-none fixed inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top_left,rgba(190,8,23,0.06),transparent_48%),radial-gradient(circle_at_top_right,rgba(255,255,255,0.95),transparent_34%)]" />
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top_left,color-mix(in_oklab,var(--dashboard-primary)_11%,transparent),transparent_48%),radial-gradient(circle_at_top_right,color-mix(in_oklab,var(--dashboard-tertiary)_8%,transparent),transparent_34%)]" />
       <KopdesSidebarCustom open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="relative lg:ml-64">

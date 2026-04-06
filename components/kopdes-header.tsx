@@ -45,7 +45,7 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
 
   return (
     <div className="sticky top-0 z-30 px-3.5 pt-3 sm:px-5 lg:px-6">
-      <header className="flex min-h-16 items-center justify-between gap-3 rounded-[1.25rem] border border-slate-200 bg-white/95 px-3.5 py-2.5 shadow-[0_10px_24px_-18px_rgba(15,23,42,0.18)] backdrop-blur-xl">
+      <header className="flex min-h-16 items-center justify-between gap-3 rounded-[1.2rem] border border-border bg-card/95 px-3.5 py-2.5 shadow-[0_12px_28px_-22px_rgba(137,114,111,0.24)] backdrop-blur-xl">
       <div className="flex min-w-0 items-center gap-3">
         <Button
           variant="ghost"

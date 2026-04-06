@@ -247,7 +247,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-sidebar-border bg-[linear-gradient(180deg,color-mix(in_oklab,var(--sidebar)_96%,black)_0%,color-mix(in_oklab,var(--sidebar)_90%,var(--primary))_100%)] shadow-[18px_0_36px_-26px_rgba(65,0,2,0.45)] transition-transform duration-200 ease-in-out",
+          "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-sidebar-border bg-[linear-gradient(180deg,color-mix(in_oklab,var(--sidebar)_94%,#a92724)_0%,color-mix(in_oklab,var(--sidebar)_86%,var(--dashboard-secondary))_100%)] shadow-[18px_0_34px_-24px_rgba(120,48,44,0.34)] transition-transform duration-200 ease-in-out",
           "lg:translate-x-0 lg:z-40",
           open ? "translate-x-0" : "-translate-x-full"
         )}

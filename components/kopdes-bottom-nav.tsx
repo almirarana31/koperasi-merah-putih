@@ -101,7 +101,7 @@ export function KopdesBottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 px-3 pb-4 pt-2 md:hidden">
-      <div className="mx-auto flex max-w-md items-center justify-around rounded-[1.9rem] border border-white/70 bg-white/88 px-2 py-2 shadow-[0_-6px_30px_-16px_rgba(92,64,61,0.18)] backdrop-blur-xl">
+      <div className="mx-auto flex max-w-md items-center justify-around rounded-[1.7rem] border border-border/80 bg-card/92 px-2 py-2 shadow-[0_-6px_28px_-18px_rgba(137,114,111,0.24)] backdrop-blur-xl">
         {items.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
 
