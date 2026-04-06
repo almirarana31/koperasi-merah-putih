@@ -506,6 +506,10 @@
     background-color: var(--dashboard-primary-hover) !important;
   }
 
+  .app-theme [class*='hover:bg-[var(--dashboard-neutral)]']:hover {
+    background-color: color-mix(in oklab, var(--dashboard-secondary-muted) 84%, white) !important;
+  }
+
   .app-theme :is(
       [class*='border-slate-900'],
       [class*='border-slate-800'],
@@ -519,6 +523,7 @@
   .app-theme :is(
       [class*='bg-slate-100'],
       [class*='bg-slate-50'],
+      [class*='bg-[var(--dashboard-neutral)]'],
       [class*='bg-white/10'],
       [class*='bg-white/14'],
       [class*='bg-white/20']

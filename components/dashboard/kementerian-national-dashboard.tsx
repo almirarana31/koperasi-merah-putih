@@ -196,15 +196,15 @@ export function KementerianNationalDashboard() {
   const SUBTLE_PANEL = 'rounded-xl border border-slate-200 bg-white shadow-[0_8px_18px_-16px_rgba(15,23,42,0.16)]'
 
   return (
-    <div className="flex min-h-screen flex-col gap-4 bg-[var(--dashboard-neutral)] p-4 lg:p-5">
+    <div className="flex min-h-screen flex-col gap-4 bg-[var(--dashboard-neutral-soft)] p-4 lg:p-5">
       {/* HEADER SECTION - COMPACT */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col justify-between gap-4 rounded-2xl border border-[var(--dashboard-secondary-border)] bg-white/92 p-4 shadow-[0_14px_30px_-22px_rgba(137,114,111,0.24)] md:flex-row md:items-center">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-[1.45rem] font-semibold text-[var(--dashboard-secondary)]">Ringkasan Kementerian</h1>
-            <Badge variant="outline" className="border-[var(--dashboard-primary)]/20 bg-[var(--dashboard-primary)]/8 px-2 py-0 text-xs font-medium text-[var(--dashboard-primary)]">Live</Badge>
+            <h1 className="text-[1.45rem] font-semibold text-foreground">Ringkasan Kementerian</h1>
+            <Badge variant="outline" className="border-[var(--dashboard-primary)]/18 bg-[var(--dashboard-primary)]/8 px-2 py-0 text-xs font-medium text-[var(--dashboard-primary)]">Live</Badge>
           </div>
-          <p className="flex items-center gap-2 text-sm text-[var(--dashboard-secondary)]/70">
+          <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <RefreshCw className="h-3 w-3 animate-spin-slow" /> 
             Data terpusat: {snapshot.scopeLabel} | Sinkron {Math.floor((Date.now() - clock)/60000)} m lalu
           </p>

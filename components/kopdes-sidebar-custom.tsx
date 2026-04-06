@@ -230,6 +230,11 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
     return pathname === href
   }
 
+  const hasActiveChild = (item: NavItem) => {
+    if (!item.children) return false
+    return item.children.some((child) => pathname === child.href || pathname.startsWith(`${child.href}/`))
+  }
+
   const handleLinkClick = () => {
     if (onClose) onClose()
   }
@@ -275,7 +280,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {visibleNavigation.map((group) => (
             <div key={group.section} className="mb-6">
-              <p className="mb-2 px-3 text-[13px] font-medium text-sidebar-foreground/60">
+              <p className="mb-2 px-3 text-[13px] font-semibold text-sidebar-foreground/72">
                 {group.section}
               </p>
               <ul className="space-y-1">
@@ -283,24 +288,37 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                   <li key={item.label}>
                     {item.children ? (
                       <div>
+                        {(() => {
+                          const parentActive = hasActiveChild(item)
+                          return (
                         <button
                           onClick={() => toggleExpand(item.label)}
                           className={cn(
-                            "flex w-full items-center justify-between rounded-full px-3 py-2.5 text-[0.95rem] transition-colors",
-                            "text-sidebar-foreground hover:bg-white/8"
+                            "flex w-full items-center justify-between rounded-full px-4 py-3 text-[0.95rem] transition-all duration-200",
+                            parentActive
+                              ? "border border-white/55 bg-[color-mix(in_oklab,white_88%,var(--dashboard-primary)_12%)] text-[var(--dashboard-primary)] shadow-[0_12px_24px_-18px_rgba(78,19,17,0.45)]"
+                              : "text-sidebar-foreground hover:bg-white/8"
                           )}
                         >
                           <span className="flex items-center gap-3">
-                            <item.icon className="h-4 w-4 text-sidebar-foreground/70" />
+                            <item.icon
+                              className={cn(
+                                "h-4 w-4 transition-colors",
+                                parentActive ? "text-[var(--dashboard-primary)]" : "text-sidebar-foreground/70"
+                              )}
+                            />
                             {item.label}
                           </span>
                           <ChevronDown
                             className={cn(
-                              "h-4 w-4 text-sidebar-foreground/70 transition-transform",
+                              "h-4 w-4 transition-transform",
+                              parentActive ? "text-[var(--dashboard-primary)]" : "text-sidebar-foreground/70",
                               expandedItems.includes(item.label) && "rotate-180"
                             )}
                           />
                         </button>
+                          )
+                        })()}
                         {expandedItems.includes(item.label) && (
                           <ul className="ml-3 mt-2 space-y-1 pl-3">
                             {item.children.map((child) => (
@@ -309,9 +327,9 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                                   href={child.href}
                                   onClick={handleLinkClick}
                                   className={cn(
-                                    "block w-full rounded-full px-3 py-2 text-left text-sm transition-colors",
+                                    "block w-full rounded-full px-4 py-2.5 text-left text-sm transition-all duration-200",
                                     isActive(child.href)
-                                      ? "bg-white/14 text-white"
+                                      ? "border border-white/50 bg-[color-mix(in_oklab,white_88%,var(--dashboard-primary)_12%)] font-medium text-[var(--dashboard-primary)] shadow-[0_10px_22px_-18px_rgba(78,19,17,0.4)]"
                                       : "text-sidebar-foreground/85 hover:bg-white/8 hover:text-sidebar-foreground"
                                   )}
                                 >
@@ -327,16 +345,16 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                         href={item.href || "#"}
                         onClick={handleLinkClick}
                         className={cn(
-                          "flex w-full items-center gap-3 rounded-full px-3 py-2.5 text-[0.95rem] transition-colors",
+                          "flex w-full items-center gap-3 rounded-full px-4 py-3 text-[0.95rem] transition-all duration-200",
                           isActive(item.href)
-                            ? "bg-white/14 text-white"
+                            ? "border border-white/55 bg-[color-mix(in_oklab,white_88%,var(--dashboard-primary)_12%)] font-medium text-[var(--dashboard-primary)] shadow-[0_12px_24px_-18px_rgba(78,19,17,0.45)]"
                             : "text-sidebar-foreground hover:bg-white/8"
                         )}
                       >
                         <item.icon
                           className={cn(
-                            "h-4 w-4",
-                            isActive(item.href) ? "text-white" : "text-sidebar-foreground/75"
+                            "h-4 w-4 transition-colors",
+                            isActive(item.href) ? "text-[var(--dashboard-primary)]" : "text-sidebar-foreground/75"
                           )}
                         />
                         {item.label}
