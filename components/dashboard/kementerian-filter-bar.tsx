@@ -26,7 +26,7 @@ interface KementerianFilterBarProps {
 }
 
 const triggerClassName =
-  'h-10 rounded-lg border border-[var(--dashboard-secondary)]/12 bg-white px-3 text-sm font-medium text-[var(--dashboard-secondary)] shadow-none transition-colors hover:bg-[var(--dashboard-neutral)]'
+  'h-9 rounded-md border border-[var(--dashboard-secondary)]/18 bg-white px-3 text-sm font-medium text-[var(--dashboard-secondary)] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:bg-[var(--dashboard-neutral)]'
 
 const contentClassName = 'border-[var(--dashboard-secondary)]/15 bg-white text-[var(--dashboard-secondary)]'
 const itemClassName =
@@ -76,21 +76,21 @@ export function KementerianFilterBar({
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--dashboard-secondary)]/15 bg-[var(--dashboard-neutral)] p-2 shadow-[0_16px_36px_-22px_rgba(69,90,100,0.45)]">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-[var(--dashboard-secondary)]/18 bg-[var(--dashboard-neutral)] p-1.5 shadow-[0_8px_18px_-14px_rgba(69,90,100,0.28)]">
         {setSearch !== undefined && (
-          <div className="relative min-w-[220px] flex-1 border-r border-[var(--dashboard-secondary)]/10 pr-2">
+          <div className="relative min-w-[220px] flex-1 border-r border-[var(--dashboard-secondary)]/10 pr-1.5">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--dashboard-secondary)]/45" />
             <Input
-              placeholder="Cari data nasional"
+              placeholder="Cari data"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-10 border-none bg-transparent pl-9 text-sm font-medium text-[var(--dashboard-secondary)] placeholder:text-[var(--dashboard-secondary)]/45 shadow-none focus-visible:ring-0"
+              className="h-9 border-none bg-transparent pl-9 text-sm font-medium text-[var(--dashboard-secondary)] placeholder:text-[var(--dashboard-secondary)]/45 shadow-none focus-visible:ring-0"
             />
           </div>
         )}
 
-        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-          <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Provinsi</span>
+        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
+          <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Provinsi</span>
           <Select
             value={filters.provinceId}
             onValueChange={(v) =>
@@ -104,11 +104,11 @@ export function KementerianFilterBar({
             }
           >
             <SelectTrigger className={`${triggerClassName} w-[140px]`}>
-              <SelectValue placeholder="SEMUA PROVINSI" />
+              <SelectValue placeholder="Semua provinsi" />
             </SelectTrigger>
             <SelectContent className={contentClassName}>
               <SelectItem value="all" className={itemClassName}>
-                SEMUA PROVINSI
+                Semua provinsi
               </SelectItem>
               {provinceOptions.map((opt) => (
                 <SelectItem key={opt.id} value={opt.id} className={itemClassName}>
@@ -119,8 +119,8 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-          <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Kab/Kota</span>
+        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
+          <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Kab/Kota</span>
           <Select
             value={filters.regionId}
             onValueChange={(v) =>
@@ -133,11 +133,11 @@ export function KementerianFilterBar({
             }
           >
             <SelectTrigger className={`${triggerClassName} w-[140px]`}>
-              <SelectValue placeholder="SEMUA KABUPATEN" />
+              <SelectValue placeholder="Semua kab/kota" />
             </SelectTrigger>
             <SelectContent className={contentClassName}>
               <SelectItem value="all" className={itemClassName}>
-                SEMUA KAB/KOTA
+                Semua kab/kota
               </SelectItem>
               {regionOptions.map((opt) => (
                 <SelectItem key={opt.id} value={opt.id} className={itemClassName}>
@@ -148,8 +148,8 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-          <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Desa</span>
+        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
+          <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Desa</span>
           <Select
             value={filters.villageId}
             onValueChange={(v) =>
@@ -161,11 +161,11 @@ export function KementerianFilterBar({
             }
           >
             <SelectTrigger className={`${triggerClassName} w-[140px]`}>
-              <SelectValue placeholder="SEMUA DESA" />
+              <SelectValue placeholder="Semua desa" />
             </SelectTrigger>
             <SelectContent className={contentClassName}>
               <SelectItem value="all" className={itemClassName}>
-                SEMUA DESA
+                Semua desa
               </SelectItem>
               {villageOptions.map((opt) => (
                 <SelectItem key={opt.id} value={opt.id} className={itemClassName}>
@@ -176,8 +176,8 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-          <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Koperasi</span>
+        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
+          <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Koperasi</span>
           <Select
             value={filters.cooperativeId}
             onValueChange={(v) =>
@@ -188,11 +188,11 @@ export function KementerianFilterBar({
             }
           >
             <SelectTrigger className={`${triggerClassName} w-[160px]`}>
-              <SelectValue placeholder="SEMUA ENTITAS" />
+              <SelectValue placeholder="Semua koperasi" />
             </SelectTrigger>
             <SelectContent className={contentClassName}>
               <SelectItem value="all" className={itemClassName}>
-                SEMUA KOPERASI
+                Semua koperasi
               </SelectItem>
               {cooperativeOptions.map((opt) => (
                 <SelectItem key={opt.id} value={opt.id} className={itemClassName}>
@@ -204,14 +204,14 @@ export function KementerianFilterBar({
         </div>
 
         {showCommodity && (
-          <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-            <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Komoditas</span>
+          <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
+            <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Komoditas</span>
             <Select
               value={filters.commodityId}
               onValueChange={(v) => setFilters((prev) => ({ ...prev, commodityId: v }))}
             >
               <SelectTrigger className={`${triggerClassName} w-[140px]`}>
-                <SelectValue placeholder="SEMUA" />
+                <SelectValue placeholder="Semua" />
               </SelectTrigger>
               <SelectContent className={contentClassName}>
                 {commodityOptions.map((opt) => (
@@ -227,7 +227,7 @@ export function KementerianFilterBar({
         <Button
           size="sm"
           variant="ghost"
-          className="ml-auto h-10 w-10 rounded-lg p-0 text-[var(--dashboard-secondary)]/70 transition-all hover:bg-[var(--dashboard-primary)] hover:text-white"
+          className="ml-auto h-9 w-9 rounded-md p-0 text-[var(--dashboard-secondary)]/70 transition-all hover:bg-[var(--dashboard-primary)] hover:text-white"
           onClick={resetFilters}
         >
           <RefreshCw className="h-3.5 w-3.5" />

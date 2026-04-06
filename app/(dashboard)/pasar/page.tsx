@@ -107,7 +107,7 @@ export default function PasarPage() {
   const avgOrderValue = filteredOrders.length === 0 ? 0 : totalRevenue / filteredOrders.length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
           <Badge className="w-fit border border-emerald-200 bg-emerald-50 text-emerald-700">Pasar Multi-Desa</Badge>
@@ -144,28 +144,28 @@ export default function PasarPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Nilai Order</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(totalRevenue)}</p>
             <p className="mt-2 text-sm text-muted-foreground">Seluruh order yang cocok dengan filter</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Order Aktif</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">{activeOrders}</p>
             <p className="mt-2 text-sm text-muted-foreground">Belum selesai dipenuhi</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Buyer Terhubung</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-600">{buyers.length}</p>
             <p className="mt-2 text-sm text-muted-foreground">Buyer muncul dari transaksi dalam scope</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Nilai Rata-rata</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(avgOrderValue)}</p>
             <p className="mt-2 text-sm text-muted-foreground">Per order setelah kombinasi filter</p>
@@ -201,7 +201,7 @@ export default function PasarPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+      <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Pendapatan Bulanan</CardTitle>

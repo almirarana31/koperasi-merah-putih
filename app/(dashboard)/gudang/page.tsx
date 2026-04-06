@@ -118,7 +118,7 @@ export default function GudangPage() {
   }))
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
           <Badge className="w-fit border border-rose-200 bg-rose-50 text-rose-700">Gudang Lintas Desa</Badge>
@@ -150,28 +150,28 @@ export default function GudangPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Stok Tersedia</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{(totalStockKg / 1000).toFixed(1)} ton</p>
             <p className="mt-2 text-sm text-muted-foreground">{filteredInventory.length} batch aktif dalam scope ini</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Nilai Persediaan</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(totalValue)}</p>
             <p className="mt-2 text-sm text-muted-foreground">{filteredWarehouses.length} gudang terhubung</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Batch Segera Keluar</p>
             <p className="mt-2 text-3xl font-semibold text-amber-600">{expiringBatches}</p>
             <p className="mt-2 text-sm text-muted-foreground">Masa simpan kurang dari 7 hari</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Cold Chain Aktif</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">{coldStorageBatches}</p>
             <p className="mt-2 text-sm text-muted-foreground">Batch memerlukan rantai dingin</p>
@@ -230,7 +230,7 @@ export default function GudangPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+      <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Komposisi Stok per Komoditas</CardTitle>

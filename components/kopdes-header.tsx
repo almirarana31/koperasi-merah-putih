@@ -44,8 +44,8 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
   }
 
   return (
-    <div className="sticky top-0 z-30 px-4 pt-4 sm:px-6 lg:px-8">
-      <header className="flex min-h-[4.5rem] items-center justify-between gap-3 rounded-[1.7rem] border border-white/70 bg-white/88 px-4 py-3 shadow-[0_12px_40px_-24px_rgba(92,64,61,0.22)] backdrop-blur-xl">
+    <div className="sticky top-0 z-30 px-3.5 pt-3 sm:px-5 lg:px-6">
+      <header className="flex min-h-16 items-center justify-between gap-3 rounded-[1.25rem] border border-slate-200 bg-white/95 px-3.5 py-2.5 shadow-[0_10px_24px_-18px_rgba(15,23,42,0.18)] backdrop-blur-xl">
       <div className="flex min-w-0 items-center gap-3">
         <Button
           variant="ghost"
@@ -60,14 +60,14 @@ export function KopdesHeader({ onMenuClick }: HeaderProps) {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
             <Leaf className="h-5 w-5" />
           </div>
-          <p className="truncate text-sm font-bold tracking-tight text-primary">KOPDES</p>
+          <p className="truncate text-sm font-semibold text-primary">Kopdes</p>
         </Link>
 
         <div className="hidden items-center gap-3 lg:flex">
           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm">
             <Leaf className="h-5 w-5" />
           </div>
-          <p className="text-sm font-bold tracking-tight text-primary">Koperasi Merah Putih</p>
+          <p className="text-sm font-semibold text-primary">Koperasi Merah Putih</p>
         </div>
       </div>
 

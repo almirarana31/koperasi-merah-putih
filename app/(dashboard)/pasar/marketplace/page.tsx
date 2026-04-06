@@ -79,7 +79,7 @@ export default function MarketplacePage() {
   ).values()]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="space-y-2">
         <Badge className="w-fit border border-emerald-200 bg-emerald-50 text-emerald-700">Marketplace Lintas Koperasi</Badge>
         <div>
@@ -94,28 +94,28 @@ export default function MarketplacePage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Listing Aktif</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{listings.length}</p>
             <p className="mt-2 text-sm text-muted-foreground">Semua listing dalam scope ini</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Stok Tersedia</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-600">{(totalStock / 1000).toFixed(1)} ton</p>
             <p className="mt-2 text-sm text-muted-foreground">Akan berubah saat filter wilayah/koperasi diganti</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Nilai Listing</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(totalValue)}</p>
             <p className="mt-2 text-sm text-muted-foreground">Dihitung dari stok dan harga listing yang terlihat</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Harga Rata-rata</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">{formatCurrency(avgPrice)}</p>
             <p className="mt-2 text-sm text-muted-foreground">Rata-rata harga per listing pada scope aktif</p>
@@ -158,7 +158,7 @@ export default function MarketplacePage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+      <div className="grid gap-5 xl:grid-cols-[1fr_1fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Stok per Regional</CardTitle>
@@ -183,7 +183,7 @@ export default function MarketplacePage() {
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             {listings.slice(0, 6).map((listing) => (
-              <div key={listing.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+              <div key={listing.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-medium text-slate-900">{listing.commodityName}</p>
@@ -225,7 +225,7 @@ export default function MarketplacePage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {listings.slice(6).map((listing) => (
           <Card key={listing.id} className="border-slate-200 bg-white">
-            <CardContent className="p-5">
+            <CardContent className="p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <p className="font-medium text-slate-900">{listing.commodityName}</p>

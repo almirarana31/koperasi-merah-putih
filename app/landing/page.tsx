@@ -61,15 +61,15 @@ export default function LandingPage() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(145,0,15,0.08),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(184,25,31,0.05),transparent_28%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(120,113,108,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.06)_1px,transparent_1px)] [background-size:32px_32px]" />
 
-      <header className="relative border-b border-[#ead8d6]/80 bg-white/82 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <header className="relative border-b border-[#dfd5d3] bg-white/88 backdrop-blur-xl">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#91000f_0%,#b8191f_100%)] text-white shadow-[0_14px_28px_-18px_rgba(145,0,15,0.55)]">
               <Leaf className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#7b5c57]">Koperasi Merah Putih</p>
-              <p className="font-display text-lg font-semibold tracking-tight text-slate-950">Portal Akses Nasional</p>
+              <p className="text-xs font-medium text-[#7b5c57]">Koperasi Merah Putih</p>
+              <p className="text-lg font-semibold text-slate-950">Portal Akses Nasional</p>
             </div>
           </div>
 
@@ -95,49 +95,49 @@ export default function LandingPage() {
       </header>
 
       <main>
-        <section className="relative px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-          <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
-            <div className="space-y-8">
-              <div className="space-y-4">
+        <section className="relative px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+          <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
+            <div className="space-y-6">
+              <div className="space-y-3">
                 <Badge className="rounded-md border border-[#e4beba]/70 bg-[#ffefed] px-3 py-1 text-xs font-medium text-[#930010] hover:bg-[#ffefed]">
                   Institutional Access Gateway
                 </Badge>
-                <h1 className="max-w-4xl font-display text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-5xl">
+                <h1 className="max-w-4xl text-[2.35rem] font-semibold leading-tight text-slate-950 sm:text-[2.9rem]">
                   Akses terkelola untuk operasional koperasi, pengawasan nasional, dan administrasi sistem.
                 </h1>
-                <p className="max-w-2xl text-lg leading-8 text-[#5f666d]">
+                <p className="max-w-2xl text-[1rem] leading-7 text-[#5f666d]">
                   Portal ini menjadi pintu masuk resmi untuk role utama dalam ekosistem Koperasi Merah Putih.
                   Setiap pengguna diarahkan ke workspace yang sesuai dengan kewenangan, lingkup data, dan tanggung
                   jawab institusionalnya.
                 </p>
               </div>
 
-              <div className="grid gap-4 rounded-[28px] bg-[#f3f4f5] p-4 sm:grid-cols-3">
-                <Card className="border-[#ead8d6]/50 bg-white shadow-[0_18px_36px_-30px_rgba(145,0,15,0.18)]">
-                  <CardContent className="p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7b5c57]">Peran Utama</p>
-                    <p className="mt-4 font-display text-4xl font-bold text-slate-950">4</p>
+              <div className="grid gap-3 rounded-[22px] border border-[#e5dad8] bg-[#f3f4f5] p-3 sm:grid-cols-3">
+                <Card className="border-[#dad2d0] bg-white shadow-[0_12px_24px_-20px_rgba(15,23,42,0.16)]">
+                  <CardContent className="p-4">
+                    <p className="text-xs font-medium text-[#7b5c57]">Peran utama</p>
+                    <p className="mt-3 text-[2rem] font-semibold text-slate-950">4</p>
                     <p className="mt-2 text-sm leading-6 text-[#5f666d]">Struktur akses utama untuk pengguna inti sistem.</p>
                   </CardContent>
                 </Card>
-                <Card className="border-[#ead8d6]/50 bg-white shadow-[0_18px_36px_-30px_rgba(145,0,15,0.18)]">
-                  <CardContent className="p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7b5c57]">Kontrol</p>
-                    <p className="mt-4 font-display text-4xl font-bold text-slate-950">RBAC</p>
+                <Card className="border-[#dad2d0] bg-white shadow-[0_12px_24px_-20px_rgba(15,23,42,0.16)]">
+                  <CardContent className="p-4">
+                    <p className="text-xs font-medium text-[#7b5c57]">Kontrol</p>
+                    <p className="mt-3 text-[2rem] font-semibold text-slate-950">RBAC</p>
                     <p className="mt-2 text-sm leading-6 text-[#5f666d]">Hak akses ditetapkan konsisten berdasarkan role.</p>
                   </CardContent>
                 </Card>
-                <Card className="border-[#ead8d6]/50 bg-white shadow-[0_18px_36px_-30px_rgba(145,0,15,0.18)]">
-                  <CardContent className="p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7b5c57]">Kesiapan</p>
-                    <p className="mt-4 font-display text-4xl font-bold text-slate-950">Produksi</p>
+                <Card className="border-[#dad2d0] bg-white shadow-[0_12px_24px_-20px_rgba(15,23,42,0.16)]">
+                  <CardContent className="p-4">
+                    <p className="text-xs font-medium text-[#7b5c57]">Kesiapan</p>
+                    <p className="mt-3 text-[2rem] font-semibold text-slate-950">Produksi</p>
                     <p className="mt-2 text-sm leading-6 text-[#5f666d]">Dirancang untuk penggunaan harian yang stabil dan terukur.</p>
                   </CardContent>
                 </Card>
               </div>
 
-              <Card className="border-[#ead8d6]/50 bg-[#f3f4f5] shadow-[0_20px_44px_-34px_rgba(145,0,15,0.16)]">
-                <CardContent className="p-6">
+              <Card className="border-[#ddd4d2] bg-[#f3f4f5] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.16)]">
+                <CardContent className="p-5">
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#e4beba]/70 bg-white text-[#930010]">
                       <LockKeyhole className="h-5 w-5" />
@@ -150,7 +150,7 @@ export default function LandingPage() {
                           kewenangan tanpa melalui langkah yang tidak relevan.
                         </p>
                       </div>
-                      <div className="grid gap-3 sm:grid-cols-3">
+                      <div className="grid gap-2.5 sm:grid-cols-3">
                         <div className="rounded-lg bg-white px-4 py-3 text-sm text-[#5f666d] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]">
                           1. Pilih role utama
                         </div>
@@ -167,12 +167,12 @@ export default function LandingPage() {
               </Card>
             </div>
 
-            <div className="space-y-4">
-              <Card className="border-[#ead8d6]/55 bg-[#f3f4f5] shadow-[0_28px_72px_-54px_rgba(145,0,15,0.22)]">
-                <CardContent className="space-y-5 p-6">
+            <div className="space-y-3">
+              <Card className="border-[#ddd4d2] bg-[#f3f4f5] shadow-[0_18px_36px_-28px_rgba(15,23,42,0.18)]">
+                <CardContent className="space-y-4 p-5">
                   <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7b5c57]">Peran Akses</p>
-                    <h2 className="font-display text-2xl font-bold tracking-tight text-slate-950">Empat role utama dalam satu portal</h2>
+                    <p className="text-xs font-medium text-[#7b5c57]">Peran akses</p>
+                    <h2 className="text-2xl font-semibold text-slate-950">Empat role utama dalam satu portal</h2>
                     <p className="text-sm leading-6 text-[#5f666d]">
                       Setiap peran memiliki cakupan data dan ruang kerja yang berbeda untuk menjaga ketertiban akses.
                     </p>

@@ -84,7 +84,7 @@ function scoreToStatus(score: number) {
   return 'critical'
 }
 
-const SURFACE_CARD = 'overflow-hidden border border-[var(--dashboard-secondary)]/10 bg-white shadow-sm'
+const SURFACE_CARD = 'overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_24px_-18px_rgba(15,23,42,0.18)]'
 
 export function KementerianNationalDashboard() {
   const [filters, setFilters] = useState<ScopeFilters>({
@@ -193,28 +193,28 @@ export function KementerianNationalDashboard() {
   const severityAlertClass = (s: AlertSeverity) => s === 'critical' ? 'border-rose-100 bg-rose-50/50 text-rose-950' : 'border-amber-100 bg-amber-50/50 text-amber-950'
   const severityBadgeClass = (s: AlertSeverity) => s === 'critical' ? 'bg-rose-600' : 'bg-amber-600'
 
-  const SUBTLE_PANEL = 'rounded-2xl border border-slate-100 bg-white shadow-sm'
+  const SUBTLE_PANEL = 'rounded-xl border border-slate-200 bg-white shadow-[0_8px_18px_-16px_rgba(15,23,42,0.16)]'
 
   return (
-    <div className="flex min-h-screen flex-col gap-4 bg-[var(--dashboard-neutral)] p-4 lg:p-6">
+    <div className="flex min-h-screen flex-col gap-4 bg-[var(--dashboard-neutral)] p-4 lg:p-5">
       {/* HEADER SECTION - COMPACT */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-black text-[var(--dashboard-secondary)] tracking-tight">KEMENTERIAN OVERVIEW</h1>
-            <Badge variant="outline" className="border-[var(--dashboard-primary)]/20 bg-[var(--dashboard-primary)]/8 px-2 py-0 font-bold text-[var(--dashboard-primary)]">LIVE</Badge>
+            <h1 className="text-[1.45rem] font-semibold text-[var(--dashboard-secondary)]">Ringkasan Kementerian</h1>
+            <Badge variant="outline" className="border-[var(--dashboard-primary)]/20 bg-[var(--dashboard-primary)]/8 px-2 py-0 text-xs font-medium text-[var(--dashboard-primary)]">Live</Badge>
           </div>
-          <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[var(--dashboard-secondary)]/70">
+          <p className="flex items-center gap-2 text-sm text-[var(--dashboard-secondary)]/70">
             <RefreshCw className="h-3 w-3 animate-spin-slow" /> 
-            DATA TERPUSAT: {snapshot.scopeLabel} • Sinkron {Math.floor((Date.now() - clock)/60000)}m lalu
+            Data terpusat: {snapshot.scopeLabel} | Sinkron {Math.floor((Date.now() - clock)/60000)} m lalu
           </p>
         </div>
         
-        <div className="flex flex-wrap items-center gap-2 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
-          <div className="flex items-center gap-1 px-2 border-r border-slate-100">
-            <span className="text-[10px] font-black text-slate-400 uppercase">Prov</span>
+        <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 bg-white p-1.5 shadow-[0_10px_22px_-18px_rgba(15,23,42,0.16)]">
+          <div className="flex items-center gap-1.5 border-r border-slate-200 px-2">
+            <span className="text-xs font-medium text-slate-500">Provinsi</span>
             <Select value={filters.provinceId} onValueChange={(v) => setFilters(prev => ({...prev, provinceId: v, regionId: 'all', villageId: 'all', cooperativeId: 'all'}))}>
-              <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[100px] text-xs font-bold p-0">
+              <SelectTrigger className="h-8 w-[120px] border-none bg-transparent px-0 text-sm font-medium shadow-none">
                 <SelectValue placeholder="Semua" />
               </SelectTrigger>
               <SelectContent>
@@ -223,10 +223,10 @@ export function KementerianNationalDashboard() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-1 px-2 border-r border-slate-100">
-            <span className="text-[10px] font-black text-slate-400 uppercase">Reg</span>
+          <div className="flex items-center gap-1.5 border-r border-slate-200 px-2">
+            <span className="text-xs font-medium text-slate-500">Kab/Kota</span>
             <Select value={filters.regionId} onValueChange={(v) => setFilters(prev => ({...prev, regionId: v, villageId: 'all', cooperativeId: 'all'}))}>
-              <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[100px] text-xs font-bold p-0">
+              <SelectTrigger className="h-8 w-[120px] border-none bg-transparent px-0 text-sm font-medium shadow-none">
                 <SelectValue placeholder="Semua" />
               </SelectTrigger>
               <SelectContent>
@@ -235,10 +235,10 @@ export function KementerianNationalDashboard() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-1 px-2 border-r border-slate-100">
-            <span className="text-[10px] font-black text-slate-400 uppercase">Komoditas</span>
+          <div className="flex items-center gap-1.5 border-r border-slate-200 px-2">
+            <span className="text-xs font-medium text-slate-500">Komoditas</span>
             <Select value={filters.commodityId} onValueChange={(v) => setFilters(prev => ({...prev, commodityId: v}))}>
-              <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[100px] text-xs font-bold p-0">
+              <SelectTrigger className="h-8 w-[120px] border-none bg-transparent px-0 text-sm font-medium shadow-none">
                 <SelectValue placeholder="Semua" />
               </SelectTrigger>
               <SelectContent>
@@ -258,7 +258,7 @@ export function KementerianNationalDashboard() {
       </div>
 
       {/* TOP ROW - KPI AGGREGATES */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
         {[
           { label: 'Total Koperasi', value: snapshot.summary.cooperatives.toLocaleString('id-ID'), icon: Building2, trend: '+12', tone: 'secondary' },
           { label: 'Anggota Aktif', value: snapshot.summary.totalMembers.toLocaleString('id-ID'), icon: Users, trend: formatPercent(snapshot.summary.memberGrowthPct), tone: 'secondary' },
@@ -267,7 +267,7 @@ export function KementerianNationalDashboard() {
           { label: 'Avg NPL', value: `${snapshot.summary.avgNpl.toFixed(1)}%`, icon: ShieldAlert, trend: '-0.2%', tone: snapshot.summary.avgNpl > 3 ? 'primary' : 'secondary' },
           { label: 'Health Score', value: `${Math.round(snapshot.summary.overallScore)}`, icon: HeartPulse, trend: 'Optimal', tone: 'secondary' },
         ].map((kpi, idx) => (
-          <Card key={idx} className={`${SURFACE_CARD} transition-all hover:border-rose-300 hover:shadow-md bg-white border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]`}>
+          <Card key={idx} className={`${SURFACE_CARD} transition-all hover:border-rose-200 hover:shadow-[0_14px_26px_-18px_rgba(15,23,42,0.18)]`}>
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
                 <div className={`rounded-xl p-2 ${
@@ -279,7 +279,7 @@ export function KementerianNationalDashboard() {
                 }`}>
                   <kpi.icon className="h-4 w-4" />
                 </div>
-                <Badge className={`text-[9px] font-black ${
+                <Badge className={`text-[10px] font-medium ${
                   kpi.tone === 'primary'
                     ? 'bg-[var(--dashboard-primary)]/10 text-[var(--dashboard-primary)]'
                     : kpi.tone === 'tertiary'
@@ -290,8 +290,8 @@ export function KementerianNationalDashboard() {
                 </Badge>
               </div>
               <div className="mt-3">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</p>
-                <p className="text-2xl font-black text-slate-900 tracking-tighter mt-0.5">{kpi.value}</p>
+                <p className="text-xs font-medium text-slate-500">{kpi.label}</p>
+                <p className="mt-0.5 text-[1.55rem] font-semibold text-slate-900">{kpi.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -299,20 +299,20 @@ export function KementerianNationalDashboard() {
       </div>
 
       {/* MIDDLE SECTION - CHARTS & EWS */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         {/* MAIN CHART - 8 COLS */}
         <Card className={`${SURFACE_CARD} lg:col-span-8 flex flex-col`}>
-          <CardHeader className="p-4 border-b border-slate-100 flex flex-row items-center justify-between space-y-0">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-200 p-4">
             <div className="space-y-0.5">
-              <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">Performa Pertumbuhan Nasional</CardTitle>
-              <CardDescription className="text-[10px] font-bold text-slate-500">Korelasi anggota baru vs produksi beras (agregat)</CardDescription>
+              <CardTitle className="text-sm font-semibold text-slate-900">Performa pertumbuhan nasional</CardTitle>
+              <CardDescription className="text-xs text-slate-500">Korelasi anggota baru vs produksi beras secara agregat</CardDescription>
             </div>
             <div className="flex gap-4">
-              <div className="flex items-center gap-1.5 text-[9px] font-black text-[var(--dashboard-secondary)]">
-                <div className="h-2 w-2 rounded-full bg-[var(--dashboard-secondary)]" /> ANGGOTA
+              <div className="flex items-center gap-1.5 text-[10px] font-medium text-[var(--dashboard-secondary)]">
+                <div className="h-2 w-2 rounded-full bg-[var(--dashboard-secondary)]" /> Anggota
               </div>
-              <div className="flex items-center gap-1.5 text-[9px] font-black text-[var(--dashboard-primary)]">
-                <div className="h-2 w-2 rounded-full bg-[var(--dashboard-primary)]" /> RISIKO
+              <div className="flex items-center gap-1.5 text-[10px] font-medium text-[var(--dashboard-primary)]">
+                <div className="h-2 w-2 rounded-full bg-[var(--dashboard-primary)]" /> Risiko
               </div>
             </div>
           </CardHeader>
@@ -327,7 +327,7 @@ export function KementerianNationalDashboard() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="month" fontSize={10} fontWeight={900} axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                  <XAxis dataKey="month" fontSize={11} axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
                   <YAxis yAxisId="left" hide />
                   <YAxis yAxisId="right" orientation="right" hide />
                   <Tooltip 
@@ -344,28 +344,28 @@ export function KementerianNationalDashboard() {
 
         {/* EWS - 4 COLS */}
         <Card className={`${SURFACE_CARD} lg:col-span-4 flex flex-col`}>
-          <CardHeader className="p-4 border-b border-slate-100 flex flex-row items-center justify-between space-y-0 bg-slate-50/50">
-            <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
-              <ShieldAlert className="h-4 w-4 text-rose-600" /> EARLY WARNING
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-200 bg-slate-50/70 p-4">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+              <ShieldAlert className="h-4 w-4 text-rose-600" /> Early warning
             </CardTitle>
-            <Badge variant="destructive" className="h-5 px-2 text-[9px] font-black rounded-full">3 KRITIS</Badge>
+            <Badge variant="destructive" className="h-5 rounded-full px-2 text-[10px] font-medium">3 kritis</Badge>
           </CardHeader>
           <CardContent className="p-0 flex-1 overflow-y-auto">
             <div className="divide-y divide-slate-100">
               {snapshot.topAlerts.slice(0, 4).map((alert) => (
-                <div key={alert.id} className="p-3.5 hover:bg-slate-50 transition-colors group cursor-pointer">
+                <div key={alert.id} className="group cursor-pointer p-3.5 transition-colors hover:bg-slate-50">
                   <div className="flex items-start gap-3">
                     <div className={`mt-0.5 p-1.5 rounded-lg ${alert.severity === 'critical' ? 'bg-rose-50 text-rose-600' : 'bg-amber-50 text-amber-600'}`}>
                       <AlertTriangle className="h-3 w-3" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-[11px] font-black text-slate-900 truncate uppercase">{alert.title}</p>
-                        <span className="text-[9px] font-bold text-slate-400 whitespace-nowrap">2H LALU</span>
+                        <p className="truncate text-sm font-semibold text-slate-900">{alert.title}</p>
+                        <span className="whitespace-nowrap text-[10px] text-slate-400">2 jam lalu</span>
                       </div>
-                      <p className="text-[10px] text-slate-500 mt-1 font-semibold leading-tight line-clamp-2">{alert.message}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-[9px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded uppercase tracking-tighter">{alert.scopeLabel}</span>
+                      <p className="mt-1 text-xs font-medium leading-tight text-slate-500 line-clamp-2">{alert.message}</p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <span className="rounded bg-rose-50 px-1.5 py-0.5 text-[10px] font-medium text-rose-700">{alert.scopeLabel}</span>
                         <ChevronRight className="h-3 w-3 text-slate-300 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
@@ -374,8 +374,8 @@ export function KementerianNationalDashboard() {
               ))}
             </div>
           </CardContent>
-          <div className="p-3 border-t border-slate-100 bg-slate-50/30">
-            <Button variant="ghost" className="w-full h-8 text-[10px] font-black text-slate-500 hover:text-rose-600 hover:bg-white uppercase tracking-widest transition-all">
+          <div className="border-t border-slate-200 bg-slate-50/30 p-3">
+            <Button variant="ghost" className="h-8 w-full text-xs font-medium text-slate-600 transition-all hover:bg-white hover:text-rose-600">
               Buka Command Center <ArrowRight className="ml-2 h-3 w-3" />
             </Button>
           </div>
@@ -383,16 +383,16 @@ export function KementerianNationalDashboard() {
       </div>
 
       {/* BOTTOM SECTION - TABLES & ANALYTICS */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
         {/* CROSS KOPERASI TABLE - 8 COLS */}
         <Card className={`${SURFACE_CARD} lg:col-span-8 flex flex-col`}>
-          <CardHeader className="border-b border-[#394B54] bg-[var(--dashboard-secondary)] p-4">
+          <CardHeader className="border-b border-slate-200 bg-slate-50/70 p-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <CardTitle className="text-sm font-black text-white uppercase tracking-widest">Audit Lintas Unit Kerja</CardTitle>
-                <CardDescription className="text-[10px] font-bold text-white/70">Monitoring 1,248 Unit Nasional - Filter Aktif: {snapshot.scopeLabel}</CardDescription>
+                <CardTitle className="text-sm font-semibold text-slate-900">Audit lintas unit kerja</CardTitle>
+                <CardDescription className="text-xs text-slate-500">Monitoring 1,248 unit nasional. Filter aktif: {snapshot.scopeLabel}</CardDescription>
               </div>
-              <Button size="sm" className="h-8 rounded-lg bg-[var(--dashboard-primary)] px-4 text-[10px] font-black text-white uppercase tracking-tighter shadow-lg shadow-rose-900/20 hover:bg-[#B82A2A]">
+              <Button size="sm" className="h-9 rounded-lg bg-[var(--dashboard-primary)] px-4 text-xs font-medium text-white shadow-[0_12px_24px_-18px_rgba(145,0,15,0.42)] hover:bg-[#B82A2A]">
                 Download Audit PDF
               </Button>
             </div>
@@ -402,12 +402,12 @@ export function KementerianNationalDashboard() {
               <Table>
                 <TableHeader className="bg-slate-50">
                 <TableRow className="border-none hover:bg-transparent">
-                  <TableHead className="text-[9px] font-black text-slate-400 uppercase px-4 h-10">Unit Koperasi</TableHead>
-                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-center h-10">Status</TableHead>
-                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-right h-10">Anggota</TableHead>
-                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-right h-10">Inc / Mem</TableHead>
-                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-right h-10">NPL Ratio</TableHead>
-                  <TableHead className="text-[9px] font-black text-slate-400 uppercase text-right px-4 h-10">Skor</TableHead>
+                  <TableHead className="h-10 px-4 text-xs font-medium text-slate-500">Unit koperasi</TableHead>
+                  <TableHead className="h-10 text-center text-xs font-medium text-slate-500">Status</TableHead>
+                  <TableHead className="h-10 text-right text-xs font-medium text-slate-500">Anggota</TableHead>
+                  <TableHead className="h-10 text-right text-xs font-medium text-slate-500">Pendapatan / anggota</TableHead>
+                  <TableHead className="h-10 text-right text-xs font-medium text-slate-500">Rasio NPL</TableHead>
+                  <TableHead className="h-10 px-4 text-right text-xs font-medium text-slate-500">Skor</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -415,24 +415,24 @@ export function KementerianNationalDashboard() {
                   <TableRow key={row.id} className="border-slate-100 hover:bg-slate-50 transition-colors group cursor-pointer">
                     <TableCell className="px-4 py-3">
                       <div className="min-w-[140px]">
-                        <p className="text-xs font-black text-slate-900 group-hover:text-rose-600 transition-colors uppercase truncate">{row.label}</p>
-                        <p className="text-[9px] font-bold text-slate-400 tracking-tighter">{row.village}</p>
+                        <p className="truncate text-sm font-semibold text-slate-900 transition-colors group-hover:text-rose-600">{row.label}</p>
+                        <p className="text-[10px] text-slate-400">{row.village}</p>
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge className={`text-[8px] font-black h-4 px-1 ${healthBadgeClass(row.overallHealth)}`}>
-                        {row.overallHealth.toUpperCase()}
+                      <Badge className={`h-5 px-1.5 text-[10px] font-medium ${healthBadgeClass(row.overallHealth)}`}>
+                        {row.overallHealth}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-slate-600">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
-                    <TableCell className="text-right text-xs font-black text-[var(--dashboard-secondary)]">{formatCompactCurrency(row.avgIncomeAfter)}</TableCell>
-                    <TableCell className={`text-right text-xs font-black ${row.avgNpl > 3 ? 'text-rose-600' : 'text-slate-900'}`}>{row.avgNpl.toFixed(1)}%</TableCell>
+                    <TableCell className="text-right text-sm font-medium text-slate-600">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
+                    <TableCell className="text-right text-sm font-semibold text-[var(--dashboard-secondary)]">{formatCompactCurrency(row.avgIncomeAfter)}</TableCell>
+                    <TableCell className={`text-right text-sm font-semibold ${row.avgNpl > 3 ? 'text-rose-600' : 'text-slate-900'}`}>{row.avgNpl.toFixed(1)}%</TableCell>
                     <TableCell className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
                           <div className={`h-full rounded-full ${row.overallScore > 80 ? 'bg-[var(--dashboard-secondary)]' : row.overallScore > 60 ? 'bg-[var(--dashboard-tertiary)]' : 'bg-[var(--dashboard-primary)]'}`} style={{ width: `${row.overallScore}%` }} />
                         </div>
-                        <span className="text-[10px] font-black text-slate-900">{Math.round(row.overallScore)}</span>
+                        <span className="text-xs font-semibold text-slate-900">{Math.round(row.overallScore)}</span>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -441,19 +441,19 @@ export function KementerianNationalDashboard() {
               </Table>
             </div>
           </CardContent>
-          <div className="p-3 bg-slate-50/50 border-t border-slate-100 text-center">
+          <div className="border-t border-slate-200 bg-slate-50/50 p-3 text-center">
 
-            <Button variant="link" className="h-auto p-0 text-[10px] font-black text-rose-600 hover:no-underline uppercase tracking-widest" asChild>
-              <Link href="/anggota">Audit Seluruh Database Unit (1,248) →</Link>
+            <Button variant="link" className="h-auto p-0 text-xs font-medium text-rose-600 hover:no-underline" asChild>
+              <Link href="/anggota">Audit seluruh database unit (1,248)</Link>
             </Button>
           </div>
         </Card>
 
         {/* DEMOGRAPHICS & HEALTH - 4 COLS */}
-        <div className="lg:col-span-4 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 lg:col-span-4">
           <Card className={`${SURFACE_CARD} flex-1`}>
-            <CardHeader className="p-4 border-b border-slate-100 pb-3">
-              <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">Kesehatan Portfolio</CardTitle>
+            <CardHeader className="border-b border-slate-200 p-4 pb-3">
+              <CardTitle className="text-sm font-semibold text-slate-900">Kesehatan portofolio</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
               <div className="h-[140px] w-full relative">
@@ -476,8 +476,8 @@ export function KementerianNationalDashboard() {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-lg font-black text-slate-900">1,248</span>
-                  <span className="text-[8px] font-black text-slate-400 uppercase">Unit</span>
+                  <span className="text-lg font-semibold text-slate-900">1,248</span>
+                  <span className="text-[10px] font-medium text-slate-400">Unit</span>
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-1.5 mt-2">
@@ -486,33 +486,33 @@ export function KementerianNationalDashboard() {
                   { label: 'Waspada / Audit', count: '620', color: 'bg-[var(--dashboard-tertiary)]' },
                   { label: 'Intervensi Segera', count: '178', color: 'bg-[var(--dashboard-primary)]' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 shadow-sm">
+                  <div key={i} className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 p-2 shadow-[0_8px_18px_-18px_rgba(15,23,42,0.18)]">
                     <div className="flex items-center gap-2">
                       <div className={`h-2 w-2 rounded-full ${item.color}`} />
-                      <span className="text-[9px] font-black text-slate-600 uppercase tracking-tighter">{item.label}</span>
+                      <span className="text-[11px] font-medium text-slate-600">{item.label}</span>
                     </div>
-                    <span className="text-xs font-black text-slate-900">{item.count}</span>
+                    <span className="text-sm font-semibold text-slate-900">{item.count}</span>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          <Card className={`${SURFACE_CARD} bg-white border-rose-100`}>
-            <CardHeader className="p-4 border-b border-rose-50 flex flex-row items-center justify-between space-y-0 bg-rose-50/20">
-              <CardTitle className="text-sm font-black text-rose-900 uppercase tracking-tight flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-rose-600" /> AI INSIGHT
+          <Card className={`${SURFACE_CARD} border-rose-200 bg-white`}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-rose-100 bg-rose-50/25 p-4">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-rose-900">
+                <Sparkles className="h-4 w-4 text-rose-600" /> Insight AI
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
               <div className="space-y-1">
-                <p className="text-xs font-black text-slate-900 leading-tight">DETEKSI ANOMALI PENDAPATAN</p>
-                <p className="text-[10px] text-slate-600 font-medium leading-relaxed">
+                <p className="text-sm font-semibold leading-tight text-slate-900">Deteksi anomali pendapatan</p>
+                <p className="text-xs leading-relaxed text-slate-600">
                   Tren pendapatan di Wilayah Timur melampaui forecast 12%. Disarankan alokasi modal tambahan untuk infrastruktur pasca-panen.
                 </p>
               </div>
-              <div className="pt-2 border-t border-rose-100">
-                <Button className="w-full h-9 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-rose-200">
+              <div className="border-t border-rose-100 pt-2">
+                <Button className="h-9 w-full rounded-xl bg-rose-600 text-xs font-medium text-white shadow-[0_12px_22px_-18px_rgba(190,24,93,0.38)] hover:bg-rose-700">
                   Konsultasi Strategi AI
                 </Button>
               </div>

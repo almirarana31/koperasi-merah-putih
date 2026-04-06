@@ -1,31 +1,10 @@
 "use client"
 
 import Link from 'next/link'
-import {
-  ArrowRight,
-  BarChart3,
-  Bell,
-  Brain,
-  ClipboardCheck,
-  FileText,
-  ShieldCheck,
-  ShoppingCart,
-  Sprout,
-  Truck,
-  UserRound,
-  Users,
-  Wallet,
-  Warehouse,
-  Zap,
-} from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Brain } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth'
-import type { DataScope, Role } from '@/lib/rbac'
-
-// Import Specialized Dashboards
 import { KementerianNationalDashboard } from '@/components/dashboard/kementerian-national-dashboard'
 import { PetaniDashboard } from '@/components/dashboard/roles/petani-dashboard'
 import { KoperasiManagerDashboard } from '@/components/dashboard/roles/koperasi-manager-dashboard'
@@ -41,7 +20,6 @@ export default function DashboardPage() {
 
   if (!user || !roleConfig) return null
 
-  // Route to the appropriate specialized dashboard component
   const renderDashboard = () => {
     switch (user.role) {
       case 'kementerian':
@@ -64,63 +42,70 @@ export default function DashboardPage() {
         return <KetuaDashboard />
       default:
         return (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <p className="text-muted-foreground text-sm font-medium">Dashboard untuk peran ini sedang dikonfigurasi.</p>
+          <div className="flex min-h-[400px] items-center justify-center">
+            <p className="text-sm font-medium text-muted-foreground">Dashboard untuk peran ini sedang dikonfigurasi.</p>
           </div>
         )
     }
   }
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="space-y-5 pb-8">
       <div className="px-1">
-        <p className="text-sm font-semibold text-slate-600 drop-shadow-sm">Selamat datang kembali,</p>
-        <h1 className="mt-1 text-[2.2rem] font-black leading-tight tracking-tight text-slate-950 drop-shadow-md">
+        <p className="text-sm font-medium text-slate-600">Selamat datang kembali,</p>
+        <h1 className="mt-1 text-[2rem] font-semibold leading-tight text-slate-950 sm:text-[2.15rem]">
           {user.name.split(' ')[0]}!
         </h1>
       </div>
 
-      {/* AI Intelligence Home Section */}
-      <section className="relative overflow-hidden rounded-[2.2rem] border border-primary/20 bg-gradient-to-br from-white via-rose-50/30 to-rose-100/20 p-7 shadow-xl">
-        <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 transition-transform hover:rotate-0 duration-700">
-          <Brain className="h-40 w-40 text-primary" />
+      <section className="relative overflow-hidden rounded-[1.6rem] border border-primary/15 bg-gradient-to-br from-white via-rose-50/35 to-stone-50 p-5 shadow-[0_16px_34px_-26px_rgba(15,23,42,0.2)] sm:p-6">
+        <div className="absolute right-0 top-0 p-6 opacity-[0.08] transition-transform duration-700 hover:rotate-0 sm:rotate-6">
+          <Brain className="h-32 w-32 text-primary sm:h-36 sm:w-36" />
         </div>
-        <div className="absolute -bottom-12 -left-12 h-40 w-40 rounded-full bg-primary/5 blur-3xl" />
-        
-        <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
-          <div className="space-y-4 text-center lg:text-left flex-1">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-[10px] font-black text-primary uppercase tracking-[0.2em] shadow-sm">
+        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-3xl" />
+
+        <div className="relative flex flex-col items-center justify-between gap-5 lg:flex-row">
+          <div className="flex-1 space-y-3 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/8 px-3 py-1.5 text-xs font-medium text-primary shadow-sm">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
               </span>
-              AI Intelligence Core • Real-time Engine
+              AI Intelligence Core | Real-time Engine
             </div>
             <div>
-              <h2 className="text-3xl font-black text-slate-950 tracking-tight drop-shadow-sm">Rangkuman Insight AI Hari Ini</h2>
-              <p className="mt-2 max-w-2xl text-base font-semibold text-slate-700 leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-                {user.role === 'kementerian' 
-                  ? "Analisis nasional dari 1,248 Desa mendeteksi tren kenaikan NPL di 3 wilayah kunci. Rekomendasi: Segera lakukan audit verifikasi pada Koperasi di Wilayah Jawa Barat." 
+              <h2 className="text-[1.6rem] font-semibold text-slate-950 sm:text-[1.85rem]">Rangkuman Insight AI Hari Ini</h2>
+              <p className="mt-2 max-w-2xl text-[0.98rem] leading-6 text-slate-700">
+                {user.role === 'kementerian'
+                  ? 'Analisis nasional dari 1,248 desa mendeteksi tren kenaikan NPL di 3 wilayah kunci. Rekomendasi: segera lakukan audit verifikasi pada koperasi di wilayah Jawa Barat.'
                   : `Berdasarkan data operasional terbaru, sistem mendeteksi efisiensi ${user.role === 'petani' ? 'panen' : 'transaksi'} meningkat 12%. Gunakan rekomendasi harga AI untuk hasil maksimal.`}
               </p>
             </div>
-            <div className="flex flex-wrap justify-center lg:justify-start gap-3">
-              <Badge variant="outline" className="bg-white/50 border-primary/10 text-[10px] font-bold py-1 px-3">Forecast Akurasi: 98.2%</Badge>
-              <Badge variant="outline" className="bg-white/50 border-primary/10 text-[10px] font-bold py-1 px-3">Data Sync: 2 mnt lalu</Badge>
+            <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+              <Badge variant="outline" className="border-primary/15 bg-white/85 px-3 py-1 text-xs font-medium text-slate-700">
+                Forecast akurasi: 98.2%
+              </Badge>
+              <Badge variant="outline" className="border-primary/15 bg-white/85 px-3 py-1 text-xs font-medium text-slate-700">
+                Data sinkron: 2 mnt lalu
+              </Badge>
             </div>
           </div>
-          
-          <div className="flex flex-col gap-3 w-full sm:w-auto">
-            <Button className="h-14 rounded-2xl bg-primary px-10 font-black text-white shadow-[0_10px_20px_-10px_rgba(190,8,23,0.5)] hover:bg-rose-800 hover:scale-[1.02] transition-all group" asChild>
+
+          <div className="flex w-full flex-col gap-2.5 sm:w-auto">
+            <Button
+              className="group h-11 rounded-xl bg-primary px-6 text-sm font-medium text-white shadow-[0_12px_24px_-18px_rgba(190,8,23,0.55)] transition-all hover:scale-[1.01] hover:bg-rose-800"
+              asChild
+            >
               <Link href="/assistant">
-                <Brain className="mr-3 h-6 w-6 transition-transform group-hover:rotate-12" /> Tanya AI Sekarang
+                <Brain className="mr-2.5 h-[18px] w-[18px] transition-transform group-hover:rotate-12" />
+                Tanya AI Sekarang
               </Link>
             </Button>
-            <p className="text-[10px] text-center font-bold text-slate-400 uppercase tracking-widest">Powered by KOPDES Intelligence</p>
+            <p className="text-center text-xs text-slate-500">Powered by Kopdes Intelligence</p>
           </div>
         </div>
       </section>
-      
+
       {renderDashboard()}
     </div>
   )

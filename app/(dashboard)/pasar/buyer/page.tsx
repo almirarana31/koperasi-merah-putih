@@ -62,7 +62,7 @@ export default function BuyerPage() {
   ).values()]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="space-y-2">
         <Badge className="w-fit border border-blue-200 bg-blue-50 text-blue-700">Buyer Aktif Lintas Wilayah</Badge>
         <div>
@@ -91,21 +91,21 @@ export default function BuyerPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Buyer Tampil</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{buyers.length}</p>
             <p className="mt-2 text-sm text-muted-foreground">Akan berubah ketika filter pasar berubah</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Nilai Transaksi</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-600">{formatCurrency(totalBuyerValue)}</p>
             <p className="mt-2 text-sm text-muted-foreground">Akumulasi transaksi buyer aktif</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Order Aktif</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">
               {buyers.reduce((total, buyer) => total + buyer.activeOrders, 0)}
@@ -114,7 +114,7 @@ export default function BuyerPage() {
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Kontribusi Rata-rata</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(avgContribution)}</p>
             <p className="mt-2 text-sm text-muted-foreground">Nilai transaksi per buyer di scope ini</p>
@@ -122,7 +122,7 @@ export default function BuyerPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+      <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Distribusi Tipe Buyer</CardTitle>
@@ -143,7 +143,7 @@ export default function BuyerPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {buyers.map((buyer) => (
             <Card key={buyer.id} className="border-slate-200 bg-white">
-              <CardContent className="p-5">
+              <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-medium text-slate-900">{buyer.name}</p>

@@ -99,7 +99,7 @@ export default function LogistikPage() {
   const regionSeries = getShipmentPerformanceByRegion(shipments)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
           <Badge className="w-fit border border-blue-200 bg-blue-50 text-blue-700">Logistik Multi-Entitas</Badge>
@@ -130,28 +130,28 @@ export default function LogistikPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Pengiriman Aktif</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{activeShipments}</p>
             <p className="mt-2 text-sm text-muted-foreground">Dalam pickup dan perjalanan</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Pengiriman Selesai</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-600">{deliveredShipments}</p>
             <p className="mt-2 text-sm text-muted-foreground">Tersampaikan ke buyer</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">On-Time Rate</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">{onTimeRate}%</p>
             <p className="mt-2 text-sm text-muted-foreground">Rasio ketepatan waktu seluruh scope</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Biaya Distribusi</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(totalCost)}</p>
             <p className="mt-2 text-sm text-muted-foreground">{shipments.length} manifest tersinkron</p>
@@ -187,7 +187,7 @@ export default function LogistikPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Volume Distribusi Bulanan</CardTitle>

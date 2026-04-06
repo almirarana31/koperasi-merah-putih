@@ -9,29 +9,8 @@ import {
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  Building2, 
-  Users, 
-  Wallet, 
-  ShieldAlert, 
-  HeartPulse, 
-  TrendingUp, 
-  TrendingDown,
-  AlertTriangle,
-  ArrowRight,
-  ChevronRight,
-  FileText,
-  Activity
-} from 'lucide-react'
-import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  CartesianGrid
-} from 'recharts'
+import { Building2, Users, Wallet, ShieldAlert, AlertTriangle, ChevronRight, FileText, Activity } from 'lucide-react'
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 
@@ -44,7 +23,6 @@ interface AuditDetailDialogProps {
 export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDetailDialogProps) {
   if (!cooperative) return null
 
-  // Mock trend data for the specific cooperative
   const cooperativeTrend = [
     { month: 'Jan', revenue: 450, members: 120, npl: 2.1 },
     { month: 'Feb', revenue: 520, members: 125, npl: 2.3 },
@@ -56,34 +34,50 @@ export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDeta
 
   const alerts = [
     { id: 1, type: 'Financial', severity: 'medium', title: 'NPL Ratio Trend', desc: 'Slight upward trend in non-performing loans over last 3 months.' },
-    { id: 2, type: 'Operational', severity: 'low', title: 'Reporting Delay', desc: 'Monthly stock report submitted 2 days past deadline.' }
+    { id: 2, type: 'Operational', severity: 'low', title: 'Reporting Delay', desc: 'Monthly stock report submitted 2 days past deadline.' },
   ]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[95vh] p-0 overflow-hidden flex flex-col gap-0 border-none shadow-2xl">
-        <DialogHeader className="p-6 bg-slate-900 text-white">
-          <div className="flex items-start justify-between">
+      <DialogContent className="flex max-h-[95vh] max-w-4xl flex-col gap-0 overflow-hidden border border-slate-200 p-0 shadow-[0_28px_60px_-40px_rgba(15,23,42,0.24)]">
+        <DialogHeader className="border-b border-slate-200 bg-white p-5 text-slate-900">
+          <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-rose-600 rounded-lg">
-                  <Building2 className="h-6 w-6 text-white" />
+                <div className="rounded-lg bg-rose-50 p-2 text-rose-600">
+                  <Building2 className="h-6 w-6" />
                 </div>
                 <div>
-                  <DialogTitle className="text-2xl font-black tracking-tight uppercase">{cooperative.label}</DialogTitle>
-                  <DialogDescription className="text-slate-400 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 mt-0.5">
-                    ID: {cooperative.id} • {cooperative.village} • {cooperative.region}
+                  <DialogTitle className="text-[1.45rem] font-semibold text-slate-950">{cooperative.label}</DialogTitle>
+                  <DialogDescription className="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
+                    ID: {cooperative.id} | {cooperative.village} | {cooperative.region}
                   </DialogDescription>
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Health Score</p>
+              <p className="mb-1 text-xs font-medium text-slate-500">Health score</p>
               <div className="flex items-center gap-3">
-                <span className={`text-4xl font-black tracking-tighter ${cooperative.overallScore > 80 ? 'text-emerald-400' : cooperative.overallScore > 60 ? 'text-amber-400' : 'text-rose-400'}`}>
+                <span
+                  className={`text-4xl font-semibold ${
+                    cooperative.overallScore > 80
+                      ? 'text-emerald-500'
+                      : cooperative.overallScore > 60
+                        ? 'text-amber-500'
+                        : 'text-rose-500'
+                  }`}
+                >
                   {Math.round(cooperative.overallScore)}
                 </span>
-                <Badge className={`uppercase font-black text-[9px] ${cooperative.overallHealth === 'good' ? 'bg-emerald-500' : cooperative.overallHealth === 'warning' ? 'bg-amber-500' : 'bg-rose-500'}`}>
+                <Badge
+                  className={`text-[10px] font-medium ${
+                    cooperative.overallHealth === 'good'
+                      ? 'bg-emerald-500'
+                      : cooperative.overallHealth === 'warning'
+                        ? 'bg-amber-500'
+                        : 'bg-rose-500'
+                  }`}
+                >
                   {cooperative.overallHealth}
                 </Badge>
               </div>
@@ -92,40 +86,46 @@ export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDeta
         </DialogHeader>
 
         <ScrollArea className="flex-1 bg-slate-50">
-          <div className="p-6 space-y-6">
-            {/* KPI Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="space-y-5 p-5">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               {[
-                { label: 'Total Anggota', value: cooperative.totalMembers.toLocaleString('id-ID'), icon: Users, tone: 'slate' },
-                { label: 'Inc / Member', value: `Rp${(cooperative.avgIncomeAfter / 1000).toFixed(0)}K`, icon: Wallet, tone: 'emerald' },
-                { label: 'NPL Ratio', value: `${cooperative.avgNpl.toFixed(1)}%`, icon: ShieldAlert, tone: cooperative.avgNpl > 3 ? 'rose' : 'emerald' },
-                { label: 'Rev / Mo', value: 'Rp42M', icon: Activity, tone: 'emerald' },
+                { label: 'Total anggota', value: cooperative.totalMembers.toLocaleString('id-ID'), icon: Users, tone: 'slate' },
+                { label: 'Pendapatan / anggota', value: `Rp${(cooperative.avgIncomeAfter / 1000).toFixed(0)}K`, icon: Wallet, tone: 'emerald' },
+                { label: 'Rasio NPL', value: `${cooperative.avgNpl.toFixed(1)}%`, icon: ShieldAlert, tone: cooperative.avgNpl > 3 ? 'rose' : 'emerald' },
+                { label: 'Pendapatan / bulan', value: 'Rp42M', icon: Activity, tone: 'emerald' },
               ].map((kpi, idx) => (
-                <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                  <div className="flex items-center gap-2 mb-2">
-                    <kpi.icon className={`h-3.5 w-3.5 ${kpi.tone === 'rose' ? 'text-rose-500' : kpi.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-400'}`} />
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</span>
+                <div key={idx} className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_10px_22px_-18px_rgba(15,23,42,0.16)]">
+                  <div className="mb-2 flex items-center gap-2">
+                    <kpi.icon
+                      className={`h-3.5 w-3.5 ${
+                        kpi.tone === 'rose'
+                          ? 'text-rose-500'
+                          : kpi.tone === 'emerald'
+                            ? 'text-emerald-500'
+                            : 'text-slate-400'
+                      }`}
+                    />
+                    <span className="text-xs font-medium text-slate-500">{kpi.label}</span>
                   </div>
-                  <p className="text-xl font-black text-slate-900 tracking-tighter">{kpi.value}</p>
+                  <p className="text-xl font-semibold text-slate-900">{kpi.value}</p>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Financial Trend */}
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
               <div className="space-y-3">
-                <h3 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] px-1">Financial Momentum</h3>
-                <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm h-[200px]">
+                <h3 className="px-1 text-sm font-semibold text-slate-900">Financial momentum</h3>
+                <div className="h-[200px] rounded-xl border border-slate-200 bg-white p-4 shadow-[0_10px_22px_-18px_rgba(15,23,42,0.16)]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={cooperativeTrend}>
                       <defs>
                         <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                      <XAxis dataKey="month" fontSize={10} fontWeight={900} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="month" fontSize={11} axisLine={false} tickLine={false} />
                       <YAxis hide />
                       <Tooltip />
                       <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={3} fill="url(#colorRev)" />
@@ -134,21 +134,22 @@ export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDeta
                 </div>
               </div>
 
-              {/* Active Alerts */}
               <div className="space-y-3">
-                <h3 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] px-1">Audit Findings</h3>
+                <h3 className="px-1 text-sm font-semibold text-slate-900">Audit findings</h3>
                 <div className="space-y-2">
                   {alerts.map((alert) => (
-                    <div key={alert.id} className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-start gap-3">
-                      <div className={`mt-0.5 p-1.5 rounded-lg ${alert.severity === 'medium' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'}`}>
+                    <div key={alert.id} className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-[0_10px_22px_-18px_rgba(15,23,42,0.16)]">
+                      <div className={`mt-0.5 rounded-lg p-1.5 ${alert.severity === 'medium' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'}`}>
                         <AlertTriangle className="h-3.5 w-3.5" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <p className="text-[10px] font-black text-slate-900 uppercase">{alert.title}</p>
-                          <Badge variant="outline" className="text-[8px] font-black h-4 px-1 uppercase">{alert.type}</Badge>
+                          <p className="text-xs font-semibold text-slate-900">{alert.title}</p>
+                          <Badge variant="outline" className="h-4 px-1 text-[10px] font-medium">
+                            {alert.type}
+                          </Badge>
                         </div>
-                        <p className="text-[10px] text-slate-500 font-medium mt-1 leading-tight">{alert.desc}</p>
+                        <p className="mt-1 text-xs leading-tight text-slate-500">{alert.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -156,36 +157,45 @@ export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDeta
               </div>
             </div>
 
-            {/* Detailed Ratios Table */}
             <div className="space-y-3">
-              <h3 className="text-[11px] font-black text-slate-900 uppercase tracking-[0.2em] px-1">Financial Ratios</h3>
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+              <h3 className="px-1 text-sm font-semibold text-slate-900">Financial ratios</h3>
+              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_22px_-18px_rgba(15,23,42,0.16)]">
                 <Table>
                   <TableHeader className="bg-slate-50">
                     <TableRow>
-                      <TableHead className="text-[9px] font-black text-slate-400 uppercase h-8">Ratio Name</TableHead>
-                      <TableHead className="text-[9px] font-black text-slate-400 uppercase h-8 text-center">Score</TableHead>
-                      <TableHead className="text-[9px] font-black text-slate-400 uppercase h-8 text-right">Status</TableHead>
+                      <TableHead className="h-8 text-xs font-medium text-slate-500">Ratio name</TableHead>
+                      <TableHead className="h-8 text-center text-xs font-medium text-slate-500">Score</TableHead>
+                      <TableHead className="h-8 text-right text-xs font-medium text-slate-500">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {[
                       { name: 'Likuiditas (Lancar)', score: 85, status: 'Sehat' },
                       { name: 'Solvabilitas (DER)', score: 72, status: 'Waspada' },
-                      { name: 'Rentabilitas (ROI)', score: 88, status: 'Sangat Sehat' },
+                      { name: 'Rentabilitas (ROI)', score: 88, status: 'Sangat sehat' },
                     ].map((ratio, i) => (
                       <TableRow key={i} className="h-10">
-                        <TableCell className="text-xs font-bold text-slate-700">{ratio.name}</TableCell>
+                        <TableCell className="text-xs font-medium text-slate-700">{ratio.name}</TableCell>
                         <TableCell className="text-center">
                           <div className="flex items-center justify-center gap-2">
-                            <div className="w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
-                              <div className={`h-full rounded-full ${ratio.score > 80 ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${ratio.score}%` }} />
+                            <div className="h-1 w-12 overflow-hidden rounded-full bg-slate-100">
+                              <div
+                                className={`h-full rounded-full ${ratio.score > 80 ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                                style={{ width: `${ratio.score}%` }}
+                              />
                             </div>
-                            <span className="text-[10px] font-black text-slate-900">{ratio.score}</span>
+                            <span className="text-xs font-semibold text-slate-900">{ratio.score}</span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Badge variant="outline" className={`text-[8px] font-black h-4 px-1 uppercase ${ratio.status === 'Sehat' || ratio.status === 'Sangat Sehat' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>
+                          <Badge
+                            variant="outline"
+                            className={`h-4 px-1 text-[10px] font-medium ${
+                              ratio.status === 'Sehat' || ratio.status === 'Sangat sehat'
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                                : 'border-amber-200 bg-amber-50 text-amber-700'
+                            }`}
+                          >
                             {ratio.status}
                           </Badge>
                         </TableCell>
@@ -198,17 +208,17 @@ export function AuditDetailDialog({ cooperative, open, onOpenChange }: AuditDeta
           </div>
         </ScrollArea>
 
-        <div className="p-4 bg-white border-t border-slate-200 flex items-center justify-between">
-          <Button variant="outline" size="sm" className="rounded-xl font-black text-[10px] uppercase tracking-widest h-10 px-6 border-slate-200 text-slate-600 hover:bg-slate-50">
-            <FileText className="h-3.5 w-3.5 mr-2" />
+        <div className="flex items-center justify-between border-t border-slate-200 bg-white p-4">
+          <Button variant="outline" size="sm" className="h-10 rounded-xl border-slate-300 px-5 text-xs font-medium text-slate-700 hover:bg-slate-50">
+            <FileText className="mr-2 h-3.5 w-3.5" />
             Full Audit Report
           </Button>
           <div className="flex gap-2">
-            <Button size="sm" variant="ghost" className="rounded-xl font-black text-[10px] uppercase tracking-widest h-10 px-4 text-slate-400" onClick={() => onOpenChange(false)}>
+            <Button size="sm" variant="ghost" className="h-10 rounded-xl px-4 text-xs font-medium text-slate-500" onClick={() => onOpenChange(false)}>
               Close
             </Button>
-            <Button size="sm" className="rounded-xl font-black text-[10px] uppercase tracking-widest h-10 px-6 bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-200">
-              Intervene AI <ChevronRight className="h-3.5 w-3.5 ml-1" />
+            <Button size="sm" className="h-10 rounded-xl bg-rose-600 px-6 text-xs font-medium text-white shadow-[0_12px_24px_-18px_rgba(190,24,93,0.38)] hover:bg-rose-700">
+              Intervene AI <ChevronRight className="ml-1 h-3.5 w-3.5" />
             </Button>
           </div>
         </div>

@@ -70,7 +70,7 @@ export default function HargaPasarPage() {
   }))
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="space-y-2">
         <Badge className="w-fit border border-rose-200 bg-rose-50 text-rose-700">Harga Lintas Wilayah</Badge>
         <div>
@@ -99,28 +99,28 @@ export default function HargaPasarPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Komoditas Tercatat</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{filteredPrices.length}</p>
             <p className="mt-2 text-sm text-muted-foreground">Baris harga dalam scope saat ini</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Harga Naik</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-600">{naik}</p>
             <p className="mt-2 text-sm text-muted-foreground">Dibanding harga sebelumnya</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Harga Turun</p>
             <p className="mt-2 text-3xl font-semibold text-rose-600">{turun}</p>
             <p className="mt-2 text-sm text-muted-foreground">Memerlukan perhatian pasar</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Volatilitas Rata-rata</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">{(avgVolatility * 100).toFixed(1)}%</p>
             <p className="mt-2 text-sm text-muted-foreground">Berasal dari harga dalam scope yang sama</p>
@@ -128,7 +128,7 @@ export default function HargaPasarPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+      <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Perbandingan Harga Regional</CardTitle>

@@ -68,7 +68,7 @@ export default function ProdusenPage() {
   ).values()]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="space-y-2">
         <Badge className="w-fit border border-emerald-200 bg-emerald-50 text-emerald-700">Produsen Lintas Desa</Badge>
         <div>
@@ -107,28 +107,28 @@ export default function ProdusenPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Produsen Aktif</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{producers.length}</p>
             <p className="mt-2 text-sm text-muted-foreground">Direktori tersaring pada scope saat ini</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Luas Lahan</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-600">{totalLand.toFixed(1)} ha</p>
             <p className="mt-2 text-sm text-muted-foreground">Total lahan produsen tersaring</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Produktivitas</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">{(totalProductivity / 1000).toFixed(1)} ton</p>
             <p className="mt-2 text-sm text-muted-foreground">Volume dari produsen di scope aktif</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Rata-rata Lahan</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{averageLand.toFixed(1)} ha</p>
             <p className="mt-2 text-sm text-muted-foreground">Per produsen dalam direktori terpilih</p>
@@ -136,7 +136,7 @@ export default function ProdusenPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+      <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Komoditas Utama</CardTitle>
@@ -157,7 +157,7 @@ export default function ProdusenPage() {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {producers.map((producer) => (
             <Card key={producer.id} className="border-slate-200 bg-white">
-              <CardContent className="p-5">
+              <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-medium text-slate-900">{producer.name}</p>

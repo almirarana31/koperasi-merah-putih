@@ -95,7 +95,7 @@ export default function MemberProfilPage() {
   }, [directory])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="space-y-2">
         <Badge className="w-fit border border-rose-200 bg-rose-50 text-rose-700">Profil & Behavior</Badge>
         <div>
@@ -138,28 +138,28 @@ export default function MemberProfilPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Akun Aktif</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{healthStats.active}</p>
             <p className="mt-2 text-sm text-muted-foreground">Dalam scope filter saat ini</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Perlu Review</p>
             <p className="mt-2 text-3xl font-semibold text-amber-600">{healthStats.review}</p>
             <p className="mt-2 text-sm text-muted-foreground">Akun dengan follow-up terjadwal</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Butuh Audit</p>
             <p className="mt-2 text-3xl font-semibold text-rose-600">{healthStats.audit}</p>
             <p className="mt-2 text-sm text-muted-foreground">Akun yang menunggu verifikasi lanjutan</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Health Coverage</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">{healthStats.utilization}%</p>
             <p className="mt-2 text-sm text-muted-foreground">Rasio akun aktif terhadap direktori</p>
@@ -167,14 +167,14 @@ export default function MemberProfilPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+      <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Profil Terpilih</CardTitle>
             <CardDescription>Seluruh blok gelap di halaman profil diganti ke kartu terang dengan hierarki teks yang lebih mudah dibaca.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
-            <div className="flex items-start gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+            <div className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="rounded-2xl bg-white p-4 shadow-sm">
                 <UserRound className="h-7 w-7 text-rose-600" />
               </div>

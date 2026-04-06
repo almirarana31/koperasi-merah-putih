@@ -103,7 +103,7 @@ export default function KontrakKementerianPage() {
   }))
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="space-y-2">
         <Badge className="w-fit border border-blue-200 bg-blue-50 text-blue-700">Kontrak Lintas Wilayah</Badge>
         <div>
@@ -132,21 +132,21 @@ export default function KontrakKementerianPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Kontrak Aktif</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{contracts.length}</p>
             <p className="mt-2 text-sm text-muted-foreground">Semua kontrak yang terbentuk dari transaksi aktif</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Nilai Pipeline</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-600">{formatCurrency(activeValue)}</p>
             <p className="mt-2 text-sm text-muted-foreground">Akumulasi seluruh kontrak dalam scope ini</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Perlu Review</p>
             <p className="mt-2 text-3xl font-semibold text-amber-600">
               {contracts.filter((contract) => contract.status === 'review').length}
@@ -155,7 +155,7 @@ export default function KontrakKementerianPage() {
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Fulfillment Rata-rata</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">
               {contracts.length === 0 ? 0 : Math.round(contracts.reduce((total, contract) => total + contract.fulfillment, 0) / contracts.length)}%
@@ -165,7 +165,7 @@ export default function KontrakKementerianPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+      <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Fulfillment per Kontrak</CardTitle>

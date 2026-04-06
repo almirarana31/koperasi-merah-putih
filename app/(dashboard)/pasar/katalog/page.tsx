@@ -64,7 +64,7 @@ export default function KatalogKementerianPage() {
   }))
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="space-y-2">
         <Badge className="w-fit border border-amber-200 bg-amber-50 text-amber-700">Katalog Agregat</Badge>
         <div>
@@ -103,28 +103,28 @@ export default function KatalogKementerianPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">SKU Agregat</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{catalogRows.length}</p>
             <p className="mt-2 text-sm text-muted-foreground">Komoditas yang tampil di katalog aktif</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Volume Total</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-600">{(totalStock / 1000).toFixed(1)} ton</p>
             <p className="mt-2 text-sm text-muted-foreground">Hasil agregasi seluruh listing tersaring</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Supplier Terhubung</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">{supplierCount}</p>
             <p className="mt-2 text-sm text-muted-foreground">Koperasi pemasok dalam katalog saat ini</p>
           </CardContent>
         </Card>
         <Card className="border-slate-200 bg-white">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Cakupan Regional</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{regionCoverage}</p>
             <p className="mt-2 text-sm text-muted-foreground">Jumlah cakupan region dari SKU yang tampil</p>
@@ -132,7 +132,7 @@ export default function KatalogKementerianPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+      <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Volume per SKU</CardTitle>
@@ -153,7 +153,7 @@ export default function KatalogKementerianPage() {
         <div className="grid gap-4 md:grid-cols-2">
           {catalogRows.map((row) => (
             <Card key={row.commodityId} className="border-slate-200 bg-white">
-              <CardContent className="p-5">
+              <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-medium text-slate-900">{row.commodityName}</p>

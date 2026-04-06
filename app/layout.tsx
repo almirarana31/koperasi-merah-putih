@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/lib/auth'
@@ -8,11 +8,6 @@ import './globals.css'
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-})
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-plus-jakarta',
 })
 
 export const metadata: Metadata = {
@@ -45,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={`${inter.variable} ${plusJakartaSans.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>
