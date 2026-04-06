@@ -71,7 +71,7 @@ export default function DashboardPage() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
               </span>
-              AI Intelligence Core | Real-time Engine
+              AI Intelligence Core | Real-Time Engine
             </div>
             <div>
               <h2 className="text-[1.6rem] font-semibold text-slate-950 sm:text-[1.85rem]">Rangkuman Insight AI Hari Ini</h2>
@@ -83,17 +83,17 @@ export default function DashboardPage() {
             </div>
             <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
               <Badge variant="outline" className="border-primary/15 bg-white/85 px-3 py-1 text-xs font-medium text-slate-700">
-                Forecast akurasi: 98.2%
+                Akurasi Forecast: 98.2%
               </Badge>
               <Badge variant="outline" className="border-primary/15 bg-white/85 px-3 py-1 text-xs font-medium text-slate-700">
-                Data sinkron: 2 mnt lalu
+                Data Sinkron: 2 Menit Lalu
               </Badge>
             </div>
           </div>
 
           <div className="flex w-full flex-col gap-2.5 sm:w-auto">
             <Button
-              className="group h-11 rounded-xl bg-primary px-6 text-sm font-medium text-white shadow-[0_12px_24px_-18px_rgba(190,8,23,0.55)] transition-all hover:scale-[1.01] hover:bg-rose-800"
+              className="group h-11 rounded-xl bg-primary px-6 text-sm font-medium text-white shadow-[0_12px_24px_-18px_rgba(190,8,23,0.55)] transition-all hover:scale-[1.01] hover:bg-[var(--dashboard-primary-hover)]"
               asChild
             >
               <Link href="/assistant">
@@ -101,7 +101,7 @@ export default function DashboardPage() {
                 Tanya AI Sekarang
               </Link>
             </Button>
-            <p className="text-center text-xs text-slate-500">Powered by Kopdes Intelligence</p>
+            <p className="text-center text-xs text-slate-500">Powered By Kopdes Intelligence</p>
           </div>
         </div>
       </section>

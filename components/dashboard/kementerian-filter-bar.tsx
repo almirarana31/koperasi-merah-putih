@@ -26,11 +26,11 @@ interface KementerianFilterBarProps {
 }
 
 const triggerClassName =
-  'h-9 rounded-md border border-[var(--dashboard-secondary)]/18 bg-white px-3 text-sm font-medium text-[var(--dashboard-secondary)] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:bg-[var(--dashboard-neutral)]'
+  'h-9 rounded-md border border-[var(--dashboard-secondary-border)] bg-white px-3 text-sm font-medium text-[var(--dashboard-secondary)] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:bg-[var(--dashboard-secondary-muted)]'
 
 const contentClassName = 'border-[var(--dashboard-secondary)]/15 bg-white text-[var(--dashboard-secondary)]'
 const itemClassName =
-  'text-sm font-medium focus:bg-[var(--dashboard-neutral)] focus:text-[var(--dashboard-secondary)]'
+  'text-sm font-medium focus:bg-[var(--dashboard-secondary-muted)] focus:text-[var(--dashboard-secondary)]'
 
 export function KementerianFilterBar({
   filters,
@@ -76,7 +76,7 @@ export function KementerianFilterBar({
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-[var(--dashboard-secondary)]/18 bg-[var(--dashboard-neutral)] p-1.5 shadow-[0_8px_18px_-14px_rgba(69,90,100,0.28)]">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-[var(--dashboard-secondary-border)] bg-white p-1.5 shadow-[0_8px_18px_-14px_rgba(137,114,111,0.22)]">
         {setSearch !== undefined && (
           <div className="relative min-w-[220px] flex-1 border-r border-[var(--dashboard-secondary)]/10 pr-1.5">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--dashboard-secondary)]/45" />
