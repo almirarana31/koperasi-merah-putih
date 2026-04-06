@@ -57,11 +57,11 @@ const ENTRY_ROLES: EntryRole[] = [
 
 export default function LandingPage() {
   return (
-    <div className="app-shell relative min-h-screen overflow-hidden bg-[#f8f9fa] text-slate-950">
+    <div className="app-shell relative min-h-screen overflow-hidden bg-white text-slate-950">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(145,0,15,0.08),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(184,25,31,0.05),transparent_28%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(120,113,108,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.06)_1px,transparent_1px)] [background-size:32px_32px]" />
 
-      <header className="relative border-b border-[#dfd5d3] bg-white/88 backdrop-blur-xl">
+      <header className="relative border-b border-[#dfd5d3] bg-[#fff7f6]/92 backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#91000f_0%,#b8191f_100%)] text-white shadow-[0_14px_28px_-18px_rgba(145,0,15,0.55)]">
@@ -76,7 +76,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
-              className="hidden border-[#e4beba]/60 bg-white text-[#6b4a46] hover:bg-[#fbf7f6] sm:inline-flex"
+              className="hidden border-[#e4beba]/60 bg-[#fff7f6] text-[#6b4a46] hover:bg-white sm:inline-flex"
               asChild
             >
               <Link href="/login">Masuk</Link>
@@ -112,22 +112,22 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="grid gap-3 rounded-[22px] border border-[#e5dad8] bg-[#f3f4f5] p-3 sm:grid-cols-3">
-                <Card className="border-[#dad2d0] bg-white shadow-[0_12px_24px_-20px_rgba(15,23,42,0.16)]">
+              <div className="grid gap-3 rounded-[22px] border border-[#e5dad8] bg-white p-3 sm:grid-cols-3">
+                <Card className="border-[#dad2d0] bg-[#fff7f6] shadow-[0_12px_24px_-20px_rgba(15,23,42,0.16)]">
                   <CardContent className="p-4">
                     <p className="text-xs font-medium text-[#7b5c57]">Peran utama</p>
                     <p className="mt-3 text-[2rem] font-semibold text-slate-950">4</p>
                     <p className="mt-2 text-sm leading-6 text-[#5f666d]">Struktur akses utama untuk pengguna inti sistem.</p>
                   </CardContent>
                 </Card>
-                <Card className="border-[#dad2d0] bg-white shadow-[0_12px_24px_-20px_rgba(15,23,42,0.16)]">
+                <Card className="border-[#dad2d0] bg-[#fff7f6] shadow-[0_12px_24px_-20px_rgba(15,23,42,0.16)]">
                   <CardContent className="p-4">
                     <p className="text-xs font-medium text-[#7b5c57]">Kontrol</p>
                     <p className="mt-3 text-[2rem] font-semibold text-slate-950">RBAC</p>
                     <p className="mt-2 text-sm leading-6 text-[#5f666d]">Hak akses ditetapkan konsisten berdasarkan role.</p>
                   </CardContent>
                 </Card>
-                <Card className="border-[#dad2d0] bg-white shadow-[0_12px_24px_-20px_rgba(15,23,42,0.16)]">
+                <Card className="border-[#dad2d0] bg-[#fff7f6] shadow-[0_12px_24px_-20px_rgba(15,23,42,0.16)]">
                   <CardContent className="p-4">
                     <p className="text-xs font-medium text-[#7b5c57]">Kesiapan</p>
                     <p className="mt-3 text-[2rem] font-semibold text-slate-950">Produksi</p>
@@ -136,10 +136,10 @@ export default function LandingPage() {
                 </Card>
               </div>
 
-              <Card className="border-[#ddd4d2] bg-[#f3f4f5] shadow-[0_16px_30px_-24px_rgba(15,23,42,0.16)]">
+              <Card className="border-[#ddd4d2] bg-white shadow-[0_16px_30px_-24px_rgba(15,23,42,0.16)]">
                 <CardContent className="p-5">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#e4beba]/70 bg-white text-[#930010]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#e4beba]/70 bg-[#fff7f6] text-[#930010]">
                       <LockKeyhole className="h-5 w-5" />
                     </div>
                     <div className="space-y-3">
@@ -151,13 +151,13 @@ export default function LandingPage() {
                         </p>
                       </div>
                       <div className="grid gap-2.5 sm:grid-cols-3">
-                        <div className="rounded-lg bg-white px-4 py-3 text-sm text-[#5f666d] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]">
+                        <div className="rounded-lg bg-[#fff7f6] px-4 py-3 text-sm text-[#5f666d] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]">
                           1. Pilih role utama
                         </div>
-                        <div className="rounded-lg bg-white px-4 py-3 text-sm text-[#5f666d] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]">
+                        <div className="rounded-lg bg-[#fff7f6] px-4 py-3 text-sm text-[#5f666d] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]">
                           2. Verifikasi akun
                         </div>
-                        <div className="rounded-lg bg-white px-4 py-3 text-sm text-[#5f666d] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]">
+                        <div className="rounded-lg bg-[#fff7f6] px-4 py-3 text-sm text-[#5f666d] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]">
                           3. Masuk ke workspace
                         </div>
                       </div>
@@ -168,7 +168,7 @@ export default function LandingPage() {
             </div>
 
             <div className="space-y-3">
-              <Card className="border-[#ddd4d2] bg-[#f3f4f5] shadow-[0_18px_36px_-28px_rgba(15,23,42,0.18)]">
+              <Card className="border-[#ddd4d2] bg-white shadow-[0_18px_36px_-28px_rgba(15,23,42,0.18)]">
                 <CardContent className="space-y-4 p-5">
                   <div className="space-y-2">
                     <p className="text-xs font-medium text-[#7b5c57]">Peran akses</p>
@@ -185,7 +185,7 @@ export default function LandingPage() {
                       return (
                         <div
                           key={role.title}
-                          className="rounded-xl bg-white p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]"
+                          className="rounded-xl bg-[#fff7f6] p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]"
                         >
                           <div className="flex items-start gap-4">
                             <div className={`flex h-11 w-11 items-center justify-center rounded-lg border ${role.tone}`}>
@@ -194,7 +194,7 @@ export default function LandingPage() {
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2">
                                 <p className="text-base font-semibold text-slate-950">{role.title}</p>
-                                <span className="rounded-md bg-[#f3f4f5] px-2 py-1 text-xs font-medium text-[#5f666d]">
+                                <span className="rounded-md bg-white px-2 py-1 text-xs font-medium text-[#5f666d]">
                                   {role.scope}
                                 </span>
                               </div>
@@ -206,7 +206,7 @@ export default function LandingPage() {
                     })}
                   </div>
 
-                  <div className="rounded-xl bg-white p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]">
+                  <div className="rounded-xl bg-[#fff7f6] p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.45)]">
                     <div className="flex items-start gap-3">
                       <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
                       <div>

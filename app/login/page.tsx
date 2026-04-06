@@ -198,12 +198,12 @@ export default function LoginPage() {
   const SelectedIcon = selectedOption.icon
 
   return (
-    <div className="app-shell relative min-h-screen overflow-hidden bg-[#f8f9fa] px-4 py-4 sm:px-6 lg:px-8 lg:py-5">
+    <div className="app-shell relative min-h-screen overflow-hidden bg-white px-4 py-4 sm:px-6 lg:px-8 lg:py-5">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(145,0,15,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(184,25,31,0.05),transparent_24%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(120,113,108,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.06)_1px,transparent_1px)] [background-size:32px_32px]" />
 
-      <div className="relative mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-7xl overflow-hidden rounded-[24px] border border-[#dfd5d3] bg-[#f3f4f5]/95 shadow-[0_28px_78px_-58px_rgba(145,0,15,0.22)] lg:grid-cols-[1.02fr_0.98fr]">
-        <section className="relative hidden overflow-hidden bg-[#f3f4f5] px-8 py-8 lg:flex lg:flex-col lg:justify-start lg:gap-8">
+      <div className="relative mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-7xl overflow-hidden rounded-[24px] border border-[#dfd5d3] bg-white shadow-[0_28px_78px_-58px_rgba(145,0,15,0.22)] lg:grid-cols-[1.02fr_0.98fr]">
+        <section className="relative hidden overflow-hidden bg-white px-8 py-8 lg:flex lg:flex-col lg:justify-start lg:gap-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(145,0,15,0.07),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(184,25,31,0.04),transparent_28%)]" />
           <div className="relative space-y-6">
             <div className="flex items-center gap-3">
@@ -229,18 +229,18 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <div className="grid gap-3 rounded-[20px] border border-[#e5dad8] bg-white/70 p-3 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.26)] sm:grid-cols-3">
-              <div className="rounded-xl border border-[#ddd4d2] bg-white p-4 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.14)]">
+            <div className="grid gap-3 rounded-[20px] border border-[#e5dad8] bg-[#fff7f6] p-3 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.26)] sm:grid-cols-3">
+              <div className="rounded-xl border border-[#ddd4d2] bg-[#fff7f6] p-4 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.14)]">
                 <p className="text-xs font-medium text-[#7b5c57]">Peran utama</p>
                 <p className="mt-3 text-[2rem] font-semibold text-slate-950">4</p>
                 <p className="mt-2 text-sm leading-6 text-[#5f666d]">Petani, Ketua Koperasi, Kementerian, dan System Admin.</p>
               </div>
-              <div className="rounded-xl border border-[#ddd4d2] bg-white p-4 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.14)]">
+              <div className="rounded-xl border border-[#ddd4d2] bg-[#fff7f6] p-4 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.14)]">
                 <p className="text-xs font-medium text-[#7b5c57]">Akses</p>
                 <p className="mt-3 text-[2rem] font-semibold text-slate-950">RBAC</p>
                 <p className="mt-2 text-sm leading-6 text-[#5f666d]">Hak akses ditentukan otomatis berdasarkan peran yang dipilih.</p>
               </div>
-              <div className="rounded-xl border border-[#ddd4d2] bg-white p-4 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.14)]">
+              <div className="rounded-xl border border-[#ddd4d2] bg-[#fff7f6] p-4 shadow-[0_12px_22px_-18px_rgba(15,23,42,0.14)]">
                 <p className="text-xs font-medium text-[#7b5c57]">Kesiapan</p>
                 <p className="mt-3 text-[2rem] font-semibold text-slate-950">Siap Pakai</p>
                 <p className="mt-2 text-sm leading-6 text-[#5f666d]">Dirancang untuk lingkungan kerja produksi dengan kontrol yang jelas.</p>
@@ -249,13 +249,13 @@ export default function LoginPage() {
           </div>
 
           <div className="relative space-y-3.5">
-            <div className="rounded-[20px] border border-[#ddd4d2] bg-white px-5 py-5 text-slate-950 shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]">
+            <div className="rounded-[20px] border border-[#ddd4d2] bg-[#fff7f6] px-5 py-5 text-slate-950 shadow-[0_18px_36px_-28px_rgba(15,23,42,0.16)]">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-xs font-medium text-[#930010]">Struktur akses</p>
                   <p className="mt-1.5 text-xl font-semibold">Empat peran utama sistem</p>
                 </div>
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#ead8d6]/70 bg-[#f8f9fa]">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#ead8d6]/70 bg-white">
                   <LockKeyhole className="h-5 w-5 text-[#930010]" />
                 </div>
               </div>
@@ -267,7 +267,7 @@ export default function LoginPage() {
                   return (
                     <div
                       key={option.role}
-                      className="flex items-start gap-3 rounded-xl bg-[#f3f4f5] p-3 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.35)]"
+                      className="flex items-start gap-3 rounded-xl bg-white p-3 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.35)]"
                     >
                       <div className={`flex h-10 w-10 items-center justify-center rounded-lg border ${option.tone.iconWrap}`}>
                         <Icon className={`h-5 w-5 ${option.tone.icon}`} />
@@ -282,7 +282,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="rounded-[18px] border border-[#ead8d6] bg-[#fff7f6] p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.35)]">
+            <div className="rounded-[18px] border border-[#ead8d6] bg-white p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.35)]">
               <div className="flex items-start gap-3">
                 <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
                 <div>
@@ -309,10 +309,10 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Card className="border-[#ddd4d2] bg-white/95 shadow-[0_24px_54px_-40px_rgba(15,23,42,0.18)]">
+            <Card className="border-[#ddd4d2] bg-[#fff7f6]/95 shadow-[0_24px_54px_-40px_rgba(15,23,42,0.18)]">
               <CardContent className="space-y-5 p-5 sm:p-6">
                 <div className="space-y-2.5">
-                  <Badge className="rounded-md border border-[#ead8d6]/80 bg-[#f8f5f4] px-3 py-1 text-xs font-medium text-[#6b4a46] hover:bg-[#f8f5f4]">
+                  <Badge className="rounded-md border border-[#ead8d6]/80 bg-white px-3 py-1 text-xs font-medium text-[#6b4a46] hover:bg-white">
                     Login Berbasis Peran
                   </Badge>
                   <div className="space-y-2">
@@ -347,7 +347,7 @@ export default function LoginPage() {
                           className={`rounded-xl border p-4 text-left transition-all focus:outline-none focus:ring-4 ${
                             isSelected
                               ? `${option.tone.selected} ${option.tone.selectedRing} shadow-[0_12px_24px_-18px_rgba(145,0,15,0.22)]`
-                              : 'border-[#ddd4d2] bg-[#fbfbfb] shadow-[inset_0_0_0_1px_rgba(228,190,186,0.34)] hover:bg-white focus:ring-[#f4e3e1]'
+                              : 'border-[#ddd4d2] bg-white shadow-[inset_0_0_0_1px_rgba(228,190,186,0.34)] hover:bg-[#fff7f6] focus:ring-[#f4e3e1]'
                           }`}
                           aria-pressed={isSelected}
                         >
@@ -384,7 +384,7 @@ export default function LoginPage() {
                 <Separator />
 
                 <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-                  <div className="rounded-xl border border-[#e1d8d6] bg-[#f3f4f5] p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.24)]">
+                  <div className="rounded-xl border border-[#e1d8d6] bg-white p-4 shadow-[inset_0_0_0_1px_rgba(228,190,186,0.24)]">
                     <div className="flex items-start gap-4">
                       <div className={`flex h-11 w-11 items-center justify-center rounded-lg border ${selectedOption.tone.iconWrap}`}>
                         <SelectedIcon className={`h-5 w-5 ${selectedOption.tone.icon}`} />
@@ -413,7 +413,7 @@ export default function LoginPage() {
                           type="email"
                           value={email}
                           onChange={(event) => setEmail(event.target.value)}
-                          className="h-11 border-[#e2d5d3] bg-[#fcfcfc] pl-10 text-sm focus-visible:border-primary focus-visible:ring-primary/20"
+                          className="h-11 border-[#e2d5d3] bg-white pl-10 text-sm focus-visible:border-primary focus-visible:ring-primary/20"
                           aria-invalid={Boolean(errors.email)}
                           autoComplete="username"
                         />
@@ -436,7 +436,7 @@ export default function LoginPage() {
                           type="password"
                           value={password}
                           onChange={(event) => setPassword(event.target.value)}
-                          className="h-11 border-[#e2d5d3] bg-[#fcfcfc] pl-10 text-sm focus-visible:border-primary focus-visible:ring-primary/20"
+                          className="h-11 border-[#e2d5d3] bg-white pl-10 text-sm focus-visible:border-primary focus-visible:ring-primary/20"
                           aria-invalid={Boolean(errors.password)}
                           autoComplete="current-password"
                         />
