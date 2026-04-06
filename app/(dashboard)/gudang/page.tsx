@@ -2,29 +2,29 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import {
-  Search,
-  Filter,
-  Package,
-  Warehouse,
-  AlertTriangle,
-  QrCode,
-  TrendingUp,
-  Thermometer,
-  ArrowUpRight,
-  ArrowDownRight,
-} from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { AlertTriangle, Package, QrCode, Search, Snowflake, Warehouse } from 'lucide-react'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import { useAuth } from '@/lib/auth/use-auth'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import {
+  filterInventoryByScope,
+  getInventoryByCommodity,
+  getScopeCaption,
+  getWarehousesForInventory,
+  resolveOperationalFilters,
+} from '@/lib/cross-entity-operations'
+import type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -33,71 +33,104 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { inventory } from '@/lib/mock-data'
+
+const REFERENCE_DATE = new Date('2026-04-06T00:00:00+07:00')
+
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(value)
+}
+
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+function badgeTone(value: string) {
+  if (value === 'fresh' || value === 'A') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  if (value === 'good' || value === 'B') return 'bg-amber-50 text-amber-700 border-amber-200'
+  return 'bg-rose-50 text-rose-700 border-rose-200'
+}
 
 export default function GudangPage() {
-  const [search, setSearch] = useState('')
-  const [filterWarehouse, setFilterWarehouse] = useState<string>('all')
-  const [filterQuality, setFilterQuality] = useState<string>('all')
-  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const { user } = useAuth()
+  const showHierarchyFilter = user?.role === 'kementerian' || user?.role === 'pemda' || user?.role === 'sysadmin'
 
-  const filteredInventory = inventory.filter((item) => {
-    const matchesSearch = item.productName.toLowerCase().includes(search.toLowerCase()) ||
-                         item.batch.toLowerCase().includes(search.toLowerCase())
-    const matchesWarehouse = filterWarehouse === 'all' || item.warehouse === filterWarehouse
-    const matchesQuality = filterQuality === 'all' || item.quality === filterQuality
-    const matchesStatus = filterStatus === 'all' || item.status === filterStatus
+  const [search, setSearch] = useState('')
+  const [warehouseFilter, setWarehouseFilter] = useState('all')
+  const [qualityFilter, setQualityFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  const scopedFilters = resolveOperationalFilters(user, filters)
+  const inventoryRows = filterInventoryByScope(scopedFilters)
+  const warehouses = getWarehousesForInventory(inventoryRows)
+
+  const filteredInventory = inventoryRows.filter((item) => {
+    const keyword = search.toLowerCase()
+    const matchesSearch =
+      item.commodityName.toLowerCase().includes(keyword) ||
+      item.batchCode.toLowerCase().includes(keyword) ||
+      item.cooperativeName.toLowerCase().includes(keyword) ||
+      item.villageName.toLowerCase().includes(keyword)
+    const matchesWarehouse = warehouseFilter === 'all' || item.warehouseId === warehouseFilter
+    const matchesQuality = qualityFilter === 'all' || item.quality === qualityFilter
+    const matchesStatus = statusFilter === 'all' || item.status === statusFilter
     return matchesSearch && matchesWarehouse && matchesQuality && matchesStatus
   })
 
-  // Calculate stats
-  const totalStock = inventory.reduce((sum, item) => sum + item.quantity, 0)
-  const warehouses = Array.from(new Set(inventory.map(item => item.warehouse)))
-  
-  const expiringStock = inventory.filter((item) => {
-    const expDate = new Date(item.expiryDate)
-    const today = new Date()
-    const diff = (expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    return diff <= 7 && diff > 0
+  const filteredWarehouses = warehouses.filter((warehouse) => {
+    if (warehouseFilter === 'all') return true
+    return warehouse.id === warehouseFilter
+  })
+
+  const totalStockKg = filteredInventory.reduce((total, item) => total + item.quantityKg, 0)
+  const totalValue = filteredInventory.reduce((total, item) => total + item.quantityKg * item.unitPrice, 0)
+  const expiringBatches = filteredInventory.filter((item) => {
+    const expiry = new Date(item.expiryDate)
+    const diff = (expiry.getTime() - REFERENCE_DATE.getTime()) / (1000 * 60 * 60 * 24)
+    return diff >= 0 && diff <= 7
   }).length
+  const coldStorageBatches = filteredInventory.filter((item) => item.warehouseType === 'cold').length
 
-  const freshStock = inventory.filter(item => item.status === 'fresh').length
-  const agingStock = inventory.filter(item => item.status === 'aging').length
+  const commoditySeries = getInventoryByCommodity(filteredInventory).map((item) => ({
+    name: item.commodity.replace(' Premium', ''),
+    stok: Number((item.quantityKg / 1000).toFixed(1)),
+    nilai: Math.round(item.value / 1_000_000),
+  }))
 
-  const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(val)
-  }
-
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    })
-  }
+  const warehouseSeries = filteredWarehouses.map((item) => ({
+    name: item.villageName,
+    utilization: item.utilizationPct,
+    batch: item.batchCount,
+  }))
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-primary">Manajemen Gudang</h1>
-          <p className="text-muted-foreground">
-            Kelola inventaris, traceability, dan cold storage
-          </p>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <Badge className="w-fit border border-rose-200 bg-rose-50 text-rose-700">Gudang Lintas Desa</Badge>
+          <div>
+            <h1 className="text-slate-900">Manajemen Gudang</h1>
+            <p className="text-muted-foreground">
+              Monitoring stok, kapasitas, dan kesehatan batch untuk {getScopeCaption(scopedFilters)}.
+            </p>
+          </div>
         </div>
-        <div className="flex gap-2">
+
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" asChild>
             <Link href="/gudang/traceability">
               <QrCode className="mr-2 h-4 w-4" />
@@ -106,264 +139,243 @@ export default function GudangPage() {
           </Button>
           <Button variant="outline" asChild>
             <Link href="/gudang/cold-storage">
-              <Thermometer className="mr-2 h-4 w-4" />
+              <Snowflake className="mr-2 h-4 w-4" />
               Cold Storage
             </Link>
           </Button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Stok</CardDescription>
-            <CardTitle className="text-2xl">{(totalStock / 1000).toFixed(1)} ton</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center text-xs text-emerald-600">
-              <TrendingUp className="mr-1 h-3 w-3" />
-              +12% dari bulan lalu
-            </div>
+      {showHierarchyFilter && <KementerianFilterBar filters={filters} setFilters={setFilters} />}
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <Card className="border-slate-200 bg-white">
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Stok Tersedia</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">{(totalStockKg / 1000).toFixed(1)} ton</p>
+            <p className="mt-2 text-sm text-muted-foreground">{filteredInventory.length} batch aktif dalam scope ini</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Lokasi Gudang</CardDescription>
-            <CardTitle className="text-2xl">{warehouses.length}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center text-xs text-muted-foreground">
-              <Warehouse className="mr-1 h-3 w-3" />
-              {inventory.length} batch tersimpan
-            </div>
+        <Card className="border-slate-200 bg-white">
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Nilai Persediaan</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(totalValue)}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{filteredWarehouses.length} gudang terhubung</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Segera Kadaluarsa</CardDescription>
-            <CardTitle className="text-2xl text-amber-600">{expiringStock}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center text-xs text-amber-600">
-              <AlertTriangle className="mr-1 h-3 w-3" />
-              Dalam 7 hari ke depan
-            </div>
+        <Card className="border-slate-200 bg-white">
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Batch Segera Keluar</p>
+            <p className="mt-2 text-3xl font-semibold text-amber-600">{expiringBatches}</p>
+            <p className="mt-2 text-sm text-muted-foreground">Masa simpan kurang dari 7 hari</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Kondisi Stok</CardDescription>
-            <CardTitle className="text-2xl text-emerald-600">{freshStock}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs text-muted-foreground">
-              Fresh: {freshStock} | Aging: {agingStock}
-            </div>
+        <Card className="border-slate-200 bg-white">
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Cold Chain Aktif</p>
+            <p className="mt-2 text-3xl font-semibold text-blue-600">{coldStorageBatches}</p>
+            <p className="mt-2 text-sm text-muted-foreground">Batch memerlukan rantai dingin</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Warehouse Capacity Overview */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {warehouses.map((warehouse) => {
-          const warehouseItems = inventory.filter(item => item.warehouse === warehouse)
-          const warehouseStock = warehouseItems.reduce((sum, item) => sum + item.quantity, 0)
-          const capacity = 10000 // Assume 10 ton capacity per warehouse
-          const utilizationPercent = (warehouseStock / capacity) * 100
-          const avgTemp = warehouseItems.reduce((sum, item) => sum + item.temperature, 0) / warehouseItems.length
-          const avgHumidity = warehouseItems.reduce((sum, item) => sum + item.humidity, 0) / warehouseItems.length
-
-          return (
-            <Card key={warehouse}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{warehouse}</CardTitle>
-                  <Badge variant={warehouse.includes('WH-002') ? 'default' : 'secondary'} className="text-[10px]">
-                    {warehouse.includes('WH-002') ? 'Cold Storage' : 'Regular'}
-                  </Badge>
-                </div>
-                <CardDescription className="text-xs">{warehouseItems.length} batch items</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <div className="flex items-center justify-between text-sm mb-1.5">
-                    <span className="text-muted-foreground text-xs">Kapasitas Terpakai</span>
-                    <span className="font-medium text-xs">{utilizationPercent.toFixed(0)}%</span>
-                  </div>
-                  <Progress value={utilizationPercent} className="h-1.5" />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {warehouseStock.toLocaleString()} / {capacity.toLocaleString()} kg
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t">
-                  <div className="flex items-center gap-1.5">
-                    <Thermometer className="h-3.5 w-3.5 text-blue-500" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">Avg Temp</p>
-                      <p className="text-xs font-medium">{avgTemp.toFixed(1)}°C</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Package className="h-3.5 w-3.5 text-cyan-500" />
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">Humidity</p>
-                      <p className="text-xs font-medium">{avgHumidity.toFixed(0)}%</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
-
-      {/* Filters */}
-      <Card>
+      <Card className="border-slate-200 bg-white">
         <CardContent className="p-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
+          <div className="grid gap-3 lg:grid-cols-[1.3fr_repeat(3,220px)]">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Cari produk atau batch code..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Cari batch, komoditas, koperasi, atau desa"
                 className="pl-9"
               />
             </div>
-            <div className="flex gap-2">
-              <Select value={filterWarehouse} onValueChange={setFilterWarehouse}>
-                <SelectTrigger className="w-[140px]">
-                  <Filter className="mr-2 h-4 w-4" />
-                  <SelectValue placeholder="Gudang" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Gudang</SelectItem>
-                  {warehouses.map((w) => (
-                    <SelectItem key={w} value={w}>{w}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={filterQuality} onValueChange={setFilterQuality}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder="Kualitas" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua</SelectItem>
-                  <SelectItem value="A">Grade A</SelectItem>
-                  <SelectItem value="B">Grade B</SelectItem>
-                  <SelectItem value="C">Grade C</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua</SelectItem>
-                  <SelectItem value="fresh">Fresh</SelectItem>
-                  <SelectItem value="good">Good</SelectItem>
-                  <SelectItem value="aging">Aging</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={warehouseFilter} onValueChange={setWarehouseFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Semua Gudang" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Gudang</SelectItem>
+                {warehouses.map((warehouse) => (
+                  <SelectItem key={warehouse.id} value={warehouse.id}>
+                    {warehouse.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={qualityFilter} onValueChange={setQualityFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Semua Grade" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Grade</SelectItem>
+                <SelectItem value="A">Grade A</SelectItem>
+                <SelectItem value="B">Grade B</SelectItem>
+                <SelectItem value="C">Grade C</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Semua Kondisi" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Kondisi</SelectItem>
+                <SelectItem value="fresh">Fresh</SelectItem>
+                <SelectItem value="good">Good</SelectItem>
+                <SelectItem value="aging">Aging</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
 
-      {/* Inventory Table */}
-      <Card>
+      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+        <Card className="border-slate-200 bg-white">
+          <CardHeader>
+            <CardTitle>Komposisi Stok per Komoditas</CardTitle>
+            <CardDescription>Volume stok yang ikut berubah mengikuti filter wilayah dan koperasi.</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={commoditySeries}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                <XAxis dataKey="name" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Bar dataKey="stok" fill="#d32f2f" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200 bg-white">
+          <CardHeader>
+            <CardTitle>Utilisasi Gudang</CardTitle>
+            <CardDescription>Perbandingan kapasitas aktif antar gudang dalam scope terpilih.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {filteredWarehouses.map((warehouse) => (
+              <div key={warehouse.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="font-medium text-slate-900">{warehouse.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {warehouse.cooperativeName} · {warehouse.villageName}
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="border-slate-200 bg-white text-slate-700">
+                    {warehouse.type === 'cold' ? 'Cold Storage' : 'Reguler'}
+                  </Badge>
+                </div>
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200">
+                  <div
+                    className="h-full rounded-full bg-rose-500"
+                    style={{ width: `${Math.min(warehouse.utilizationPct, 100)}%` }}
+                  />
+                </div>
+                <div className="mt-3 grid gap-2 text-sm text-muted-foreground md:grid-cols-3">
+                  <span>{warehouse.utilizationPct}% terpakai</span>
+                  <span>{warehouse.occupancyKg.toLocaleString('id-ID')} kg tersimpan</span>
+                  <span>{warehouse.batchCount} batch aktif</span>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="border-slate-200 bg-white">
         <CardHeader>
-          <CardTitle>Daftar Inventaris</CardTitle>
+          <CardTitle>Daftar Batch Gudang</CardTitle>
           <CardDescription>
-            Menampilkan {filteredInventory.length} dari {inventory.length} batch
+            {filteredInventory.length} batch tampil. KPI, gudang, dan tabel memakai sumber data yang sama.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Batch Code</TableHead>
-                <TableHead>Produk</TableHead>
-                <TableHead>Gudang / Lokasi</TableHead>
+                <TableHead>Batch</TableHead>
+                <TableHead>Komoditas</TableHead>
+                <TableHead>Gudang</TableHead>
+                <TableHead>Wilayah</TableHead>
                 <TableHead className="text-right">Jumlah</TableHead>
-                <TableHead>Kualitas</TableHead>
+                <TableHead>Grade</TableHead>
                 <TableHead>Kondisi</TableHead>
-                <TableHead>Panen</TableHead>
+                <TableHead>Harvest</TableHead>
                 <TableHead>Kadaluarsa</TableHead>
-                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredInventory.slice(0, 20).map((item) => {
-                const isExpiring = new Date(item.expiryDate).getTime() - new Date().getTime() < 7 * 24 * 60 * 60 * 1000
-                const isExpired = new Date(item.expiryDate) < new Date()
-                
+              {filteredInventory.map((item) => {
+                const expiringSoon =
+                  (new Date(item.expiryDate).getTime() - REFERENCE_DATE.getTime()) / (1000 * 60 * 60 * 24) <= 7
+
                 return (
                   <TableRow key={item.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <QrCode className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="font-mono text-xs">{item.batch}</span>
+                        <QrCode className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-mono text-sm">{item.batchCode}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="font-medium text-sm">{item.productName}</TableCell>
                     <TableCell>
-                      <div className="text-xs">
-                        <p className="font-medium">{item.warehouse}</p>
-                        <p className="text-muted-foreground">{item.location}</p>
+                      <div>
+                        <p className="font-medium text-slate-900">{item.commodityName}</p>
+                        <p className="text-sm text-muted-foreground">{item.cooperativeName}</p>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-medium text-sm">
-                      {item.quantity.toLocaleString()} kg
-                    </TableCell>
+                    <TableCell>{item.warehouseName}</TableCell>
                     <TableCell>
-                      <Badge 
-                        className={`text-[10px] px-1.5 py-0 ${
-                          item.quality === 'A' ? 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/10' :
-                          item.quality === 'B' ? 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/10' :
-                          'bg-slate-100 text-slate-600 hover:bg-slate-100'
-                        }`}
-                      >
+                      <div className="text-sm text-muted-foreground">
+                        {item.villageName}, {item.regionName}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right font-medium">{item.quantityKg.toLocaleString('id-ID')} kg</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={badgeTone(item.quality)}>
                         Grade {item.quality}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge 
-                        className={`text-[10px] px-1.5 py-0 ${
-                          item.status === 'fresh' ? 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/10' :
-                          item.status === 'good' ? 'bg-blue-500/10 text-blue-600 hover:bg-blue-500/10' :
-                          'bg-amber-500/10 text-amber-600 hover:bg-amber-500/10'
-                        }`}
-                      >
+                      <Badge variant="outline" className={badgeTone(item.status)}>
                         {item.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {formatDate(item.harvestDate)}
-                    </TableCell>
+                    <TableCell>{formatDate(item.harvestDate)}</TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1 text-xs">
-                        {isExpiring && !isExpired && (
-                          <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
-                        )}
-                        <span className={isExpiring && !isExpired ? 'text-amber-600 font-medium' : 'text-muted-foreground'}>
+                      <div className="flex items-center gap-2">
+                        {expiringSoon && <AlertTriangle className="h-4 w-4 text-amber-500" />}
+                        <span className={expiringSoon ? 'font-medium text-amber-700' : 'text-muted-foreground'}>
                           {formatDate(item.expiryDate)}
                         </span>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                        <Link href={`/gudang/traceability?batch=${item.batch}`}>
-                          <QrCode className="h-3.5 w-3.5" />
-                        </Link>
-                      </Button>
                     </TableCell>
                   </TableRow>
                 )
               })}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="border-slate-200 bg-slate-50">
+        <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="rounded-2xl bg-white p-3 shadow-sm">
+              <Warehouse className="h-5 w-5 text-rose-600" />
+            </div>
+            <div>
+              <p className="font-medium text-slate-900">Sinkronisasi Gudang Aktif</p>
+              <p className="text-sm text-muted-foreground">
+                Scope saat ini mencakup {filteredWarehouses.length} gudang, {commoditySeries.length} komoditas, dan seluruh ringkasan di atas bergerak bersama filter yang sama.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <Package className="h-4 w-4" />
+            <span>{warehouseSeries.length} node tersinkron lintas desa</span>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -26,11 +26,11 @@ interface KementerianFilterBarProps {
 }
 
 const triggerClassName =
-  'h-8 rounded-lg border border-[var(--dashboard-secondary)]/12 bg-white px-3 text-[10px] font-black tracking-tight text-[var(--dashboard-secondary)] shadow-none transition-colors hover:bg-[var(--dashboard-neutral)]'
+  'h-10 rounded-lg border border-[var(--dashboard-secondary)]/12 bg-white px-3 text-sm font-medium text-[var(--dashboard-secondary)] shadow-none transition-colors hover:bg-[var(--dashboard-neutral)]'
 
 const contentClassName = 'border-[var(--dashboard-secondary)]/15 bg-white text-[var(--dashboard-secondary)]'
 const itemClassName =
-  'text-[10px] font-black uppercase tracking-tight focus:bg-[var(--dashboard-neutral)] focus:text-[var(--dashboard-secondary)]'
+  'text-sm font-medium focus:bg-[var(--dashboard-neutral)] focus:text-[var(--dashboard-secondary)]'
 
 export function KementerianFilterBar({
   filters,
@@ -78,19 +78,19 @@ export function KementerianFilterBar({
     <div className="w-full">
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--dashboard-secondary)]/15 bg-[var(--dashboard-neutral)] p-2 shadow-[0_16px_36px_-22px_rgba(69,90,100,0.45)]">
         {setSearch !== undefined && (
-          <div className="relative min-w-[180px] flex-1 border-r border-[var(--dashboard-secondary)]/10 pr-2">
+          <div className="relative min-w-[220px] flex-1 border-r border-[var(--dashboard-secondary)]/10 pr-2">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--dashboard-secondary)]/45" />
             <Input
-              placeholder="PENCARIAN DATA NASIONAL..."
+              placeholder="Cari data nasional"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-8 border-none bg-transparent pl-9 text-[10px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)] placeholder:text-[var(--dashboard-secondary)]/45 shadow-none focus-visible:ring-0"
+              className="h-10 border-none bg-transparent pl-9 text-sm font-medium text-[var(--dashboard-secondary)] placeholder:text-[var(--dashboard-secondary)]/45 shadow-none focus-visible:ring-0"
             />
           </div>
         )}
 
         <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-          <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">PROV</span>
+          <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Provinsi</span>
           <Select
             value={filters.provinceId}
             onValueChange={(v) =>
@@ -120,7 +120,7 @@ export function KementerianFilterBar({
         </div>
 
         <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-          <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">KAB/KOTA</span>
+          <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Kab/Kota</span>
           <Select
             value={filters.regionId}
             onValueChange={(v) =>
@@ -149,7 +149,7 @@ export function KementerianFilterBar({
         </div>
 
         <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-          <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">DESA</span>
+          <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Desa</span>
           <Select
             value={filters.villageId}
             onValueChange={(v) =>
@@ -177,7 +177,7 @@ export function KementerianFilterBar({
         </div>
 
         <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-          <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">KOPERASI</span>
+          <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Koperasi</span>
           <Select
             value={filters.cooperativeId}
             onValueChange={(v) =>
@@ -205,7 +205,7 @@ export function KementerianFilterBar({
 
         {showCommodity && (
           <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-3">
-            <span className="shrink-0 text-[9px] font-black uppercase tracking-widest text-[var(--dashboard-secondary)]/55">KOMODITAS</span>
+            <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-[var(--dashboard-secondary)]/55">Komoditas</span>
             <Select
               value={filters.commodityId}
               onValueChange={(v) => setFilters((prev) => ({ ...prev, commodityId: v }))}
@@ -227,7 +227,7 @@ export function KementerianFilterBar({
         <Button
           size="sm"
           variant="ghost"
-          className="ml-auto h-8 w-8 rounded-lg p-0 text-[var(--dashboard-secondary)]/70 transition-all hover:bg-[var(--dashboard-primary)] hover:text-white"
+          className="ml-auto h-10 w-10 rounded-lg p-0 text-[var(--dashboard-secondary)]/70 transition-all hover:bg-[var(--dashboard-primary)] hover:text-white"
           onClick={resetFilters}
         >
           <RefreshCw className="h-3.5 w-3.5" />

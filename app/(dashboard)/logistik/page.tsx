@@ -2,28 +2,30 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import {
-  Search,
-  Plus,
-  Filter,
-  Truck,
-  MapPin,
-  Phone,
-  Clock,
-  CheckCircle,
-  Navigation,
-  Package,
-} from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { MapPin, Navigation, Search, Truck } from 'lucide-react'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import { useAuth } from '@/lib/auth/use-auth'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import {
+  filterOrdersByScope,
+  filterShipmentsByScope,
+  getMonthlyOrderSeries,
+  getScopeCaption,
+  getShipmentPerformanceByRegion,
+  resolveOperationalFilters,
+} from '@/lib/cross-entity-operations'
+import type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -32,246 +34,285 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { shipments, orders, formatDate } from '@/lib/data'
 
-const statusColors: Record<string, string> = {
-  dijadwalkan: 'bg-gray-500/10 text-gray-500',
-  pickup: 'bg-amber-500/10 text-amber-500',
-  transit: 'bg-blue-500/10 text-blue-500',
-  delivered: 'bg-emerald-500/10 text-emerald-500',
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(value)
 }
 
-const statusLabels: Record<string, string> = {
-  dijadwalkan: 'Dijadwalkan',
-  pickup: 'Pickup',
-  transit: 'Dalam Perjalanan',
-  delivered: 'Terkirim',
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+function statusTone(status: string) {
+  if (status === 'delivered') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  if (status === 'transit') return 'bg-blue-50 text-blue-700 border-blue-200'
+  if (status === 'pickup') return 'bg-amber-50 text-amber-700 border-amber-200'
+  return 'bg-slate-100 text-slate-700 border-slate-200'
 }
 
 export default function LogistikPage() {
-  const [search, setSearch] = useState('')
-  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const { user } = useAuth()
+  const showHierarchyFilter = user?.role === 'kementerian' || user?.role === 'pemda' || user?.role === 'sysadmin'
 
-  const filteredShipments = shipments.filter((shipment) => {
-    const matchesSearch =
-      shipment.nomorResi.toLowerCase().includes(search.toLowerCase()) ||
-      shipment.driver.toLowerCase().includes(search.toLowerCase())
-    const matchesStatus =
-      filterStatus === 'all' || shipment.status === filterStatus
-    return matchesSearch && matchesStatus
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
   })
 
-  const totalShipments = shipments.length
-  const inTransit = shipments.filter((s) => s.status === 'transit').length
-  const delivered = shipments.filter((s) => s.status === 'delivered').length
-  const pendingPickup = shipments.filter(
-    (s) => s.status === 'dijadwalkan' || s.status === 'pickup'
-  ).length
+  const scopedFilters = resolveOperationalFilters(user, filters)
+  const shipments = filterShipmentsByScope(scopedFilters).filter((shipment) => {
+    const keyword = search.toLowerCase()
+    const matchesSearch =
+      shipment.orderNumber.toLowerCase().includes(keyword) ||
+      shipment.driver.toLowerCase().includes(keyword) ||
+      shipment.buyerName.toLowerCase().includes(keyword) ||
+      shipment.routeTo.toLowerCase().includes(keyword)
+    const matchesStatus = statusFilter === 'all' || shipment.status === statusFilter
+    return matchesSearch && matchesStatus
+  })
+  const orders = filterOrdersByScope(scopedFilters)
+
+  const activeShipments = shipments.filter((shipment) => shipment.status !== 'delivered').length
+  const deliveredShipments = shipments.filter((shipment) => shipment.status === 'delivered').length
+  const onTimeRate = shipments.length === 0 ? 0 : Math.round((shipments.filter((shipment) => shipment.onTime).length / shipments.length) * 100)
+  const totalCost = shipments.reduce((total, shipment) => total + shipment.cost, 0)
+
+  const monthlySeries = getMonthlyOrderSeries(orders).map((item) => ({
+    name: item.month.replace(' 2026', ''),
+    volume: Math.round(item.volumeKg / 100),
+    orders: item.orders,
+  }))
+
+  const regionSeries = getShipmentPerformanceByRegion(shipments)
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Pengiriman</h1>
-          <p className="text-muted-foreground">
-            Kelola pengiriman dan distribusi
-          </p>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <Badge className="w-fit border border-blue-200 bg-blue-50 text-blue-700">Logistik Multi-Entitas</Badge>
+          <div>
+            <h1 className="text-slate-900">Pengiriman & Distribusi</h1>
+            <p className="text-muted-foreground">
+              Arus pengiriman dari {getScopeCaption(scopedFilters)} ditampilkan seragam pada KPI, chart, dan tabel.
+            </p>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" asChild>
             <Link href="/logistik/tracking">
               <Navigation className="mr-2 h-4 w-4" />
               Live Tracking
             </Link>
           </Button>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Buat Pengiriman
+          <Button variant="outline" asChild>
+            <Link href="/logistik/rute">
+              <MapPin className="mr-2 h-4 w-4" />
+              Rute
+            </Link>
           </Button>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <Truck className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{totalShipments}</p>
-                <p className="text-xs text-muted-foreground">Total Pengiriman</p>
-              </div>
-            </div>
+      {showHierarchyFilter && <KementerianFilterBar filters={filters} setFilters={setFilters} />}
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <Card className="border-slate-200 bg-white">
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Pengiriman Aktif</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">{activeShipments}</p>
+            <p className="mt-2 text-sm text-muted-foreground">Dalam pickup dan perjalanan</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-                <Clock className="h-5 w-5 text-amber-500" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{pendingPickup}</p>
-                <p className="text-xs text-muted-foreground">Menunggu Pickup</p>
-              </div>
-            </div>
+        <Card className="border-slate-200 bg-white">
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Pengiriman Selesai</p>
+            <p className="mt-2 text-3xl font-semibold text-emerald-600">{deliveredShipments}</p>
+            <p className="mt-2 text-sm text-muted-foreground">Tersampaikan ke buyer</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10">
-                <Navigation className="h-5 w-5 text-blue-500" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{inTransit}</p>
-                <p className="text-xs text-muted-foreground">Dalam Perjalanan</p>
-              </div>
-            </div>
+        <Card className="border-slate-200 bg-white">
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">On-Time Rate</p>
+            <p className="mt-2 text-3xl font-semibold text-blue-600">{onTimeRate}%</p>
+            <p className="mt-2 text-sm text-muted-foreground">Rasio ketepatan waktu seluruh scope</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10">
-                <CheckCircle className="h-5 w-5 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{delivered}</p>
-                <p className="text-xs text-muted-foreground">Terkirim</p>
-              </div>
-            </div>
+        <Card className="border-slate-200 bg-white">
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Biaya Distribusi</p>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(totalCost)}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{shipments.length} manifest tersinkron</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters */}
-      <Card>
+      <Card className="border-slate-200 bg-white">
         <CardContent className="p-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
+          <div className="grid gap-3 lg:grid-cols-[1.2fr_220px]">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Cari nomor resi atau driver..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Cari nomor order, driver, buyer, atau tujuan"
                 className="pl-9"
               />
             </div>
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-[180px]">
-                <Filter className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Status" />
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Semua Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Status</SelectItem>
                 <SelectItem value="dijadwalkan">Dijadwalkan</SelectItem>
                 <SelectItem value="pickup">Pickup</SelectItem>
-                <SelectItem value="transit">Dalam Perjalanan</SelectItem>
-                <SelectItem value="delivered">Terkirim</SelectItem>
+                <SelectItem value="transit">Transit</SelectItem>
+                <SelectItem value="delivered">Delivered</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardContent>
       </Card>
 
-      {/* Shipments Table */}
-      <Card>
+      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <Card className="border-slate-200 bg-white">
+          <CardHeader>
+            <CardTitle>Volume Distribusi Bulanan</CardTitle>
+            <CardDescription>Order yang masuk dan beban logistik ikut berubah sesuai kombinasi filter saat ini.</CardDescription>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={monthlySeries}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                <XAxis dataKey="name" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <Bar dataKey="volume" fill="#2563eb" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200 bg-white">
+          <CardHeader>
+            <CardTitle>Performa Wilayah</CardTitle>
+            <CardDescription>Ringkasan pengiriman per regional dalam scope yang sama.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {regionSeries.map((region) => (
+              <div key={region.region} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center justify-between">
+                  <p className="font-medium text-slate-900">{region.region}</p>
+                  <Badge variant="outline" className="border-slate-200 bg-white text-slate-700">
+                    {region.onTimeRate}% on-time
+                  </Badge>
+                </div>
+                <div className="mt-3 grid gap-2 text-sm text-muted-foreground md:grid-cols-3">
+                  <span>{region.delivered} selesai</span>
+                  <span>{region.active} aktif</span>
+                  <span>{region.onTime} manifest tepat waktu</span>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="border-slate-200 bg-white">
         <CardHeader>
-          <CardTitle>Daftar Pengiriman</CardTitle>
+          <CardTitle>Manifest Pengiriman</CardTitle>
           <CardDescription>
-            {filteredShipments.length} pengiriman ditemukan
+            {shipments.length} manifest tampil. Tidak ada data statis yang terpisah dari filter wilayah.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>No. Resi</TableHead>
-                <TableHead>Order</TableHead>
+                <TableHead>No. Order</TableHead>
+                <TableHead>Komoditas</TableHead>
+                <TableHead>Koperasi</TableHead>
+                <TableHead>Tujuan</TableHead>
                 <TableHead>Driver</TableHead>
-                <TableHead>Kendaraan</TableHead>
-                <TableHead>Rute</TableHead>
-                <TableHead>Tanggal</TableHead>
+                <TableHead className="text-right">Volume</TableHead>
+                <TableHead className="text-right">Biaya</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredShipments.map((shipment) => {
-                const order = orders.find((o) => o.id === shipment.orderId)
-                return (
-                  <TableRow key={shipment.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Package className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-mono text-sm">
-                          {shipment.nomorResi}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{order?.nomorPO}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {order?.buyerNama}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{shipment.driver}</p>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Phone className="h-3 w-3" />
-                          {shipment.noHpDriver}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="text-sm">{shipment.kendaraan}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {shipment.platNomor}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">
-                          {shipment.rute.join(' → ')}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-sm">
-                        <p>Berangkat: {formatDate(shipment.tanggalBerangkat)}</p>
-                        {shipment.tanggalSampai && (
-                          <p className="text-muted-foreground">
-                            Sampai: {formatDate(shipment.tanggalSampai)}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={statusColors[shipment.status]}>
-                        {statusLabels[shipment.status]}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
+              {shipments.map((shipment) => (
+                <TableRow key={shipment.id}>
+                  <TableCell className="font-mono text-sm">{shipment.orderNumber}</TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-slate-900">{shipment.commodityName}</p>
+                      <p className="text-sm text-muted-foreground">{shipment.buyerName}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-slate-900">{shipment.cooperativeName}</p>
+                      <p className="text-sm text-muted-foreground">{shipment.villageName}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="text-sm text-muted-foreground">
+                      {shipment.routeFrom} → {shipment.routeTo}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-slate-900">{shipment.driver}</p>
+                      <p className="text-sm text-muted-foreground">{shipment.driverPhone}</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-medium">{shipment.volumeKg.toLocaleString('id-ID')} kg</TableCell>
+                  <TableCell className="text-right">{formatCurrency(shipment.cost)}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className={statusTone(shipment.status)}>
+                      {shipment.status}
+                    </Badge>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {formatDate(shipment.departureDate)}
+                      {shipment.arrivalDate ? ` · ${formatDate(shipment.arrivalDate)}` : ''}
+                    </p>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card className="border-slate-200 bg-slate-50">
+        <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="rounded-2xl bg-white p-3 shadow-sm">
+              <Truck className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="font-medium text-slate-900">Sinkronisasi Logistik Aktif</p>
+              <p className="text-sm text-muted-foreground">
+                Manifest, biaya, dan performa wilayah di atas mengambil data dari shipment dan order lintas desa yang sama.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <Navigation className="h-4 w-4" />
+            <span>{orders.length} order sumber terhubung</span>
+          </div>
         </CardContent>
       </Card>
     </div>

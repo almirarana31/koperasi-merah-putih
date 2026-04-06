@@ -247,7 +247,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col bg-[linear-gradient(180deg,color-mix(in_oklab,var(--sidebar)_96%,black)_0%,color-mix(in_oklab,var(--sidebar)_90%,var(--primary))_100%)] shadow-[20px_0_48px_-32px_rgba(65,0,2,0.55)] transition-transform duration-200 ease-in-out",
+          "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-sidebar-border bg-[linear-gradient(180deg,color-mix(in_oklab,var(--sidebar)_98%,white)_0%,color-mix(in_oklab,var(--sidebar)_94%,var(--primary)_2%)_100%)] shadow-[20px_0_48px_-40px_rgba(92,64,61,0.18)] transition-transform duration-200 ease-in-out",
           "lg:translate-x-0 lg:z-40",
           open ? "translate-x-0" : "-translate-x-full"
         )}
@@ -255,12 +255,12 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
         {/* Logo */}
         <div className="flex h-20 items-center justify-between px-6">
           <Link href="/login" className="flex items-center gap-3" onClick={handleLinkClick}>
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-sm">
               <Leaf className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
               <h1 className="text-lg font-semibold text-sidebar-foreground">KOPDES</h1>
-              <p className="text-xs text-sidebar-foreground/60">Koperasi Digital</p>
+              <p className="text-sm text-sidebar-foreground/60">Koperasi Digital</p>
             </div>
           </Link>
           <button
@@ -275,7 +275,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           {visibleNavigation.map((group) => (
             <div key={group.section} className="mb-6">
-              <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-sidebar-foreground/45">
+              <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-[0.18em] text-sidebar-foreground/45">
                 {group.section}
               </p>
               <ul className="space-y-1">
@@ -286,7 +286,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                         <button
                           onClick={() => toggleExpand(item.label)}
                           className={cn(
-                            "flex w-full items-center justify-between rounded-full px-3 py-2.5 text-sm transition-colors",
+                            "flex w-full items-center justify-between rounded-full px-3 py-2.5 text-[0.95rem] transition-colors",
                             "text-sidebar-foreground hover:bg-sidebar-accent"
                           )}
                         >
@@ -311,7 +311,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                                   className={cn(
                                     "block w-full rounded-full px-3 py-2 text-left text-sm transition-colors",
                                     isActive(child.href)
-                                      ? "bg-white/14 text-white"
+                                      ? "bg-primary/10 text-primary"
                                       : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
                                   )}
                                 >
@@ -327,16 +327,16 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                         href={item.href || "#"}
                         onClick={handleLinkClick}
                         className={cn(
-                          "flex w-full items-center gap-3 rounded-full px-3 py-2.5 text-sm transition-colors",
+                          "flex w-full items-center gap-3 rounded-full px-3 py-2.5 text-[0.95rem] transition-colors",
                           isActive(item.href)
-                            ? "bg-white/14 text-white"
+                            ? "bg-primary/10 text-primary"
                             : "text-sidebar-foreground hover:bg-sidebar-accent"
                         )}
                       >
                         <item.icon
                           className={cn(
                             "h-4 w-4",
-                            isActive(item.href) ? "text-white" : "text-sidebar-foreground/70"
+                            isActive(item.href) ? "text-primary" : "text-sidebar-foreground/70"
                           )}
                         />
                         {item.label}
