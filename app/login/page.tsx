@@ -130,7 +130,7 @@ type FormErrors = {
 
 export default function LoginPage() {
   const router = useRouter()
-  const { loginAs } = useAuth()
+  const { loginAs, logout } = useAuth()
   const [selectedRole, setSelectedRole] = useState<Role>('petani')
   const [email, setEmail] = useState(MOCK_USERS.petani.email)
   const [password, setPassword] = useState(ROLE_PASSWORDS.petani)
@@ -149,6 +149,16 @@ export default function LoginPage() {
     setPassword(ROLE_PASSWORDS[selectedRole])
     setErrors({})
   }, [selectedRole])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('fresh') !== '1') return
+
+    document.cookie = 'kopdes-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=strict'
+    logout()
+  }, [logout])
 
   const validateForm = () => {
     const nextErrors: FormErrors = {}

@@ -79,13 +79,13 @@ export default function LandingPage() {
               className="hidden border-[#e4beba]/60 bg-[#fff7f6] text-[#6b4a46] hover:bg-white sm:inline-flex"
               asChild
             >
-              <Link href="/login">Masuk</Link>
+              <Link href="/login?fresh=1">Masuk</Link>
             </Button>
             <Button
               className="bg-[linear-gradient(135deg,#91000f_0%,#b8191f_100%)] text-primary-foreground shadow-[0_18px_36px_-22px_rgba(145,0,15,0.55)] hover:opacity-95"
               asChild
             >
-              <Link href="/login">
+              <Link href="/login?fresh=1">
                 Akses Sistem
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -223,7 +223,7 @@ export default function LandingPage() {
                     className="h-11 w-full bg-[linear-gradient(135deg,#91000f_0%,#b8191f_100%)] text-primary-foreground shadow-[0_18px_36px_-22px_rgba(145,0,15,0.45)] hover:opacity-95"
                     asChild
                   >
-                    <Link href="/login">
+                    <Link href="/login?fresh=1">
                       Masuk ke Portal Akses
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
