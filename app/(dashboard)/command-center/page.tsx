@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useEffect, useState, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -51,6 +52,7 @@ import { toast } from "sonner"
 import { useAuth } from "@/lib/auth/use-auth"
 import { KementerianFilterBar } from "@/components/dashboard/kementerian-filter-bar"
 import { ScopeFilters } from "@/lib/kementerian-dashboard-data"
+import { canAccessRoute, canExport } from "@/lib/rbac"
 
 // Enhanced Mock Data for Cross-Entity Monitoring
 const initialProductionData = [
@@ -80,7 +82,7 @@ const toTitleCase = (value: string) =>
 
 export default function ExecutiveCommandCenterPage() {
   const { user } = useAuth()
-  const isKementerian = user?.role === 'kementerian'
+  const role = user?.role
   
   const [filters, setFilters] = useState<ScopeFilters>({
     provinceId: 'all',
@@ -94,6 +96,11 @@ export default function ExecutiveCommandCenterPage() {
   const [isExporting, setIsExporting] = useState(false)
   const [logs, setLogs] = useState(initialLogs)
   const scopeLabel = filters.provinceId === 'all' ? 'National Scope' : `Regional Scope: ${toTitleCase(filters.provinceId)}`
+  const canExportPdf = role ? canExport(role, 'pdf') : false
+  const canViewRouteDetails = role ? canAccessRoute(role, '/logistik/rute') : false
+  const canOpenAuditConsole = role ? canAccessRoute(role, '/assistant') : false
+  const showMonitoringPanels = activeView !== 'audit'
+  const showAuditPanels = activeView !== 'monitoring'
 
   // Dynamic Data Calculation based on Filters
   const productionData = useMemo(() => {
@@ -140,10 +147,67 @@ export default function ExecutiveCommandCenterPage() {
   }, [])
 
   const handleExportPDF = async () => {
+    if (!canExportPdf) return
+
     setIsExporting(true)
     toast.info(`Generating Audit Report For ${scopeLabel}...`)
-    await new Promise(r => setTimeout(r, 2000))
-    toast.success("Executive Audit PDF Generated Successfully.")
+
+    const result = await exportToPDF({
+      title: 'Executive Audit Report',
+      subtitle: scopeLabel,
+      filename: `executive-audit-${Date.now()}.pdf`,
+      orientation: 'landscape',
+      data: logs.map((log) => ({
+        Time: log.time,
+        User: toTitleCase(log.role),
+        Action: log.action,
+        Status: toTitleCase(log.status),
+        Entity: log.entity,
+      })),
+    })
+
+    if (result.success) {
+      toast.success("Executive Audit PDF Generated Successfully.")
+    } else {
+      toast.error(result.error ?? "Executive Audit PDF Failed To Generate.")
+    }
+
+    setIsExporting(false)
+  }
+
+  const handleDownloadGlobalReport = async () => {
+    if (!canExportPdf) return
+
+    setIsExporting(true)
+    toast.info(`Compiling Global Report For ${scopeLabel}...`)
+
+    const summaryRows = [
+      { Section: 'Summary', Metric: 'Active Units', Value: totals.activeUnits.toLocaleString('id-ID') },
+      { Section: 'Summary', Metric: 'Total Members', Value: totals.totalMembers.toLocaleString('id-ID') },
+      { Section: 'Summary', Metric: 'Inflow', Value: `Rp ${(totals.inflow / 1000000).toFixed(1)} JT` },
+      { Section: 'Summary', Metric: 'Outflow', Value: `Rp ${(totals.outflow / 1000000).toFixed(1)} JT` },
+      { Section: 'Summary', Metric: 'Net Position', Value: `Rp ${(totals.net / 1000000).toFixed(1)} JT` },
+      ...productionData.map((row) => ({
+        Section: 'Production Trend',
+        Metric: row.month,
+        Value: `Beras ${row.beras}T | Sayur ${row.sayur}T | Buah ${row.buah}T`,
+      })),
+    ]
+
+    const result = await exportToPDF({
+      title: 'Global Performance Report',
+      subtitle: scopeLabel,
+      filename: `global-report-${Date.now()}.pdf`,
+      orientation: 'landscape',
+      data: summaryRows,
+    })
+
+    if (result.success) {
+      toast.success("Global Report Downloaded Successfully.")
+    } else {
+      toast.error(result.error ?? "Global Report Failed To Generate.")
+    }
+
     setIsExporting(false)
   }
 
@@ -191,14 +255,18 @@ export default function ExecutiveCommandCenterPage() {
               Audit Log
             </Button>
           </div>
-          <Button onClick={handleExportPDF} variant="outline" size="sm" className="h-10 border-[var(--dashboard-secondary-border)] bg-white text-xs font-semibold text-[var(--dashboard-secondary)] hover:bg-[var(--dashboard-secondary-muted)]" disabled={isExporting}>
-            <FileText className="mr-2 h-4 w-4 text-[var(--dashboard-primary)]" />
-            Export Audit PDF
-          </Button>
-          <Button size="sm" className="h-10 bg-[var(--dashboard-primary)] px-6 text-xs font-semibold text-white shadow-[0_10px_24px_-12px_rgba(190,24,93,0.35)] hover:bg-[var(--dashboard-primary-hover)]">
-            <Download className="h-4 w-4 mr-2" />
-            Global Report
-          </Button>
+          {canExportPdf && (
+            <Button onClick={handleExportPDF} variant="outline" size="sm" className="h-10 border-[var(--dashboard-secondary-border)] bg-white text-xs font-semibold text-[var(--dashboard-secondary)] hover:bg-[var(--dashboard-secondary-muted)]" disabled={isExporting}>
+              <FileText className="mr-2 h-4 w-4 text-[var(--dashboard-primary)]" />
+              Export Audit PDF
+            </Button>
+          )}
+          {canExportPdf && (
+            <Button onClick={handleDownloadGlobalReport} size="sm" className="h-10 bg-[var(--dashboard-primary)] px-6 text-xs font-semibold text-white shadow-[0_10px_24px_-12px_rgba(190,24,93,0.35)] hover:bg-[var(--dashboard-primary-hover)]" disabled={isExporting}>
+              <Download className="h-4 w-4 mr-2" />
+              Global Report
+            </Button>
+          )}
         </div>
       </div>
 
@@ -236,13 +304,14 @@ export default function ExecutiveCommandCenterPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <div className={`grid gap-6 ${showMonitoringPanels && showAuditPanels ? 'lg:grid-cols-[1fr_380px]' : 'grid-cols-1'}`}>
+        {showMonitoringPanels && (
         <div className="space-y-6">
           {/* Main Monitoring Panels */}
           <div className="grid gap-6 md:grid-cols-2">
             {/* Production Aggregation */}
             <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.26)]">
-              <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)] p-4">
+              <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Package className="h-4 w-4 text-[var(--dashboard-secondary)]" />
@@ -272,7 +341,7 @@ export default function ExecutiveCommandCenterPage() {
 
             {/* Financial Health Matrix */}
             <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.26)]">
-              <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)] p-4">
+              <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-[var(--dashboard-primary)]" />
@@ -287,7 +356,7 @@ export default function ExecutiveCommandCenterPage() {
                   { label: 'Outflow Operasional', val: totals.outflow, tone: 'rose', trend: '+4.2%' },
                   { label: 'Saldo Bersih', val: totals.net, tone: 'tertiary', trend: 'Stabil' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-xl border border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)]/60 p-4">
+                  <div key={i} className="flex items-center justify-between rounded-xl border border-[var(--dashboard-secondary-border)] bg-white p-4 shadow-[0_10px_20px_-18px_rgba(137,114,111,0.22)]">
                     <div>
                       <p className="text-xs font-semibold text-slate-500">{item.label}</p>
                       <p className={`mt-1 text-lg font-semibold ${item.tone === 'rose' ? 'text-[var(--dashboard-primary)]' : item.tone === 'secondary' ? 'text-[var(--dashboard-secondary)]' : 'text-[var(--dashboard-tertiary)]'}`}>
@@ -305,13 +374,17 @@ export default function ExecutiveCommandCenterPage() {
 
           {/* Regional Performance Heatmap */}
           <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.26)]">
-             <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)] p-4">
+             <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
                <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-xs font-semibold text-slate-900">Distribusi & Logistik Nasional</CardTitle>
                     <CardDescription className="text-xs font-medium text-slate-500">Monitoring pengiriman lintas provinsi</CardDescription>
                   </div>
-                  <Button size="sm" variant="outline" className="h-8 border-[var(--dashboard-secondary-border)] bg-white text-xs font-semibold text-[var(--dashboard-secondary)] hover:bg-[var(--dashboard-secondary-muted)]">Detail Rute</Button>
+                  {canViewRouteDetails && (
+                    <Button size="sm" variant="outline" className="h-8 border-[var(--dashboard-secondary-border)] bg-white text-xs font-semibold text-[var(--dashboard-secondary)] hover:bg-[var(--dashboard-secondary-muted)]" asChild>
+                      <Link href="/logistik/rute">Detail Rute</Link>
+                    </Button>
+                  )}
                </div>
              </CardHeader>
              <CardContent className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -341,11 +414,13 @@ export default function ExecutiveCommandCenterPage() {
              </CardContent>
           </Card>
         </div>
+        )}
 
         {/* War Room Side Panel */}
+        {showAuditPanels && (
         <div className="space-y-6">
           <Card className="flex h-full max-h-[800px] flex-col overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_20px_40px_-16px_rgba(137,114,111,0.22)]">
-            <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)] p-5">
+            <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-5">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                   <Activity className="h-4 w-4 text-[var(--dashboard-primary)]" /> Live Audit Feed
@@ -359,7 +434,7 @@ export default function ExecutiveCommandCenterPage() {
             <CardContent className="p-0 flex-1 overflow-y-auto scrollbar-hide">
               <div className="divide-y divide-slate-100">
                 {logs.map((log, i) => (
-                  <div key={i} className="group cursor-pointer p-5 transition-colors hover:bg-[var(--dashboard-secondary-muted)]/50">
+                  <div key={i} className="group cursor-pointer bg-white p-5 transition-colors hover:bg-slate-50">
                     <div className="flex items-center justify-between mb-2">
                       <Badge className={`h-4 rounded border-none px-1.5 text-xs font-semibold ${
                         log.status === 'success' ? 'bg-emerald-50 text-emerald-700' :
@@ -379,16 +454,18 @@ export default function ExecutiveCommandCenterPage() {
                 ))}
               </div>
             </CardContent>
-            <div className="border-t border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)]/55 p-4">
-              <Button variant="ghost" className="h-10 w-full text-xs font-semibold text-slate-600 hover:bg-white hover:text-[var(--dashboard-primary)]">
-                Buka Konsol Audit Lengkap
-              </Button>
+            <div className="border-t border-[var(--dashboard-secondary-border)] bg-white p-4">
+              {canOpenAuditConsole && (
+                <Button variant="ghost" className="h-10 w-full text-xs font-semibold text-slate-600 hover:bg-white hover:text-[var(--dashboard-primary)]" asChild>
+                  <Link href="/assistant">Buka Konsol Audit Lengkap</Link>
+                </Button>
+              )}
             </div>
           </Card>
 
           {/* Critical Risk Matrix */}
           <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.26)]">
-            <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)] p-4">
+            <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
               <CardTitle className="flex items-center gap-2 text-xs font-semibold text-rose-900">
                 <AlertTriangle className="h-3.5 w-3.5" /> High-Impact Risks
               </CardTitle>
@@ -412,6 +489,7 @@ export default function ExecutiveCommandCenterPage() {
             </CardContent>
           </Card>
         </div>
+        )}
       </div>
     </div>
   )

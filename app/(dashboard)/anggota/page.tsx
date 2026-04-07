@@ -63,10 +63,15 @@ import {
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import { ExportButton } from '@/components/dashboard/export-button'
 import { members } from '@/lib/mock-data'
+import { canAccessRoute } from '@/lib/rbac'
 
 export default function AnggotaPage() {
   const { user } = useAuth()
   const isKementerian = user?.role === 'kementerian'
+  const canOpenOnboarding = user?.role ? canAccessRoute(user.role, '/anggota/onboarding') : false
+  const canOpenVerification = user?.role ? canAccessRoute(user.role, '/anggota/verifikasi') : false
+  const canOpenProfile = user?.role ? canAccessRoute(user.role, '/anggota/profil') : false
+  const canOpenCreateMember = user?.role ? canAccessRoute(user.role, '/anggota/tambah') : false
 
   const [search, setSearch] = useState('')
   const [filterRole, setFilterRole] = useState<string>('all')
@@ -173,30 +178,38 @@ export default function AnggotaPage() {
               }))}
             />
           )}
-          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
-            <Link href="/anggota/onboarding">
-              <CreditCard className="mr-2 h-3.5 w-3.5" />
-              Onboarding
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
-            <Link href="/anggota/verifikasi">
-              <CheckCircle2 className="mr-2 h-3.5 w-3.5" />
-              KYC
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
-            <Link href="/anggota/profil">
-              <Users className="mr-2 h-3.5 w-3.5" />
-              Profil
-            </Link>
-          </Button>
-          <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold  " asChild>
-            <Link href="/anggota/tambah">
-              <Plus className="mr-2 h-3.5 w-3.5" />
-              Tambah
-            </Link>
-          </Button>
+          {canOpenOnboarding && (
+            <Button variant="outline" size="sm" className="h-8 text-xs font-semibold text-slate-600" asChild>
+              <Link href="/anggota/onboarding">
+                <CreditCard className="mr-2 h-3.5 w-3.5" />
+                Onboarding
+              </Link>
+            </Button>
+          )}
+          {canOpenVerification && (
+            <Button variant="outline" size="sm" className="h-8 text-xs font-semibold text-slate-600" asChild>
+              <Link href="/anggota/verifikasi">
+                <CheckCircle2 className="mr-2 h-3.5 w-3.5" />
+                KYC
+              </Link>
+            </Button>
+          )}
+          {canOpenProfile && (
+            <Button variant="outline" size="sm" className="h-8 text-xs font-semibold text-slate-600" asChild>
+              <Link href="/anggota/profil">
+                <Users className="mr-2 h-3.5 w-3.5" />
+                Profil
+              </Link>
+            </Button>
+          )}
+          {canOpenCreateMember && (
+            <Button size="sm" className="h-8 bg-[var(--dashboard-primary)] text-xs font-semibold text-white hover:bg-[var(--dashboard-primary-hover)]" asChild>
+              <Link href="/anggota/tambah">
+                <Plus className="mr-2 h-3.5 w-3.5" />
+                Tambah
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -238,7 +251,7 @@ export default function AnggotaPage() {
       )}
 
       {/* Local Filters */}
-      <Card>
+      <Card className="border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_14px_28px_-24px_rgba(137,114,111,0.22)]">
         <CardContent className="p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             {!isKementerian && (
@@ -282,8 +295,8 @@ export default function AnggotaPage() {
       </Card>
 
       {/* Table */}
-      <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
-        <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
+      <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.24)]">
+        <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-sm font-semibold text-slate-900  ">Database Anggota</CardTitle>
@@ -293,10 +306,10 @@ export default function AnggotaPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="bg-white p-0">
           <Table>
-            <TableHeader className="bg-slate-50/50">
-              <TableRow className="border-slate-100">
+            <TableHeader className="bg-white">
+              <TableRow className="border-[var(--dashboard-secondary-border)]/70 bg-white">
                 <TableHead className="text-xs font-semibold text-slate-400  h-10 px-4">Anggota</TableHead>
                 <TableHead className="text-xs font-semibold text-slate-400  h-10">ID Anggota</TableHead>
                 <TableHead className="text-xs font-semibold text-slate-400  h-10">Peran</TableHead>
@@ -309,7 +322,7 @@ export default function AnggotaPage() {
             </TableHeader>
             <TableBody>
               {filteredMembers.map((member) => (
-                <TableRow key={member.id} className="border-slate-50 hover:bg-slate-50/50 transition-colors group">
+                <TableRow key={member.id} className="group border-[var(--dashboard-secondary-border)]/60 bg-white transition-colors hover:bg-slate-50">
                   <TableCell className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8 border-none bg-slate-100">

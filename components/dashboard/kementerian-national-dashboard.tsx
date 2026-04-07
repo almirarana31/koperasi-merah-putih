@@ -41,6 +41,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { exportToPDF } from '@/lib/pdf-export'
+import { toast } from 'sonner'
 import {
   KEMENTERIAN_DASHBOARD_DATA,
   getKementerianDashboardSnapshot,
@@ -85,6 +87,11 @@ function scoreToStatus(score: number) {
 }
 
 const SURFACE_CARD = 'overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_24px_-18px_rgba(15,23,42,0.18)]'
+const PORTFOLIO_HEALTH_COLORS = {
+  healthy: '#BE5850',
+  warning: '#006E9D',
+  critical: '#DC3935',
+} as const
 
 export function KementerianNationalDashboard() {
   const [filters, setFilters] = useState<ScopeFilters>({
@@ -97,6 +104,7 @@ export function KementerianNationalDashboard() {
   const [clock, setClock] = useState(() => Date.now())
   const [selectedCooperative, setSelectedCooperative] = useState<any>(null)
   const [isAuditDialogOpen, setIsAuditDialogOpen] = useState(false)
+  const [isDownloadingAudit, setIsDownloadingAudit] = useState(false)
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setClock(Date.now()), 30000)
@@ -173,6 +181,11 @@ export function KementerianNationalDashboard() {
 
   const weakestCooperatives = [...snapshot.cooperativeComparisons].sort((a, b) => a.overallScore - b.overallScore).slice(0, 5)
   const topGrowthRegions = [...snapshot.regionComparisons].sort((a, b) => b.incomeImprovementPct - a.incomeImprovementPct).slice(0, 5)
+  const portfolioHealthData = [
+    { label: 'Sangat Sehat', count: 450, color: PORTFOLIO_HEALTH_COLORS.healthy },
+    { label: 'Waspada / Audit', count: 620, color: PORTFOLIO_HEALTH_COLORS.warning },
+    { label: 'Intervensi Segera', count: 178, color: PORTFOLIO_HEALTH_COLORS.critical },
+  ]
 
   const nplTone = snapshot.summary.avgNpl > 5 ? 'rose' : snapshot.summary.avgNpl > 3 ? 'sand' : 'emerald'
   const healthTone = snapshot.summary.overallScore > 80 ? 'emerald' : snapshot.summary.overallScore > 65 ? 'sand' : 'rose'
@@ -194,6 +207,35 @@ export function KementerianNationalDashboard() {
   const severityBadgeClass = (s: AlertSeverity) => s === 'critical' ? 'bg-[var(--dashboard-primary)]' : 'bg-amber-600'
 
   const SUBTLE_PANEL = 'rounded-xl border border-slate-200 bg-white shadow-[0_8px_18px_-16px_rgba(15,23,42,0.16)]'
+
+  const handleDownloadAuditPdf = async () => {
+    setIsDownloadingAudit(true)
+    toast.info(`Menyiapkan Audit PDF Untuk ${snapshot.scopeLabel}...`)
+
+    const result = await exportToPDF({
+      title: 'Audit Lintas Unit Kerja',
+      subtitle: `Ringkasan ${snapshot.scopeLabel}`,
+      filename: `audit-lintas-unit-${filters.provinceId}-${Date.now()}.pdf`,
+      orientation: 'landscape',
+      data: snapshot.cooperativeComparisons.slice(0, 12).map((row) => ({
+        'Unit Koperasi': row.label,
+        Desa: row.village,
+        Status: row.overallHealth,
+        Anggota: row.totalMembers.toLocaleString('id-ID'),
+        'Pendapatan / Anggota': formatCompactCurrency(row.avgIncomeAfter),
+        'Rasio NPL': `${row.avgNpl.toFixed(1)}%`,
+        Skor: Math.round(row.overallScore),
+      })),
+    })
+
+    if (result.success) {
+      toast.success('Audit PDF Berhasil Diunduh.')
+    } else {
+      toast.error(result.error ?? 'Audit PDF Gagal Dibuat.')
+    }
+
+    setIsDownloadingAudit(false)
+  }
 
   return (
     <div className="flex min-h-screen flex-col gap-4 bg-[var(--dashboard-secondary-muted)] p-4 lg:p-5">
@@ -375,8 +417,10 @@ export function KementerianNationalDashboard() {
             </div>
           </CardContent>
           <div className="border-t border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)]/45 p-3">
-            <Button variant="ghost" className="h-8 w-full text-xs font-medium text-slate-600 transition-all hover:bg-white hover:text-[var(--dashboard-primary)]">
-              Buka Command Center <ArrowRight className="ml-2 h-3 w-3" />
+            <Button variant="ghost" className="h-8 w-full text-xs font-medium text-slate-600 transition-all hover:bg-white hover:text-[var(--dashboard-primary)]" asChild>
+              <Link href="/command-center">
+                Buka Command Center <ArrowRight className="ml-2 h-3 w-3" />
+              </Link>
             </Button>
           </div>
         </Card>
@@ -392,8 +436,13 @@ export function KementerianNationalDashboard() {
                 <CardTitle className="text-sm font-semibold text-slate-900">Audit Lintas Unit Kerja</CardTitle>
                 <CardDescription className="text-xs text-slate-500">Monitoring 1.248 Unit Nasional. Filter Aktif: {snapshot.scopeLabel}</CardDescription>
               </div>
-              <Button size="sm" className="h-9 rounded-lg bg-[var(--dashboard-primary)] px-4 text-xs font-medium text-white shadow-[0_12px_24px_-18px_rgba(145,0,15,0.42)] hover:bg-[var(--dashboard-primary-hover)]">
-                Download Audit PDF
+              <Button
+                size="sm"
+                className="h-9 rounded-lg bg-[var(--dashboard-primary)] px-4 text-xs font-medium text-white shadow-[0_12px_24px_-18px_rgba(145,0,15,0.42)] hover:bg-[var(--dashboard-primary-hover)]"
+                onClick={handleDownloadAuditPdf}
+                disabled={isDownloadingAudit}
+              >
+                {isDownloadingAudit ? 'Menyiapkan PDF...' : 'Download Audit PDF'}
               </Button>
             </div>
           </CardHeader>
@@ -460,17 +509,15 @@ export function KementerianNationalDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={[
-                        { name: 'Sehat', value: 450, color: 'var(--dashboard-secondary)' },
-                        { name: 'Waspada', value: 620, color: 'var(--dashboard-tertiary)' },
-                        { name: 'Kritis', value: 178, color: 'var(--dashboard-primary)' },
-                      ]}
+                      data={portfolioHealthData}
                       innerRadius={45}
                       outerRadius={60}
                       paddingAngle={5}
-                      dataKey="value"
+                      dataKey="count"
                     >
-                      {[0,1,2].map((_, i) => <Cell key={i} fill={['var(--dashboard-secondary)', 'var(--dashboard-tertiary)', 'var(--dashboard-primary)'][i]} />)}
+                      {portfolioHealthData.map((item) => (
+                        <Cell key={item.label} fill={item.color} />
+                      ))}
                     </Pie>
                     <Tooltip />
                   </PieChart>
@@ -481,14 +528,10 @@ export function KementerianNationalDashboard() {
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-1.5 mt-2">
-                {[
-                  { label: 'Sangat Sehat', count: '450', color: 'bg-[var(--dashboard-secondary)]' },
-                  { label: 'Waspada / Audit', count: '620', color: 'bg-[var(--dashboard-tertiary)]' },
-                  { label: 'Intervensi Segera', count: '178', color: 'bg-[var(--dashboard-primary)]' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-lg border border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)]/55 p-2 shadow-[0_8px_18px_-18px_rgba(137,114,111,0.22)]">
+                {portfolioHealthData.map((item) => (
+                  <div key={item.label} className="flex items-center justify-between rounded-lg border border-[var(--dashboard-secondary-border)] bg-white p-2 shadow-[0_8px_18px_-18px_rgba(137,114,111,0.22)]">
                     <div className="flex items-center gap-2">
-                      <div className={`h-2 w-2 rounded-full ${item.color}`} />
+                      <div className="h-2.5 w-2.5 rounded-full border border-white/80 shadow-sm" style={{ backgroundColor: item.color }} />
                       <span className="text-sm font-medium text-slate-600">{item.label}</span>
                     </div>
                     <span className="text-sm font-semibold text-slate-900">{item.count}</span>
@@ -512,8 +555,11 @@ export function KementerianNationalDashboard() {
                 </p>
               </div>
               <div className="border-t border-rose-100 pt-2">
-                <Button className="h-9 w-full rounded-xl bg-[var(--dashboard-primary)] text-xs font-medium text-white shadow-[0_12px_22px_-18px_rgba(190,24,93,0.38)] hover:bg-[var(--dashboard-primary-hover)]">
-                  Konsultasi Strategi AI
+                <Button
+                  asChild
+                  className="h-9 w-full rounded-xl bg-[var(--dashboard-primary)] text-xs font-medium text-white shadow-[0_12px_22px_-18px_rgba(190,24,93,0.38)] hover:bg-[var(--dashboard-primary-hover)]"
+                >
+                  <Link href="/assistant">Konsultasi Strategi AI</Link>
                 </Button>
               </div>
             </CardContent>
