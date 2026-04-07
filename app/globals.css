@@ -5,9 +5,9 @@
 
 /* KOPERASI MERAH PUTIH Theme */
 :root {
-  --background: #fdf4f1;
+  --background: #f7ede8;
   --foreground: #3b2b29;
-  --dashboard-canvas: #f7ebe8;
+  --dashboard-canvas: #f1e3de;
   --dashboard-primary: #dc3935;
   --dashboard-primary-hover: #c4322f;
   --dashboard-primary-soft: #f7dedd;
@@ -83,9 +83,9 @@
 }
 
 .dark {
-  --background: #f8eeeb;
+  --background: #f3e7e2;
   --foreground: #3b2b29;
-  --dashboard-canvas: #f5e8e4;
+  --dashboard-canvas: #ecddd8;
   --dashboard-surface: #ffffff;
   --dashboard-surface-subtle: #fff9f7;
   --dashboard-surface-muted: #fff1ed;
@@ -190,9 +190,12 @@
     font-family: var(--font-manrope), system-ui, sans-serif;
     letter-spacing: normal;
     background-image:
-      radial-gradient(circle at top left, color-mix(in oklab, var(--dashboard-primary) 9%, transparent), transparent 22rem),
-      radial-gradient(circle at top right, color-mix(in oklab, var(--dashboard-tertiary) 7%, transparent), transparent 22rem),
-      linear-gradient(180deg, color-mix(in oklab, var(--background) 96%, white) 0%, var(--background) 100%);
+      linear-gradient(180deg, color-mix(in oklab, var(--background) 97%, white) 0%, var(--background) 100%),
+      radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--dashboard-secondary) 10%, transparent) 1px, transparent 0),
+      radial-gradient(circle at top left, color-mix(in oklab, var(--dashboard-primary) 8%, transparent), transparent 22rem),
+      radial-gradient(circle at top right, color-mix(in oklab, var(--dashboard-tertiary) 6%, transparent), transparent 22rem);
+    background-size: auto, 30px 30px, auto, auto;
+    background-position: 0 0, 0 0, 0 0, 100% 0;
   }
   
   /* Unified Typography System */
@@ -334,6 +337,11 @@
 
   .dashboard-canvas {
     background-color: var(--dashboard-canvas);
+    background-image:
+      linear-gradient(180deg, color-mix(in oklab, var(--dashboard-canvas) 96%, white) 0%, var(--dashboard-canvas) 100%),
+      radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--dashboard-secondary) 10%, transparent) 1px, transparent 0);
+    background-size: auto, 30px 30px;
+    background-position: 0 0, 0 0;
   }
 
   .dashboard-surface {
