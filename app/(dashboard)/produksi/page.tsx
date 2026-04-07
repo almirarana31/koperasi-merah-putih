@@ -61,6 +61,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { HarvestDetailDialog } from '@/components/dialogs/harvest-detail-dialog'
+import { useToast } from '@/components/ui/use-toast'
 import {
   KEMENTERIAN_DASHBOARD_DATA,
   type ScopeFilters,
@@ -133,6 +134,7 @@ const regionalSummaries = [
 
 export default function ProduksiPage() {
   const { user, canRoute } = useAuth()
+  const { toast } = useToast()
   const isKementerian = user?.role === 'kementerian'
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -365,58 +367,31 @@ export default function ProduksiPage() {
     return (
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-900">NATIONAL PRODUCTION HUB</h1>
-            <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT KOMANDO PRODUKSI NASIONAL</h1>
+            <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
               MONITORING AGREGAT OUTPUT KOMODITAS STRATEGIS NASIONAL
             </p>
           </div>
           <div className="flex gap-2">
-            <ExportButton
-              title="NATIONAL_PRODUCTION_REPORT"
-              filename="KOPDES_PRODUCTION_AUDIT"
-              data={filteredProductions.map(p => ({
-                'ID': p.id,
-                'Anggota': p.memberNama,
-                'Komoditas': p.komoditasNama,
-                'Jumlah': `${p.jumlah} ${p.satuan}`,
-                'Grade': p.grade,
-                'Tanggal': p.tanggalPanen,
-                'Status': p.status
-              }))}
-            />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none shadow-sm"
+              onClick={() => toast({ title: "Inisiasi Audit Produksi", description: "Mengagregasi data panen regional ke dalam sistem pemantauan nasional..." })}
+            >
+              <ClipboardList className="mr-2 h-3.5 w-3.5" />
+              AUDIT PRODUKSI
+            </Button>
             {canRoute('/produksi/agregasi') && (
-              <Button variant="outline" size="sm" className="h-8 text-[10px] font-black text-slate-600 border-slate-200" asChild>
+              <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" asChild>
                 <Link href="/produksi/agregasi">
                   <BarChart3 className="mr-2 h-3.5 w-3.5" />
-                  AGREGASI
+                  ANALITIK AGREGASI
                 </Link>
               </Button>
             )}
           </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {[
-            { label: 'WILAYAH DIPANTAU', value: Math.floor(regionalSummaries.length * scaleFactor).toLocaleString('id-ID'), icon: MapPin, tone: 'slate' },
-            { label: 'PRODUKSI TERCATAT', value: `${(totalHarvestVolume * scaleFactor).toLocaleString('id-ID')} TON`, icon: Package, tone: 'emerald' },
-            { label: 'KOMODITAS UTAMA', value: 'PADI PREMIUM', icon: Leaf, tone: 'emerald' },
-            { label: 'TREN PRODUKSI', value: 'STABIL POSITIF', icon: TrendingUp, tone: 'emerald' },
-          ].map((stat, i) => (
-            <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
-              <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
-              <CardHeader className="p-4 pb-2">
-                <div className="flex justify-between items-start">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
-                  <stat.icon className={`h-4 w-4 ${stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-900'}`} />
-                </div>
-                <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <p className="text-[10px] font-bold text-slate-500 mt-1">REAL-TIME TELEMETRY</p>
-              </CardContent>
-            </Card>
-          ))}
         </div>
 
         <KementerianFilterBar
@@ -426,28 +401,51 @@ export default function ProduksiPage() {
           setSearch={setSearch}
         />
 
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {[
+            { label: 'WILAYAH DIPANTAU', value: Math.floor(regionalSummaries.length * scaleFactor).toLocaleString('id-ID'), sub: 'ENTITAS TERVERIFIKASI', icon: MapPin, tone: 'slate' },
+            { label: 'PRODUKSI TERCATAT', value: `${(totalHarvestVolume * scaleFactor * 100).toLocaleString('id-ID')} TON`, sub: 'VOLUME KONSOLIDASI', icon: Package, tone: 'emerald' },
+            { label: 'KOMODITAS UTAMA', value: 'PADI PREMIUM', sub: 'OUTPUT DOMINAN', icon: Leaf, tone: 'emerald' },
+            { label: 'TREN PRODUKSI', value: 'STABIL POSITIF', sub: 'INDEKS PERFORMA', icon: TrendingUp, tone: 'emerald' },
+          ].map((stat, i) => (
+            <Card key={i} className="border-none bg-white shadow-sm overflow-hidden rounded-none">
+              <div className={`h-1 w-full border-t-4 ${stat.tone === 'emerald' ? 'border-emerald-500' : 'border-slate-900'}`} />
+              <CardHeader className="p-4 pb-2">
+                <div className="flex justify-between items-start">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                  <stat.icon className={`h-4 w-4 ${stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-900'}`} />
+                </div>
+                <CardTitle className="text-xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-tighter">{stat.sub}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
         <div className="grid gap-4 lg:grid-cols-3">
           {regionalSummaries.map((item) => (
-            <Card key={item.area} className="border-none bg-white shadow-sm overflow-hidden transition-all hover:shadow-md group">
-              <div className="h-1 w-full bg-slate-100 group-hover:bg-emerald-500 transition-colors" />
+            <Card key={item.area} className="border-none bg-white shadow-sm overflow-hidden transition-all hover:shadow-md group rounded-none">
+              <div className="h-1 w-full bg-slate-100 border-t-4 border-slate-900 group-hover:border-emerald-500 transition-colors" />
               <CardHeader className="p-4 pb-3 border-b border-slate-50">
-                <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.area}</CardTitle>
-                <CardDescription className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{item.commodity}</CardDescription>
+                <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.area.toUpperCase()}</CardTitle>
+                <CardDescription className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{item.commodity.toUpperCase()}</CardDescription>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-3">
+                  <div className="rounded-none bg-slate-50 border border-slate-100 p-3">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">VOLUME AGREGAT</p>
                     <p className="mt-1 text-lg font-black text-slate-900">{item.volume.toUpperCase()}</p>
                   </div>
-                  <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3">
-                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">GROWTH</p>
+                  <div className="rounded-none bg-emerald-50 border border-emerald-100 p-3">
+                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">PERTUMBUHAN</p>
                     <p className="mt-1 text-lg font-black text-emerald-700">{item.change}</p>
                   </div>
                 </div>
-                <div className="rounded-xl bg-slate-900 p-3 text-white">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">AI INSIGHT</p>
-                  <p className="text-[10px] font-bold text-slate-300 leading-relaxed uppercase">{item.insight}</p>
+                <div className="rounded-none bg-slate-900 p-3 text-white">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">WAWASAN AI</p>
+                  <p className="text-[10px] font-bold text-slate-300 leading-relaxed uppercase tracking-wider">{item.insight.toUpperCase()}</p>
                 </div>
               </CardContent>
             </Card>

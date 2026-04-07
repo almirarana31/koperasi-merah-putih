@@ -138,19 +138,19 @@ export default function ArmadaPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">FLEET COMMAND CENTER</h1>
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT KOMANDO ARMADA</h1>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            STRATEGIC ASSET MONITORING & MAINTENANCE AUDIT • {stats.total} TOTAL UNITS IN NATIONAL NETWORK
+            MONITORING ASET STRATEGIS & AUDIT PEMELIHARAAN • {stats.total} TOTAL UNIT DALAM JARINGAN NASIONAL
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Maintenance Sync", description: "Fetching real-time unit health data..." })}>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Sinkronisasi Pemeliharaan", description: "Mengambil data kesehatan unit real-time..." })}>
             <History className="h-3.5 w-3.5 mr-2 text-blue-600" />
-            HISTORY
+            RIWAYAT
           </Button>
-          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Unit Registration", description: "Opening secure asset onboarding portal..." })}>
+          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Registrasi Unit", description: "Membuka portal pendaftaran aset baru..." })}>
             <Plus className="h-4 w-4 mr-2" />
-            REGISTER UNIT
+            DAFTAR UNIT
           </Button>
         </div>
       </div>
@@ -159,12 +159,12 @@ export default function ArmadaPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'TOTAL ARMADA', value: stats.total, sub: 'UNITS ENROLLED', icon: Truck, tone: 'slate' },
-          { label: 'UNIT OPERASIONAL', value: stats.ops, sub: 'MISSION READY', icon: CheckCircle2, tone: 'emerald' },
-          { label: 'MAINTENANCE', value: stats.maint, sub: 'ACTIVE SERVICE', icon: Wrench, tone: 'blue' },
-          { label: 'CRITICAL ALERT', value: stats.alert, sub: 'IMMEDIATE AUDIT', icon: AlertTriangle, tone: 'rose' },
+          { label: 'TOTAL ARMADA', value: stats.total, sub: 'UNIT TERDAFTAR', icon: Truck, tone: 'slate' },
+          { label: 'UNIT OPERASIONAL', value: stats.ops, sub: 'SIAP MISI', icon: CheckCircle2, tone: 'emerald' },
+          { label: 'PEMELIHARAAN', value: stats.maint, sub: 'SERVIS AKTIF', icon: Wrench, tone: 'blue' },
+          { label: 'PERINGATAN KRITIS', value: stats.alert, sub: 'AUDIT SEGERA', icon: AlertTriangle, tone: 'rose' },
         ].map((s, i) => (
-          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
              <div className={`h-1 w-full ${
               s.tone === 'emerald' ? 'bg-emerald-500' : 
               s.tone === 'blue' ? 'bg-blue-500' : 
@@ -200,7 +200,7 @@ export default function ArmadaPage() {
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="SEARCH BY ASSET ID, PLATE NUMBER, OR OPERATOR NAME..."
+                  placeholder="CARI BERDASARKAN ID ASET, NOMOR PLAT, ATAU NAMA OPERATOR..."
                   className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
                 />
               </div>
@@ -209,7 +209,7 @@ export default function ArmadaPage() {
 
           <div className="grid gap-4 md:grid-cols-2">
             {filteredArmada.map((armada) => (
-              <Card key={armada.id} className="border-none bg-white shadow-sm overflow-hidden group hover:shadow-md transition-all">
+              <Card key={armada.id} className="border-none bg-white shadow-sm overflow-hidden group hover:shadow-md transition-all rounded-none">
                 <div className={`h-1 w-full ${armada.status === 'operasional' ? 'bg-emerald-500' : 'bg-blue-500'}`} />
                 <CardHeader className="p-4 pb-2">
                    <div className="flex items-start justify-between">
@@ -239,7 +239,7 @@ export default function ArmadaPage() {
                 <CardContent className="p-4 space-y-4">
                   <div className="grid grid-cols-2 gap-y-4 pt-2 border-t border-slate-50">
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">CAPACITY</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">KAPASITAS</p>
                       <p className="text-[10px] font-black text-slate-900 mt-1 uppercase">{armada.kapasitas}</p>
                     </div>
                     <div>
@@ -247,18 +247,18 @@ export default function ArmadaPage() {
                       <p className="text-[10px] font-black text-slate-900 mt-1 uppercase">{armada.driver}</p>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">USAGE</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">PENGGUNAAN</p>
                       <p className="text-[10px] font-black text-slate-900 mt-1 uppercase">{armada.km.toLocaleString()} KM</p>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">NEXT SVC</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">SERVIS BERIKUTNYA</p>
                       <p className="text-[10px] font-black text-blue-600 mt-1 uppercase">{armada.serviceBerikutnya}</p>
                     </div>
                   </div>
 
                   <div className="space-y-2 pt-2 border-t border-slate-50">
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">HEALTH INDEX</span>
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">INDEKS KESEHATAN</span>
                       <span className={`text-[10px] font-black ${
                         armada.kondisi >= 90 ? 'text-emerald-600' :
                         armada.kondisi >= 70 ? 'text-blue-600' : 'text-rose-600'
@@ -268,10 +268,10 @@ export default function ArmadaPage() {
                   </div>
 
                   <div className="flex gap-2 pt-2">
-                    <Button className="flex-1 h-9 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-800 transition-all" onClick={() => toast({ title: "Audit Hub", description: "Generating maintenance diagnostic report for " + armada.id })}>
+                    <Button className="flex-1 h-9 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-800 transition-all" onClick={() => toast({ title: "Pusat Audit", description: "Menghasilkan laporan diagnostik pemeliharaan untuk " + armada.id })}>
                       AUDIT UNIT
                     </Button>
-                    <Button variant="outline" className="h-9 w-9 p-0 border-slate-200 rounded-none hover:bg-slate-50" onClick={() => toast({ title: "Unit Config", description: "Accessing technical parameters for " + armada.id })}>
+                    <Button variant="outline" className="h-9 w-9 p-0 border-slate-200 rounded-none hover:bg-slate-50" onClick={() => toast({ title: "Konfigurasi Unit", description: "Mengakses parameter teknis untuk " + armada.id })}>
                       <Settings className="h-4 w-4 text-slate-600" />
                     </Button>
                   </div>
@@ -286,40 +286,40 @@ export default function ArmadaPage() {
             <CardHeader className="p-4 border-b border-white/5 bg-slate-900/50">
                <div className="flex items-center justify-between">
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                     <Activity className="h-4 w-4 text-blue-500" /> MAINTENANCE FEED
+                     <Activity className="h-4 w-4 text-blue-500" /> FEED PEMELIHARAAN
                   </CardTitle>
                   <div className="flex items-center gap-1.5">
                      <div className="h-1 w-1 bg-blue-500 rounded-full animate-ping" />
-                     <span className="text-[9px] font-black text-blue-500 tracking-widest">SYNCING</span>
+                     <span className="text-[9px] font-black text-blue-500 tracking-widest">SINKRONISASI</span>
                   </div>
                </div>
             </CardHeader>
             <CardContent className="p-0">
                <div className="divide-y divide-white/5">
                   {[
-                    { time: '14:20', action: 'Engine Diagnostic: TRK-012', status: 'HEALTHY', unit: 'PASSED' },
-                    { time: '13:15', action: 'Oil Pressure Alert: TRK-005', status: 'CRITICAL', unit: 'SERVICE' },
-                    { time: '12:58', action: 'Tire Replacement: TRK-022', status: 'SCHEDULED', unit: 'TOMORROW' },
-                    { time: '11:42', action: 'GPS Module Reset: TRK-008', status: 'RESOLVED', unit: 'STABLE' },
+                    { time: '14:20', action: 'Diagnostik Mesin: TRK-012', status: 'SEHAT', unit: 'LOLOS' },
+                    { time: '13:15', action: 'Peringatan Tekanan Oli: TRK-005', status: 'KRITIS', unit: 'SERVIS' },
+                    { time: '12:58', action: 'Penggantian Ban: TRK-022', status: 'TERJADWAL', unit: 'BESOK' },
+                    { time: '11:42', action: 'Reset Modul GPS: TRK-008', status: 'TERATASI', unit: 'STABIL' },
                   ].map((log, i) => (
                     <div key={i} className="p-4 hover:bg-white/5 transition-colors cursor-pointer group">
                        <div className="flex items-center justify-between mb-2">
                           <Badge className={`text-[9px] font-black px-1.5 h-4 border-none rounded-none tracking-widest ${
-                            log.status === 'CRITICAL' ? 'bg-rose-600 text-white' : 
-                            log.status === 'HEALTHY' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'
+                            log.status === 'KRITIS' ? 'bg-rose-600 text-white' : 
+                            log.status === 'SEHAT' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'
                           }`}>
                              {log.status}
                           </Badge>
                           <span className="text-[9px] font-mono text-slate-600 group-hover:text-slate-400">{log.time}</span>
                        </div>
                        <p className="text-xs font-black text-slate-200 uppercase tracking-tight leading-tight">{log.action}</p>
-                       <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">ASSET STATUS: {log.unit}</p>
+                       <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">STATUS ASET: {log.unit}</p>
                     </div>
                   ))}
                </div>
                <div className="p-4 bg-white/5 border-t border-white/5">
-                  <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-9 rounded-none" onClick={() => toast({ title: "Master Schedule", description: "Loading national maintenance calendar..." })}>
-                     FULL MAINTENANCE LOG →
+                  <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-9 rounded-none" onClick={() => toast({ title: "Jadwal Induk", description: "Memuat kalender pemeliharaan nasional..." })}>
+                     LOG PEMELIHARAAN LENGKAP →
                   </Button>
                </div>
             </CardContent>
@@ -327,13 +327,13 @@ export default function ArmadaPage() {
 
           <Card className="border-none shadow-sm bg-slate-50 rounded-none">
              <CardHeader className="p-4 border-b border-slate-200">
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">FLEET CAPABILITY</CardTitle>
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">KAPABILITAS ARMADA</CardTitle>
              </CardHeader>
              <CardContent className="p-4 space-y-4">
                 {[
-                  { label: 'TOTAL VOLUME', val: stats.cap + ' T', status: 'Available' },
-                  { label: 'FUEL EFFICIENCY', val: '8.4 km/L', status: 'Avg' },
-                  { label: 'UTILIZATION', val: '88.2%', status: 'Optimal' },
+                  { label: 'TOTAL VOLUME', val: stats.cap + ' T', status: 'Tersedia' },
+                  { label: 'EFISIENSI BBM', val: '8.4 km/L', status: 'Rata-rata' },
+                  { label: 'UTILISASI', val: '88.2%', status: 'Optimal' },
                 ].map((h, i) => (
                    <div key={i} className="flex items-center justify-between">
                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{h.label}</span>

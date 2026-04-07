@@ -28,76 +28,76 @@ import {
 import { useAuth } from '@/lib/auth/use-auth'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
+import { toast } from 'sonner'
 
-const rencanaTanam = [
+const baseRencanaTanam = [
   {
     id: 'RT001',
-    komoditas: 'Padi',
-    varietas: 'IR64',
-    luasHa: 15.5,
-    kelompok: 'Klp. Makmur Jaya',
+    komoditas: 'Padi IR64',
+    varietas: 'Unggul Nasional',
+    luasHa: 15500,
+    kelompok: 'Gabungan Kelompok Tani Makmur',
     desa: 'SUKAMAJU',
-    koperasi: 'KOP. MAJU JAYA',
-    musim: 'MT1 2024',
-    tanggalMulai: '2024-01-15',
-    tanggalPanen: '2024-04-15',
+    koperasi: 'KOP. MERAH PUTIH JAYA',
+    musim: 'MT1 2026',
+    tanggalMulai: '2026-05-15',
+    tanggalPanen: '2026-08-15',
     progress: 65,
     status: 'berjalan',
-    estimasiHasil: '85 ton',
+    estimasiHasil: 85000,
   },
   {
     id: 'RT002',
-    komoditas: 'Jagung',
-    varietas: 'Hibrida',
-    luasHa: 8.0,
-    kelompok: 'Klp. Makmur Jaya',
+    komoditas: 'Jagung Hibrida',
+    varietas: 'Pioneer P35',
+    luasHa: 8000,
+    kelompok: 'Klp. Tani Sejahtera',
     desa: 'SUKAMAJU',
-    koperasi: 'KOP. MAJU JAYA',
-    musim: 'MT1 2024',
-    tanggalMulai: '2024-02-01',
-    tanggalPanen: '2024-05-01',
+    koperasi: 'KOP. MERAH PUTIH JAYA',
+    musim: 'MT1 2026',
+    tanggalMulai: '2026-06-01',
+    tanggalPanen: '2026-09-01',
     progress: 40,
     status: 'berjalan',
-    estimasiHasil: '32 ton',
+    estimasiHasil: 32000,
   },
   {
     id: 'RT003',
-    komoditas: 'Kentang',
-    varietas: 'Granola',
-    luasHa: 5.0,
-    kelompok: 'Klp. Sumber Rezeki',
+    komoditas: 'Kentang Granola',
+    varietas: 'G2 Bersertifikat',
+    luasHa: 5000,
+    kelompok: 'Klp. Tani Mandiri',
     desa: 'CIBODAS',
-    koperasi: 'KOP. MANDIRI',
-    musim: 'MT1 2024',
-    tanggalMulai: '2024-01-20',
-    tanggalPanen: '2024-04-20',
+    koperasi: 'KOP. MANDIRI SEJAHTERA',
+    musim: 'MT1 2026',
+    tanggalMulai: '2026-05-20',
+    tanggalPanen: '2026-08-20',
     progress: 80,
     status: 'berjalan',
-    estimasiHasil: '75 ton',
+    estimasiHasil: 75000,
   },
   {
     id: 'RT004',
-    komoditas: 'Cabai Merah',
-    varietas: 'TM999',
-    luasHa: 3.2,
-    kelompok: 'Klp. Makmur Jaya',
+    komoditas: 'Cabai Merah Keriting',
+    varietas: 'TM999 Special',
+    luasHa: 3200,
+    kelompok: 'Klp. Tani Makmur',
     desa: 'SUKAMAJU',
-    koperasi: 'KOP. MAJU JAYA',
-    musim: 'MT2 2024',
-    tanggalMulai: '2024-03-01',
-    tanggalPanen: '2024-06-15',
+    koperasi: 'KOP. MERAH PUTIH JAYA',
+    musim: 'MT2 2026',
+    tanggalMulai: '2026-07-01',
+    tanggalPanen: '2026-10-15',
     progress: 0,
     status: 'dijadwalkan',
-    estimasiHasil: '28 ton',
+    estimasiHasil: 28000,
   },
 ]
 
-const musimOptions = ['MT1 2024', 'MT2 2024', 'MT1 2025']
+const musimOptions = ['MT1 2026', 'MT2 2026', 'MT1 2027']
 
 export default function RencanaTanamPage() {
   const { user } = useAuth()
   const isKementerian = user?.role === 'kementerian'
-  const isPetani = user?.role === 'petani'
 
   const [filters, setFilters] = useState<ScopeFilters>({
     provinceId: 'all',
@@ -110,61 +110,71 @@ export default function RencanaTanamPage() {
   const [filterMusim, setFilterMusim] = useState('semua')
   const [search, setSearch] = useState('')
 
-  const filteredRencana = useMemo(() => {
-    return rencanaTanam.filter(r => {
+  const scaleFactor = useMemo(() => {
+    if (filters.cooperativeId !== 'all') return 0.05
+    if (filters.villageId !== 'all') return 0.1
+    if (filters.regionId !== 'all') return 0.25
+    if (filters.provinceId !== 'all') return 0.5
+    return 1.0
+  }, [filters])
+
+  const rencanaTanam = useMemo(() => {
+    return baseRencanaTanam.map(item => ({
+      ...item,
+      luasHa: item.luasHa * scaleFactor,
+      estimasiHasil: item.estimasiHasil * scaleFactor,
+    })).filter(r => {
       const matchesSearch = r.komoditas.toLowerCase().includes(search.toLowerCase()) || r.kelompok.toLowerCase().includes(search.toLowerCase())
       const matchesMusim = filterMusim === 'semua' || r.musim === filterMusim
-      
-      if (!isKementerian) return matchesSearch && matchesMusim
-
-      const matchesVillage = filters.villageId === 'all' || r.desa.toUpperCase().includes(filters.villageId.split('-').pop() || '')
-      const matchesKop = filters.cooperativeId === 'all' || r.koperasi.toUpperCase().includes(filters.cooperativeId.split('-').pop() || '')
-      const matchesCommodity = filters.commodityId === 'all' || r.komoditas.toLowerCase().includes(filters.commodityId.toLowerCase())
-
-      return matchesSearch && matchesMusim && matchesVillage && matchesKop && matchesCommodity
+      return matchesSearch && matchesMusim
     })
-  }, [search, filterMusim, filters, isKementerian])
+  }, [search, filterMusim, scaleFactor])
 
   const totals = useMemo(() => {
     return {
-      count: filteredRencana.length,
-      luas: filteredRencana.reduce((acc, r) => acc + r.luasHa, 0),
-      berjalan: filteredRencana.filter(r => r.status === 'berjalan').length,
-      estHasil: filteredRencana.reduce((acc, r) => acc + parseInt(r.estimasiHasil), 0)
+      count: rencanaTanam.length,
+      luas: rencanaTanam.reduce((acc, r) => acc + r.luasHa, 0),
+      berjalan: rencanaTanam.filter(r => r.status === 'berjalan').length,
+      estHasil: rencanaTanam.reduce((acc, r) => acc + r.estimasiHasil, 0)
     }
-  }, [filteredRencana])
+  }, [rencanaTanam])
+
+  const handleAction = (action: string) => {
+    toast.success(`Aksi ${action} berhasil diverifikasi`)
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold  text-slate-900 ">Rencana Produksi Nasional</h1>
-          <p className="text-xs font-bold text-slate-500   mt-1">
-            Orkestrasi Musim Tanam dan Proyeksi Hasil Panen Lintas Wilayah
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Pusat Rencana Produksi Nasional</h1>
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
+            Orkestrasi Musim Tanam dan Proyeksi Hasil Panen Strategis Lintas Wilayah
           </p>
         </div>
-        {!isPetani && (
-          <Button size="sm" className="h-10 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold   px-6 shadow-lg shadow-slate-200">
-            <Plus className="mr-2 h-4 w-4" />
-            Buat Rencana Strategis
-          </Button>
-        )}
+        <Button 
+          size="sm" 
+          onClick={() => handleAction('Buat Rencana')}
+          className="h-10 rounded-none bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Buat Rencana Strategis
+        </Button>
       </div>
 
-      {/* Kementerian Filter Bar */}
-      {isKementerian && <KementerianFilterBar filters={filters} setFilters={setFilters} search={search} setSearch={setSearch} />}
+      <KementerianFilterBar filters={filters} setFilters={setFilters} search={search} setSearch={setSearch} />
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: 'RENCANA AKTIF', value: totals.count, sub: `${totals.berjalan} DALAM PROSES`, icon: Target, tone: 'slate' },
-          { label: 'AKUMULASI LAHAN', value: `${totals.luas.toFixed(1)} HA`, sub: 'AREA TERENCANA', icon: Leaf, tone: 'emerald' },
-          { label: 'PROYEKSI OUTPUT', value: `${totals.estHasil} TON`, sub: 'EST. PANEN GLOBAL', icon: BarChart3, tone: 'emerald' },
-          { label: 'RISK ALERT', value: '1', sub: 'TERLAMBAT JADWAL', icon: AlertTriangle, tone: 'rose' },
+          { label: 'RENCANA AKTIF', value: totals.count, sub: `${totals.berjalan} UNIT DALAM PROSES`, icon: Target, tone: 'slate' },
+          { label: 'AKUMULASI LAHAN', value: `${totals.luas.toLocaleString()} HA`, sub: 'TOTAL AREA TERENCANA', icon: Leaf, tone: 'emerald' },
+          { label: 'PROYEKSI OUTPUT', value: `${(totals.estHasil / 1000).toFixed(1)}K TON`, sub: 'ESTIMASI PANEN GLOBAL', icon: BarChart3, tone: 'emerald' },
+          { label: 'RISK ASSESSMENT', value: 'LOW', sub: 'TINGKAT KERAWANAN PANGAN', icon: AlertTriangle, tone: 'emerald' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
-            <div className={`h-1 w-full ${stat.tone === 'rose' ? 'bg-rose-500' : stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
+          <Card key={i} className="rounded-none border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1.5 w-full ${stat.tone === 'rose' ? 'bg-rose-500' : stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
@@ -173,23 +183,23 @@ export default function RencanaTanamPage() {
               <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className={`text-[10px] font-bold mt-1 uppercase ${stat.tone === 'rose' ? 'text-rose-600' : 'text-slate-500'}`}>{stat.sub}</p>
+              <p className={`text-[10px] font-black mt-1 uppercase tracking-tighter ${stat.tone === 'rose' ? 'text-rose-600' : 'text-slate-500'}`}>{stat.sub}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
       {/* Local Filter: Musim */}
-      <div className="flex bg-white p-2 rounded-xl border border-slate-100 shadow-sm w-fit gap-2">
-        <span className="flex items-center px-3 text-xs font-semibold text-slate-400   border-r border-slate-100">Filter Musim</span>
+      <div className="flex bg-white p-2 rounded-none border border-slate-100 shadow-sm w-fit gap-2">
+        <span className="flex items-center px-3 text-[10px] font-black text-slate-400 uppercase tracking-widest border-r border-slate-100">Filter Musim</span>
         <Select value={filterMusim} onValueChange={setFilterMusim}>
-          <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[160px] text-xs font-semibold  px-2 focus:ring-0">
+          <SelectTrigger className="h-8 border-none bg-transparent shadow-none w-[160px] text-[10px] font-black uppercase px-2 focus:ring-0">
             <SelectValue placeholder="Pilih Musim" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-900 border-slate-800 text-white">
-            <SelectItem value="semua" className="text-xs font-semibold ">SEMUA MUSIM</SelectItem>
+          <SelectContent className="rounded-none bg-slate-900 border-slate-800 text-white">
+            <SelectItem value="semua" className="text-[10px] font-black uppercase">SEMUA MUSIM</SelectItem>
             {musimOptions.map((musim) => (
-              <SelectItem key={musim} value={musim} className="text-xs font-semibold ">
+              <SelectItem key={musim} value={musim} className="text-[10px] font-black uppercase">
                 {musim}
               </SelectItem>
             ))}
@@ -199,65 +209,70 @@ export default function RencanaTanamPage() {
 
       {/* Rencana Grid */}
       <div className="grid gap-4 lg:grid-cols-2">
-        {filteredRencana.map((rencana) => (
-          <Card key={rencana.id} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden group hover:shadow-lg transition-all">
+        {rencanaTanam.map((rencana) => (
+          <Card key={rencana.id} className="rounded-none border-none shadow-sm overflow-hidden group hover:shadow-md transition-all border-t-4 border-t-emerald-500">
             <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
               <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded bg-white border border-slate-100 flex items-center justify-center shadow-sm">
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-none bg-white border border-slate-100 flex items-center justify-center shadow-sm">
                     <Leaf className="h-5 w-5 text-emerald-600" />
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-slate-900   group-hover:text-emerald-600 transition-colors">
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight group-hover:text-emerald-600 transition-colors">
                         {rencana.komoditas}
                       </h3>
-                      <Badge variant="outline" className="text-xs font-semibold  border-slate-200 text-slate-500 h-4">{rencana.varietas}</Badge>
+                      <Badge variant="outline" className="rounded-none text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-500 h-4">{rencana.varietas}</Badge>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="text-xs font-bold text-slate-400  ">PELAKSANA:</p>
-                      <p className="text-xs font-semibold text-slate-900  ">{rencana.kelompok}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">PELAKSANA:</p>
+                      <p className="text-[10px] font-black text-slate-900 uppercase tracking-tighter">{rencana.kelompok}</p>
                     </div>
                   </div>
                 </div>
-                <Badge className={`text-xs font-semibold  border-none px-2 h-5 ${rencana.status === 'berjalan' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                <Badge className={`rounded-none text-[10px] font-black uppercase tracking-widest border-none px-2 h-5 ${rencana.status === 'berjalan' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
                   {rencana.status === 'berjalan' ? 'ON-GOING' : 'SCHEDULED'}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="p-4">
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                  <p className="text-xs font-semibold text-slate-400  ">AREA</p>
-                  <p className="text-xs font-semibold text-slate-900 mt-1">{rencana.luasHa} HA</p>
+              <div className="grid grid-cols-3 gap-2 mb-6">
+                <div className="p-3 rounded-none bg-slate-50 border border-slate-100">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">LUAS AREA</p>
+                  <p className="text-xs font-black text-slate-900 mt-1 uppercase">{rencana.luasHa.toLocaleString()} HA</p>
                 </div>
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
-                  <p className="text-xs font-semibold text-slate-400  ">MUSIM</p>
-                  <p className="text-xs font-semibold text-slate-900 mt-1">{rencana.musim}</p>
+                <div className="p-3 rounded-none bg-slate-50 border border-slate-100">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">MUSIM</p>
+                  <p className="text-xs font-black text-slate-900 mt-1 uppercase">{rencana.musim}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
-                  <p className="text-xs font-semibold text-emerald-600  ">EST. HASIL</p>
-                  <p className="text-xs font-semibold text-emerald-700 mt-1">{rencana.estimasiHasil}</p>
+                <div className="p-3 rounded-none bg-emerald-50 border border-emerald-100">
+                  <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">EST. PANEN</p>
+                  <p className="text-xs font-black text-emerald-700 mt-1 uppercase">{(rencana.estimasiHasil / 1000).toFixed(1)}K TON</p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold  ">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 text-slate-400">
                     <Calendar className="h-3 w-3" />
-                    <span>{rencana.tanggalMulai} — {rencana.tanggalPanen}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">{rencana.tanggalMulai} — {rencana.tanggalPanen}</span>
                   </div>
-                  <span className="text-slate-900">{rencana.progress}% PROGRESS</span>
+                  <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest">{rencana.progress}% PROGRESS</span>
                 </div>
-                <Progress value={rencana.progress} className="h-1.5 bg-slate-100" />
+                <Progress value={rencana.progress} className="h-1.5 bg-slate-100 rounded-none" />
               </div>
 
               <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-50">
                 <div className="flex items-center gap-2">
                   <MapPin className="h-3 w-3 text-slate-400" />
-                  <span className="text-xs font-semibold text-slate-500  ">{rencana.desa} • {rencana.koperasi}</span>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{rencana.desa} • {rencana.koperasi}</span>
                 </div>
-                <Button variant="ghost" size="sm" className="h-8 text-xs font-semibold   text-slate-600 hover:bg-slate-100">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handleAction(`Detail ${rencana.id}`)}
+                  className="h-8 rounded-none text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-100"
+                >
                   Detail Rencana
                   <ChevronRight className="ml-1.5 h-3.5 w-3.5" />
                 </Button>
@@ -269,3 +284,4 @@ export default function RencanaTanamPage() {
     </div>
   )
 }
+

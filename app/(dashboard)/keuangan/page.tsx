@@ -59,31 +59,31 @@ export default function KeuanganPage() {
   }, [scaleFactor])
 
   const modules = [
-    { title: 'SETTLEMENT HUB', desc: 'Real-time ledger and cross-entity payment clearing.', href: '/keuangan/pembayaran', icon: CreditCard, color: 'emerald' },
-    { title: 'FINANCIAL ANALYTICS', desc: 'National cashflow projections and audit archives.', href: '/keuangan/laporan', icon: BarChart3, color: 'blue' },
-    { title: 'SAVING & LOAN HUB', desc: 'Cooperative savings and loan portfolio analysis.', href: '/keuangan/simpan-pinjam', icon: Wallet, color: 'blue' },
-    { title: 'CREDIT RATING HUB', desc: 'AI-driven credit scoring and member audit logs.', href: '/keuangan/credit-scoring', icon: TrendingUp, color: 'emerald' },
-    { title: 'NATIONAL CREDIT HUB', desc: 'Loan application queue and risk assessment matrix.', href: '/keuangan/pinjaman', icon: ShieldCheck, color: 'emerald' },
-    { title: 'NATIONAL SHU AUDIT', desc: 'Surplus distribution and allocation compliance.', href: '/keuangan/shu', icon: PieChartIcon, color: 'blue' },
+    { title: 'HUB PENYELESAIAN', desc: 'Buku besar waktu nyata dan kliring pembayaran lintas entitas.', href: '/keuangan/pembayaran', icon: CreditCard, color: 'emerald' },
+    { title: 'ANALITIK KEUANGAN', desc: 'Proyeksi arus kas nasional dan arsip audit.', href: '/keuangan/laporan', icon: BarChart3, color: 'blue' },
+    { title: 'HUB SIMPAN PINJAM', desc: 'Analisis portofolio simpanan dan pinjaman koperasi.', href: '/keuangan/simpan-pinjam', icon: Wallet, color: 'blue' },
+    { title: 'HUB RATING KREDIT', desc: 'Skoring kredit berbasis AI dan log audit anggota.', href: '/keuangan/credit-scoring', icon: TrendingUp, color: 'emerald' },
+    { title: 'HUB KREDIT NASIONAL', desc: 'Antrean aplikasi pinjaman dan matriks penilaian risiko.', href: '/keuangan/pinjaman', icon: ShieldCheck, color: 'emerald' },
+    { title: 'AUDIT SHU NASIONAL', desc: 'Distribusi surplus dan kepatuhan alokasi.', href: '/keuangan/shu', icon: PieChartIcon, color: 'blue' },
   ]
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">FINANCIAL COMMAND CENTER</h1>
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT KOMANDO KEUANGAN</h1>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            NATIONAL FISCAL MONITORING • PORTFOLIO RISK AUDIT • {formatCurrency(stats.totalAssets)} TOTAL MANAGED ASSETS
+            PEMANTAUAN FISKAL NASIONAL • AUDIT RISIKO PORTOFOLIO • TOTAL ASET DIKELOLA {formatCurrency(stats.totalAssets)}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Fiscal Sync", description: "Aggregating regional financial data into national ledger..." })}>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Sinkronisasi Fiskal", description: "Mengagregasi data keuangan regional ke dalam buku besar nasional..." })}>
             <History className="h-3.5 w-3.5 mr-2 text-blue-600" />
-            HISTORY
+            RIWAYAT
           </Button>
-          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Audit Initiation", description: "Generating cross-entity financial integrity report..." })}>
+          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Inisiasi Audit", description: "Menghasilkan laporan integritas keuangan lintas entitas..." })}>
             <Download className="h-4 w-4 mr-2" />
-            AUDIT HUB
+            PUSAT AUDIT
           </Button>
         </div>
       </div>
@@ -92,12 +92,12 @@ export default function KeuanganPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'MANAGED ASSETS', value: formatCurrency(stats.totalAssets), sub: 'NATIONAL POOL', icon: Wallet, tone: 'emerald' },
-          { label: 'LOAN PORTFOLIO', value: formatCurrency(stats.totalLoans), sub: 'ACTIVE CREDIT', icon: CreditCard, tone: 'blue' },
-          { label: 'MONTHLY INFLOW', value: formatCurrency(stats.monthlyInflow), sub: 'NETWORK REVENUE', icon: ArrowDownRight, tone: 'emerald' },
-          { label: 'NPL RATIO', value: stats.nplRate + '%', sub: 'RISK INDEX', icon: Activity, tone: 'rose' },
+          { label: 'ASET DIKELOLA', value: formatCurrency(stats.totalAssets), sub: 'POOL NASIONAL', icon: Wallet, tone: 'emerald' },
+          { label: 'PORTOFOLIO PINJAMAN', value: formatCurrency(stats.totalLoans), sub: 'KREDIT AKTIF', icon: CreditCard, tone: 'blue' },
+          { label: 'INFLOW BULANAN', value: formatCurrency(stats.monthlyInflow), sub: 'PENDAPATAN JARINGAN', icon: ArrowDownRight, tone: 'emerald' },
+          { label: 'RASIO NPL', value: stats.nplRate + '%', sub: 'INDEKS RISIKO', icon: Activity, tone: 'rose' },
         ].map((s, i) => (
-          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
              <div className={`h-1 w-full ${
               s.tone === 'emerald' ? 'bg-emerald-500' : 
               s.tone === 'blue' ? 'bg-blue-500' : 
@@ -170,10 +170,10 @@ export default function KeuanganPage() {
             <CardContent className="p-6 space-y-6">
                <div className="grid grid-cols-2 gap-8">
                   {[
-                    { label: 'COMPLIANCE SCORE', val: '98.2%', tone: 'emerald' },
-                    { label: 'FRAUD ALERT NODES', val: '0', tone: 'emerald' },
-                    { label: 'PENDING SETTLEMENTS', val: '124', tone: 'blue' },
-                    { label: 'NETWORK LATENCY', val: '142ms', tone: 'blue' },
+                    { label: 'SKOR KEPATUHAN', val: '98.2%', tone: 'emerald' },
+                    { label: 'NODE WASPADA FRAUD', val: '0', tone: 'emerald' },
+                    { label: 'PENYELESAIAN TERTUNDA', val: '124', tone: 'blue' },
+                    { label: 'LATENSI JARINGAN', val: '142ms', tone: 'blue' },
                   ].map((a, i) => (
                     <div key={i}>
                        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{a.label}</p>
@@ -184,8 +184,8 @@ export default function KeuanganPage() {
                   ))}
                </div>
                <div className="pt-6 border-t border-white/5">
-                  <Button variant="outline" className="w-full h-10 bg-transparent text-white border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest rounded-none" onClick={() => toast({ title: "Compliance Suite", description: "Opening national fiscal compliance dashboard..." })}>
-                     ACCESS FULL COMPLIANCE SUITE →
+                  <Button variant="outline" className="w-full h-10 bg-transparent text-white border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest rounded-none" onClick={() => toast({ title: "Suite Kepatuhan", description: "Membuka dashboard kepatuhan fiskal nasional..." })}>
+                     AKSES SUITE KEPATUHAN LENGKAP →
                   </Button>
                </div>
             </CardContent>
@@ -193,13 +193,13 @@ export default function KeuanganPage() {
 
          <Card className="border-none shadow-sm bg-slate-50 rounded-none">
             <CardHeader className="p-4 border-b border-slate-200">
-               <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">STRATEGIC PROJECTIONS</CardTitle>
+               <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">PROYEKSI STRATEGIS</CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
                <div className="space-y-4">
                   {[
-                    { label: 'Q3 REVENUE PROJECTION', val: '+12.4%', sub: 'vs Previous Quarter' },
-                    { label: 'NETWORK EXPANSION RATE', val: '4.2%', sub: 'New Nodes/Month' },
+                    { label: 'PROYEKSI PENDAPATAN Q3', val: '+12.4%', sub: 'vs Kuartal Sebelumnya' },
+                    { label: 'TINGKAT EKSPANSI JARINGAN', val: '4.2%', sub: 'Node Baru/Bulan' },
                   ].map((p, i) => (
                     <div key={i}>
                        <div className="flex items-center justify-between">
@@ -211,7 +211,7 @@ export default function KeuanganPage() {
                   ))}
                </div>
                <div className="pt-6 border-t border-slate-200">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4">DATA INTEGRITY NODES</p>
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4">NODE INTEGRITAS DATA</p>
                   <div className="flex flex-wrap gap-2">
                      {['FIN-HUB-01', 'FIN-HUB-02', 'RISK-SEC-A', 'RISK-SEC-B'].map(n => (
                         <Badge key={n} className="bg-white text-slate-900 text-[9px] font-black border border-slate-200 rounded-none h-5 tracking-tighter">

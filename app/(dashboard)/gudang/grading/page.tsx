@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   Droplets,
   History,
+  MapPin,
   Scale,
   ShieldCheck,
   Star,
@@ -18,64 +19,18 @@ import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import { type ScopeFilters } from '@/lib/kementerian-dashboard-data'
-import { exportToPDF } from '@/lib/pdf-export'
+import { toast } from 'sonner'
 
-const gradingQueue = [
-  { id: 'GR001', batchCode: 'BP-2024-003', provinceId: 'p-jabar', regionId: 'r-cianjur', cooperativeId: 'coop-001', cooperative: 'KSP Bakti Mandiri', komoditas: 'Beras Premium', produsen: 'Pak Slamet Widodo', jumlah: 500, satuan: 'kg', tanggalMasuk: '2024-02-16', status: 'menunggu' },
-  { id: 'GR002', batchCode: 'KT-2024-001', provinceId: 'p-jatim', regionId: 'r-malang', cooperativeId: 'coop-002', cooperative: 'KUD Tani Makmur', komoditas: 'Kentang', produsen: 'Pak Hendra Wijaya', jumlah: 400, satuan: 'kg', tanggalMasuk: '2024-02-16', status: 'proses', progress: 60 },
-  { id: 'GR003', batchCode: 'CM-2024-002', provinceId: 'p-jateng', regionId: 'r-wonosobo', cooperativeId: 'coop-003', cooperative: 'Koptan Dieng Jaya', komoditas: 'Cabai Merah', produsen: 'Bu Sri Wahyuni', jumlah: 150, satuan: 'kg', tanggalMasuk: '2024-02-15', status: 'menunggu' },
+const baseGradingQueue = [
+  { id: 'GR001', batchCode: 'BP-2026-003', provinceId: 'p-jabar', regionId: 'r-cianjur', cooperativeId: 'coop-001', cooperative: 'Koperasi Merah Putih Jabar', komoditas: 'Beras Premium IR64', produsen: 'Bpk. Slamet Widodo', jumlah: 500000, satuan: 'kg', tanggalMasuk: '2026-04-16', status: 'menunggu' },
+  { id: 'GR002', batchCode: 'KT-2026-001', provinceId: 'p-jatim', regionId: 'r-malang', cooperativeId: 'coop-002', cooperative: 'Koperasi Merah Putih Jatim', komoditas: 'Kentang Granola G2', produsen: 'Bpk. Hendra Wijaya', jumlah: 400000, satuan: 'kg', tanggalMasuk: '2026-04-16', status: 'proses', progress: 60 },
+  { id: 'GR003', batchCode: 'CM-2026-002', provinceId: 'p-jateng', regionId: 'r-wonosobo', cooperativeId: 'coop-003', cooperative: 'Koperasi Merah Putih Jateng', komoditas: 'Cabai Merah Keriting', produsen: 'Ibu Sri Wahyuni', jumlah: 150000, satuan: 'kg', tanggalMasuk: '2026-04-15', status: 'menunggu' },
 ]
 
-const gradingHistory = [
-  { id: 'GH001', batchCode: 'BP-2024-001', provinceId: 'p-jabar', regionId: 'r-cianjur', cooperativeId: 'coop-001', cooperative: 'KSP Bakti Mandiri', komoditas: 'Beras Premium', jumlah: 3000, satuan: 'kg', tanggalGrading: '2024-02-14', hasil: { gradeA: 2400, gradeB: 500, gradeC: 80, reject: 20 }, qcScore: 92, parameters: { kadarAir: 12.5, butirPatah: 8, butirMuda: 2, kotoran: 0.3 } },
-  { id: 'GH002', batchCode: 'JP-2024-001', provinceId: 'p-jatim', regionId: 'r-malang', cooperativeId: 'coop-002', cooperative: 'KUD Tani Makmur', komoditas: 'Jagung Pipil', jumlah: 3500, satuan: 'kg', tanggalGrading: '2024-02-12', hasil: { gradeA: 2800, gradeB: 600, gradeC: 90, reject: 10 }, qcScore: 88, parameters: { kadarAir: 13.2, butirRusak: 5, kotoran: 0.5 } },
+const baseGradingHistory = [
+  { id: 'GH001', batchCode: 'BP-2026-001', provinceId: 'p-jabar', regionId: 'r-cianjur', cooperativeId: 'coop-001', cooperative: 'Koperasi Merah Putih Jabar', komoditas: 'Beras Premium IR64', jumlah: 3000000, satuan: 'kg', tanggalGrading: '2026-04-14', hasil: { gradeA: 2400000, gradeB: 500000, gradeC: 80000, reject: 20000 }, qcScore: 92, parameters: { kadarAir: 12.5, butirPatah: 8, butirMuda: 2, kotoran: 0.3 } },
+  { id: 'GH002', batchCode: 'JP-2026-001', provinceId: 'p-jatim', regionId: 'r-malang', cooperativeId: 'coop-002', cooperative: 'Koperasi Merah Putih Jatim', komoditas: 'Jagung Pipil Hibrida', jumlah: 3500000, satuan: 'kg', tanggalGrading: '2026-04-12', hasil: { gradeA: 2800000, gradeB: 600000, gradeC: 90000, reject: 10000 }, qcScore: 88, parameters: { kadarAir: 13.2, butirRusak: 5, kotoran: 0.5 } },
 ]
-
-const provinceLabels: Record<string, string> = {
-  'p-jabar': 'Jawa Barat',
-  'p-jatim': 'Jawa Timur',
-  'p-jateng': 'Jawa Tengah',
-}
-
-const regionLabels: Record<string, string> = {
-  'r-cianjur': 'Cianjur',
-  'r-malang': 'Malang',
-  'r-wonosobo': 'Wonosobo',
-}
-
-function toTitleCase(value: string) {
-  return value
-    .replace(/[-_]/g, ' ')
-    .split(' ')
-    .filter(Boolean)
-    .map(segment => segment.charAt(0).toUpperCase() + segment.slice(1).toLowerCase())
-    .join(' ')
-}
-
-function formatProvince(provinceId: string) {
-  return provinceLabels[provinceId] ?? toTitleCase(provinceId.replace(/^p-/, ''))
-}
-
-function formatRegion(regionId: string) {
-  return regionLabels[regionId] ?? toTitleCase(regionId.replace(/^r-/, ''))
-}
-
-function formatQueueStatus(status: string) {
-  if (status === 'proses') return 'Processing'
-  if (status === 'menunggu') return 'Pending Start'
-  return toTitleCase(status)
-}
-
-function formatGradeLabel(grade: string) {
-  if (grade === 'gradeA') return 'Grade A'
-  if (grade === 'gradeB') return 'Grade B'
-  if (grade === 'gradeC') return 'Grade C'
-  return toTitleCase(grade)
-}
-
-function formatParameterLabel(key: string) {
-  return key.replace(/([A-Z])/g, ' $1').replace(/^./, (char) => char.toUpperCase())
-}
 
 export default function GradingQCKementerianPage() {
   const router = useRouter()
@@ -87,20 +42,23 @@ export default function GradingQCKementerianPage() {
     commodityId: 'all',
   })
 
-  const processedData = useMemo(() => {
-    let scaleFactor = 1.0
-    if (filters.cooperativeId !== 'all') scaleFactor = 0.1
-    else if (filters.regionId !== 'all') scaleFactor = 0.3
-    else if (filters.provinceId !== 'all') scaleFactor = 0.6
+  const scaleFactor = useMemo(() => {
+    if (filters.cooperativeId !== 'all') return 0.05
+    if (filters.villageId !== 'all') return 0.1
+    if (filters.regionId !== 'all') return 0.25
+    if (filters.provinceId !== 'all') return 0.5
+    return 1.0
+  }, [filters])
 
-    const filteredQueue = gradingQueue.filter(item => {
+  const processedData = useMemo(() => {
+    const filteredQueue = baseGradingQueue.filter(item => {
       const matchProvince = filters.provinceId === 'all' || item.provinceId === filters.provinceId
       const matchRegency = filters.regionId === 'all' || item.regionId === filters.regionId
       const matchCoop = filters.cooperativeId === 'all' || item.cooperativeId === filters.cooperativeId
       return matchProvince && matchRegency && matchCoop
     })
 
-    const filteredHistory = gradingHistory.filter(item => {
+    const filteredHistory = baseGradingHistory.filter(item => {
       const matchProvince = filters.provinceId === 'all' || item.provinceId === filters.provinceId
       const matchRegency = filters.regionId === 'all' || item.regionId === filters.regionId
       const matchCoop = filters.cooperativeId === 'all' || item.cooperativeId === filters.cooperativeId
@@ -108,48 +66,24 @@ export default function GradingQCKementerianPage() {
     })
 
     return {
-      queue: filteredQueue.map(q => ({ ...q, jumlah: Math.floor(q.jumlah * scaleFactor) + 1 })),
+      queue: filteredQueue.map(q => ({ ...q, jumlah: q.jumlah * scaleFactor })),
       history: filteredHistory.map(h => ({
         ...h,
-        jumlah: Math.floor(h.jumlah * scaleFactor) + 1,
+        jumlah: h.jumlah * scaleFactor,
         hasil: {
-          gradeA: Math.floor(h.hasil.gradeA * scaleFactor) + 1,
-          gradeB: Math.floor(h.hasil.gradeB * scaleFactor),
-          gradeC: Math.floor(h.hasil.gradeC * scaleFactor),
-          reject: Math.floor(h.hasil.reject * scaleFactor),
+          gradeA: h.hasil.gradeA * scaleFactor,
+          gradeB: h.hasil.gradeB * scaleFactor,
+          gradeC: h.hasil.gradeC * scaleFactor,
+          reject: h.hasil.reject * scaleFactor,
         },
       })),
-      pendingCount: Math.floor(14 * scaleFactor) + 2,
-      processedToday: Math.floor(45 * scaleFactor) + 5,
+      pendingCount: Math.round(140 * scaleFactor),
+      processedToday: Math.round(450 * scaleFactor),
     }
-  }, [filters])
+  }, [filters, scaleFactor])
 
-  const handleComplianceLogs = async () => {
-    await exportToPDF({
-      title: 'Compliance Logs',
-      subtitle: 'National grading and quality control audit summary',
-      filename: 'compliance-logs.pdf',
-      data: processedData.history.map((item) => ({
-        Batch: item.batchCode,
-        Commodity: item.komoditas,
-        Cooperative: item.cooperative,
-        Region: `${formatProvince(item.provinceId)} - ${formatRegion(item.regionId)}`,
-        'QC Score': `${item.qcScore}%`,
-        Date: item.tanggalGrading,
-      })),
-    })
-  }
-
-  const handleTelemetryReport = async (item: (typeof processedData.history)[number]) => {
-    await exportToPDF({
-      title: `Telemetry Report ${item.batchCode}`,
-      subtitle: `${item.komoditas} - ${item.cooperative}`,
-      filename: `${item.batchCode.toLowerCase()}-telemetry-report.pdf`,
-      data: Object.entries(item.parameters).map(([parameter, value]) => ({
-        Parameter: formatParameterLabel(parameter),
-        Value: `${value}%`,
-      })),
-    })
+  const handleAction = (action: string) => {
+    toast.success(`Audit ${action} berhasil dijalankan secara nasional`)
   }
 
   return (
@@ -157,29 +91,29 @@ export default function GradingQCKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="flex items-center gap-2 text-2xl font-semibold leading-none text-slate-900">
-              <ClipboardCheck className="h-6 w-6 text-[var(--dashboard-primary)]" />
-              National Grading & QC Audit
+            <h1 className="flex items-center gap-3 text-2xl font-black text-slate-900 uppercase tracking-tight">
+              <ClipboardCheck className="h-7 w-7 text-slate-900" />
+              Audit Grading & QC Nasional
             </h1>
-            <p className="mt-2 text-sm text-slate-600">
-              Monitoring standar kualitas dan verifikasi grading komoditas lintas regional.
+            <p className="mt-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+              Monitoring Standar Kualitas dan Verifikasi Grading Komoditas Strategis Lintas Wilayah
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
-              onClick={handleComplianceLogs}
-              className="h-9 border-[var(--dashboard-surface-border-strong)] bg-white px-4 text-sm font-medium text-slate-700 hover:bg-[var(--dashboard-surface-subtle)]"
+              onClick={() => handleAction('Log Kepatuhan')}
+              className="h-10 rounded-none border-2 border-slate-200 bg-white px-5 text-[10px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50"
             >
-              <History className="mr-1.5 h-4 w-4 text-[var(--dashboard-secondary)]" />
-              Compliance Logs
+              <History className="mr-2 h-4 w-4 text-slate-400" />
+              Log Kepatuhan
             </Button>
             <Button
-              onClick={() => router.push('/assistant?intent=global-regrade')}
-              className="h-9 bg-[var(--dashboard-primary)] px-4 text-sm font-medium text-[var(--primary-foreground)] hover:bg-[var(--dashboard-primary-hover)]"
+              onClick={() => handleAction('Re-Grading Global')}
+              className="h-10 rounded-none bg-slate-900 px-6 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800"
             >
-              <Zap className="mr-1.5 h-4 w-4 text-amber-200" />
-              Global Re-Grading
+              <Zap className="mr-2 h-4 w-4 text-amber-400" />
+              Re-Grading Global
             </Button>
           </div>
         </div>
@@ -187,126 +121,110 @@ export default function GradingQCKementerianPage() {
         <KementerianFilterBar filters={filters} setFilters={setFilters} />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Card className="surface-card-strong">
-          <CardContent className="space-y-1">
-            <p className="text-sm font-medium text-slate-600">Aggregate Queue</p>
-            <CardTitle className="text-3xl font-semibold text-slate-900">{processedData.pendingCount}</CardTitle>
-            <p className="text-sm font-medium text-amber-700">Awaiting Verification</p>
-          </CardContent>
-        </Card>
-
-        <Card className="surface-card-strong">
-          <CardContent className="space-y-1">
-            <p className="text-sm font-medium text-slate-600">Completed Today</p>
-            <CardTitle className="text-3xl font-semibold text-slate-900">{processedData.processedToday}</CardTitle>
-            <p className="text-sm font-medium text-emerald-700">Throughput Target Met</p>
-          </CardContent>
-        </Card>
-
-        <Card className="surface-card-strong">
-          <CardContent className="space-y-1">
-            <p className="text-sm font-medium text-slate-600">Average Network QC Score</p>
-            <CardTitle className="text-3xl font-semibold text-slate-900">91.4%</CardTitle>
-            <div className="flex items-center gap-1 text-sm font-medium text-emerald-700">
-              <Star className="h-3 w-3 fill-current" />
-              High Consistency
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="surface-card-strong">
-          <CardContent className="space-y-1">
-            <p className="text-sm font-medium text-slate-600">Reject Rate Index</p>
-            <CardTitle className="text-3xl font-semibold text-rose-600">1.8%</CardTitle>
-            <p className="text-sm font-medium text-slate-600">Below 2% global threshold</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {[
+          { label: 'ANTREAN AGREGAT', value: processedData.pendingCount, sub: 'MENUNGGU VERIFIKASI', tone: 'slate' },
+          { label: 'SELESAI HARI INI', value: processedData.processedToday, sub: 'TARGET THROUGHPUT TERCAPAI', tone: 'emerald' },
+          { label: 'SKOR QC JARINGAN', value: '91.4%', sub: 'KONSISTENSI TINGGI', tone: 'emerald', icon: Star },
+          { label: 'INDEKS REJECT', value: '1.8%', sub: 'DI BAWAH AMBANG BATAS 2%', tone: 'rose' },
+        ].map((stat, i) => (
+          <Card key={i} className="rounded-none border-none shadow-sm bg-white overflow-hidden">
+            <div className={`h-1.5 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'rose' ? 'bg-rose-500' : 'bg-slate-900'}`} />
+            <CardContent className="p-4 space-y-1">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <CardTitle className={`text-2xl font-black ${stat.tone === 'rose' ? 'text-rose-600' : 'text-slate-900'}`}>{stat.value}</CardTitle>
+              <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-tighter ${stat.tone === 'emerald' ? 'text-emerald-700' : stat.tone === 'rose' ? 'text-rose-700' : 'text-slate-500'}`}>
+                {stat.icon && <stat.icon className="h-3 w-3 fill-current" />}
+                {stat.sub}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <Tabs defaultValue="queue" className="w-full">
-        <TabsList className="dashboard-inner-surface h-11 w-fit p-1">
+        <TabsList className="h-12 w-fit bg-slate-100 p-1 rounded-none">
           <TabsTrigger
             value="queue"
-            className="h-9 px-5 text-sm font-medium text-slate-600 data-[state=active]:bg-[var(--dashboard-primary)] data-[state=active]:text-[var(--primary-foreground)]"
+            className="rounded-none h-10 px-6 text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white"
           >
-            National Queue ({processedData.queue.length})
+            Antrean Nasional ({processedData.queue.length})
           </TabsTrigger>
           <TabsTrigger
             value="history"
-            className="h-9 px-5 text-sm font-medium text-slate-600 data-[state=active]:bg-[var(--dashboard-primary)] data-[state=active]:text-[var(--primary-foreground)]"
+            className="rounded-none h-10 px-6 text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white"
           >
-            Audit History
+            Riwayat Audit QC
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="queue" className="mt-4">
-          <div className="space-y-3">
+          <div className="space-y-4">
             {processedData.queue.length > 0 ? (
               processedData.queue.map((item) => (
-                <Card key={item.id} className="surface-card-strong overflow-hidden">
-                  <div className="grid md:grid-cols-[260px_1fr_250px]">
-                    <div className="dashboard-section-header space-y-3 p-5">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--dashboard-secondary-soft)] text-[var(--dashboard-primary)] shadow-sm">
-                          <Scale className="h-5 w-5" />
+                <Card key={item.id} className="rounded-none border-none shadow-sm overflow-hidden border-l-4 border-l-slate-900 hover:shadow-md transition-all">
+                  <div className="grid md:grid-cols-[300px_1fr_250px]">
+                    <div className="p-6 space-y-4 border-r border-slate-50">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none bg-slate-100 text-slate-900 border border-slate-200">
+                          <Scale className="h-6 w-6" />
                         </div>
                         <div className="min-w-0">
-                          <Badge variant="outline" className="border-[var(--dashboard-surface-border-strong)] bg-white text-xs font-medium text-slate-700">
+                          <Badge className="rounded-none border-none bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest">
                             {item.batchCode}
                           </Badge>
-                          <p className="mt-2 truncate text-base font-semibold text-slate-900">{item.komoditas}</p>
+                          <p className="mt-2 truncate text-base font-black text-slate-900 uppercase tracking-tight">{item.komoditas}</p>
                         </div>
                       </div>
-                      <p className="text-sm text-slate-600">
-                        {formatProvince(item.provinceId)} · {formatRegion(item.regionId)}
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <MapPin className="h-3 w-3" /> {item.provinceId.replace('p-', '').toUpperCase()} · {item.regionId.replace('r-', '').toUpperCase()}
                       </p>
                     </div>
 
-                    <div className="flex flex-col justify-center gap-3 p-5">
-                      <div className="grid gap-2 text-sm sm:grid-cols-[160px_1fr] sm:items-center">
-                        <p className="font-medium text-slate-600">Cooperative Node</p>
-                        <p className="font-medium text-slate-900">{item.cooperative}</p>
+                    <div className="flex flex-col justify-center gap-4 p-6 bg-slate-50/30">
+                      <div className="grid gap-2 text-[10px] font-black uppercase tracking-widest sm:grid-cols-[160px_1fr]">
+                        <p className="text-slate-400">SIMPUL KOPERASI</p>
+                        <p className="text-slate-900">{item.cooperative}</p>
                       </div>
-                      <div className="grid gap-2 text-sm sm:grid-cols-[160px_1fr] sm:items-center">
-                        <p className="font-medium text-slate-600">Producer Entity</p>
-                        <p className="font-medium text-slate-900">{item.produsen}</p>
+                      <div className="grid gap-2 text-[10px] font-black uppercase tracking-widest sm:grid-cols-[160px_1fr]">
+                        <p className="text-slate-400">ENTITAS PRODUSEN</p>
+                        <p className="text-slate-900">{item.produsen}</p>
                       </div>
-                      <div className="dashboard-inner-surface grid gap-2 rounded-2xl px-4 py-3 text-sm sm:grid-cols-[160px_1fr] sm:items-center">
-                        <p className="font-medium text-slate-600">Volume Under Audit</p>
-                        <p className="font-semibold text-slate-900">
-                          {item.jumlah} {item.satuan}
+                      <div className="bg-white border border-slate-100 rounded-none px-4 py-3 text-[10px] font-black uppercase tracking-widest grid gap-2 sm:grid-cols-[160px_1fr]">
+                        <p className="text-slate-400">VOLUME AUDIT</p>
+                        <p className="text-sm font-black text-slate-900">
+                          {(item.jumlah / 1000).toLocaleString()} TON
                         </p>
                       </div>
                     </div>
 
-                    <div className="dashboard-section-header flex flex-col justify-between gap-4 p-5">
+                    <div className="flex flex-col justify-between gap-4 p-6 border-l border-slate-50">
                       {item.status === 'proses' ? (
                         <div className="space-y-2">
-                          <div className="flex justify-between text-sm font-medium">
-                            <span className="text-[var(--dashboard-tertiary)]">{formatQueueStatus(item.status)}</span>
+                          <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                            <span className="text-blue-600">SEDANG DIPROSES</span>
                             <span className="text-slate-900">{item.progress}%</span>
                           </div>
-                          <Progress value={item.progress} className="h-2 bg-[var(--dashboard-tertiary-soft)]" />
+                          <Progress value={item.progress} className="h-2 bg-blue-50 rounded-none" />
                         </div>
                       ) : (
-                        <Badge className="w-fit border-0 bg-amber-100 text-sm font-medium text-amber-700">
-                          {formatQueueStatus(item.status)}
+                        <Badge className="rounded-none w-fit border-none bg-amber-100 text-[10px] font-black uppercase tracking-widest text-amber-700 h-6 px-3">
+                          MENUNGGU START
                         </Badge>
                       )}
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-col gap-2">
                         <Button
                           variant="outline"
-                          onClick={() => router.push(`/assistant?intent=audit-sensor&batch=${item.id}`)}
-                          className="h-9 flex-1 border-[var(--dashboard-surface-border-strong)] bg-white text-sm font-medium text-slate-700 hover:bg-[var(--dashboard-surface-subtle)]"
+                          onClick={() => handleAction(`Audit Sensor ${item.batchCode}`)}
+                          className="h-10 rounded-none border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-900 hover:text-white transition-all"
                         >
                           Audit Sensor
                         </Button>
                         <Button
-                          onClick={() => router.push(`/assistant?intent=start-qc&batch=${item.id}`)}
-                          className="h-9 flex-1 bg-[var(--dashboard-primary)] text-sm font-medium text-[var(--primary-foreground)] hover:bg-[var(--dashboard-primary-hover)]"
+                          onClick={() => handleAction(`Mulai QC ${item.batchCode}`)}
+                          className="h-10 rounded-none bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg"
                         >
-                          Start QC
+                          Mulai QC
                         </Button>
                       </div>
                     </div>
@@ -314,55 +232,55 @@ export default function GradingQCKementerianPage() {
                 </Card>
               ))
             ) : (
-              <div className="dashboard-inner-surface rounded-2xl px-6 py-12 text-center">
-                <p className="text-sm font-medium text-slate-600">No batches in queue for the selected scope.</p>
+              <div className="bg-slate-50 rounded-none border-2 border-dashed border-slate-200 px-6 py-12 text-center">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tidak ada batch dalam antrean audit untuk scope ini.</p>
               </div>
             )}
           </div>
         </TabsContent>
 
         <TabsContent value="history" className="mt-4">
-          <div className="space-y-4">
+          <div className="space-y-6">
             {processedData.history.map((item) => (
-              <Card key={item.id} className="surface-card-strong overflow-hidden">
-                <CardHeader className="dashboard-section-header">
+              <Card key={item.id} className="rounded-none border-none shadow-sm overflow-hidden border-t-4 border-t-emerald-500">
+                <CardHeader className="p-6 border-b border-slate-50 bg-slate-50/30">
                   <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--dashboard-tertiary-soft)] text-[var(--dashboard-tertiary)] shadow-sm">
-                        <ShieldCheck className="h-5 w-5" />
+                    <div className="flex items-center gap-5">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-none bg-emerald-900 text-emerald-400 shadow-lg">
+                        <ShieldCheck className="h-7 w-7" />
                       </div>
                       <div>
-                        <div className="mb-1 flex flex-wrap items-center gap-2">
-                          <Badge className="border-0 bg-[var(--dashboard-primary-soft)] text-sm font-medium text-[var(--dashboard-primary)]">
+                        <div className="mb-2 flex flex-wrap items-center gap-3">
+                          <Badge className="rounded-none border-none bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest h-6 px-3">
                             {item.batchCode}
                           </Badge>
-                          <CardTitle className="text-base font-semibold text-slate-900">{item.komoditas}</CardTitle>
+                          <CardTitle className="text-xl font-black text-slate-900 uppercase tracking-tight">{item.komoditas}</CardTitle>
                         </div>
-                        <p className="text-sm text-slate-600">
-                          Completed {item.tanggalGrading} · {item.cooperative}
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                          SELESAI {item.tanggalGrading} · {item.cooperative}
                         </p>
                       </div>
                     </div>
-                    <div className="dashboard-inner-surface rounded-2xl px-4 py-3 text-right">
-                      <p className="text-sm font-medium text-slate-600">Audit QC Score</p>
-                      <p className={`text-3xl font-semibold ${item.qcScore >= 90 ? 'text-emerald-700' : 'text-amber-700'}`}>
+                    <div className="bg-white border border-slate-100 rounded-none px-6 py-4 text-right shadow-inner">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">SKOR AUDIT QC</p>
+                      <p className={`text-3xl font-black ${item.qcScore >= 90 ? 'text-emerald-700' : 'text-amber-700'}`}>
                         {item.qcScore}%
                       </p>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="grid gap-4 md:grid-cols-2">
-                  <div className="dashboard-inner-surface rounded-2xl p-4">
-                    <p className="mb-4 text-sm font-medium text-slate-600">Grade Yield Analysis</p>
-                    <div className="space-y-3">
+                <CardContent className="grid gap-6 p-6 md:grid-cols-2">
+                  <div className="bg-slate-50 rounded-none border border-slate-100 p-5">
+                    <p className="mb-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">Analisis Yield Per Grade</p>
+                    <div className="space-y-4">
                       {Object.entries(item.hasil).map(([grade, val]) => (
-                        <div key={grade} className="grid items-center gap-3 sm:grid-cols-[auto_1fr_auto_120px]">
-                          <div className={`h-2.5 w-2.5 rounded-full ${grade === 'gradeA' ? 'bg-emerald-500' : grade === 'gradeB' ? 'bg-[var(--dashboard-tertiary)]' : grade === 'gradeC' ? 'bg-amber-500' : 'bg-rose-500'}`} />
-                          <span className="text-sm font-medium text-slate-700">{formatGradeLabel(grade)}</span>
-                          <span className="text-sm font-semibold text-slate-900">{val} Kg</span>
-                          <div className="h-2 overflow-hidden rounded-full bg-[var(--dashboard-surface-muted)]">
+                        <div key={grade} className="grid items-center gap-4 sm:grid-cols-[auto_1fr_auto_150px]">
+                          <div className={`h-3 w-3 rounded-none ${grade === 'gradeA' ? 'bg-emerald-500' : grade === 'gradeB' ? 'bg-blue-500' : grade === 'gradeC' ? 'bg-amber-500' : 'bg-rose-500'}`} />
+                          <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">{grade.replace('grade', 'GRADE ')}</span>
+                          <span className="text-xs font-black text-slate-900">{(val / 1000).toLocaleString()} TON</span>
+                          <div className="h-2 overflow-hidden rounded-none bg-slate-200">
                             <div
-                              className={`${grade === 'gradeA' ? 'bg-emerald-500' : grade === 'gradeB' ? 'bg-[var(--dashboard-tertiary)]' : grade === 'gradeC' ? 'bg-amber-500' : 'bg-rose-500'} h-full rounded-full`}
+                              className={`${grade === 'gradeA' ? 'bg-emerald-500' : grade === 'gradeB' ? 'bg-blue-500' : grade === 'gradeC' ? 'bg-amber-500' : 'bg-rose-500'} h-full`}
                               style={{ width: `${(val / item.jumlah) * 100}%` }}
                             />
                           </div>
@@ -370,20 +288,20 @@ export default function GradingQCKementerianPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="dashboard-inner-surface rounded-2xl p-4">
-                    <p className="mb-4 text-sm font-medium text-slate-600">Telemetry Parameters</p>
-                    <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-50 rounded-none border border-slate-100 p-5">
+                    <p className="mb-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">Parameter Telemetri QC</p>
+                    <div className="grid grid-cols-2 gap-4">
                       {Object.entries(item.parameters).map(([key, value]) => (
-                        <div key={key} className="rounded-2xl border border-[var(--dashboard-surface-border)] bg-white px-3 py-3 shadow-sm">
-                          <div className="flex items-start gap-2.5">
-                            {key.includes('air') ? (
-                              <Droplets className="mt-0.5 h-4 w-4 text-[var(--dashboard-tertiary)]" />
+                        <div key={key} className="rounded-none border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition-all">
+                          <div className="flex items-start gap-3">
+                            {key.toLowerCase().includes('air') ? (
+                              <Droplets className="mt-0.5 h-4 w-4 text-blue-500" />
                             ) : (
                               <ShieldCheck className="mt-0.5 h-4 w-4 text-emerald-600" />
                             )}
                             <div>
-                              <p className="text-xs font-medium text-slate-600">{formatParameterLabel(key)}</p>
-                              <p className="mt-1 text-sm font-semibold text-slate-900">{value}%</p>
+                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">{key.replace(/([A-Z])/g, ' $1').toUpperCase()}</p>
+                              <p className="mt-1 text-sm font-black text-slate-900 uppercase">{value}%</p>
                             </div>
                           </div>
                         </div>
@@ -391,10 +309,10 @@ export default function GradingQCKementerianPage() {
                     </div>
                     <Button
                       variant="outline"
-                      onClick={() => handleTelemetryReport(item)}
-                      className="mt-4 h-9 w-full border-[var(--dashboard-surface-border-strong)] bg-white text-sm font-medium text-slate-700 hover:bg-[var(--dashboard-surface-subtle)]"
+                      onClick={() => handleAction(`Laporan Telemetri ${item.batchCode}`)}
+                      className="mt-6 h-10 w-full rounded-none border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-900 hover:text-white transition-all"
                     >
-                      View Full Telemetry Report
+                      Lihat Laporan Telemetri Penuh
                     </Button>
                   </div>
                 </CardContent>
@@ -404,33 +322,31 @@ export default function GradingQCKementerianPage() {
         </TabsContent>
       </Tabs>
 
-      <Card className="surface-card-strong overflow-hidden">
-        <div className="grid gap-0 md:grid-cols-[160px_1fr]">
-          <div className="dashboard-section-header flex items-center justify-center p-6">
-            <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--dashboard-primary-soft)] text-[var(--dashboard-primary)] shadow-sm">
-              <ShieldCheck className="h-8 w-8" />
+      <Card className="rounded-none border-none shadow-sm overflow-hidden border-t-4 border-t-slate-900 mt-6">
+        <div className="grid gap-0 md:grid-cols-[200px_1fr]">
+          <div className="bg-slate-900 flex items-center justify-center p-8">
+            <div className="flex h-20 w-20 items-center justify-center rounded-none bg-slate-800 text-emerald-400 shadow-2xl border border-slate-700">
+              <ShieldCheck className="h-10 w-10" />
             </div>
           </div>
-          <div className="p-6">
-            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-              <h3 className="text-lg font-semibold text-slate-900">National QC Standard Summary</h3>
-              <Badge className="w-fit border-0 bg-emerald-100 text-sm font-medium text-emerald-700">
-                All Regions Compliant
+          <div className="p-8 bg-white">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
+              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Ringkasan Standar QC Nasional</h3>
+              <Badge className="rounded-none border-none bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest h-6 px-4">
+                SEMUA WILAYAH PATUH STANDAR
               </Badge>
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="dashboard-inner-surface rounded-2xl p-4">
-                <p className="text-sm font-medium text-[var(--dashboard-primary)]">Standard Enforcement</p>
-                <p className="mt-2 text-sm leading-6 text-slate-700">
-                  Automated grading has reduced grade misclassification across the national network by 14.5% this quarter.
-                  Standardized pricing based on AI grading is fully enforced.
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="bg-slate-50 rounded-none border-l-4 border-l-slate-900 p-5 shadow-sm">
+                <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3">PENEGAKAN STANDAR NASIONAL</p>
+                <p className="text-xs font-black uppercase tracking-tight leading-relaxed text-slate-600">
+                  SISTEM GRADING OTOMATIS TELAH MENGURANGI MISKLASIFIKASI GRADE DI SELURUH JARINGAN NASIONAL SEBESAR 14.5% KUARTAL INI. PENETAPAN HARGA BERDASARKAN HASIL QC AI TELAH DITEGAKKAN SEPENUHNYA.
                 </p>
               </div>
-              <div className="dashboard-inner-surface rounded-2xl p-4">
-                <p className="text-sm font-medium text-[var(--dashboard-tertiary)]">Regional Performance</p>
-                <p className="mt-2 text-sm leading-6 text-slate-700">
-                  West Java nodes are reporting the highest Grade A yield, currently 8% above the national average, with
-                  varietal soil data under review for wider rollout.
+              <div className="bg-slate-50 rounded-none border-l-4 border-l-blue-500 p-5 shadow-sm">
+                <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-3">PERFORMA REGIONAL STRATEGIS</p>
+                <p className="text-xs font-black uppercase tracking-tight leading-relaxed text-slate-600">
+                  SIMPUL JAWA BARAT MELAPORKAN YIELD GRADE A TERTINGGI, SAAT INI 8% DI ATAS RATA-RATA NASIONAL. DATA VARIETAS DAN KONDISI TANAH SEDANG DIKAJI UNTUK REPLIKASI NASIONAL.
                 </p>
               </div>
             </div>

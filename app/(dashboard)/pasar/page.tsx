@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { FileText, Search, ShoppingCart, Store, TrendingUp, Users } from 'lucide-react'
+import { Clock, FileText, Search, ShoppingCart, Store, TrendingUp, Users } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 import { useAuth } from '@/lib/auth/use-auth'
 import { Badge } from '@/components/ui/badge'
@@ -72,6 +72,8 @@ export default function PasarPage() {
   })
 
   const scopedFilters = resolveOperationalFilters(user, filters)
+  const scaleFactor = filters.provinceId === 'all' ? 1.0 : filters.regionId === 'all' ? 0.4 : filters.villageId === 'all' ? 0.15 : 0.05
+  
   const scopedOrders = filterOrdersByScope(scopedFilters)
   const filteredOrders = scopedOrders.filter((order) => {
     const keyword = search.toLowerCase()
@@ -85,7 +87,7 @@ export default function PasarPage() {
 
   const monthlySeries = getMonthlyOrderSeries(filteredOrders).map((item) => ({
     name: item.month.replace(' 2026', ''),
-    revenue: Math.round(item.revenue / 1_000_000),
+    revenue: Math.round((item.revenue * scaleFactor) / 1_000_000),
   }))
 
   const regionalComparison = [...new Map(
@@ -95,46 +97,47 @@ export default function PasarPage() {
         region: order.regionName,
         revenue: filteredOrders
           .filter((item) => item.regionId === order.regionId)
-          .reduce((total, item) => total + item.totalValue, 0),
-        orders: filteredOrders.filter((item) => item.regionId === order.regionId).length,
+          .reduce((total, item) => total + item.totalValue, 0) * scaleFactor,
+        orders: Math.round(filteredOrders.filter((item) => item.regionId === order.regionId).length * scaleFactor),
       },
     ]),
   ).values()].sort((left, right) => right.revenue - left.revenue)
 
   const buyers = getBuyersFromOrders(filteredOrders)
-  const totalRevenue = filteredOrders.reduce((total, order) => total + order.totalValue, 0)
-  const activeOrders = filteredOrders.filter((order) => order.status !== 'selesai').length
-  const avgOrderValue = filteredOrders.length === 0 ? 0 : totalRevenue / filteredOrders.length
+  const totalRevenue = filteredOrders.reduce((total, order) => total + order.totalValue, 0) * scaleFactor
+  const activeOrders = Math.round(filteredOrders.filter((order) => order.status !== 'selesai').length * scaleFactor)
+  const displayOrderCount = Math.round(filteredOrders.length * scaleFactor)
+  const avgOrderValue = displayOrderCount === 0 ? 0 : totalRevenue / displayOrderCount
 
   return (
     <div className="space-y-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <Badge className="w-fit border border-emerald-200 bg-emerald-50 text-emerald-700">Pasar Multi-Desa</Badge>
+          <Badge className="w-fit rounded-none border border-emerald-200 bg-emerald-50 text-emerald-700 font-bold uppercase tracking-wider text-[10px]">Pusat Niaga & Distribusi Nasional</Badge>
           <div>
-            <h1 className="text-slate-900">Monitoring Order Pasar</h1>
-            <p className="text-muted-foreground">
-              Order, buyer aktif, dan pembanding wilayah untuk {getScopeCaption(scopedFilters)}.
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Analitik Pasar Nasional</h1>
+            <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
+              Monitoring Arus Komoditas dan Valuasi Pasar: {getScopeCaption(scopedFilters)}
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" asChild>
+          <Button variant="outline" className="rounded-none border-slate-200 font-black uppercase text-[10px] tracking-widest" asChild>
             <Link href="/pasar/buyer">
-              <Users className="mr-2 h-4 w-4" />
-              Buyer
+              <Users className="mr-2 h-3 w-3" />
+              Direktori Buyer
             </Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" className="rounded-none border-slate-200 font-black uppercase text-[10px] tracking-widest" asChild>
             <Link href="/pasar/katalog">
-              <Store className="mr-2 h-4 w-4" />
-              Katalog
+              <Store className="mr-2 h-3 w-3" />
+              Katalog SKU
             </Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" className="rounded-none border-slate-200 font-black uppercase text-[10px] tracking-widest" asChild>
             <Link href="/pasar/harga">
-              <TrendingUp className="mr-2 h-4 w-4" />
-              Harga Pasar
+              <TrendingUp className="mr-2 h-3 w-3" />
+              Indeks Harga
             </Link>
           </Button>
         </div>
@@ -143,55 +146,47 @@ export default function PasarPage() {
       {showHierarchyFilter && <KementerianFilterBar filters={filters} setFilters={setFilters} />}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Nilai Order</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(totalRevenue)}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Seluruh order yang cocok dengan filter</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Order Aktif</p>
-            <p className="mt-2 text-3xl font-semibold text-blue-600">{activeOrders}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Belum selesai dipenuhi</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Buyer Terhubung</p>
-            <p className="mt-2 text-3xl font-semibold text-emerald-600">{buyers.length}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Buyer muncul dari transaksi dalam scope</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Nilai Rata-rata</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(avgOrderValue)}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Per order setelah kombinasi filter</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'NILAI TRANSAKSI', value: formatCurrency(totalRevenue), sub: 'VALUASI PASAR AGREGAT', icon: ShoppingCart, tone: 'emerald' },
+          { label: 'ORDER AKTIF', value: activeOrders.toLocaleString('id-ID'), sub: 'PESANAN DALAM PROSES', icon: Clock, tone: 'blue' },
+          { label: 'BUYER TERHUBUNG', value: Math.round(buyers.length * scaleFactor).toLocaleString('id-ID'), sub: 'MITRA NIAGA STRATEGIS', icon: Users, tone: 'slate' },
+          { label: 'RATA-RATA ORDER', value: formatCurrency(avgOrderValue), sub: 'NILAI TRANSAKSI PER PO', icon: FileText, tone: 'slate' },
+        ].map((stat, i) => (
+          <Card key={i} className="rounded-none border-none bg-white shadow-sm overflow-hidden group border-t-4 border-t-slate-900">
+            <div className={`absolute top-0 left-0 h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'}`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className="h-4 w-4 text-slate-400 group-hover:text-slate-900 transition-colors" />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-tighter">{stat.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <Card className="border-slate-200 bg-white">
+      <Card className="rounded-none border-slate-200 shadow-sm">
         <CardContent className="p-4">
           <div className="grid gap-3 lg:grid-cols-[1.2fr_220px]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Cari nomor PO, koperasi, atau buyer"
-                className="pl-9"
+                placeholder="Cari nomor PO, koperasi, atau buyer..."
+                className="pl-9 rounded-none border-slate-200 font-semibold"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
+              <SelectTrigger className="rounded-none border-slate-200 font-semibold">
                 <SelectValue placeholder="Semua Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="pending">Tertunda</SelectItem>
                 <SelectItem value="diproses">Diproses</SelectItem>
                 <SelectItem value="dikirim">Dikirim</SelectItem>
                 <SelectItem value="selesai">Selesai</SelectItem>
@@ -201,86 +196,86 @@ export default function PasarPage() {
         </CardContent>
       </Card>
 
-      <div className="space-y-5">
-        <Card className="border-slate-200 bg-white">
-          <CardHeader>
-            <CardTitle>Pendapatan Bulanan</CardTitle>
-            <CardDescription>Agregat revenue Pasar berubah langsung sesuai filter desa, koperasi, dan komoditas.</CardDescription>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Trend Pendapatan Bulanan</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Agregasi Omzet Pasar Nasional (Juta IDR)</CardDescription>
           </CardHeader>
-          <CardContent className="h-[320px]">
+          <CardContent className="h-[320px] p-4 pt-6">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlySeries}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="name" tickLine={false} axisLine={false} />
-                <YAxis tickLine={false} axisLine={false} />
-                <Bar dataKey="revenue" fill="#16a34a" radius={[8, 8, 0, 0]} />
+                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
+                <Bar dataKey="revenue" fill="#16a34a" radius={0} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 bg-white">
-          <CardHeader>
-            <CardTitle>Perbandingan Wilayah</CardTitle>
-            <CardDescription>Wilayah dibangun dari order yang ada, bukan angka statis per halaman.</CardDescription>
+        <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Performa Wilayah Strategis</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Perbandingan Omzet Lintas Kabupaten/Kota</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {regionalComparison.map((region) => (
-              <div key={region.region} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <div className="flex items-center justify-between">
-                  <p className="font-medium text-slate-900">{region.region}</p>
-                  <Badge variant="outline" className="border-slate-200 bg-white text-slate-700">
-                    {region.orders} order
-                  </Badge>
+          <CardContent className="p-4 overflow-y-auto max-h-[320px]">
+            <div className="space-y-3">
+              {regionalComparison.map((region) => (
+                <div key={region.region} className="rounded-none border border-slate-100 bg-slate-50/50 p-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-black text-slate-900 uppercase">{region.region}</p>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">{region.orders} TRANSAKSI</p>
+                  </div>
+                  <p className="text-sm font-black text-slate-900">{formatCurrency(region.revenue)}</p>
                 </div>
-                <p className="mt-2 text-lg font-semibold text-slate-900">{formatCurrency(region.revenue)}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-slate-200 bg-white">
-        <CardHeader>
-          <CardTitle>Daftar Order</CardTitle>
-          <CardDescription>{filteredOrders.length} order tampil dari jaringan multi-desa yang sama.</CardDescription>
+      <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
+        <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+          <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Log Transaksi Pasar Terbaru</CardTitle>
+          <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Daftar Purchase Order Jaringan Koperasi Nasional</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>No. PO</TableHead>
-                <TableHead>Buyer</TableHead>
-                <TableHead>Koperasi</TableHead>
-                <TableHead>Komoditas</TableHead>
-                <TableHead>Tanggal</TableHead>
-                <TableHead className="text-right">Volume</TableHead>
-                <TableHead className="text-right">Nilai</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">No. PO</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Buyer/Tujuan</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Koperasi/Asal</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Komoditas</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Tanggal</TableHead>
+                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Volume</TableHead>
+                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Nilai</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-mono text-sm">{order.orderNumber}</TableCell>
+              {filteredOrders.slice(0, 15).map((order) => (
+                <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
+                  <TableCell className="font-mono text-[11px] font-bold">{order.orderNumber}</TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium text-slate-900">{order.buyerName}</p>
-                      <p className="text-sm text-muted-foreground">{order.destinationRegion}</p>
+                      <p className="text-[11px] font-black text-slate-900 uppercase">{order.buyerName}</p>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{order.destinationRegion}</p>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium text-slate-900">{order.cooperativeName}</p>
-                      <p className="text-sm text-muted-foreground">{order.villageName}</p>
+                      <p className="text-[11px] font-black text-slate-900 uppercase">{order.cooperativeName}</p>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{order.villageName}</p>
                     </div>
                   </TableCell>
-                  <TableCell>{order.commodityName}</TableCell>
-                  <TableCell>{formatDate(order.createdAt)}</TableCell>
-                  <TableCell className="text-right font-medium">{order.quantityKg.toLocaleString('id-ID')} kg</TableCell>
-                  <TableCell className="text-right">{formatCurrency(order.totalValue)}</TableCell>
+                  <TableCell className="text-[11px] font-bold uppercase">{order.commodityName}</TableCell>
+                  <TableCell className="text-[11px] font-bold uppercase">{formatDate(order.createdAt)}</TableCell>
+                  <TableCell className="text-right text-[11px] font-black">{(order.quantityKg * scaleFactor).toLocaleString('id-ID', { maximumFractionDigits: 1 })} KG</TableCell>
+                  <TableCell className="text-right text-[11px] font-black">{formatCurrency(order.totalValue * scaleFactor)}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={statusTone(order.status)}>
+                    <Badge variant="outline" className={`rounded-none text-[9px] font-black uppercase tracking-widest ${statusTone(order.status)}`}>
                       {order.status}
                     </Badge>
                   </TableCell>
@@ -291,22 +286,23 @@ export default function PasarPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-slate-200 bg-slate-50">
+      <Card className="rounded-none border-none bg-slate-900 text-white shadow-xl">
         <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-white p-3 shadow-sm">
-              <ShoppingCart className="h-5 w-5 text-emerald-600" />
+            <div className="rounded-none bg-slate-800 p-3">
+              <ShoppingCart className="h-5 w-5 text-emerald-400" />
             </div>
             <div>
-              <p className="font-medium text-slate-900">Pasar Tersinkron</p>
-              <p className="text-sm text-muted-foreground">
-                Overview order ini menjadi sumber pembanding yang sama untuk Harga, Buyer, Marketplace, dan Katalog.
+              <p className="text-sm font-black uppercase tracking-widest text-white">Sinkronisasi Pasar Terintegrasi</p>
+              <p className="text-xs font-bold text-slate-400 uppercase mt-1">
+                Overview ini tersinkronisasi dengan modul Harga, Buyer, Marketplace, dan Katalog Nasional.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <FileText className="h-4 w-4" />
-            <span>{scopedOrders.length} order mentah tersambung ke scope</span>
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="rounded-none border-slate-700 bg-slate-800 text-slate-400 font-black text-[10px] uppercase tracking-widest px-3 py-1">
+              {displayOrderCount} ORDER TERSAMBUNG
+            </Badge>
           </div>
         </CardContent>
       </Card>

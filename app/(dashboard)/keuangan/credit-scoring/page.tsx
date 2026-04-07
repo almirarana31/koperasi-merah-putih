@@ -38,7 +38,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Table,
   TableBody,
@@ -61,7 +60,6 @@ import { useAuth } from '@/lib/auth/use-auth'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
-// Credit Score Ranges
 const getScoreColor = (score: number) => {
   if (score >= 750) return 'text-emerald-500'
   if (score >= 650) return 'text-blue-500'
@@ -72,10 +70,10 @@ const getScoreColor = (score: number) => {
 
 const getScoreBadge = (score: number) => {
   if (score >= 750) return { label: 'PRIME', color: 'bg-emerald-100 text-emerald-700' }
-  if (score >= 650) return { label: 'GOOD', color: 'bg-blue-100 text-blue-700' }
-  if (score >= 550) return { label: 'FAIR', color: 'bg-amber-100 text-amber-700' }
-  if (score >= 450) return { label: 'LOW', color: 'bg-orange-100 text-orange-700' }
-  return { label: 'CRITICAL', color: 'bg-rose-100 text-rose-700' }
+  if (score >= 650) return { label: 'BAIK', color: 'bg-blue-100 text-blue-700' }
+  if (score >= 550) return { label: 'CUKUP', color: 'bg-amber-100 text-amber-700' }
+  if (score >= 450) return { label: 'RENDAH', color: 'bg-orange-100 text-orange-700' }
+  return { label: 'KRITIS', color: 'bg-rose-100 text-rose-700' }
 }
 
 const getLoanEligibility = (score: number) => {
@@ -86,11 +84,10 @@ const getLoanEligibility = (score: number) => {
   return { eligible: false, maxLoan: 0, interestRate: 0, message: 'Not Eligible for Credit' }
 }
 
-// Mock member credit data
 const memberCreditData = [
-  { id: 'M001', nama: 'Pak Slamet Widodo', nik: '3201012345678901', tipe: 'petani', creditScore: 785, lastUpdated: '2026-03-01', kycVerified: true, dukcapilVerified: true, factors: { paymentHistory: 95, creditUtilization: 25, creditAge: 48, totalAccounts: 3, recentInquiries: 1 }, financials: { totalSimpanan: 15000000, totalPinjaman: 10000000, sisaPinjaman: 3000000, pendapatanBulanan: 8500000, pengeluaranBulanan: 5200000 }, purchaseHistory: { totalTransactions: 156, avgMonthlySpend: 2500000, topCategories: ['Pupuk', 'Bibit', 'Peralatan'], lastPurchase: '2026-03-05' }, loanHistory: [{ id: 'L001', amount: 5000000, status: 'lunas', date: '2024-01-15' }, { id: 'L002', amount: 10000000, status: 'aktif', date: '2025-06-01' }] },
-  { id: 'M002', nama: 'Bu Sri Wahyuni', nik: '3201019876543210', tipe: 'umkm', creditScore: 692, lastUpdated: '2026-03-02', kycVerified: true, dukcapilVerified: true, factors: { paymentHistory: 88, creditUtilization: 35, creditAge: 36, totalAccounts: 2, recentInquiries: 2 }, financials: { totalSimpanan: 8500000, totalPinjaman: 15000000, sisaPinjaman: 8000000, pendapatanBulanan: 12000000, pengeluaranBulanan: 8500000 }, purchaseHistory: { totalTransactions: 89, avgMonthlySpend: 4200000, topCategories: ['Bahan Makanan', 'Packaging', 'Bumbu'], lastPurchase: '2026-03-06' }, loanHistory: [{ id: 'L003', amount: 15000000, status: 'aktif', date: '2025-08-01' }] },
-  { id: 'M003', nama: 'Pak Ahmad Sudirman', nik: '3201015555666677', tipe: 'petani', creditScore: 548, lastUpdated: '2026-03-01', kycVerified: true, dukcapilVerified: true, factors: { paymentHistory: 72, creditUtilization: 65, creditAge: 18, totalAccounts: 1, recentInquiries: 4 }, financials: { totalSimpanan: 3200000, totalPinjaman: 8000000, sisaPinjaman: 6500000, pendapatanBulanan: 5000000, pengeluaranBulanan: 4200000 }, purchaseHistory: { totalTransactions: 45, avgMonthlySpend: 1200000, topCategories: ['Pupuk', 'Pestisida'], lastPurchase: '2026-02-28' }, loanHistory: [{ id: 'L004', amount: 8000000, status: 'aktif', date: '2025-11-01' }] },
+  { id: 'M001', nama: 'Pak Slamet Widodo', nik: '3201012345678901', tipe: 'PETANI', creditScore: 785, lastUpdated: '2026-03-01', kycVerified: true, dukcapilVerified: true, factors: { paymentHistory: 95, creditUtilization: 25, creditAge: 48, totalAccounts: 3, recentInquiries: 1 }, financials: { totalSimpanan: 15000000, totalPinjaman: 10000000, sisaPinjaman: 3000000, pendapatanBulanan: 8500000, pengeluaranBulanan: 5200000 }, purchaseHistory: { totalTransactions: 156, avgMonthlySpend: 2500000, topCategories: ['Pupuk', 'Bibit', 'Peralatan'], lastPurchase: '2026-03-05' }, loanHistory: [{ id: 'L001', amount: 5000000, status: 'lunas', date: '2024-01-15' }, { id: 'L002', amount: 10000000, status: 'aktif', date: '2025-06-01' }] },
+  { id: 'M002', nama: 'Bu Sri Wahyuni', nik: '3201019876543210', tipe: 'UMKM', creditScore: 692, lastUpdated: '2026-03-02', kycVerified: true, dukcapilVerified: true, factors: { paymentHistory: 88, creditUtilization: 35, creditAge: 36, totalAccounts: 2, recentInquiries: 2 }, financials: { totalSimpanan: 8500000, totalPinjaman: 15000000, sisaPinjaman: 8000000, pendapatanBulanan: 12000000, pengeluaranBulanan: 8500000 }, purchaseHistory: { totalTransactions: 89, avgMonthlySpend: 4200000, topCategories: ['Bahan Makanan', 'Packaging', 'Bumbu'], lastPurchase: '2026-03-06' }, loanHistory: [{ id: 'L003', amount: 15000000, status: 'aktif', date: '2025-08-01' }] },
+  { id: 'M003', nama: 'Pak Ahmad Sudirman', nik: '3201015555666677', tipe: 'PETANI', creditScore: 548, lastUpdated: '2026-03-01', kycVerified: true, dukcapilVerified: true, factors: { paymentHistory: 72, creditUtilization: 65, creditAge: 18, totalAccounts: 1, recentInquiries: 4 }, financials: { totalSimpanan: 3200000, totalPinjaman: 8000000, sisaPinjaman: 6500000, pendapatanBulanan: 5000000, pengeluaranBulanan: 4200000 }, purchaseHistory: { totalTransactions: 45, avgMonthlySpend: 1200000, topCategories: ['Pupuk', 'Pestisida'], lastPurchase: '2026-02-28' }, loanHistory: [{ id: 'L004', amount: 8000000, status: 'aktif', date: '2025-11-01' }] },
 ]
 
 const formatCurrency = (amount: number) => {
@@ -131,20 +128,20 @@ export default function CreditScoringPage() {
                 <ArrowLeft className="h-4 w-4 text-slate-600" />
               </Link>
             </Button>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">CREDIT RATING HUB</h1>
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT RATING KREDIT</h1>
           </div>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed ml-12">
-            AI-DRIVEN RISK ASSESSMENT & MEMBER SCORING • {stats.totalMembers} AUDITED MEMBERS IN NETWORK
+            PENILAIAN RISIKO BERBASIS AI & SKORING ANGGOTA • {stats.totalMembers} ANGGOTA TER-AUDIT DALAM JARINGAN NASIONAL
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Model Sync", description: "Updating risk parameters with latest transactional data..." })}>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none shadow-sm" onClick={() => toast({ title: "Sinkronisasi Model", description: "Memperbarui parameter risiko dengan data transaksional terbaru..." })}>
             <History className="h-3.5 w-3.5 mr-2 text-blue-600" />
-            RE-SCORE ALL
+            SKOR ULANG SEMUA
           </Button>
-          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Audit Initiation", description: "Generating cross-entity credit integrity report..." })}>
+          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Inisiasi Audit", description: "Menghasilkan laporan integritas kredit lintas entitas..." })}>
             <Download className="h-4 w-4 mr-2" />
-            EXPORT AUDIT
+            EKSPOR AUDIT
           </Button>
         </div>
       </div>
@@ -153,12 +150,12 @@ export default function CreditScoringPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'RATA-RATA SKOR', value: stats.avgScore, sub: 'NATIONAL RATING', icon: BarChart3, tone: 'blue' },
-          { label: 'MEMBER PRIME', value: stats.primeCount, sub: 'HIGH TRUST ASSETS', icon: ShieldCheck, tone: 'emerald' },
-          { label: 'ELIGIBLE CREDIT', value: Math.ceil(stats.totalMembers * 0.84), sub: 'MARKET REACH', icon: CreditCard, tone: 'emerald' },
-          { label: 'DEFAULT RISK', value: stats.defaultRisk + '%', sub: 'SYSTEMIC INDEX', icon: Activity, tone: 'rose' },
+          { label: 'RATA-RATA SKOR', value: stats.avgScore, sub: 'RATING NASIONAL', icon: BarChart3, tone: 'blue' },
+          { label: 'ANGGOTA PRIME', value: stats.primeCount, sub: 'ASET KEPERCAYAAN TINGGI', icon: ShieldCheck, tone: 'emerald' },
+          { label: 'LAYAK KREDIT', value: Math.ceil(stats.totalMembers * 0.84), sub: 'JANGKAUAN PASAR', icon: CreditCard, tone: 'emerald' },
+          { label: 'RISIKO GAGAL BAYAR', value: stats.defaultRisk + '%', sub: 'INDEKS SISTEMIK', icon: Activity, tone: 'rose' },
         ].map((s, i) => (
-          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
              <div className={`h-1 w-full ${
               s.tone === 'emerald' ? 'bg-emerald-500' : 
               s.tone === 'blue' ? 'bg-blue-500' : 
@@ -173,7 +170,7 @@ export default function CreditScoringPage() {
                 }`} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{s.label}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
                 <div className="flex items-baseline gap-1 mt-0.5">
                   <span className="text-xl font-black text-slate-900">{s.value}</span>
                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">{s.sub}</span>
@@ -194,7 +191,7 @@ export default function CreditScoringPage() {
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="SEARCH MEMBER BY NAME, NIK, OR ENTITY ID..."
+                  placeholder="CARI ANGGOTA BERDASARKAN NAMA, NIK, ATAU ID ENTITAS..."
                   className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
                 />
               </div>
@@ -204,17 +201,17 @@ export default function CreditScoringPage() {
           <Card className="border-none bg-white shadow-sm overflow-hidden rounded-none">
             <div className="h-1 w-full bg-slate-900" />
             <CardHeader className="p-6 border-b border-slate-50">
-              <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">MEMBER RATING MANIFEST</CardTitle>
-              <CardDescription className="text-[10px] font-bold text-slate-400 uppercase mt-1">COMPREHENSIVE CREDIT AUDIT LOG</CardDescription>
+              <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">MANIFEST RATING ANGGOTA</CardTitle>
+              <CardDescription className="text-[10px] font-bold text-slate-400 uppercase mt-1">LOG AUDIT KREDIT KOMPREHENSIF</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
                 <TableHeader className="bg-slate-900">
                   <TableRow className="hover:bg-slate-900 border-none">
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">MEMBER / TYPE</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">SCORE</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">ANGGOTA / TIPE</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">SKOR</TableHead>
                     <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">STATUS</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">VERIFIED</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">TERVERIFIKASI</TableHead>
                     <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">AUDIT</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -247,7 +244,7 @@ export default function CreditScoringPage() {
                         </div>
                       </TableCell>
                       <TableCell className="px-6 py-4 text-right">
-                        <Button variant="ghost" size="sm" className="h-8 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-white rounded-none group-hover:shadow-sm" onClick={() => toast({ title: "Risk Diagnostic", description: "Opening factor analysis for " + m.nama })}>
+                        <Button variant="ghost" size="sm" className="h-8 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-white rounded-none group-hover:shadow-sm" onClick={() => toast({ title: "Diagnostik Risiko", description: "Membuka analisis faktor untuk " + m.nama })}>
                            DETAIL
                         </Button>
                       </TableCell>
@@ -264,40 +261,40 @@ export default function CreditScoringPage() {
             <CardHeader className="p-4 border-b border-white/5 bg-slate-900/50">
                <div className="flex items-center justify-between">
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                     <Activity className="h-4 w-4 text-blue-500" /> RISK ENGINE FEED
+                     <Activity className="h-4 w-4 text-blue-500" /> FEED MESIN RISIKO
                   </CardTitle>
                   <div className="flex items-center gap-1.5">
                      <div className="h-1 w-1 bg-blue-500 rounded-full animate-ping" />
-                     <span className="text-[9px] font-black text-blue-500 tracking-widest">ACTIVE</span>
+                     <span className="text-[9px] font-black text-blue-500 tracking-widest">AKTIF</span>
                   </div>
                </div>
             </CardHeader>
             <CardContent className="p-0">
                <div className="divide-y divide-white/5">
                   {[
-                    { time: '14:20', action: 'KYC Sync: JKT-042', status: 'VERIFIED', val: 'PASSED' },
-                    { time: '13:15', action: 'Anomaly: RT-992', status: 'CRITICAL', val: 'AUDIT' },
-                    { time: '12:58', action: 'New Score: RT-124', status: 'PRIME', val: '812' },
-                    { time: '11:42', action: 'Batch Re-Rating Q1', status: 'COMPLETE', val: '1.2K' },
+                    { time: '14:20', action: 'Sinkronisasi KYC: JKT-042', status: 'TERVERIFIKASI', val: 'LOLOS' },
+                    { time: '13:15', action: 'Anomali: RT-992', status: 'KRITIS', val: 'AUDIT' },
+                    { time: '12:58', action: 'Skor Baru: RT-124', status: 'PRIME', val: '812' },
+                    { time: '11:42', action: 'Skoring Ulang Batch Q1', status: 'SELESAI', val: '1.2K' },
                   ].map((log, i) => (
                     <div key={i} className="p-4 hover:bg-white/5 transition-colors cursor-pointer group">
                        <div className="flex items-center justify-between mb-2">
                           <Badge className={`text-[9px] font-black px-1.5 h-4 border-none rounded-none tracking-widest ${
-                            log.status === 'CRITICAL' ? 'bg-rose-600 text-white' : 
-                            log.status === 'VERIFIED' || log.status === 'PRIME' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'
+                            log.status === 'KRITIS' ? 'bg-rose-600 text-white' : 
+                            log.status === 'TERVERIFIKASI' || log.status === 'PRIME' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'
                           }`}>
                              {log.status}
                           </Badge>
                           <span className="text-[9px] font-mono text-slate-600 group-hover:text-slate-400">{log.time}</span>
                        </div>
-                       <p className="text-xs font-black text-slate-200 uppercase tracking-tight leading-tight">{log.action}</p>
-                       <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">NODE STATUS: {log.val}</p>
+                       <p className="text-xs font-black text-slate-200 uppercase tracking-tight leading-tight group-hover:text-blue-400 transition-colors">{log.action}</p>
+                       <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">STATUS NODE: {log.val}</p>
                     </div>
                   ))}
                </div>
                <div className="p-4 bg-white/5 border-t border-white/5">
-                  <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-9 rounded-none" onClick={() => toast({ title: "Master Logs", description: "Loading national risk assessment logs..." })}>
-                     FULL RISK LOGS →
+                  <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-9 rounded-none" onClick={() => toast({ title: "Log Induk", description: "Memuat log penilaian risiko nasional..." })}>
+                     LOG RISIKO LENGKAP →
                   </Button>
                </div>
             </CardContent>
@@ -305,13 +302,13 @@ export default function CreditScoringPage() {
 
           <Card className="border-none shadow-sm bg-slate-50 rounded-none">
              <CardHeader className="p-4 border-b border-slate-200">
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">RATING COMPOSITION</CardTitle>
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">KOMPOSISI RATING</CardTitle>
              </CardHeader>
              <CardContent className="p-4 space-y-4">
                 {[
-                  { label: 'PRIME ASSETS', val: '22.4%', color: 'bg-emerald-500' },
-                  { label: 'STANDARD TRUST', val: '62.1%', color: 'bg-blue-500' },
-                  { label: 'HIGH RISK', val: '15.5%', color: 'bg-rose-500' },
+                  { label: 'ASET PRIME', val: '22.4%', color: 'bg-emerald-500' },
+                  { label: 'TRUST STANDAR', val: '62.1%', color: 'bg-blue-500' },
+                  { label: 'RISIKO TINGGI', val: '15.5%', color: 'bg-rose-500' },
                 ].map((h, i) => (
                    <div key={i} className="space-y-2">
                       <div className="flex items-center justify-between">

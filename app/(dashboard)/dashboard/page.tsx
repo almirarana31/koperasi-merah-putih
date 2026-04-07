@@ -50,58 +50,59 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="page-shell pb-8">
-      <div className="px-1">
-        <p className="text-sm font-medium text-slate-600">Selamat datang kembali,</p>
-        <h1 className="mt-1 text-[2rem] font-semibold leading-tight text-slate-950 sm:text-[2.15rem]">
-          {user.name.split(' ')[0]}!
-        </h1>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between px-1">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">DASHBOARD EKSEKUTIF NASIONAL</h1>
+          <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
+            SELAMAT DATANG KEMBALI, {user.name.toUpperCase()} • NODES AKTIF: 1,248 DESA • STATUS: KOPDES ONLINE
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none shadow-sm" asChild>
+            <Link href="/command-center">
+              PUSAT KENDALI
+            </Link>
+          </Button>
+          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" asChild>
+            <Link href="/assistant">
+              <Brain className="mr-2.5 h-3.5 w-3.5" />
+              TANYA AI
+            </Link>
+          </Button>
+        </div>
       </div>
 
-      <section className="relative overflow-hidden rounded-[1.6rem] border border-primary/15 bg-gradient-to-br from-white via-rose-50/35 to-stone-50 p-5 shadow-[0_16px_34px_-26px_rgba(15,23,42,0.2)] sm:p-6">
-        <div className="absolute right-0 top-0 p-6 opacity-[0.08] transition-transform duration-700 hover:rotate-0 sm:rotate-6">
-          <Brain className="h-32 w-32 text-primary sm:h-36 sm:w-36" />
+      <section className="relative overflow-hidden rounded-none border-t-4 border-slate-900 bg-white p-5 shadow-sm sm:p-6 transition-all hover:shadow-md">
+        <div className="absolute right-0 top-0 p-6 opacity-[0.05] transition-transform duration-700 hover:rotate-0 sm:rotate-6">
+          <Brain className="h-32 w-32 text-slate-900 sm:h-36 sm:w-36" />
         </div>
-        <div className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-primary/5 blur-3xl" />
 
-        <div className="relative flex flex-col items-center justify-between gap-5 lg:flex-row">
-          <div className="flex-1 space-y-3 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/8 px-3 py-1.5 text-xs font-medium text-primary shadow-sm">
+        <div className="relative flex flex-col items-start justify-between gap-5 lg:flex-row">
+          <div className="flex-1 space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-none bg-slate-900 px-3 py-1 text-[9px] font-black text-white tracking-widest">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
               </span>
-              AI Intelligence Core | Real-Time Engine
+              AI INTELLIGENCE CORE | SINYAL AKTIF
             </div>
             <div>
-              <h2 className="text-[1.6rem] font-semibold text-slate-950 sm:text-[1.85rem]">Rangkuman Insight AI Hari Ini</h2>
-              <p className="mt-2 max-w-2xl text-[0.98rem] leading-6 text-slate-700">
+              <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">RANGKUMAN INSIGHT AI HARI INI</h2>
+              <p className="mt-2 max-w-2xl text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed">
                 {user.role === 'kementerian'
-                  ? 'Analisis nasional dari 1,248 desa mendeteksi tren kenaikan NPL di 3 wilayah kunci. Rekomendasi: segera lakukan audit verifikasi pada koperasi di wilayah Jawa Barat.'
-                  : `Berdasarkan data operasional terbaru, sistem mendeteksi efisiensi ${user.role === 'petani' ? 'panen' : 'transaksi'} meningkat 12%. Gunakan rekomendasi harga AI untuk hasil maksimal.`}
+                  ? 'ANALISIS NASIONAL DARI 1,248 DESA MENDETEKSI TREN KENAIKAN NPL DI 3 WILAYAH KUNCI. REKOMENDASI: SEGERA LAKUKAN AUDIT VERIFIKASI PADA KOPERASI DI WILAYAH JAWA BARAT.'
+                  : `BERDASARKAN DATA OPERASIONAL TERBARU, SISTEM MENDETEKSI EFISIENSI ${user.role === 'petani' ? 'PANEN' : 'TRANSAKSI'} MENINGKAT 12%. GUNAKAN REKOMENDASI HARGA AI UNTUK HASIL MAKSIMAL.`}
               </p>
             </div>
-            <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
-              <Badge variant="outline" className="border-primary/15 bg-white/85 px-3 py-1 text-xs font-medium text-slate-700">
-                Akurasi Forecast: 98.2%
+            <div className="flex flex-wrap gap-2">
+              <Badge className="bg-slate-50 text-slate-600 border border-slate-100 rounded-none px-3 py-1 text-[9px] font-black tracking-widest">
+                AKURASI FORECAST: 98.2%
               </Badge>
-              <Badge variant="outline" className="border-primary/15 bg-white/85 px-3 py-1 text-xs font-medium text-slate-700">
-                Data Sinkron: 2 Menit Lalu
+              <Badge className="bg-slate-50 text-slate-600 border border-slate-100 rounded-none px-3 py-1 text-[9px] font-black tracking-widest">
+                DATA SINKRON: 2 MENIT LALU
               </Badge>
             </div>
-          </div>
-
-          <div className="flex w-full flex-col gap-2.5 sm:w-auto">
-            <Button
-              className="group h-11 rounded-xl bg-primary px-6 text-sm font-medium text-white shadow-[0_12px_24px_-18px_rgba(190,8,23,0.55)] transition-all hover:scale-[1.01] hover:bg-[var(--dashboard-primary-hover)]"
-              asChild
-            >
-              <Link href="/assistant">
-                <Brain className="mr-2.5 h-[18px] w-[18px] transition-transform group-hover:rotate-12" />
-                Tanya AI Sekarang
-              </Link>
-            </Button>
-            <p className="text-center text-xs text-slate-500">Powered By Kopdes Intelligence</p>
           </div>
         </div>
       </section>

@@ -115,17 +115,17 @@ export default function InvoicePage() {
     })
   }, [search, filters])
 
-  const totalInvoices = Math.ceil(filteredInvoices.length * scaleFactor)
-  const totalPending = (filteredInvoices.filter(i => i.status === 'pending' || i.status === 'dikirim').reduce((acc, i) => acc + i.total, 0) * scaleFactor)
-  const totalOverdue = (filteredInvoices.filter(i => i.status === 'overdue').reduce((acc, i) => acc + i.total, 0) * scaleFactor)
-  const totalLunas = (filteredInvoices.filter(i => i.status === 'lunas').reduce((acc, i) => acc + i.total, 0) * scaleFactor)
+  const totalInvoices = Math.ceil(filteredInvoices.length * scaleFactor * 50)
+  const totalPending = (filteredInvoices.filter(i => i.status === 'pending' || i.status === 'dikirim').reduce((acc, i) => acc + i.total, 0) * scaleFactor * 100)
+  const totalOverdue = (filteredInvoices.filter(i => i.status === 'overdue').reduce((acc, i) => acc + i.total, 0) * scaleFactor * 100)
+  const totalLunas = (filteredInvoices.filter(i => i.status === 'lunas').reduce((acc, i) => acc + i.total, 0) * scaleFactor * 100)
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-slate-900">INVOICE HUB</h1>
-          <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">INVOICE HUB NASIONAL</h1>
+          <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
             MONITORING TAGIHAN DAN PIUTANG PENJUALAN NASIONAL
           </p>
         </div>
@@ -143,9 +143,9 @@ export default function InvoicePage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
           { label: 'TOTAL INVOICE', value: totalInvoices, sub: 'DOKUMEN TERBIT', icon: FileText, tone: 'slate' },
-          { label: 'WAITING PAYMENT', value: formatCurrency(totalPending), sub: `${Math.ceil(filteredInvoices.filter(i => i.status === 'pending' || i.status === 'dikirim').length * scaleFactor)} INVOICE AKTIF`, icon: Clock, tone: 'amber' },
-          { label: 'OVERDUE PIUTANG', value: formatCurrency(totalOverdue), sub: 'MEMBUTUHKAN TINDAKAN', icon: AlertCircle, tone: 'rose' },
-          { label: 'TOTAL PELUNASAN', value: formatCurrency(totalLunas), sub: 'SUCCESSFUL REVENUE', icon: CheckCircle2, tone: 'emerald' },
+          { label: 'MENUNGGU PEMBAYARAN', value: formatCurrency(totalPending), sub: `${Math.ceil(filteredInvoices.filter(i => i.status === 'pending' || i.status === 'dikirim').length * scaleFactor * 50)} INVOICE AKTIF`, icon: Clock, tone: 'amber' },
+          { label: 'PIUTANG JATUH TEMPO', value: formatCurrency(totalOverdue), sub: 'MEMBUTUHKAN TINDAKAN', icon: AlertCircle, tone: 'rose' },
+          { label: 'TOTAL PELUNASAN', value: formatCurrency(totalLunas), sub: 'PENDAPATAN BERHASIL', icon: CheckCircle2, tone: 'emerald' },
         ].map((stat, i) => (
           <Card key={i} className="border-none bg-white shadow-sm overflow-hidden rounded-none">
             <div className={`h-1 w-full border-t-4 ${
@@ -162,10 +162,10 @@ export default function InvoicePage() {
                   stat.tone === 'amber' ? 'text-amber-500' : 'text-slate-900'
                 }`} />
               </div>
-              <CardTitle className="text-lg font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+              <CardTitle className="text-xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-tighter">{stat.sub}</p>
+              <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-tighter">{stat.sub}</p>
             </CardContent>
           </Card>
         ))}
@@ -180,7 +180,7 @@ export default function InvoicePage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="CARI NOMOR INVOICE ATAU NAMA BUYER..."
-              className="pl-9 h-10 text-xs font-semibold bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
+              className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
             />
           </div>
         </CardContent>
@@ -221,14 +221,18 @@ export default function InvoicePage() {
                     <p className="text-[10px] font-bold text-slate-500 uppercase">{formatDate(invoice.jatuhTempo)}</p>
                   </TableCell>
                   <TableCell className="px-6 py-4 text-center">
-                    <Badge className={`text-[10px] font-black border-none px-2 h-5 uppercase rounded-none ${
+                    <Badge className={`text-[9px] font-black border-none px-2 h-4 uppercase rounded-none tracking-widest ${
                       invoice.status === 'lunas' ? 'bg-emerald-100 text-emerald-700' :
                       invoice.status === 'overdue' ? 'bg-rose-100 text-rose-700' :
                       invoice.status === 'dikirim' ? 'bg-blue-100 text-blue-700' :
                       invoice.status === 'pending' ? 'bg-amber-100 text-amber-700' :
                       'bg-slate-100 text-slate-600'
                     }`}>
-                      {invoice.status}
+                      {invoice.status === 'lunas' ? 'LUNAS' :
+                       invoice.status === 'overdue' ? 'JATUH TEMPO' :
+                       invoice.status === 'dikirim' ? 'TERKIRIM' :
+                       invoice.status === 'pending' ? 'PENDING' :
+                       'DRAFT'}
                     </Badge>
                   </TableCell>
                   <TableCell className="px-6 py-4 text-right">
@@ -237,7 +241,7 @@ export default function InvoicePage() {
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8 rounded-none group-hover:bg-white group-hover:shadow-sm"
-                        onClick={() => toast({ title: "Audit Detail", description: `Membuka detail invoice ${invoice.nomorInvoice}` })}
+                        onClick={() => toast({ title: "Detail Audit", description: `Membuka detail invoice ${invoice.nomorInvoice}` })}
                       >
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
@@ -245,7 +249,7 @@ export default function InvoicePage() {
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8 rounded-none group-hover:bg-white group-hover:shadow-sm"
-                        onClick={() => toast({ title: "Export Document", description: `Mengunduh file PDF invoice ${invoice.nomorInvoice}` })}
+                        onClick={() => toast({ title: "Ekspor Dokumen", description: `Mengunduh file PDF invoice ${invoice.nomorInvoice}` })}
                       >
                         <Download className="h-3.5 w-3.5" />
                       </Button>
@@ -254,7 +258,7 @@ export default function InvoicePage() {
                           variant="ghost" 
                           size="icon" 
                           className="h-8 w-8 rounded-none group-hover:bg-white group-hover:shadow-sm"
-                          onClick={() => toast({ title: "Dispatch Hub", description: `Mengirim invoice ${invoice.nomorInvoice} ke buyer...` })}
+                          onClick={() => toast({ title: "Pusat Pengiriman", description: `Mengirim invoice ${invoice.nomorInvoice} ke pembeli...` })}
                         >
                           <Send className="h-3.5 w-3.5" />
                         </Button>

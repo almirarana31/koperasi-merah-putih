@@ -96,9 +96,9 @@ export default function LaporanPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">NATIONAL AUDIT LEDGER</h1>
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">BUKU BESAR AUDIT NASIONAL</h1>
             <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-none">
-              ANALISIS PERFORMA & AUDIT KEUANGAN NASIONAL • REAL-TIME ANALYSIS
+              ANALISIS PERFORMA & AUDIT KEUANGAN NASIONAL • ANALISIS REAL-TIME
             </p>
           </div>
         </div>
@@ -115,10 +115,10 @@ export default function LaporanPage() {
           </Select>
           <Button 
             className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all"
-            onClick={() => toast({ title: "Audit Export", description: "Menyiapkan dokumen audit PDF konsolidasi..." })}
+            onClick={() => toast({ title: "Ekspor Audit", description: "Menyiapkan dokumen audit PDF konsolidasi..." })}
           >
             <Download className="mr-2 h-3.5 w-3.5" />
-            EXPORT AUDIT PDF
+            EKSPOR AUDIT PDF
           </Button>
         </div>
       </div>
@@ -128,9 +128,9 @@ export default function LaporanPage() {
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         {[
-          { label: 'TOTAL PEMASUKAN', value: formatCurrency(totalPemasukan), sub: '+18.4% ANOMALY DETECTED', icon: TrendingUp, tone: 'emerald' },
-          { label: 'TOTAL PENGELUARAN', value: formatCurrency(totalPengeluaran), sub: 'WITHIN OPERATIONAL LIMITS', icon: TrendingDown, tone: 'rose' },
-          { label: 'LABA BERSIH (EBITDA)', value: formatCurrency(labaKotor), sub: `MARGIN: ${((labaKotor / totalPemasukan) * 100).toFixed(1)}% PERFORMANCE INDEX`, icon: FileText, tone: 'slate' },
+          { label: 'TOTAL PEMASUKAN', value: formatCurrency(totalPemasukan), sub: '+18.4% ANOMALI TERDETEKSI', icon: TrendingUp, tone: 'emerald' },
+          { label: 'TOTAL PENGELUARAN', value: formatCurrency(totalPengeluaran), sub: 'DALAM BATAS OPERASIONAL', icon: TrendingDown, tone: 'rose' },
+          { label: 'LABA BERSIH (EBITDA)', value: formatCurrency(labaKotor), sub: `MARGIN: ${((labaKotor / totalPemasukan) * 100).toFixed(1)}% INDEKS PERFORMA`, icon: FileText, tone: 'slate' },
         ].map((stat, i) => (
           <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
             <div className={`h-1 w-full border-t-4 ${
@@ -173,6 +173,7 @@ export default function LaporanPage() {
                     tickLine={false}
                     axisLine={false}
                     tick={{ fontWeight: 900, fill: '#64748b' }}
+                    tickFormatter={(value) => value.toUpperCase()}
                   />
                   <YAxis
                     stroke="#0f172a"
@@ -239,6 +240,7 @@ export default function LaporanPage() {
                     tickLine={false}
                     axisLine={false}
                     tick={{ fontWeight: 900, fill: '#64748b' }}
+                    tickFormatter={(value) => value.toUpperCase()}
                   />
                   <YAxis
                     stroke="#0f172a"
@@ -288,9 +290,9 @@ export default function LaporanPage() {
         <CardContent className="p-4">
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              { title: 'NERACA SALDO', sub: 'BALANCE SHEET (NATIONAL)', color: 'bg-slate-900' },
-              { title: 'LABA RUGI', sub: 'INCOME STATEMENT (CONSOLIDATED)', color: 'bg-emerald-600' },
-              { title: 'ARUS KAS', sub: 'CASH FLOW (LIQUIDITY INDEX)', color: 'bg-blue-600' },
+              { title: 'NERACA SALDO', sub: 'LAPORAN POSISI KEUANGAN (NASIONAL)', color: 'bg-slate-900' },
+              { title: 'LABA RUGI', sub: 'LAPORAN OPERASIONAL (KONSOLIDASI)', color: 'bg-emerald-600' },
+              { title: 'ARUS KAS', sub: 'INDEKS LIKUIDITAS KAS', color: 'bg-blue-600' },
             ].map((report, i) => (
               <div key={i} className="flex items-center justify-between rounded-none border border-slate-100 p-4 hover:border-slate-900 transition-colors group bg-slate-50/30">
                 <div className="flex items-center gap-3">
@@ -306,7 +308,7 @@ export default function LaporanPage() {
                   variant="ghost" 
                   size="icon" 
                   className="h-8 w-8 rounded-none hover:bg-slate-900 hover:text-white transition-all text-slate-400"
-                  onClick={() => toast({ title: "Document Download", description: `Mengunduh laporan ${report.title}...` })}
+                  onClick={() => toast({ title: "Unduh Dokumen", description: `Mengunduh laporan ${report.title}...` })}
                 >
                   <Download className="h-4 w-4" />
                 </Button>
@@ -318,3 +320,5 @@ export default function LaporanPage() {
     </div>
   )
 }
+
+

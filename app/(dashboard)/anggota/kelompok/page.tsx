@@ -80,6 +80,7 @@ export default function KelompokTaniPage() {
   })
 
   const [search, setSearch] = useState('')
+  const scaleFactor = filters.provinceId === 'all' ? 1.0 : filters.regionId === 'all' ? 0.4 : filters.villageId === 'all' ? 0.15 : 0.05
 
   const filteredKelompok = useMemo(() => {
     return initialKelompokData.filter(k => {
@@ -96,26 +97,27 @@ export default function KelompokTaniPage() {
 
   const totals = useMemo(() => {
     return {
-      groups: filteredKelompok.length,
-      members: filteredKelompok.reduce((acc, k) => acc + k.anggota, 0),
-      land: filteredKelompok.reduce((acc, k) => acc + k.luasTotal, 0),
+      groups: Math.round(filteredKelompok.length * scaleFactor),
+      members: Math.round(filteredKelompok.reduce((acc, k) => acc + k.anggota, 0) * scaleFactor),
+      land: filteredKelompok.reduce((acc, k) => acc + k.luasTotal, 0) * scaleFactor,
       avgProd: filteredKelompok.length ? Math.round(filteredKelompok.reduce((acc, k) => acc + k.produksi, 0) / filteredKelompok.length) : 0
     }
-  }, [filteredKelompok])
+  }, [filteredKelompok, scaleFactor])
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold  text-slate-900 ">Kelompok Tani Nasional</h1>
-          <p className="text-xs font-bold text-slate-500   mt-1">
-            Supervisi dan Monitoring Kelompok Produsen Lintas Wilayah
+          <Badge className="rounded-none border-none bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] mb-2 px-2 py-0.5">Database Kelompok Nasional</Badge>
+          <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">Kelompok Produsen</h1>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">
+            Monitoring Kapasitas Organisasi Produksi Lintas Wilayah
           </p>
         </div>
-        <Button size="sm" className="h-10 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold   px-6 shadow-lg shadow-slate-200">
+        <Button size="sm" className="h-10 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest rounded-none px-6 shadow-xl">
           <Plus className="mr-2 h-4 w-4" />
-          Registrasi Kelompok
+          Registrasi Baru
         </Button>
       </div>
 
@@ -125,22 +127,22 @@ export default function KelompokTaniPage() {
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: 'TOTAL KELOMPOK NASIONAL', value: totals.groups, sub: `${filteredKelompok.filter(k => k.status === 'aktif').length} UNIT OPERASIONAL`, icon: Building2, tone: 'slate' },
-          { label: 'TOTAL ANGGOTA TERDAFTAR', value: totals.members.toLocaleString(), sub: 'PRODUSEN TERVERIFIKASI', icon: Users, tone: 'emerald' },
-          { label: 'AKUMULASI LUAS LAHAN', value: `${totals.land.toFixed(1)} HA`, sub: 'AREA PRODUKTIF AKTIF', icon: Target, tone: 'emerald' },
-          { label: 'EFISIENSI OUTPUT', value: `${totals.avgProd}%`, sub: 'RATA-RATA PRODUKTIVITAS', icon: BarChart3, tone: 'emerald' },
+          { label: 'TOTAL KELOMPOK', value: totals.groups.toLocaleString('id-ID'), sub: 'UNIT TERVERIFIKASI', icon: Building2, tone: 'slate' },
+          { label: 'TOTAL ANGGOTA', value: totals.members.toLocaleString('id-ID'), sub: 'PRODUSEN AKTIF', icon: Users, tone: 'emerald' },
+          { label: 'AKUMULASI LAHAN', value: `${totals.land.toLocaleString('id-ID', { maximumFractionDigits: 1 })} HA`, sub: 'AREA PRODUKTIF', icon: Target, tone: 'emerald' },
+          { label: 'EFISIENSI OUTPUT', value: `${totals.avgProd}%`, sub: 'PRODUKTIVITAS AGREGAT', icon: BarChart3, tone: 'emerald' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
-            <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
+          <Card key={i} className="rounded-none border-none bg-white shadow-sm overflow-hidden group border-t-4 border-t-slate-900">
+            <div className={`absolute top-0 left-0 h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
                 <stat.icon className="h-4 w-4 text-slate-400 group-hover:text-slate-900 transition-colors" />
               </div>
-              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+              <CardTitle className="text-3xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-[10px] font-bold text-slate-500 mt-1">{stat.sub}</p>
+              <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-tighter">{stat.sub}</p>
             </CardContent>
           </Card>
         ))}
@@ -149,30 +151,30 @@ export default function KelompokTaniPage() {
       {/* Kelompok List Grid */}
       <div className="grid gap-4 lg:grid-cols-2">
         {filteredKelompok.length === 0 ? (
-          <div className="lg:col-span-2 py-20 text-center bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
-            <p className="text-xs font-semibold text-slate-400  ">Tidak ada kelompok ditemukan dalam scope ini</p>
+          <div className="lg:col-span-2 py-20 text-center bg-slate-50 rounded-none border-2 border-dashed border-slate-200">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tidak ada kelompok dalam scope monitoring ini</p>
           </div>
         ) : (
           filteredKelompok.map((kelompok) => (
-            <Card key={kelompok.id} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden group hover:shadow-lg transition-all">
+            <Card key={kelompok.id} className="rounded-none border-slate-200 shadow-sm overflow-hidden group hover:border-slate-900 transition-all">
               <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-slate-900   group-hover:text-emerald-600 transition-colors">
+                      <h3 className="text-sm font-black uppercase tracking-tight text-slate-900 group-hover:text-emerald-600 transition-colors">
                         {kelompok.nama}
                       </h3>
-                      <Badge className={`text-xs font-semibold  border-none px-1.5 h-4 ${kelompok.status === 'aktif' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                      <Badge className={`rounded-none text-[9px] font-black uppercase tracking-widest border-none px-1.5 h-4 ${kelompok.status === 'aktif' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
                         {kelompok.status}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="text-xs font-bold text-slate-400  ">KETUA:</p>
-                      <p className="text-xs font-semibold text-slate-900  ">{kelompok.ketua}</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">KETUA:</p>
+                      <p className="text-[10px] font-black uppercase text-slate-900">{kelompok.ketua}</p>
                     </div>
                   </div>
                   <Link href={`/anggota/kelompok/${kelompok.id}`}>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white hover:text-emerald-600">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none hover:bg-slate-900 hover:text-white">
                       <ChevronRight className="h-4 w-4" />
                     </Button>
                   </Link>
@@ -183,36 +185,36 @@ export default function KelompokTaniPage() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-slate-600">
                       <MapPin className="h-3.5 w-3.5 text-slate-400" />
-                      <span className="text-xs font-semibold  ">{kelompok.desa} • {kelompok.koperasi}</span>
+                      <span className="text-[10px] font-black uppercase tracking-tighter">{kelompok.desa} · {kelompok.koperasi}</span>
                     </div>
                     <div className="flex items-center gap-2 text-slate-600">
                       <Users className="h-3.5 w-3.5 text-slate-400" />
-                      <span className="text-xs font-semibold  ">{kelompok.anggota} ANGGOTA</span>
+                      <span className="text-[10px] font-black uppercase tracking-tighter">{Math.round(kelompok.anggota * scaleFactor)} ANGGOTA</span>
                     </div>
                     {kelompok.luasTotal > 0 && (
                       <div className="flex items-center gap-2 text-slate-600">
                         <Leaf className="h-3.5 w-3.5 text-slate-400" />
-                        <span className="text-xs font-semibold  ">{kelompok.luasTotal} HA LAHAN</span>
+                        <span className="text-[10px] font-black uppercase tracking-tighter">{(kelompok.luasTotal * scaleFactor).toFixed(1)} HA LAHAN</span>
                       </div>
                     )}
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-xs font-semibold text-slate-400   mb-1.5">KOMODITAS UTAMA</p>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">KOMODITAS</p>
                       <div className="flex flex-wrap gap-1">
                         {kelompok.komoditas.map((k, i) => (
-                          <Badge key={i} variant="outline" className="text-xs font-semibold  border-slate-200 text-slate-600 bg-white">
+                          <Badge key={i} variant="outline" className="rounded-none text-[9px] font-black uppercase tracking-widest border-slate-200 text-slate-600 bg-white">
                             {k}
                           </Badge>
                         ))}
                       </div>
                     </div>
                     <div>
-                      <div className="flex items-center justify-between text-xs font-semibold   mb-1.5">
-                        <span className="text-slate-400">OUTPUT PRODUKSI</span>
+                      <div className="flex items-center justify-between text-[9px] font-black uppercase tracking-widest mb-1.5">
+                        <span className="text-slate-400">OUTPUT</span>
                         <span className="text-emerald-600">{kelompok.produksi}%</span>
                       </div>
-                      <Progress value={kelompok.produksi} className="h-1 bg-slate-100" />
+                      <Progress value={kelompok.produksi} className="h-1 bg-slate-100 rounded-none" />
                     </div>
                   </div>
                 </div>

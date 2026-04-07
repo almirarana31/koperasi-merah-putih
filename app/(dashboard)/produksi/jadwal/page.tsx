@@ -17,28 +17,29 @@ import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/lib/auth/use-auth'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
+import { toast } from 'sonner'
 
-const initialJadwalPanen = [
+const baseJadwalPanen = [
   {
     id: 'JP001',
-    tanggal: '2024-02-18',
-    hari: 'Minggu',
+    tanggal: '2026-05-18',
+    hari: 'Senin',
     desa: 'CIBODAS',
-    koperasi: 'KOP. MANDIRI',
+    koperasi: 'KOP. MANDIRI SEJAHTERA',
     items: [
       {
-        komoditas: 'Kentang',
-        produsen: 'Pak Hendra Wijaya',
-        lokasi: 'Blok Utara',
-        estimasi: '400 kg',
+        komoditas: 'Kentang Granola',
+        produsen: 'Bpk. Hendra Wijaya',
+        lokasi: 'Sektor Utara Nasional',
+        estimasi: 400000,
         waktu: '06:00 - 10:00',
         status: 'terkonfirmasi',
       },
       {
-        komoditas: 'Wortel',
-        produsen: 'Pak Hendra Wijaya',
-        lokasi: 'Blok Utara',
-        estimasi: '250 kg',
+        komoditas: 'Wortel Import',
+        produsen: 'Bpk. Hendra Wijaya',
+        lokasi: 'Sektor Utara Nasional',
+        estimasi: 250000,
         waktu: '06:00 - 10:00',
         status: 'terkonfirmasi',
       },
@@ -46,16 +47,16 @@ const initialJadwalPanen = [
   },
   {
     id: 'JP002',
-    tanggal: '2024-02-20',
-    hari: 'Selasa',
+    tanggal: '2026-05-20',
+    hari: 'Rabu',
     desa: 'SUKAMAJU',
-    koperasi: 'KOP. MAJU JAYA',
+    koperasi: 'KOP. MERAH PUTIH JAYA',
     items: [
       {
-        komoditas: 'Cabai Merah',
-        produsen: 'Bu Sri Wahyuni',
-        lokasi: 'Lahan A1',
-        estimasi: '150 kg',
+        komoditas: 'Cabai Merah Keriting',
+        produsen: 'Ibu Sri Wahyuni',
+        lokasi: 'Zona Produksi A1',
+        estimasi: 150000,
         waktu: '07:00 - 09:00',
         status: 'terkonfirmasi',
       },
@@ -63,16 +64,16 @@ const initialJadwalPanen = [
   },
   {
     id: 'JP003',
-    tanggal: '2024-02-22',
-    hari: 'Kamis',
+    tanggal: '2026-05-22',
+    hari: 'Jumat',
     desa: 'SUKAMAJU',
-    koperasi: 'KOP. MAJU JAYA',
+    koperasi: 'KOP. MERAH PUTIH JAYA',
     items: [
       {
-        komoditas: 'Beras Premium',
-        produsen: 'Pak Slamet Widodo',
-        lokasi: 'Blok Sawah Tengah',
-        estimasi: '2000 kg',
+        komoditas: 'Beras Premium IR64',
+        produsen: 'Bpk. Slamet Widodo',
+        lokasi: 'Sentra Sawah Tengah',
+        estimasi: 2000000,
         waktu: '06:00 - 12:00',
         status: 'menunggu',
       },
@@ -80,7 +81,7 @@ const initialJadwalPanen = [
   },
 ]
 
-const today: string = '2024-02-17'
+const today: string = '2026-05-17'
 
 export default function JadwalPanenPage() {
   const { user } = useAuth()
@@ -96,56 +97,67 @@ export default function JadwalPanenPage() {
 
   const [search, setSearch] = useState('')
 
+  const scaleFactor = useMemo(() => {
+    if (filters.cooperativeId !== 'all') return 0.05
+    if (filters.villageId !== 'all') return 0.1
+    if (filters.regionId !== 'all') return 0.25
+    if (filters.provinceId !== 'all') return 0.5
+    return 1.0
+  }, [filters])
+
   const filteredJadwal = useMemo(() => {
-    return initialJadwalPanen.filter(j => {
+    return baseJadwalPanen.map(j => ({
+      ...j,
+      items: j.items.map(i => ({
+        ...i,
+        estimasi: i.estimasi * scaleFactor
+      }))
+    })).filter(j => {
       const matchesSearch = j.items.some(i => i.komoditas.toLowerCase().includes(search.toLowerCase()) || i.produsen.toLowerCase().includes(search.toLowerCase()))
-      if (!isKementerian) return matchesSearch
-
-      const matchesVillage = filters.villageId === 'all' || j.desa.toUpperCase().includes(filters.villageId.split('-').pop() || '')
-      const matchesKop = filters.cooperativeId === 'all' || j.koperasi.toUpperCase().includes(filters.cooperativeId.split('-').pop() || '')
-      const matchesCommodity = filters.commodityId === 'all' || j.items.some(i => i.komoditas.toLowerCase().includes(filters.commodityId.toLowerCase()))
-
-      return matchesSearch && matchesVillage && matchesKop && matchesCommodity
+      return matchesSearch
     })
-  }, [search, filters, isKementerian])
+  }, [search, scaleFactor])
 
   const totals = useMemo(() => {
     let est = 0
     let itemsCount = 0
     filteredJadwal.forEach(j => {
       j.items.forEach(i => {
-        est += parseInt(i.estimasi)
+        est += i.estimasi
         itemsCount++
       })
     })
     return { est, itemsCount, schedules: filteredJadwal.length }
   }, [filteredJadwal])
 
+  const handleAction = (action: string) => {
+    toast.success(`Sinkronisasi ${action} berhasil diverifikasi`)
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold  text-slate-900 ">Logistik Panen Nasional</h1>
-          <p className="text-xs font-bold text-slate-500   mt-1">
-            Sinkronisasi Jadwal Penjemputan Hasil Bumi Lintas Entitas
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Logistik Panen Nasional</h1>
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
+            Sinkronisasi Jadwal Penjemputan Hasil Bumi Strategis Lintas Entitas
           </p>
         </div>
       </div>
 
-      {/* Kementerian Filter Bar */}
-      {isKementerian && <KementerianFilterBar filters={filters} setFilters={setFilters} search={search} setSearch={setSearch} />}
+      <KementerianFilterBar filters={filters} setFilters={setFilters} search={search} setSearch={setSearch} />
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: 'TOTAL JADWAL', value: totals.schedules, sub: 'BATCH PENJEMPUTAN', icon: Calendar, tone: 'slate' },
-          { label: 'ITEM PANEN', value: totals.itemsCount, sub: 'KOMODITAS TERDATA', icon: Leaf, tone: 'emerald' },
-          { label: 'VOLUME ESTIMASI', value: `${(totals.est / 1000).toFixed(1)} TON`, sub: 'PROYEKSI LOGISTIK', icon: Clock, tone: 'emerald' },
-          { label: 'STATUS HUB', value: 'OPTIMAL', sub: 'KESIAPAN ARMADA', icon: CheckCircle2, tone: 'emerald' },
+          { label: 'BATCH LOGISTIK', value: totals.schedules, sub: 'JADWAL PENJEMPUTAN', icon: Calendar, tone: 'slate' },
+          { label: 'ITEM KOMODITAS', value: totals.itemsCount, sub: 'VARIETAS TERDATA', icon: Leaf, tone: 'emerald' },
+          { label: 'PROYEKSI VOLUME', value: `${(totals.est / 1000).toLocaleString()} TON`, sub: 'TOTAL VOLUME LOGISTIK', icon: Clock, tone: 'emerald' },
+          { label: 'KESIAPAN HUB', value: 'OPTIMAL', sub: 'STATUS ARMADA NASIONAL', icon: CheckCircle2, tone: 'emerald' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
-            <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
+          <Card key={i} className="rounded-none border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1.5 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
@@ -154,17 +166,17 @@ export default function JadwalPanenPage() {
               <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase">{stat.sub}</p>
+              <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-tighter">{stat.sub}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
       {/* Timeline View */}
-      <div className="space-y-8 relative">
+      <div className="space-y-8 relative mt-8">
         {filteredJadwal.length === 0 ? (
-          <div className="py-20 text-center bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
-            <p className="text-xs font-semibold text-slate-400  ">Tidak ada jadwal dalam scope filter ini</p>
+          <div className="py-20 text-center bg-slate-50 rounded-none border-2 border-dashed border-slate-200">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Tidak ada jadwal dalam scope audit ini</p>
           </div>
         ) : (
           filteredJadwal.map((jadwal, index) => {
@@ -177,7 +189,7 @@ export default function JadwalPanenPage() {
                 )}
                 
                 {/* Timeline Dot */}
-                <div className={`absolute left-0 top-0 h-10 w-10 rounded-xl border-4 border-white shadow-lg flex items-center justify-center transition-all z-10 ${
+                <div className={`absolute left-0 top-0 h-10 w-10 rounded-none border-4 border-white shadow-lg flex items-center justify-center transition-all z-10 ${
                   isToday ? 'bg-slate-900 scale-110' : 'bg-white'
                 }`}>
                   <Calendar className={`h-4 w-4 ${isToday ? 'text-emerald-400' : 'text-slate-400'}`} />
@@ -186,50 +198,53 @@ export default function JadwalPanenPage() {
                 <div className="space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-3">
-                      <h3 className="text-sm font-semibold text-slate-900  ">{jadwal.hari}, {jadwal.tanggal}</h3>
-                      {isToday && <Badge className="bg-emerald-500 text-white text-xs font-semibold  border-none">HARI INI</Badge>}
+                      <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{jadwal.hari}, {jadwal.tanggal}</h3>
+                      {isToday && <Badge className="rounded-none bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest border-none">HARI INI</Badge>}
                     </div>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-3 w-3 text-slate-400" />
-                      <span className="text-xs font-semibold text-slate-500  ">{jadwal.desa} • {jadwal.koperasi}</span>
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{jadwal.desa} • {jadwal.koperasi}</span>
                     </div>
                   </div>
 
-                  <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+                  <Card className="rounded-none border-none shadow-sm overflow-hidden border-t-4 border-t-emerald-500">
                     <CardContent className="p-0 divide-y divide-slate-50">
                       {jadwal.items.map((item, itemIndex) => (
                         <div key={itemIndex} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition-colors">
                           <div className="flex items-start gap-4">
-                            <div className="h-10 w-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
+                            <div className="h-10 w-10 rounded-none bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
                               <Leaf className="h-5 w-5 text-slate-900" />
                             </div>
                             <div className="space-y-1">
-                              <p className="text-xs font-semibold text-slate-900  ">{item.komoditas}</p>
+                              <p className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.komoditas}</p>
                               <div className="flex items-center gap-3">
                                 <div className="flex items-center gap-1.5">
                                   <User className="h-3 w-3 text-slate-400" />
-                                  <span className="text-xs font-bold text-slate-500  ">{item.produsen}</span>
+                                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.produsen}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                   <MapPin className="h-3 w-3 text-slate-400" />
-                                  <span className="text-xs font-bold text-slate-500  ">{item.lokasi}</span>
+                                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.lokasi}</span>
                                 </div>
                               </div>
                             </div>
                           </div>
                           
-                          <div className="flex items-center justify-between sm:justify-end gap-8 bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-lg border sm:border-none border-slate-100">
+                          <div className="flex items-center justify-between sm:justify-end gap-8 bg-slate-50 sm:bg-transparent p-3 sm:p-0 rounded-none border sm:border-none border-slate-100">
                             <div className="text-left sm:text-right">
-                              <p className="text-sm font-semibold text-emerald-600 ">{item.estimasi.toUpperCase()}</p>
-                              <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400   mt-0.5 sm:justify-end">
+                              <p className="text-sm font-black text-emerald-600 uppercase tracking-tighter">{(item.estimasi / 1000).toLocaleString()} TON</p>
+                              <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5 sm:justify-end">
                                 <Clock className="h-3 w-3" />
                                 {item.waktu}
                               </div>
                             </div>
-                            <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
-                              item.status === 'terkonfirmasi' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
-                            }`}>
-                              {item.status === 'terkonfirmasi' ? <CheckCircle2 className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
+                            <div 
+                              onClick={() => handleAction(`Status ${jadwal.id}`)}
+                              className={`h-10 w-10 rounded-none cursor-pointer flex items-center justify-center transition-all ${
+                                item.status === 'terkonfirmasi' ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200' : 'bg-amber-100 text-amber-600 hover:bg-amber-200'
+                              }`}
+                            >
+                              {item.status === 'terkonfirmasi' ? <CheckCircle2 className="h-5 w-5" /> : <Clock className="h-5 w-5" />}
                             </div>
                           </div>
                         </div>
@@ -245,3 +260,4 @@ export default function JadwalPanenPage() {
     </div>
   )
 }
+

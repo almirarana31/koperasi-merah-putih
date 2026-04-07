@@ -118,20 +118,20 @@ export default function PinjamanPage() {
                 <ArrowLeft className="h-4 w-4 text-slate-600" />
               </Link>
             </Button>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">NATIONAL CREDIT HUB</h1>
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT KREDIT NASIONAL</h1>
           </div>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed ml-12">
-            CREDIT FLOW MONITORING & RISK ASSESSMENT • {stats.activeApps} ACTIVE APPLICATIONS • {formatCurrency(stats.totalVolume)} TOTAL VOLUME
+            MONITORING ALIRAN KREDIT & PENILAIAN RISIKO • {stats.activeApps} PENGAJUAN AKTIF • {formatCurrency(stats.totalVolume)} TOTAL VOLUME
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Portfolio Sync", description: "Aggregating regional credit flows into national risk matrix..." })}>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Sinkronisasi Portofolio", description: "Menggabungkan aliran kredit regional ke dalam matriks risiko nasional..." })}>
             <History className="h-3.5 w-3.5 mr-2 text-blue-600" />
-            HISTORY
+            RIWAYAT
           </Button>
-          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Audit Hub", description: "Generating cross-entity credit integrity report..." })}>
+          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Pusat Audit", description: "Menghasilkan laporan integritas kredit lintas entitas..." })}>
             <Download className="h-4 w-4 mr-2" />
-            AUDIT HUB
+            PUSAT AUDIT
           </Button>
         </div>
       </div>
@@ -140,10 +140,10 @@ export default function PinjamanPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'ANTRIAN APLIKASI', value: stats.activeApps, sub: 'PENDING REVIEW', icon: Clock3, tone: 'slate' },
-          { label: 'VOLUME PENGAJUAN', value: (stats.totalVolume / 1000000000).toFixed(2) + ' B', sub: 'BILLION IDR', icon: CircleDollarSign, tone: 'emerald' },
-          { label: 'AVG CREDIT SCORE', value: stats.avgScore, sub: 'NATIONAL RATING', icon: Activity, tone: 'blue' },
-          { label: 'DEFAULT RISK', value: stats.nplRate + '%', sub: 'SYSTEMIC INDEX', icon: ShieldAlert, tone: 'rose' },
+          { label: 'ANTRIAN APLIKASI', value: stats.activeApps, sub: 'MENUNGGU TINJAUAN', icon: Clock3, tone: 'slate' },
+          { label: 'VOLUME PENGAJUAN', value: (stats.totalVolume / 1000000000).toFixed(2) + ' M', sub: 'MILIAR IDR', icon: CircleDollarSign, tone: 'emerald' },
+          { label: 'RATA-RATA SKOR KREDIT', value: stats.avgScore, sub: 'RATING NASIONAL', icon: Activity, tone: 'blue' },
+          { label: 'RISIKO GAGAL BAYAR', value: stats.nplRate + '%', sub: 'INDEKS SISTEMIK', icon: ShieldAlert, tone: 'rose' },
         ].map((s, i) => (
           <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
              <div className={`h-1 w-full ${
@@ -181,7 +181,7 @@ export default function PinjamanPage() {
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="SEARCH APPLICATIONS BY MEMBER NAME OR TRX ID..."
+                  placeholder="CARI PENGAJUAN BERDASARKAN NAMA ANGGOTA ATAU ID TRX..."
                   className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
                 />
               </div>
@@ -214,22 +214,22 @@ export default function PinjamanPage() {
                       </div>
                       <div className="text-right">
                          <p className="text-[10px] font-black text-slate-900">{formatCurrency(item.amount)}</p>
-                         <p className="text-[8px] font-bold text-slate-400 uppercase">{item.tenor}M TENOR</p>
+                         <p className="text-[8px] font-bold text-slate-400 uppercase">{item.tenor} BLN TENOR</p>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 space-y-4">
                     <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-50">
                        <div className="flex flex-col">
-                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">REGION</span>
+                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">WILAYAH</span>
                           <span className="text-[9px] font-black text-slate-900 uppercase mt-0.5">{item.village}</span>
                        </div>
                        <div className="flex flex-col">
-                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">COMMODITY</span>
+                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">KOMODITAS</span>
                           <span className="text-[9px] font-black text-slate-900 uppercase mt-0.5">{item.commodity}</span>
                        </div>
                        <div className="flex flex-col text-right">
-                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">SCORE</span>
+                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">SKOR</span>
                           <span className="text-[9px] font-black text-emerald-600 mt-0.5">{item.score}</span>
                        </div>
                     </div>
@@ -237,11 +237,11 @@ export default function PinjamanPage() {
                        "{item.recommendation}"
                     </div>
                     <div className="flex gap-2">
-                       <Button variant="outline" className="flex-1 h-8 border-slate-200 text-slate-600 font-black text-[9px] uppercase tracking-widest rounded-none hover:bg-slate-50" onClick={() => toast({ title: "Document Review", description: "Loading electronic KYC and supporting documents for audit..." })}>
-                          REVIEW DOCS
+                       <Button variant="outline" className="flex-1 h-8 border-slate-200 text-slate-600 font-black text-[9px] uppercase tracking-widest rounded-none hover:bg-slate-50" onClick={() => toast({ title: "Tinjauan Dokumen", description: "Memuat e-KYC dan dokumen pendukung untuk audit..." })}>
+                          TINJAU DOKUMEN
                        </Button>
-                       <Button className="flex-1 h-8 bg-slate-900 text-white font-black text-[9px] uppercase tracking-widest rounded-none hover:bg-slate-800 transition-all" onClick={() => toast({ title: "Final Approval", description: "Submitting application " + item.id + " to national committee for final disbursement..." })}>
-                          EXECUTE APPROVAL
+                       <Button className="flex-1 h-8 bg-slate-900 text-white font-black text-[9px] uppercase tracking-widest rounded-none hover:bg-slate-800 transition-all" onClick={() => toast({ title: "Persetujuan Akhir", description: "Mengirimkan pengajuan " + item.id + " ke komite nasional untuk pencairan akhir..." })}>
+                          EKSEKUSI PERSETUJUAN
                        </Button>
                     </div>
                   </CardContent>
@@ -256,39 +256,39 @@ export default function PinjamanPage() {
             <CardHeader className="p-4 border-b border-white/5 bg-slate-900/50">
                <div className="flex items-center justify-between">
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                     <Activity className="h-4 w-4 text-blue-500" /> CREDIT FEED
+                     <Activity className="h-4 w-4 text-blue-500" /> FEED KREDIT
                   </CardTitle>
                   <div className="flex items-center gap-1.5">
                      <div className="h-1 w-1 bg-blue-500 rounded-full animate-ping" />
-                     <span className="text-[9px] font-black text-blue-500 tracking-widest">LIVE</span>
+                     <span className="text-[9px] font-black text-blue-500 tracking-widest">LANGSUNG</span>
                   </div>
                </div>
             </CardHeader>
             <CardContent className="p-0">
                <div className="divide-y divide-white/5">
                   {[
-                    { time: '14:22', action: 'Approval: AP-022', status: 'SUCCESS', borrower: 'Subang' },
-                    { time: '14:10', action: 'Credit Score Update', status: 'INFO', borrower: 'Bandung' },
-                    { time: '13:55', action: 'Disbursement Alert', status: 'WARN', borrower: 'Nasional' },
-                    { time: '13:40', action: 'New App: AP-045', status: 'PENDING', borrower: 'Cikupa' },
+                    { time: '14:22', action: 'Persetujuan: AP-022', status: 'BERHASIL', borrower: 'Subang' },
+                    { time: '14:10', action: 'Pembaruan Skor Kredit', status: 'INFO', borrower: 'Bandung' },
+                    { time: '13:55', action: 'Peringatan Pencairan', status: 'PERINGATAN', borrower: 'Nasional' },
+                    { time: '13:40', action: 'Pengajuan Baru: AP-045', status: 'PENDING', borrower: 'Cikupa' },
                   ].map((log, i) => (
                     <div key={i} className="p-4 hover:bg-white/5 transition-colors cursor-pointer group">
                        <div className="flex items-center justify-between mb-2">
                           <Badge className={`text-[8px] font-black px-1.5 h-4 border-none rounded-none tracking-widest ${
-                            log.status === 'WARN' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
+                            log.status === 'PERINGATAN' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
                           }`}>
                              {log.status}
                           </Badge>
                           <span className="text-[9px] font-mono text-slate-600 group-hover:text-slate-400">{log.time}</span>
                        </div>
                        <p className="text-xs font-black text-slate-200 uppercase tracking-tight leading-tight">{log.action}</p>
-                       <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">REGION: {log.borrower}</p>
+                       <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">WILAYAH: {log.borrower}</p>
                     </div>
                   ))}
                </div>
                <div className="p-4 bg-white/5 border-t border-white/5">
-                  <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-9 rounded-none" onClick={() => toast({ title: "Master Logs", description: "Loading national credit assessment logs..." })}>
-                     FULL CREDIT LOGS →
+                  <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-9 rounded-none" onClick={() => toast({ title: "Log Induk", description: "Memuat log penilaian kredit nasional..." })}>
+                     LOG KREDIT LENGKAP →
                   </Button>
                </div>
             </CardContent>
@@ -296,13 +296,13 @@ export default function PinjamanPage() {
 
           <Card className="border-none shadow-sm bg-slate-50 rounded-none">
              <CardHeader className="p-4 border-b border-slate-200">
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">RISK ASSESSMENT</CardTitle>
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">PENILAIAN RISIKO</CardTitle>
              </CardHeader>
              <CardContent className="p-4 space-y-4">
                 {[
-                  { label: 'COLLECTIBILITY INDEX', val: '98.2%', status: 'Optimal' },
-                  { label: 'BRANCH LIQUIDITY', val: 'Rp 4.2B', status: 'Stable' },
-                  { label: 'SECTOR CONCENTRATION', val: 'PADI', status: 'High' },
+                  { label: 'INDEKS KOLEKTIBILITAS', val: '98.2%', status: 'Optimal' },
+                  { label: 'LIKUIDITAS CABANG', val: 'Rp 4.2M', status: 'Stabil' },
+                  { label: 'KONSENTRASI SEKTOR', val: 'PADI', status: 'Tinggi' },
                 ].map((h, i) => (
                    <div key={i} className="flex items-center justify-between">
                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{h.label}</span>
@@ -312,15 +312,15 @@ export default function PinjamanPage() {
                       </div>
                    </div>
                 ))}
-                <Button className="w-full h-9 bg-white border border-slate-200 text-slate-900 font-black text-[9px] uppercase tracking-widest hover:bg-slate-50 shadow-sm rounded-none mt-2" onClick={() => toast({ title: "Risk Heatmap", description: "Visualizing regional default probabilities and systemic risk clusters..." })}>
-                   VIEW RISK HEATMAP
+                <Button className="w-full h-9 bg-white border border-slate-200 text-slate-900 font-black text-[9px] uppercase tracking-widest hover:bg-slate-50 shadow-sm rounded-none mt-2" onClick={() => toast({ title: "Heatmap Risiko", description: "Visualisasi probabilitas gagal bayar regional dan klaster risiko sistemik..." })}>
+                   LIHAT HEATMAP RISIKO
                 </Button>
              </CardContent>
           </Card>
         </div>
       </div>
 
-      <Card className="border-none overflow-hidden relative group cursor-pointer bg-rose-50 border border-rose-100 rounded-none" onClick={() => toast({ title: "Audit Triggered", description: "Initiating forensic credit review for seasonal volatility in Jawa Timur region..." })}>
+      <Card className="border-none overflow-hidden relative group cursor-pointer bg-rose-50 border border-rose-100 rounded-none" onClick={() => toast({ title: "Audit Dipicu", description: "Memulai tinjauan kredit forensik untuk volatilitas musiman di wilayah Jawa Timur..." })}>
         <div className="absolute top-0 right-0 p-6 opacity-10 transition-transform duration-700 group-hover:scale-110">
           <ShieldAlert className="h-32 w-32 text-rose-900" />
         </div>
@@ -331,14 +331,14 @@ export default function PinjamanPage() {
              </div>
              <div>
                 <div className="flex items-center gap-3">
-                   <Badge className="bg-rose-600 text-white text-[10px] font-black px-2 h-5 rounded-none tracking-widest border-none">SYSTEM ALERT</Badge>
-                   <span className="text-[10px] font-black text-rose-900 uppercase tracking-widest">High Volatility Detected</span>
+                   <Badge className="bg-rose-600 text-white text-[10px] font-black px-2 h-5 rounded-none tracking-widest border-none">PERINGATAN SISTEM</Badge>
+                   <span className="text-[10px] font-black text-rose-900 uppercase tracking-widest">Volatilitas Tinggi Terdeteksi</span>
                 </div>
-                <p className="mt-2 text-lg font-black text-rose-900 uppercase tracking-tight">ALERT: Application surge detected in Jawa Timur (Planting Season Credit). Strict scoring audit recommended.</p>
+                <p className="mt-2 text-lg font-black text-rose-900 uppercase tracking-tight">PERINGATAN: Lonjakan pengajuan terdeteksi di Jawa Timur (Kredit Musim Tanam). Audit skoring ketat direkomendasikan.</p>
              </div>
           </div>
           <Button className="bg-rose-900 text-white hover:bg-rose-800 h-12 rounded-none px-8 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-200 transition-all">
-             REGIONAL AUDIT
+             AUDIT REGIONAL
           </Button>
         </CardContent>
       </Card>

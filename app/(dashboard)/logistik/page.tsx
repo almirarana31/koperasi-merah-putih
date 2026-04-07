@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Activity, MapPin, Navigation, Search, Truck } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 import { useAuth } from '@/lib/auth/use-auth'
+import { useToast } from '@/components/ui/use-toast'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -60,6 +61,7 @@ function statusTone(status: string) {
 
 export default function LogistikPage() {
   const { user } = useAuth()
+  const { toast } = useToast()
   const showHierarchyFilter = user?.role === 'kementerian' || user?.role === 'pemda' || user?.role === 'sysadmin'
 
   const [search, setSearch] = useState('')
@@ -104,22 +106,22 @@ export default function LogistikPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-slate-900">LOGISTICS COMMAND CENTER</h1>
-          <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">
-            MONITORING ARUS DISTRIBUSI KOMODITAS NASIONAL
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT KOMANDO LOGISTIK</h1>
+          <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
+            PEMANTAUAN ARUS DISTRIBUSI KOMODITAS NASIONAL
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black border-slate-200" asChild>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" asChild>
             <Link href="/logistik/tracking">
-              <Navigation className="mr-2 h-3.5 w-3.5" />
-              LIVE TRACKING
+              <Navigation className="mr-2 h-3.5 w-3.5 text-blue-600" />
+              PELACAKAN LANGSUNG
             </Link>
           </Button>
-          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black border-slate-200" asChild>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" asChild>
             <Link href="/logistik/rute">
-              <MapPin className="mr-2 h-3.5 w-3.5" />
-              OPTIMAL ROUTE
+              <MapPin className="mr-2 h-3.5 w-3.5 text-emerald-600" />
+              RUTE OPTIMAL
             </Link>
           </Button>
         </div>
@@ -130,27 +132,27 @@ export default function LogistikPage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
           { label: 'PENGIRIMAN AKTIF', value: Math.floor(activeShipments * scaleFactor), sub: 'UNIT DALAM PERJALANAN', icon: Truck, tone: 'slate' },
-          { label: 'PENGIRIMAN SELESAI', value: Math.floor(deliveredShipments * scaleFactor), sub: 'SUCCESSFUL DELIVERY', icon: Navigation, tone: 'emerald' },
-          { label: 'ON-TIME RATE', value: `${onTimeRate}%`, sub: 'EFFICIENCY SCORE', icon: Activity, tone: 'blue' },
+          { label: 'PENGIRIMAN SELESAI', value: Math.floor(deliveredShipments * scaleFactor), sub: 'PENGIRIMAN BERHASIL', icon: Navigation, tone: 'emerald' },
+          { label: 'ON-TIME RATE', value: `${onTimeRate}%`, sub: 'SKOR EFISIENSI', icon: Activity, tone: 'blue' },
           { label: 'BIAYA DISTRIBUSI', value: formatCurrency(totalCost * scaleFactor), sub: 'AKUMULASI OPERASIONAL', icon: Truck, tone: 'slate' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden rounded-none">
             <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'}`} />
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
                 <stat.icon className={`h-4 w-4 ${stat.tone === 'emerald' ? 'text-emerald-500' : stat.tone === 'blue' ? 'text-blue-500' : 'text-slate-900'}`} />
               </div>
-              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+              <CardTitle className="text-xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-[10px] font-bold text-slate-500 mt-1">{stat.sub}</p>
+              <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">{stat.sub}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card className="border-none bg-white shadow-sm overflow-hidden">
+      <Card className="border-none bg-white shadow-sm overflow-hidden rounded-none">
         <div className="h-1 w-full bg-slate-900" />
         <CardContent className="p-4">
           <div className="grid gap-3 lg:grid-cols-[1.2fr_220px]">
@@ -160,19 +162,19 @@ export default function LogistikPage() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="CARI NOMOR ORDER, DRIVER, ATAU TUJUAN..."
-                className="pl-9 h-10 text-xs font-semibold bg-slate-50 border-slate-100"
+                className="pl-9 h-10 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="h-10 text-xs font-semibold bg-slate-50 border-slate-100">
+              <SelectTrigger className="h-10 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none">
                 <SelectValue placeholder="SEMUA STATUS" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">SEMUA STATUS</SelectItem>
-                <SelectItem value="dijadwalkan">DIJADWALKAN</SelectItem>
-                <SelectItem value="pickup">PICKUP</SelectItem>
-                <SelectItem value="transit">TRANSIT</SelectItem>
-                <SelectItem value="delivered">DELIVERED</SelectItem>
+              <SelectContent className="rounded-none border-slate-200">
+                <SelectItem value="all" className="text-[10px] font-black uppercase tracking-widest">SEMUA STATUS</SelectItem>
+                <SelectItem value="dijadwalkan" className="text-[10px] font-black uppercase tracking-widest">DIJADWALKAN</SelectItem>
+                <SelectItem value="pickup" className="text-[10px] font-black uppercase tracking-widest">PICKUP</SelectItem>
+                <SelectItem value="transit" className="text-[10px] font-black uppercase tracking-widest">TRANSIT</SelectItem>
+                <SelectItem value="delivered" className="text-[10px] font-black uppercase tracking-widest">DELIVERED</SelectItem>
               </SelectContent>
             </Select>
           </div>

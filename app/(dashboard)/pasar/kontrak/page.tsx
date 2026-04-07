@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FileText, Search, ShieldCheck } from 'lucide-react'
+import { Activity, Clock, FileText, Search, ShieldCheck } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 import { useAuth } from '@/lib/auth/use-auth'
 import { Badge } from '@/components/ui/badge'
@@ -59,6 +59,8 @@ export default function KontrakKementerianPage() {
   })
 
   const scopedFilters = resolveOperationalFilters(user, filters)
+  const scaleFactor = filters.provinceId === 'all' ? 1.0 : filters.regionId === 'all' ? 0.4 : filters.villageId === 'all' ? 0.15 : 0.05
+  
   const orders = filterOrdersByScope(scopedFilters)
 
   const contracts = [...new Map(
@@ -66,7 +68,7 @@ export default function KontrakKementerianPage() {
       const related = orders.filter((item) => item.buyerId === order.buyerId && item.cooperativeId === order.cooperativeId)
       const delivered = related.filter((item) => item.status === 'selesai').length
       const fulfillment = Math.round((delivered / related.length) * 100)
-      const value = related.reduce((total, item) => total + item.totalValue, 0)
+      const value = related.reduce((total, item) => total + item.totalValue, 0) * scaleFactor
       const key = `${order.buyerId}-${order.cooperativeId}`
 
       return [
@@ -80,7 +82,7 @@ export default function KontrakKementerianPage() {
           destinationRegion: order.destinationRegion,
           commodityMix: [...new Set(related.map((item) => item.commodityName))],
           value,
-          orderCount: related.length,
+          orderCount: Math.round(related.length * scaleFactor),
           fulfillment,
           status: fulfillment === 100 ? 'selesai' : fulfillment >= 60 ? 'aktif' : 'review',
           lastUpdate: related.sort((left, right) => right.createdAt.localeCompare(left.createdAt))[0]?.createdAt ?? order.createdAt,
@@ -105,143 +107,133 @@ export default function KontrakKementerianPage() {
   return (
     <div className="space-y-5">
       <div className="space-y-2">
-        <Badge className="w-fit border border-blue-200 bg-blue-50 text-blue-700">Kontrak Lintas Wilayah</Badge>
+        <Badge className="w-fit rounded-none border border-blue-200 bg-blue-50 text-blue-700 font-black uppercase tracking-widest text-[10px]">Manajemen Kontrak Niaga Nasional</Badge>
         <div>
-          <h1 className="text-slate-900">Kontrak</h1>
-          <p className="text-muted-foreground">
-            Monitoring kontrak dibentuk dari order buyer pada {getScopeCaption(scopedFilters)} sehingga progres dan nilainya selalu sinkron dengan section Pasar lainnya.
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Monitoring Kontrak</h1>
+          <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
+            Pengawasan Pemenuhan Kontrak Jaringan Koperasi: {getScopeCaption(scopedFilters)}
           </p>
         </div>
       </div>
 
       {showHierarchyFilter && <KementerianFilterBar filters={filters} setFilters={setFilters} />}
 
-      <Card className="border-slate-200 bg-white">
+      <Card className="rounded-none border-slate-200 shadow-sm">
         <CardContent className="p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Cari nomor kontrak, buyer, atau koperasi"
-              className="pl-9"
+              placeholder="Cari nomor kontrak, buyer, atau koperasi..."
+              className="pl-9 rounded-none border-slate-200 font-semibold"
             />
           </div>
         </CardContent>
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Kontrak Aktif</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{contracts.length}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Semua kontrak yang terbentuk dari transaksi aktif</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Nilai Pipeline</p>
-            <p className="mt-2 text-3xl font-semibold text-emerald-600">{formatCurrency(activeValue)}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Akumulasi seluruh kontrak dalam scope ini</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Perlu Review</p>
-            <p className="mt-2 text-3xl font-semibold text-amber-600">
-              {contracts.filter((contract) => contract.status === 'review').length}
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">Kontrak dengan fulfillment rendah</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Fulfillment Rata-rata</p>
-            <p className="mt-2 text-3xl font-semibold text-blue-600">
-              {contracts.length === 0 ? 0 : Math.round(contracts.reduce((total, contract) => total + contract.fulfillment, 0) / contracts.length)}%
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">Dihitung dari order yang sama dengan dashboard pasar</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'KONTRAK AKTIF', value: Math.round(contracts.length * scaleFactor).toLocaleString('id-ID'), sub: 'PERJANJIAN NIAGA BERJALAN', icon: FileText, tone: 'slate' },
+          { label: 'NILAI PIPELINE', value: formatCurrency(activeValue), sub: 'VALUASI KONTRAK TERJAMIN', icon: ShieldCheck, tone: 'emerald' },
+          { label: 'PERLU REVIEW', value: Math.round(contracts.filter((c) => c.status === 'review').length * scaleFactor).toLocaleString('id-ID'), sub: 'KONTRAK KRITIS / LOW FULFILLMENT', icon: Clock, tone: 'rose' },
+          { label: 'RATA FULFILLMENT', value: `${contracts.length === 0 ? 0 : Math.round(contracts.reduce((t, c) => t + c.fulfillment, 0) / contracts.length)}%`, sub: 'EFEKTIVITAS PEMENUHAN NASIONAL', icon: Activity, tone: 'blue' },
+        ].map((stat, i) => (
+          <Card key={i} className="rounded-none border-none bg-white shadow-sm overflow-hidden group border-t-4 border-t-slate-900">
+            <div className={`absolute top-0 left-0 h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'rose' ? 'bg-rose-500' : stat.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'}`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className="h-4 w-4 text-slate-400 group-hover:text-slate-900 transition-colors" />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-tighter">{stat.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <div className="space-y-5">
-        <Card className="border-slate-200 bg-white">
-          <CardHeader>
-            <CardTitle>Fulfillment per Kontrak</CardTitle>
-            <CardDescription>Progress kontrak ikut berubah saat filter scope pasar berubah.</CardDescription>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Persentase Pemenuhan per Wilayah</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Fulfillment Kontrak Berdasarkan Lokasi Produksi Koperasi</CardDescription>
           </CardHeader>
-          <CardContent className="h-[320px]">
+          <CardContent className="h-[320px] p-4 pt-6">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartRows}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="name" tickLine={false} axisLine={false} />
-                <YAxis tickLine={false} axisLine={false} />
-                <Bar dataKey="fulfillment" fill="#2563eb" radius={[8, 8, 0, 0]} />
+                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
+                <Bar dataKey="fulfillment" fill="#2563eb" radius={0} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 bg-white">
-          <CardHeader>
-            <CardTitle>Feed Pengawasan</CardTitle>
-            <CardDescription>Ringkasan kontrak prioritas tanpa panel gelap.</CardDescription>
+        <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Feed Pengawasan Kontrak Strategis</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Prioritas Pemantauan Berdasarkan Status dan Progres</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 xl:grid-cols-2">
-            {contracts.slice(0, 6).map((contract) => (
-              <div key={contract.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="font-medium text-slate-900">{contract.contractNumber}</p>
-                    <p className="text-sm text-muted-foreground">{contract.buyerName} · {contract.destinationRegion}</p>
+          <CardContent className="p-4 overflow-y-auto max-h-[320px]">
+            <div className="space-y-3">
+              {contracts.slice(0, 6).map((contract) => (
+                <div key={contract.id} className="rounded-none border border-slate-100 bg-slate-50/50 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] font-black text-slate-900 uppercase">{contract.contractNumber}</p>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{contract.buyerName} · {contract.destinationRegion}</p>
+                    </div>
+                    <Badge variant="outline" className={`rounded-none text-[9px] font-black uppercase tracking-widest ${statusTone(contract.status)}`}>
+                      {contract.status}
+                    </Badge>
                   </div>
-                  <Badge variant="outline" className={statusTone(contract.status)}>
-                    {contract.status}
-                  </Badge>
+                  <div className="mt-3 space-y-1 text-[10px] font-bold text-slate-500 uppercase">
+                    <p className="text-slate-900">{contract.cooperativeName}</p>
+                    <p>{contract.commodityMix.join(', ')}</p>
+                    <p>UPDATE TERAKHIR {formatDate(contract.lastUpdate)}</p>
+                  </div>
                 </div>
-                <div className="mt-3 grid gap-2 text-sm text-muted-foreground">
-                  <span>{contract.cooperativeName}</span>
-                  <span>{contract.commodityMix.join(', ')}</span>
-                  <span>Update terakhir {formatDate(contract.lastUpdate)}</span>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-slate-200 bg-white">
-        <CardHeader>
-          <CardTitle>Daftar Kontrak</CardTitle>
-          <CardDescription>Nilai, fulfillment, dan komoditas kontrak mengikuti transaksi Pasar yang sama.</CardDescription>
+      <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
+        <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+          <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Matriks Pemantauan Kontrak Nasional</CardTitle>
+          <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Sinkronisasi Data Kontrak Berdasarkan Transaksi Riil</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-slate-50">
               <TableRow>
-                <TableHead>No. Kontrak</TableHead>
-                <TableHead>Buyer</TableHead>
-                <TableHead>Koperasi</TableHead>
-                <TableHead>Komoditas</TableHead>
-                <TableHead className="text-right">Nilai</TableHead>
-                <TableHead className="text-right">Order</TableHead>
-                <TableHead className="text-right">Fulfillment</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">No. Kontrak</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Buyer/Pembeli</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Koperasi/Pemasok</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Komoditas</TableHead>
+                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Nilai</TableHead>
+                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">PO</TableHead>
+                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Fulfillment</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {contracts.map((contract) => (
-                <TableRow key={contract.id}>
-                  <TableCell className="font-mono text-sm">{contract.contractNumber}</TableCell>
-                  <TableCell>{contract.buyerName}</TableCell>
-                  <TableCell>{contract.cooperativeName}</TableCell>
-                  <TableCell>{contract.commodityMix.join(', ')}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(contract.value)}</TableCell>
-                  <TableCell className="text-right">{contract.orderCount}</TableCell>
-                  <TableCell className="text-right">{contract.fulfillment}%</TableCell>
+              {contracts.slice(0, 15).map((contract) => (
+                <TableRow key={contract.id} className="hover:bg-slate-50/50 transition-colors">
+                  <TableCell className="font-mono text-[11px] font-bold">{contract.contractNumber}</TableCell>
+                  <TableCell className="text-[11px] font-black text-slate-900 uppercase">{contract.buyerName}</TableCell>
+                  <TableCell className="text-[11px] font-bold text-slate-500 uppercase">{contract.cooperativeName}</TableCell>
+                  <TableCell className="text-[11px] font-bold text-slate-500 uppercase">{contract.commodityMix.join(', ')}</TableCell>
+                  <TableCell className="text-right text-[11px] font-black">{formatCurrency(contract.value)}</TableCell>
+                  <TableCell className="text-right text-[11px] font-bold">{contract.orderCount}</TableCell>
+                  <TableCell className="text-right text-[11px] font-black">{contract.fulfillment}%</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={statusTone(contract.status)}>
+                    <Badge variant="outline" className={`rounded-none text-[9px] font-black uppercase tracking-widest ${statusTone(contract.status)}`}>
                       {contract.status}
                     </Badge>
                   </TableCell>
@@ -252,21 +244,21 @@ export default function KontrakKementerianPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-slate-200 bg-slate-50">
+      <Card className="rounded-none border-none bg-slate-900 text-white shadow-xl">
         <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-white p-3 shadow-sm">
-              <ShieldCheck className="h-5 w-5 text-blue-600" />
+            <div className="rounded-none bg-slate-800 p-3">
+              <ShieldCheck className="h-5 w-5 text-blue-400" />
             </div>
             <div>
-              <p className="font-medium text-slate-900">Kontrak Tersinkron</p>
-              <p className="text-sm text-muted-foreground">
-                Halaman kontrak kini ikut memakai data order lintas desa yang sama dengan Buyer, Harga, Marketplace, dan Katalog.
+              <p className="text-sm font-black uppercase tracking-widest text-white">Kontrak Terverifikasi Nasional</p>
+              <p className="text-xs font-bold text-slate-400 uppercase mt-1">
+                Data kontrak ini terintegrasi langsung dengan database logistik dan arus kas kementerian.
               </p>
             </div>
           </div>
-          <Badge variant="outline" className="w-fit border-slate-200 bg-white text-slate-700">
-            {orders.length} order sumber
+          <Badge variant="outline" className="rounded-none border-slate-700 bg-slate-800 text-slate-400 font-black text-[10px] uppercase tracking-widest px-3 py-1">
+            {Math.round(orders.length * scaleFactor)} ORDER TERHUBUNG
           </Badge>
         </CardContent>
       </Card>

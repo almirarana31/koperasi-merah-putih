@@ -121,19 +121,19 @@ export default function RutePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">ROUTE NETWORK COMMAND</h1>
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">KOMANDO JARINGAN RUTE</h1>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            CORRIDOR OPTIMIZATION & LOGISTICS TOPOLOGY ANALYTICS • {stats.activeCorridors} ACTIVE NATIONAL CORRIDORS
+            OPTIMASI KORIDOR & ANALITIK TOPOLOGI LOGISTIK • {stats.activeCorridors} KORIDOR NASIONAL AKTIF
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Topology Scan", description: "Mapping national distribution corridors and bottleneck nodes..." })}>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Pemindaian Topologi", description: "Memetakan koridor distribusi nasional dan titik hambatan..." })}>
             <Maximize2 className="h-3.5 w-3.5 mr-2 text-blue-600" />
-            TOPOLOGY VIEW
+            PANDANGAN TOPOLOGI
           </Button>
-          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Corridor Creation", description: "Opening route design suite for new cluster connection..." })}>
+          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Pembuatan Koridor", description: "Membuka suite desain rute untuk koneksi klaster baru..." })}>
             <Plus className="h-4 w-4 mr-2" />
-            DEFINE CORRIDOR
+            DEFINISI KORIDOR
           </Button>
         </div>
       </div>
@@ -142,10 +142,10 @@ export default function RutePage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'KORIDOR AKTIF', value: stats.activeCorridors, sub: 'VERIFIED PATHS', icon: Navigation, tone: 'emerald' },
-          { label: 'TOTAL NETWORK', value: stats.totalDistance + ' KM', sub: 'OPERATIONAL REACH', icon: MapPin, tone: 'blue' },
-          { label: 'TRIP FREQUENCY', value: stats.tripFreq, sub: 'WEEKLY MISSIONS', icon: Activity, tone: 'slate' },
-          { label: 'NETWORK EFFICIENCY', value: stats.efficiency + '%', sub: 'LOAD OPTIMIZATION', icon: Zap, tone: 'emerald' },
+          { label: 'KORIDOR AKTIF', value: stats.activeCorridors, sub: 'JALUR TERVERIFIKASI', icon: Navigation, tone: 'emerald' },
+          { label: 'TOTAL JARINGAN', value: stats.totalDistance + ' KM', sub: 'JANGKAUAN OPERASIONAL', icon: MapPin, tone: 'blue' },
+          { label: 'FREKUENSI PERJALANAN', value: stats.tripFreq, sub: 'MISI MINGGUAN', icon: Activity, tone: 'slate' },
+          { label: 'EFISIENSI JARINGAN', value: stats.efficiency + '%', sub: 'OPTIMASI MUATAN', icon: Zap, tone: 'emerald' },
         ].map((s, i) => (
           <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
              <div className={`h-1 w-full ${
@@ -215,21 +215,21 @@ export default function RutePage() {
                 <CardContent className="p-4 space-y-6">
                   <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-50">
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">DISTANCE</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">JARAK</p>
                       <p className="text-[10px] font-black text-slate-900 mt-1 uppercase">{rute.jarak}</p>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">EST. TIME</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">EST. WAKTU</p>
                       <p className="text-[10px] font-black text-slate-900 mt-1 uppercase">{rute.estimasiWaktu}</p>
                     </div>
                     <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">FREQUENCY</p>
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">FREKUENSI</p>
                       <p className="text-[10px] font-black text-slate-900 mt-1 uppercase">{rute.frekuensi}</p>
                     </div>
                   </div>
 
                   <div className="p-3 bg-slate-50 border border-slate-100 space-y-3">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">NETWORK TOPOLOGY</p>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">TOPOLOGI JARINGAN</p>
                     <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
                       {rute.stops.map((stop, idx) => (
                         <div key={idx} className="flex items-center gap-2 shrink-0">
@@ -250,11 +250,11 @@ export default function RutePage() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="outline" className="flex-1 h-9 border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-50" onClick={() => toast({ title: "Map Visualization", description: "Projecting corridor " + rute.id + " onto national GIS layer..." })}>
-                       MAP VISUALIZATION
+                    <Button variant="outline" className="flex-1 h-9 border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-50" onClick={() => toast({ title: "Visualisasi Peta", description: "Memproyeksikan koridor " + rute.id + " ke lapisan GIS nasional..." })}>
+                       VISUALISASI PETA
                     </Button>
-                    <Button className="flex-1 h-9 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-800 transition-all" onClick={() => toast({ title: "Route Re-Optimization", description: "Recalculating mission parameters for corridor " + rute.id })}>
-                       RE-OPTIMIZE
+                    <Button className="flex-1 h-9 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-800 transition-all" onClick={() => toast({ title: "Re-Optimasi Rute", description: "Menghitung ulang parameter misi untuk koridor " + rute.id })}>
+                       RE-OPTIMASI
                     </Button>
                   </div>
                 </CardContent>

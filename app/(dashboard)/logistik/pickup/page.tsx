@@ -143,19 +143,19 @@ export default function PickupPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PICKUP COMMAND HUB</h1>
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT KOMANDO PENJEMPUTAN</h1>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            UPSTREAM AGGREGATION MONITORING & LOGISTICS SCHEDULING • {stats.todayActive} ACTIVE MISSIONS TODAY
+            MONITORING AGREGASI HULU & PENJADWALAN LOGISTIK • {stats.todayActive} MISI AKTIF HARI INI
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Schedule Sync", description: "Re-calculating optimal pickup windows for active clusters..." })}>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Sinkronisasi Jadwal", description: "Menghitung ulang jendela penjemputan optimal untuk klaster aktif..." })}>
             <ClipboardList className="h-3.5 w-3.5 mr-2 text-blue-600" />
-            AUDIT SCHEDULE
+            AUDIT JADWAL
           </Button>
-          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "New Assignment", description: "Opening mission dispatcher for downstream hub..." })}>
+          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Penugasan Baru", description: "Membuka dispatcher misi untuk hub hilir..." })}>
             <Plus className="h-4 w-4 mr-2" />
-            DISPATCH MISSION
+            DISPATCH MISI
           </Button>
         </div>
       </div>
@@ -164,10 +164,10 @@ export default function PickupPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'PICKUP HARI INI', value: stats.todayActive, sub: 'ACTIVE MISSIONS', icon: Truck, tone: 'emerald' },
-          { label: 'RENCANA MINGGUAN', value: stats.totalWeekly, sub: 'SCHEDULED SLOTS', icon: Calendar, tone: 'slate' },
-          { label: 'OPERATOR AKTIF', value: stats.driversOnMission, sub: 'ON FIELD TALLY', icon: User, tone: 'blue' },
-          { label: 'NETWORK READINESS', value: stats.readiness + '%', sub: 'FLEET UPTIME', icon: Activity, tone: 'slate' },
+          { label: 'PENJEMPUTAN HARI INI', value: stats.todayActive, sub: 'MISI AKTIF', icon: Truck, tone: 'emerald' },
+          { label: 'RENCANA MINGGUAN', value: stats.totalWeekly, sub: 'SLOT TERJADWAL', icon: Calendar, tone: 'slate' },
+          { label: 'OPERATOR AKTIF', value: stats.driversOnMission, sub: 'PERSONEL LAPANGAN', icon: User, tone: 'blue' },
+          { label: 'KESIAPAN JARINGAN', value: stats.readiness + '%', sub: 'UPTIME ARMADA', icon: Activity, tone: 'slate' },
         ].map((s, i) => (
           <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
              <div className={`h-1 w-full ${
@@ -196,9 +196,9 @@ export default function PickupPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_350px]">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">NATIONAL MISSION TIMELINE</h2>
-            <Button variant="ghost" size="sm" className="h-7 text-[9px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-700" onClick={() => toast({ title: "View Expansion", description: "Loading full monthly aggregation view..." })}>
-              EXPAND VIEW
+            <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">LINI MASA MISI NASIONAL</h2>
+            <Button variant="ghost" size="sm" className="h-7 text-[9px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-700" onClick={() => toast({ title: "Perluas Pandangan", description: "Memuat tampilan agregasi bulanan lengkap..." })}>
+              PERLUAS PANDANGAN
             </Button>
           </div>
           
@@ -213,11 +213,11 @@ export default function PickupPage() {
                       {schedule.hari}, {schedule.tanggal}
                     </CardTitle>
                     {schedule.isToday && (
-                      <Badge className="bg-slate-900 text-white text-[9px] font-black px-1.5 h-4 border-none rounded-none tracking-widest">TODAY</Badge>
+                      <Badge className="bg-slate-900 text-white text-[9px] font-black px-1.5 h-4 border-none rounded-none tracking-widest">HARI INI</Badge>
                     )}
                   </div>
                   <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                    {Math.ceil(schedule.pickups.length * scaleFactor)} REGISTERED MISSIONS
+                    {Math.ceil(schedule.pickups.length * scaleFactor)} MISI TERDAFTAR
                   </span>
                 </div>
               </CardHeader>
@@ -249,14 +249,14 @@ export default function PickupPage() {
                       
                       <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-50">
                         <div>
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">TIME WINDOW</p>
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">JENDELA WAKTU</p>
                           <div className="flex items-center gap-1.5 mt-1">
                              <Clock className="h-3 w-3 text-slate-400" />
                              <p className="text-[10px] font-black text-slate-900 uppercase">{pickup.waktu}</p>
                           </div>
                         </div>
                         <div>
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">OPERATOR ASSIGNED</p>
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">OPERATOR DITUGASKAN</p>
                           <div className="flex items-center gap-1.5 mt-1">
                              <User className="h-3 w-3 text-slate-400" />
                              <p className="text-[10px] font-black text-slate-900 uppercase">{pickup.driver}</p>

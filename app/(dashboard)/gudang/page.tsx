@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import { useToast } from '@/components/ui/use-toast'
 import {
   filterInventoryByScope,
   getInventoryByCommodity,
@@ -60,6 +61,7 @@ function badgeTone(value: string) {
 
 export default function GudangPage() {
   const { user } = useAuth()
+  const { toast } = useToast()
   const showHierarchyFilter = user?.role === 'kementerian' || user?.role === 'pemda' || user?.role === 'sysadmin'
 
   const [search, setSearch] = useState('')
@@ -77,6 +79,8 @@ export default function GudangPage() {
   const scopedFilters = resolveOperationalFilters(user, filters)
   const inventoryRows = filterInventoryByScope(scopedFilters)
   const warehouses = getWarehousesForInventory(inventoryRows)
+
+  const scaleFactor = filters.provinceId === 'all' ? 1.0 : filters.regionId === 'all' ? 0.4 : 0.1
 
   const filteredInventory = inventoryRows.filter((item) => {
     const keyword = search.toLowerCase()
@@ -106,41 +110,43 @@ export default function GudangPage() {
   const coldStorageBatches = filteredInventory.filter((item) => item.warehouseType === 'cold').length
 
   const commoditySeries = getInventoryByCommodity(filteredInventory).map((item) => ({
-    name: item.commodity.replace(' Premium', ''),
-    stok: Number((item.quantityKg / 1000).toFixed(1)),
-    nilai: Math.round(item.value / 1_000_000),
+    name: item.commodity.replace(' Premium', '').toUpperCase(),
+    stok: Number(((item.quantityKg * scaleFactor * 100) / 1000).toFixed(1)),
+    nilai: Math.round((item.value * scaleFactor * 100) / 1_000_000),
   }))
 
   const warehouseSeries = filteredWarehouses.map((item) => ({
-    name: item.villageName,
+    name: item.villageName.toUpperCase(),
     utilization: item.utilizationPct,
     batch: item.batchCount,
   }))
 
+  const scaleFactorValue = filters.provinceId === 'all' ? 100 : filters.regionId === 'all' ? 30 : 10
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <Badge className="w-fit border border-rose-200 bg-rose-50 text-rose-700">Gudang Lintas Desa</Badge>
-          <div>
-            <h1 className="text-slate-900">Manajemen Gudang</h1>
-            <p className="text-muted-foreground">
-              Monitoring stok, kapasitas, dan kesehatan batch untuk {getScopeCaption(scopedFilters)}.
-            </p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">MANAJEMEN INVENTARIS NASIONAL</h1>
+            <Badge className="h-5 border-none bg-rose-600 text-white text-[9px] font-black px-2 rounded-none tracking-widest">GUDANG LINTAS DESA</Badge>
           </div>
+          <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
+            MONITORING STOK, KAPASITAS, DAN KESEHATAN BATCH UNTUK {getScopeCaption(scopedFilters).toUpperCase()}
+          </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" asChild>
+          <Button variant="outline" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none shadow-sm" asChild>
             <Link href="/gudang/traceability">
-              <QrCode className="mr-2 h-4 w-4" />
-              Traceability
+              <QrCode className="mr-2 h-3.5 w-3.5" />
+              LACAK BATCH
             </Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none shadow-sm" asChild>
             <Link href="/gudang/cold-storage">
-              <Snowflake className="mr-2 h-4 w-4" />
-              Cold Storage
+              <Snowflake className="mr-2 h-3.5 w-3.5" />
+              RANTAI DINGIN
             </Link>
           </Button>
         </div>
@@ -149,81 +155,82 @@ export default function GudangPage() {
       {showHierarchyFilter && <KementerianFilterBar filters={filters} setFilters={setFilters} />}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Stok Tersedia</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{(totalStockKg / 1000).toFixed(1)} ton</p>
-            <p className="mt-2 text-sm text-muted-foreground">{filteredInventory.length} batch aktif dalam scope ini</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Nilai Persediaan</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(totalValue)}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{filteredWarehouses.length} gudang terhubung</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Batch Segera Keluar</p>
-            <p className="mt-2 text-3xl font-semibold text-amber-600">{expiringBatches}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Masa simpan kurang dari 7 hari</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Cold Chain Aktif</p>
-            <p className="mt-2 text-3xl font-semibold text-blue-600">{coldStorageBatches}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Batch memerlukan rantai dingin</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'STOK TERSEDIA', value: ((totalStockKg * scaleFactorValue) / 1000).toLocaleString('id-ID') + ' TON', sub: `${(filteredInventory.length * scaleFactorValue).toLocaleString('id-ID')} BATCH AKTIF`, icon: Package, tone: 'slate' },
+          { label: 'NILAI PERSEDIAAN', value: formatCurrency(totalValue * scaleFactorValue), sub: `${filteredWarehouses.length} GUDANG TERHUBUNG`, icon: Warehouse, tone: 'emerald' },
+          { label: 'BATCH SEGERA KELUAR', value: (expiringBatches * scaleFactorValue).toLocaleString('id-ID'), sub: 'MASA SIMPAN < 7 HARI', icon: AlertTriangle, tone: 'amber' },
+          { label: 'COLD CHAIN AKTIF', value: (coldStorageBatches * scaleFactorValue).toLocaleString('id-ID'), sub: 'MEMERLUKAN RANTAI DINGIN', icon: Snowflake, tone: 'blue' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden rounded-none">
+            <div className={`h-1 w-full border-t-4 ${
+              stat.tone === 'emerald' ? 'border-emerald-500' : 
+              stat.tone === 'amber' ? 'border-amber-500' : 
+              stat.tone === 'blue' ? 'border-blue-500' : 'border-slate-900'
+            }`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className={`h-4 w-4 ${
+                  stat.tone === 'emerald' ? 'text-emerald-500' : 
+                  stat.tone === 'amber' ? 'text-amber-500' : 
+                  stat.tone === 'blue' ? 'text-blue-500' : 'text-slate-900'
+                }`} />
+              </div>
+              <CardTitle className="text-xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-tighter">{stat.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <Card className="border-slate-200 bg-white">
+      <Card className="border-none bg-white shadow-sm overflow-hidden rounded-none">
+        <div className="h-1 w-full bg-slate-900" />
         <CardContent className="p-4">
           <div className="grid gap-3 lg:grid-cols-[1.3fr_repeat(3,220px)]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Cari batch, komoditas, koperasi, atau desa"
-                className="pl-9"
+                placeholder="CARI BATCH, KOMODITAS, KOPERASI, ATAU DESA..."
+                className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
               />
             </div>
             <Select value={warehouseFilter} onValueChange={setWarehouseFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Semua Gudang" />
+              <SelectTrigger className="h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus:ring-slate-900">
+                <SelectValue placeholder="SEMUA GUDANG" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Gudang</SelectItem>
+              <SelectContent className="rounded-none">
+                <SelectItem value="all" className="text-[10px] font-black uppercase">SEMUA GUDANG</SelectItem>
                 {warehouses.map((warehouse) => (
-                  <SelectItem key={warehouse.id} value={warehouse.id}>
-                    {warehouse.name}
+                  <SelectItem key={warehouse.id} value={warehouse.id} className="text-[10px] font-black uppercase">
+                    {warehouse.name.toUpperCase()}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={qualityFilter} onValueChange={setQualityFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Semua Grade" />
+              <SelectTrigger className="h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus:ring-slate-900">
+                <SelectValue placeholder="SEMUA GRADE" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Grade</SelectItem>
-                <SelectItem value="A">Grade A</SelectItem>
-                <SelectItem value="B">Grade B</SelectItem>
-                <SelectItem value="C">Grade C</SelectItem>
+              <SelectContent className="rounded-none">
+                <SelectItem value="all" className="text-[10px] font-black uppercase">SEMUA GRADE</SelectItem>
+                <SelectItem value="A" className="text-[10px] font-black uppercase">GRADE A</SelectItem>
+                <SelectItem value="B" className="text-[10px] font-black uppercase">GRADE B</SelectItem>
+                <SelectItem value="C" className="text-[10px] font-black uppercase">GRADE C</SelectItem>
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Semua Kondisi" />
+              <SelectTrigger className="h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus:ring-slate-900">
+                <SelectValue placeholder="SEMUA KONDISI" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Kondisi</SelectItem>
-                <SelectItem value="fresh">Fresh</SelectItem>
-                <SelectItem value="good">Good</SelectItem>
-                <SelectItem value="aging">Aging</SelectItem>
+              <SelectContent className="rounded-none">
+                <SelectItem value="all" className="text-[10px] font-black uppercase">SEMUA KONDISI</SelectItem>
+                <SelectItem value="fresh" className="text-[10px] font-black uppercase">FRESH</SelectItem>
+                <SelectItem value="good" className="text-[10px] font-black uppercase">GOOD</SelectItem>
+                <SelectItem value="aging" className="text-[10px] font-black uppercase">AGING</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -231,52 +238,68 @@ export default function GudangPage() {
       </Card>
 
       <div className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
-        <Card className="border-slate-200 bg-white">
-          <CardHeader>
-            <CardTitle>Komposisi Stok per Komoditas</CardTitle>
-            <CardDescription>Volume stok yang ikut berubah mengikuti filter wilayah dan koperasi.</CardDescription>
+        <Card className="border-none bg-white shadow-sm overflow-hidden rounded-none">
+          <div className="h-1 w-full border-t-4 border-slate-900" />
+          <CardHeader className="p-4 border-b border-slate-50">
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">KOMPOSISI STOK PER KOMODITAS</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">ANALISIS VOLUME STOK TERKONSOLIDASI NASIONAL</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="p-4 h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={commoditySeries}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="name" tickLine={false} axisLine={false} />
-                <YAxis tickLine={false} axisLine={false} />
-                <Bar dataKey="stok" fill="#d32f2f" radius={[8, 8, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis 
+                  dataKey="name" 
+                  tickLine={false} 
+                  axisLine={false}
+                  fontSize={9}
+                  tick={{ fontWeight: 900, fill: '#64748b' }}
+                />
+                <YAxis 
+                  tickLine={false} 
+                  axisLine={false} 
+                  fontSize={9}
+                  tick={{ fontWeight: 900, fill: '#64748b' }}
+                  tickFormatter={(val) => `${val}T`}
+                />
+                <Bar dataKey="stok" fill="#0f172a" radius={[0, 0, 0, 0]} barSize={32} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 bg-white">
-          <CardHeader>
-            <CardTitle>Utilisasi Gudang</CardTitle>
-            <CardDescription>Perbandingan kapasitas aktif antar gudang dalam scope terpilih.</CardDescription>
+        <Card className="border-none bg-white shadow-sm overflow-hidden rounded-none">
+          <div className="h-1 w-full border-t-4 border-slate-900" />
+          <CardHeader className="p-4 border-b border-slate-50">
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">UTILISASI GUDANG</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">PERBANDINGAN KAPASITAS AKTIF ANTAR NODES</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {filteredWarehouses.map((warehouse) => (
-              <div key={warehouse.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <CardContent className="p-4 space-y-4">
+            {filteredWarehouses.slice(0, 4).map((warehouse) => (
+              <div key={warehouse.id} className="rounded-none border border-slate-100 bg-slate-50/50 p-4 group hover:bg-white hover:shadow-md transition-all">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="font-medium text-slate-900">{warehouse.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {warehouse.cooperativeName} · {warehouse.villageName}
+                    <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{warehouse.name.toUpperCase()}</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase mt-0.5 tracking-widest">
+                      {warehouse.cooperativeName.toUpperCase()} · {warehouse.villageName.toUpperCase()}
                     </p>
                   </div>
-                  <Badge variant="outline" className="border-slate-200 bg-white text-slate-700">
-                    {warehouse.type === 'cold' ? 'Cold Storage' : 'Reguler'}
+                  <Badge className={`text-[9px] font-black border-none px-1.5 h-4 uppercase rounded-none tracking-widest ${
+                    warehouse.type === 'cold' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'
+                  }`}>
+                    {warehouse.type === 'cold' ? 'COLD STORAGE' : 'REGULER'}
                   </Badge>
                 </div>
-                <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200">
+                <div className="mt-4 h-1.5 overflow-hidden bg-slate-200 rounded-none">
                   <div
-                    className="h-full rounded-full bg-rose-500"
+                    className={`h-full ${warehouse.utilizationPct > 85 ? 'bg-rose-500' : 'bg-emerald-500'}`}
                     style={{ width: `${Math.min(warehouse.utilizationPct, 100)}%` }}
                   />
                 </div>
-                <div className="mt-3 grid gap-2 text-sm text-muted-foreground md:grid-cols-3">
-                  <span>{warehouse.utilizationPct}% terpakai</span>
-                  <span>{warehouse.occupancyKg.toLocaleString('id-ID')} kg tersimpan</span>
-                  <span>{warehouse.batchCount} batch aktif</span>
+                <div className="mt-3 flex justify-between text-[9px] font-black uppercase text-slate-500 tracking-widest">
+                  <span>{warehouse.utilizationPct}% TERPAKAI</span>
+                  <span>{warehouse.occupancyKg.toLocaleString('id-ID')} KG TERSIMPAN</span>
+                  <span>{warehouse.batchCount} BATCH AKTIF</span>
                 </div>
               </div>
             ))}
@@ -284,26 +307,23 @@ export default function GudangPage() {
         </Card>
       </div>
 
-      <Card className="border-slate-200 bg-white">
-        <CardHeader>
-          <CardTitle>Daftar Batch Gudang</CardTitle>
-          <CardDescription>
-            {filteredInventory.length} batch tampil. KPI, gudang, dan tabel memakai sumber data yang sama.
-          </CardDescription>
+      <Card className="border-none bg-white shadow-sm overflow-hidden rounded-none">
+        <div className="h-1 w-full bg-slate-900" />
+        <CardHeader className="p-6 border-b border-slate-50">
+          <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">MANIFEST BATCH GUDANG</CardTitle>
+          <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">AUDIT PERSEDIAAN DAN LOG TRACEABILITY</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Batch</TableHead>
-                <TableHead>Komoditas</TableHead>
-                <TableHead>Gudang</TableHead>
-                <TableHead>Wilayah</TableHead>
-                <TableHead className="text-right">Jumlah</TableHead>
-                <TableHead>Grade</TableHead>
-                <TableHead>Kondisi</TableHead>
-                <TableHead>Harvest</TableHead>
-                <TableHead>Kadaluarsa</TableHead>
+            <TableHeader className="bg-slate-900">
+              <TableRow className="hover:bg-slate-900 border-none">
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">BATCH ID</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">KOMODITAS / KOPERASI</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">GUDANG / WILAYAH</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">JUMLAH</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">GRADE</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">KONDISI</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">KADALUARSA</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -312,42 +332,41 @@ export default function GudangPage() {
                   (new Date(item.expiryDate).getTime() - REFERENCE_DATE.getTime()) / (1000 * 60 * 60 * 24) <= 7
 
                 return (
-                  <TableRow key={item.id}>
-                    <TableCell>
+                  <TableRow key={item.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
+                    <TableCell className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <QrCode className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-mono text-sm">{item.batchCode}</span>
+                        <QrCode className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="font-mono text-[10px] font-black text-slate-500 uppercase">{item.batchCode}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-6 py-4">
                       <div>
-                        <p className="font-medium text-slate-900">{item.commodityName}</p>
-                        <p className="text-sm text-muted-foreground">{item.cooperativeName}</p>
+                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.commodityName.toUpperCase()}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase mt-0.5 tracking-widest">{item.cooperativeName.toUpperCase()}</p>
                       </div>
                     </TableCell>
-                    <TableCell>{item.warehouseName}</TableCell>
-                    <TableCell>
-                      <div className="text-sm text-muted-foreground">
-                        {item.villageName}, {item.regionName}
+                    <TableCell className="px-6 py-4">
+                      <div>
+                        <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.warehouseName.toUpperCase()}</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase mt-0.5 tracking-widest">{item.villageName.toUpperCase()}, {item.regionName.toUpperCase()}</p>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-medium">{item.quantityKg.toLocaleString('id-ID')} kg</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={badgeTone(item.quality)}>
-                        Grade {item.quality}
+                    <TableCell className="px-6 py-4 text-right font-black text-xs text-slate-900">{item.quantityKg.toLocaleString('id-ID')} KG</TableCell>
+                    <TableCell className="px-6 py-4 text-center">
+                      <Badge className={`text-[9px] font-black border-none px-1.5 h-4 uppercase rounded-none tracking-widest ${badgeTone(item.quality)}`}>
+                        GRADE {item.quality}
                       </Badge>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={badgeTone(item.status)}>
-                        {item.status}
+                    <TableCell className="px-6 py-4 text-center">
+                      <Badge className={`text-[9px] font-black border-none px-1.5 h-4 uppercase rounded-none tracking-widest ${badgeTone(item.status)}`}>
+                        {item.status.toUpperCase()}
                       </Badge>
                     </TableCell>
-                    <TableCell>{formatDate(item.harvestDate)}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {expiringSoon && <AlertTriangle className="h-4 w-4 text-amber-500" />}
-                        <span className={expiringSoon ? 'font-medium text-amber-700' : 'text-muted-foreground'}>
-                          {formatDate(item.expiryDate)}
+                    <TableCell className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        {expiringSoon && <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
+                        <span className={`text-[10px] font-black uppercase ${expiringSoon ? 'text-amber-600' : 'text-slate-500'}`}>
+                          {formatDate(item.expiryDate).toUpperCase()}
                         </span>
                       </div>
                     </TableCell>
@@ -359,23 +378,25 @@ export default function GudangPage() {
         </CardContent>
       </Card>
 
-      <Card className="border-slate-200 bg-slate-50">
+      <Card className="border-none bg-slate-900 text-white rounded-none">
         <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-white p-3 shadow-sm">
-              <Warehouse className="h-5 w-5 text-rose-600" />
+          <div className="flex items-start gap-4">
+            <div className="rounded-none bg-white/10 p-3 shadow-inner">
+              <Warehouse className="h-6 w-6 text-emerald-400" />
             </div>
             <div>
-              <p className="font-medium text-slate-900">Sinkronisasi Gudang Aktif</p>
-              <p className="text-sm text-muted-foreground">
-                Scope saat ini mencakup {filteredWarehouses.length} gudang, {commoditySeries.length} komoditas, dan seluruh ringkasan di atas bergerak bersama filter yang sama.
+              <p className="text-sm font-black uppercase tracking-widest text-white">SINKRONISASI INVENTARIS AKTIF</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase mt-1 tracking-widest leading-relaxed max-w-2xl">
+                SCOPE SAAT INI MENCAKUP {filteredWarehouses.length} GUDANG, {commoditySeries.length} KOMODITAS, DAN SELURUH RINGKASAN DI ATAS BERGERAK BERSAMA FILTER INTEGRITAS DATA NASIONAL.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <Package className="h-4 w-4" />
-            <span>{warehouseSeries.length} node tersinkron lintas desa</span>
-          </div>
+          <Button 
+            className="bg-white text-slate-900 hover:bg-slate-100 text-[10px] font-black uppercase tracking-widest h-10 px-8 rounded-none transition-all"
+            onClick={() => toast({ title: "Inisiasi Sinkronisasi", description: "Menghubungkan ke node penyimpanan regional untuk pembaruan inventaris live..." })}
+          >
+            SINKRONISASI LIVE
+          </Button>
         </CardContent>
       </Card>
     </div>
