@@ -5,8 +5,8 @@
 
 /* KOPERASI MERAH PUTIH Theme */
 :root {
-  --font-inter: 'Inter';
-  --font-manrope: 'Manrope';
+  --font-inter: Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-manrope: Manrope, Inter, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --background: #f7ede8;
   --foreground: #3b2b29;
   --dashboard-canvas: #f1e3de;
@@ -133,7 +133,7 @@
 
 @theme inline {
   --font-sans: var(--font-manrope);
-  --font-mono: var(--font-manrope);
+  --font-mono: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-display: var(--font-manrope);
   --color-background: var(--background);
   --color-foreground: var(--foreground);

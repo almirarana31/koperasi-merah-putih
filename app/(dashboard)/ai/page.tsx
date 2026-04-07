@@ -204,14 +204,14 @@ export default function AIIntelligenceHubPage() {
       {/* Strategic AI Insights Feed */}
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.24)]">
-          <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)]/45">
+          <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900">
               <CheckCircle className="h-4 w-4 text-emerald-500" /> Recent Strategic Audits
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 divide-y divide-slate-100">
+          <CardContent className="divide-y divide-slate-100 bg-white p-0">
             {aiAnalyses.slice(0, 4).map((analysis) => (
-              <div key={analysis.id} className="p-4 hover:bg-slate-50 transition-colors">
+              <div key={analysis.id} className="bg-white p-4 transition-colors hover:bg-slate-50">
                 <div className="flex justify-between items-start mb-1">
                   <p className="text-xs font-semibold text-slate-900">{analysis.title}</p>
                   <span className="text-xs font-medium text-slate-400">{analysis.createdAt}</span>
