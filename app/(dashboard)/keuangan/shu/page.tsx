@@ -200,12 +200,12 @@ export default function SHUPage() {
            </Card>
 
            {/* Member Level Distribution Table */}
-           <Card className="border-none shadow-sm overflow-hidden">
-              <CardHeader className="p-6 border-b border-slate-50">
+           <Card className="overflow-hidden border border-[var(--dashboard-surface-border)] bg-white shadow-sm">
+              <CardHeader className="border-b border-slate-100 bg-white p-6">
                  <CardTitle className="text-xs font-semibold text-slate-900  ">Sample Distribusi Per Anggota</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                 <div className="overflow-x-auto">
+                 <div className="overflow-x-auto rounded-[var(--surface-radius-sm)] border border-[var(--dashboard-surface-border)] bg-white shadow-[var(--surface-shadow-soft)] [&_[data-slot=table-container]]:border-0 [&_[data-slot=table-container]]:bg-white [&_[data-slot=table-container]]:shadow-none">
                     <Table>
                        <TableHeader className="bg-slate-900">
                           <TableRow className="hover:bg-slate-900 border-none">
@@ -293,8 +293,8 @@ export default function SHUPage() {
               </CardContent>
            </Card>
 
-           <Card className="border-none shadow-sm bg-slate-50">
-              <CardHeader className="p-4 border-b border-slate-200">
+           <Card className="border border-[var(--dashboard-surface-border)] bg-white shadow-sm">
+              <CardHeader className="border-b border-slate-100 bg-white p-4">
                  <CardTitle className="text-xs font-semibold   text-slate-900">Indeks Kinerja Keuangan</CardTitle>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
