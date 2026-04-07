@@ -283,11 +283,3 @@ export default function MemberProfilPage() {
     </div>
   )
 }
-           </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-}

@@ -5,6 +5,8 @@
 
 /* KOPERASI MERAH PUTIH Theme */
 :root {
+  --font-inter: 'Inter';
+  --font-manrope: 'Manrope';
   --background: #f7ede8;
   --foreground: #3b2b29;
   --dashboard-canvas: #f1e3de;

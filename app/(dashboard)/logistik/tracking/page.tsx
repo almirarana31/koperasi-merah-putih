@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Truck,
   MapPin,
-  Phone,
   Clock,
   Navigation,
   Package,
@@ -17,16 +16,32 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
+import { useAuth } from '@/lib/auth/use-auth'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import {
+  filterShipmentsByScope,
+  resolveOperationalFilters,
+} from '@/lib/cross-entity-operations'
+import type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
+
+const statusColors: Record<string, string> = {
+  pickup: 'bg-amber-500',
+  transit: 'bg-blue-500',
+  delivered: 'bg-emerald-500',
+  dijadwalkan: 'bg-slate-500',
+}
 
 export default function TrackingPage() {
+  const { user } = useAuth()
   const { toast } = useToast()
+  const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<ScopeFilters>({
     provinceId: 'all',
     regionId: 'all',
@@ -299,22 +314,6 @@ export default function TrackingPage() {
               Saat ini tidak ada armada yang sedang beroperasi di wilayah yang dipilih.
             </p>
             <Button 
-              variant="link" 
-              onClick={() => {
-                setSearch('')
-                setFilters({ provinceId: 'all', regionId: 'all', villageId: 'all', cooperativeId: 'all', commodityId: 'all' })
-              }}
-              className="mt-6 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700"
-            >
-              Lihat Seluruh Nasional
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  )
-}
-  <Button 
               variant="link" 
               onClick={() => {
                 setSearch('')

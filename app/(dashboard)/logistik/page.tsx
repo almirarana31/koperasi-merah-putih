@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { MapPin, Navigation, Search, Truck } from 'lucide-react'
+import { Activity, MapPin, Navigation, Search, Truck } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 import { useAuth } from '@/lib/auth/use-auth'
 import { Badge } from '@/components/ui/badge'

@@ -1,19 +1,8 @@
 import type { Metadata } from 'next'
-import { Inter, Manrope } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from 'sonner'
 import { AuthProvider } from '@/lib/auth'
 import './globals.css'
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-})
-
-const manrope = Manrope({
-  subsets: ['latin'],
-  variable: '--font-manrope',
-})
 
 export const metadata: Metadata = {
   title: 'KOPDES - Koperasi Digital Operating System',
@@ -45,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={`${inter.variable} ${manrope.variable} app-theme font-sans antialiased`}>
+      <body className="app-theme font-sans antialiased">
         <AuthProvider>
           {children}
         </AuthProvider>

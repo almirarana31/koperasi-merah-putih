@@ -25,7 +25,6 @@ import {
   Download,
   History,
   ShieldAlert,
-  AuditSquare,
 } from 'lucide-react'
 import {
   Card,
@@ -328,62 +327,6 @@ export default function CreditScoringPage() {
           </Card>
         </div>
       </div>
-    </div>
-  )
-}
-                  <TableCell className="text-center">
-                        <Badge className={`${scoreBadge.color} text-white`}>
-                          {scoreBadge.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          {member.kycVerified ? (
-                            <ShieldCheck className="h-4 w-4 text-emerald-500" aria-label="KYC Verified" />
-                          ) : (
-                            <XCircle className="h-4 w-4 text-red-500" aria-label="KYC Pending" />
-                          )}
-                          {member.dukcapilVerified ? (
-                            <CheckCircle className="h-4 w-4 text-emerald-500" aria-label="Dukcapil Verified" />
-                          ) : (
-                            <AlertTriangle className="h-4 w-4 text-amber-500" aria-label="Dukcapil Pending" />
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {eligibility.eligible ? (
-                          <span className="font-medium text-emerald-600">
-                            {formatCurrency(eligibility.maxLoan)}
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground text-sm">Tidak Eligible</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              Detail
-                              <ChevronRight className="ml-1 h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle>Detail Credit Score</DialogTitle>
-                              <DialogDescription>{member.nama}</DialogDescription>
-                            </DialogHeader>
-                            <MemberCreditDetail member={member} />
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

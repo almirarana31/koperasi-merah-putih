@@ -209,7 +209,3 @@ export default function AgregasiPage() {
     </div>
   )
 }
-   </div>
-    </div>
-  )
-}

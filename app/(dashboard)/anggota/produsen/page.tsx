@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { LandPlot, Leaf, Search, Users } from 'lucide-react'
+import { Activity, LandPlot, Leaf, Search, Users } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 import { useAuth } from '@/lib/auth/use-auth'
 import { Badge } from '@/components/ui/badge'
@@ -208,13 +208,6 @@ export default function ProdusenPage() {
           </div>
           <Badge variant="outline" className="w-fit border-slate-200 bg-white text-slate-700">
             {chartRows.length} komoditas aktif
-          </Badge>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-           {chartRows.length} komoditas aktif
           </Badge>
         </CardContent>
       </Card>
