@@ -35,6 +35,13 @@ function statusTone(status: string) {
   return 'bg-rose-50 text-rose-700 border-rose-200'
 }
 
+function toTitleCaseLabel(value: string) {
+  return value
+    .replace(/[_-]+/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
 function createFallbackProfile(user: NonNullable<ReturnType<typeof useAuth>['user']>) {
   return {
     id: user.id,
@@ -234,12 +241,12 @@ export default function MemberProfilPage() {
               {
                 icon: ShieldCheck,
                 title: 'Status akses',
-                description: `Hak akses mengikuti scope ${getScopeCaption(scopedFilters)} dan role ${activeProfile.role}.`,
+                description: `Hak akses mengikuti scope ${getScopeCaption(scopedFilters)} dan role ${toTitleCaseLabel(activeProfile.role)}.`,
               },
               {
                 icon: Activity,
                 title: 'Cadence aktivitas',
-                description: `Aktivitas terakhir tercatat pada ${formatDate(activeProfile.lastActivity)} dengan status ${activeProfile.status}.`,
+                description: `Aktivitas terakhir tercatat pada ${formatDate(activeProfile.lastActivity)} dengan status ${toTitleCaseLabel(activeProfile.status)}.`,
               },
               {
                 icon: Users,
@@ -271,7 +278,7 @@ export default function MemberProfilPage() {
                         <p className="text-sm text-muted-foreground">{profile.cooperativeName}</p>
                       </div>
                       <Badge variant="outline" className={statusTone(profile.status)}>
-                        {profile.status}
+                        {toTitleCaseLabel(profile.status)}
                       </Badge>
                     </div>
                   ))}

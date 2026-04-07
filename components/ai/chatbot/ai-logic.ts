@@ -1,126 +1,122 @@
-export const getAIResponse = (query: string): string => {
+const normalizeScope = (scopeLabel?: string) => {
+  const cleaned = scopeLabel?.trim()
+  return cleaned && cleaned.length > 0 ? cleaned : "scope aktif"
+}
+
+export const getAIResponse = (query: string, scopeLabel?: string): string => {
   const lowerQuery = query.toLowerCase()
+  const scope = normalizeScope(scopeLabel)
 
   if (lowerQuery.includes("performa nasional") || lowerQuery.includes("ringkasan")) {
-    return `📊 **Executive Summary (Nasional):**
+    return `Ringkasan Kinerja untuk ${scope}:
 
-• **Total Unit Aktif:** 1,248 (99.8% Online)
-• **NPL Agregat:** 2.4% (Zona Hijau ✓)
-• **Anggota Baru:** +1,240 (↗️ 4.2% MoM)
-• **Produksi Agregat:** 12,500 ton (+8% vs target)
+- Total unit aktif: 1.248
+- NPL agregat: 2,4%
+- Anggota baru bulan berjalan: 1.240
+- Produksi agregat: 12.500 ton
 
-**Rekomendasi Strategis:**
-✓ Fokus pada Koperasi Wilayah Timur yang melampaui forecast
-✓ Audit preventif untuk 3 unit dengan tren NPL naik
-✓ Optimasi logistik Jawa-Bali untuk efisiensi margin`
+Prioritas tindak lanjut:
+- Audit preventif untuk tiga koperasi dengan tren NPL meningkat
+- Jaga suplai wilayah timur yang sedang tumbuh di atas target
+- Optimalkan rute distribusi Jawa-Bali untuk menjaga margin`
   }
 
   if (lowerQuery.includes("audit") || lowerQuery.includes("unit koperasi")) {
-    return `🔍 **Analisis Prioritas Audit:**
+    return `Prioritas Audit untuk ${scope}:
 
-1. **Koperasi Maju Jaya (Jawa Barat)**
-   - Skor: 58 (⚠️ KRITIS)
-   - Masalah: Rasio likuiditas < 1.0
-   - NPL: 4.8% (Mendekati batas intervensi)
+1. Koperasi Maju Jaya, Jawa Barat
+   - Skor kesehatan: 58
+   - Rasio likuiditas di bawah batas aman
+   - NPL: 4,8%
 
-2. **Koperasi Tani Makmur (Sumatra)**
-   - Skor: 64 (⚠️ WASPADA)
-   - Masalah: Penundaan pelaporan stok
-   - NPL: 3.1%
+2. Koperasi Tani Makmur, Sumatra
+   - Skor kesehatan: 64
+   - Pelaporan stok terlambat
+   - NPL: 3,1%
 
-**AI Insight:** Segera kirim tim audit untuk Koperasi Maju Jaya guna restrukturisasi piutang.`
+Saran:
+- Dahulukan audit lapangan pada unit dengan likuiditas tertekan
+- Cocokkan stok fisik dengan laporan distribusi terakhir`
   }
 
   if (lowerQuery.includes("npl") || lowerQuery.includes("kredit macet")) {
-    return `🛡️ **Status NPL Agregat:** 2.4%
+    return `Status NPL untuk ${scope}:
 
-**Trend Wilayah:**
-• Jawa: 1.8% (Stabil)
-• Sumatra: 3.2% (Meningkat ⚠️)
-• Sulawesi: 2.1% (Menurun ✓)
-• Bali: 1.5% (Sangat Sehat ✓)
+- Jawa: 1,8% dan stabil
+- Sumatra: 3,2% dan perlu perhatian
+- Sulawesi: 2,1% dan membaik
+- Bali: 1,5% dan sangat sehat
 
-**Saran Mitigasi:**
-✓ Terapkan skema asuransi gagal panen di Sumatra
-✓ Perketat credit scoring untuk komoditas hortikultura
-✓ Confidence: 92%`
+Rekomendasi:
+- Perketat verifikasi pinjaman baru di wilayah dengan tren naik
+- Aktifkan pendampingan usaha untuk anggota berisiko sedang
+- Pantau komoditas hortikultura dengan volatilitas harga tinggi`
   }
 
   if (lowerQuery.includes("stok") || lowerQuery.includes("inventory")) {
-    return `📦 **Status Stok Hari Ini:**
+    return `Status Stok untuk ${scope}:
 
-• Beras Grade A: 120 ton (Stok Aman ✓)
-• Cabai Merah: 2.5 ton (Stok Menipis ⚠️)
-• Tomat: 1.8 ton (Stok Aman ✓)
-• Wortel: 3.2 ton (Stok Aman ✓)
+- Beras Grade A: 120 ton, aman
+- Cabai Merah: 2,5 ton, menipis
+- Tomat: 1,8 ton, aman
+- Wortel: 3,2 ton, aman
 
-**Rekomendasi:**
-✓ Order cabai merah 1 ton dalam 2 hari
-✓ Stok lainnya mencukupi untuk 5-7 hari`
+Rekomendasi:
+- Tambah pasokan cabai merah dalam dua hari
+- Pertahankan buffer stok lima sampai tujuh hari untuk komoditas utama`
   }
 
   if (lowerQuery.includes("harga") || lowerQuery.includes("prediksi")) {
-    return `📈 **Prediksi Harga Cabai Merah (7 Hari):**
+    return `Prediksi Harga untuk ${scope}:
 
-Harga Saat Ini: Rp 45,000/kg
-Trend: ↗️ Naik 15%
+- Harga cabai saat ini: Rp45.000 per kg
+- Proyeksi tiga hari: Rp48.000 per kg
+- Proyeksi tujuh hari: Rp52.000 per kg
 
-**Prediksi:**
-• 3 hari: Rp 48,000/kg (+7%)
-• 7 hari: Rp 52,000/kg (+15%)
-
-**Rekomendasi:**
-✓ TAHAN stok 5-7 hari
-✓ Potensi profit tambahan: Rp 7,000/kg
-✓ Confidence: 87%`
+Rekomendasi:
+- Tahan stok cabai selama tiga sampai tujuh hari jika kapasitas gudang aman
+- Siapkan redistribusi lintas wilayah untuk menahan lonjakan harga`
   }
 
   if (lowerQuery.includes("anggota") || lowerQuery.includes("member")) {
-    return `👥 **Top 5 Anggota (Bulan Ini):**
+    return `Sorotan Anggota untuk ${scope}:
 
-1. **Pak Budi Santoso**
-   - Transaksi: Rp 45.5 juta
-   - Volume: 2.5 ton
-   - Komoditas: Beras, Cabai
+1. Pak Budi Santoso
+   - Transaksi: Rp45,5 juta
+   - Volume: 2,5 ton
 
-2. **Ibu Siti Aminah**
-   - Transaksi: Rp 38.2 juta
-   - Volume: 1.8 ton
-   - Komoditas: Sayuran
+2. Ibu Siti Aminah
+   - Transaksi: Rp38,2 juta
+   - Volume: 1,8 ton
 
-3. **Pak Ahmad Dahlan**
-   - Transaksi: Rp 32.7 juta
-   - Volume: 1.5 ton
-   - Komoditas: Buah-buahan`
+3. Pak Ahmad Dahlan
+   - Transaksi: Rp32,7 juta
+   - Volume: 1,5 ton
+
+Saran:
+- Prioritaskan pembinaan anggota dengan volume tinggi agar distribusi tetap stabil`
   }
 
   if (lowerQuery.includes("rekomendasi") || lowerQuery.includes("jual")) {
-    return `💡 **Rekomendasi Komoditas Minggu Ini:**
+    return `Rekomendasi Komoditas untuk ${scope}:
 
-🥇 **Cabai Merah** (Prioritas Tinggi)
-- Demand: Tinggi (↗️ +25%)
-- Margin: 42%
-- Potensi profit: Rp 52.5 juta
+- Cabai Merah: prioritas tinggi, demand meningkat
+- Beras Grade A: stabil, margin konsisten
+- Tomat: perlu perhatian, permintaan melemah
 
-🥈 **Beras Grade A** (Stabil)
-- Demand: Sedang (→ Stabil)
-- Margin: 18%
-- Potensi profit: Rp 40.5 juta
-
-🥉 **Tomat** (Perhatian)
-- Demand: Menurun (↘️ -12%)
-- Margin: 35%
-- Rekomendasi: Kurangi stok 20%`
+Langkah yang disarankan:
+- Fokus penjualan pada komoditas dengan demand tinggi
+- Jaga ritme distribusi untuk komoditas yang marginnya stabil
+- Kurangi eksposur stok untuk komoditas dengan tren turun`
   }
 
-  return `Terima kasih atas pertanyaan Anda. Saya sedang menganalisis data untuk memberikan jawaban terbaik. 
+  return `Analisis siap untuk ${scope}.
 
-Beberapa hal yang bisa saya bantu:
-• Cek stok dan inventory
-• Prediksi harga komoditas
-• Analisis performa anggota
-• Rekomendasi penjualan
-• Forecast demand & supply
+Saya dapat membantu dengan:
+- Ringkasan performa dan kesehatan unit
+- Prioritas audit dan risiko NPL
+- Prediksi harga dan kebutuhan stok
+- Analisis anggota dan rekomendasi tindak lanjut
 
-Silakan tanyakan lebih spesifik! 😊`
+Silakan ajukan pertanyaan yang lebih spesifik agar saya bisa memberi jawaban yang lebih terarah.`
 }

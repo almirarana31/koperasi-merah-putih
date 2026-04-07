@@ -82,13 +82,14 @@ export function FloatingAIChatbot() {
     }
   }, [isOpen, isMinimized])
 
-  const handleSend = async () => {
-    if (!input.trim()) return
+  const handleSend = async (draft = input) => {
+    const nextInput = draft.trim()
+    if (!nextInput) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input,
+      content: nextInput,
       timestamp: new Date(),
     }
 
@@ -101,7 +102,7 @@ export function FloatingAIChatbot() {
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: getAIResponse(input),
+        content: getAIResponse(nextInput),
         timestamp: new Date(),
       }
       setMessages((prev) => [...prev, aiResponse])
@@ -110,8 +111,11 @@ export function FloatingAIChatbot() {
   }
 
   const handleQuickAction = (action: string) => {
-    setInput(action)
-    setTimeout(() => handleSend(), 100)
+    handleSend(action)
+  }
+
+  if (pathname === "/assistant") {
+    return null
   }
 
   if (!isOpen) {
@@ -152,7 +156,7 @@ export function FloatingAIChatbot() {
           </div>
           <div>
             <h3 className="font-semibold text-white text-sm">Asisten AI Koperasi</h3>
-            <p className="text-xs text-emerald-100">Online • Siap membantu</p>
+            <p className="text-xs text-emerald-100">Online | Siap membantu</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -237,7 +241,7 @@ export function FloatingAIChatbot() {
                 className="flex-1"
               />
               <Button
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 disabled={!input.trim() || isTyping}
                 className="bg-emerald-500 hover:bg-emerald-600"
                 size="icon"
@@ -246,7 +250,7 @@ export function FloatingAIChatbot() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              Powered by AI • Tekan Enter untuk kirim
+              Powered by AI | Tekan Enter untuk kirim
             </p>
           </div>
         </>

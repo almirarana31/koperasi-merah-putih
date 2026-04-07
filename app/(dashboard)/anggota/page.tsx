@@ -140,6 +140,12 @@ export default function AnggotaPage() {
     }).format(val)
   }
 
+  const toTitleCaseLabel = (value: string) =>
+    value
+      .replace(/[_-]+/g, ' ')
+      .toLowerCase()
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -322,8 +328,8 @@ export default function AnggotaPage() {
                   </TableCell>
                   <TableCell className="text-xs font-mono font-bold text-slate-500">{member.memberNumber}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize text-xs font-semibold px-1.5 py-0 border-slate-200 text-slate-600 ">
-                      {member.role}
+                    <Badge variant="outline" className="text-xs font-semibold px-1.5 py-0 border-slate-200 text-slate-600">
+                      {toTitleCaseLabel(member.role)}
                     </Badge>
                   </TableCell>
                   <TableCell>

@@ -28,6 +28,13 @@ function statusTone(status: string) {
   return 'bg-amber-50 text-amber-700 border-amber-200'
 }
 
+function toTitleCaseLabel(value: string) {
+  return value
+    .replace(/[_-]+/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
 export default function ProdusenPage() {
   const { user } = useAuth()
   const showHierarchyFilter = user?.role === 'kementerian' || user?.role === 'pemda' || user?.role === 'sysadmin'
@@ -166,12 +173,12 @@ export default function ProdusenPage() {
                     </p>
                   </div>
                   <Badge variant="outline" className={statusTone(producer.status)}>
-                    {producer.status}
+                    {toTitleCaseLabel(producer.status)}
                   </Badge>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-700">
-                    {producer.type}
+                    {toTitleCaseLabel(producer.type)}
                   </Badge>
                   <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-700">
                     {producer.commodityName}
