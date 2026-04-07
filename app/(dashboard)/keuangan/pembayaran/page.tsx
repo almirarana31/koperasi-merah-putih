@@ -327,25 +327,25 @@ export default function PembayaranPage() {
       </div>
 
       {/* Global Financial Alert Banner */}
-      <Card className="bg-rose-600 border-none overflow-hidden relative shadow-2xl shadow-rose-100 group cursor-pointer">
-        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform duration-700">
-          <ShieldAlert className="h-32 w-32 text-white" />
+      <Card className="alert-surface-banner border-none overflow-hidden relative group cursor-pointer">
+        <div className="alert-surface-watermark absolute top-0 right-0 p-6 transition-transform duration-700 group-hover:scale-110">
+          <ShieldAlert className="h-32 w-32" />
         </div>
         <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-8 relative">
           <div className="flex items-center gap-6">
-             <div className="h-14 w-14 rounded-2xl bg-white/20 border border-white/10 flex items-center justify-center shrink-0">
-                <Globe className="h-7 w-7 text-white animate-pulse" />
+             <div className="alert-surface-icon flex h-14 w-14 items-center justify-center rounded-2xl shrink-0">
+                <Globe className="h-7 w-7" />
              </div>
              <div>
                 <div className="flex items-center gap-3">
-                   <Badge className="bg-white text-rose-600 font-semibold text-xs px-2 h-5 border-none">COMPLIANCE ALERT</Badge>
-                   <span className="text-xs font-semibold text-rose-100  ">Unreconciled Batch Detected</span>
+                   <Badge className="alert-surface-chip h-5 px-2 text-xs font-semibold">Compliance Alert</Badge>
+                   <span className="alert-surface-meta text-sm font-medium">Unreconciled Batch Detected</span>
                 </div>
-                <p className="text-white text-base font-semibold  mt-2 ">Perhatian: Terdeteksi batch transaksi yang belum direkonsiliasi di wilayah Sumatera Utara (Rp 1.2M).</p>
+                <p className="alert-surface-copy mt-2 text-lg font-semibold">Perhatian: Terdeteksi batch transaksi yang belum direkonsiliasi di wilayah Sumatera Utara (Rp 1.2M).</p>
              </div>
           </div>
-          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-semibold text-sm   px-8 rounded-xl shadow-xl transition-all">
-             Audit Settlement →
+          <Button className="alert-surface-action h-12 rounded-xl px-8 text-sm font-semibold transition-all">
+             Audit Settlement
           </Button>
         </CardContent>
       </Card>

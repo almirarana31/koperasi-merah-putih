@@ -326,22 +326,22 @@ export default function KomoditasPage() {
       )}
 
       {/* Global Stock Alert Banner */}
-      <Card className="bg-rose-600 border-none overflow-hidden relative group cursor-pointer shadow-xl shadow-rose-100">
-        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-          <ShieldAlert className="h-20 w-20 text-white" />
+      <Card className="alert-surface-banner border-none overflow-hidden relative group cursor-pointer">
+        <div className="alert-surface-watermark absolute top-0 right-0 p-4 transition-transform group-hover:scale-110">
+          <ShieldAlert className="h-20 w-20" />
         </div>
         <CardContent className="p-5 flex items-center gap-6 relative">
-          <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-            <Activity className="h-6 w-6 text-white animate-pulse" />
+          <div className="alert-surface-icon flex h-12 w-12 items-center justify-center rounded-xl shrink-0">
+            <Activity className="h-6 w-6" />
           </div>
           <div className="flex-1">
              <div className="flex items-center gap-2">
-                <Badge className="bg-white text-rose-600 font-semibold text-xs px-1.5 h-4">PRIORITY ALERT</Badge>
-                <span className="text-xs font-semibold text-rose-100  ">Stock Anomaly Detected</span>
+                <Badge className="alert-surface-chip h-4 px-1.5 text-xs font-semibold">Priority Alert</Badge>
+                <span className="alert-surface-meta text-sm font-medium">Stock Anomaly Detected</span>
              </div>
-             <p className="text-white text-sm font-semibold  mt-1">Beberapa wilayah melaporkan stok kritis untuk Padi Premium (Sumatera Utara).</p>
+             <p className="alert-surface-copy mt-1 text-base font-semibold">Beberapa wilayah melaporkan stok kritis untuk Padi Premium (Sumatera Utara).</p>
           </div>
-          <Button variant="outline" className="h-10 bg-white/10 border-white/20 text-white hover:bg-white hover:text-rose-600 text-xs font-semibold   px-6 transition-all">
+          <Button className="alert-surface-action h-10 px-6 text-xs font-semibold transition-all">
             Lihat Detail
           </Button>
         </CardContent>

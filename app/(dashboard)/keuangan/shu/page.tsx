@@ -155,8 +155,8 @@ export default function SHUPage() {
               <CardHeader className="p-6 border-b border-slate-50 bg-slate-50/50">
                  <div className="flex items-center justify-between">
                     <div>
-                       <CardTitle className="text-xs font-semibold text-slate-900  ">Matriks Alokasi Surplus Nasional</CardTitle>
-                       <CardDescription className="text-xs font-bold text-slate-400  mt-1">Distribusi surplus berdasarkan AD/ART kolektif</CardDescription>
+                       <CardTitle className="text-slate-900">Matriks Alokasi Surplus Nasional</CardTitle>
+                       <CardDescription className="mt-1 text-slate-500">Distribusi surplus berdasarkan AD/ART kolektif</CardDescription>
                     </div>
                     <Badge variant="outline" className="bg-white border-slate-200 text-xs font-semibold ">LIVE AUDIT</Badge>
                  </div>
@@ -202,7 +202,7 @@ export default function SHUPage() {
            {/* Member Level Distribution Table */}
            <Card className="overflow-hidden border border-[var(--dashboard-surface-border)] bg-white shadow-sm">
               <CardHeader className="border-b border-slate-100 bg-white p-6">
-                 <CardTitle className="text-xs font-semibold text-slate-900  ">Sample Distribusi Per Anggota</CardTitle>
+                 <CardTitle className="text-slate-900">Distribusi Per Anggota</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
                  <div className="overflow-x-auto rounded-[var(--surface-radius-sm)] border border-[var(--dashboard-surface-border)] bg-white shadow-[var(--surface-shadow-soft)] [&_[data-slot=table-container]]:border-0 [&_[data-slot=table-container]]:bg-white [&_[data-slot=table-container]]:shadow-none">
@@ -295,7 +295,7 @@ export default function SHUPage() {
 
            <Card className="border border-[var(--dashboard-surface-border)] bg-white shadow-sm">
               <CardHeader className="border-b border-slate-100 bg-white p-4">
-                 <CardTitle className="text-xs font-semibold   text-slate-900">Indeks Kinerja Keuangan</CardTitle>
+                 <CardTitle className="text-slate-900">Indeks Kinerja Keuangan</CardTitle>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                  {[
@@ -323,25 +323,25 @@ export default function SHUPage() {
       </div>
 
       {/* Global Financial Anomaly Banner */}
-      <Card className="bg-rose-600 border-none overflow-hidden relative shadow-2xl shadow-rose-100 group cursor-pointer">
-        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform duration-700">
-          <ShieldAlert className="h-32 w-32 text-white" />
+      <Card className="alert-surface-banner border-none overflow-hidden relative group cursor-pointer">
+        <div className="alert-surface-watermark absolute top-0 right-0 p-6 transition-transform duration-700 group-hover:scale-110">
+          <ShieldAlert className="h-32 w-32" />
         </div>
         <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-8 relative">
           <div className="flex items-center gap-6">
-             <div className="h-14 w-14 rounded-2xl bg-white/20 border border-white/10 flex items-center justify-center shrink-0">
-                <DollarSign className="h-7 w-7 text-white animate-pulse" />
+             <div className="alert-surface-icon flex h-14 w-14 items-center justify-center rounded-2xl shrink-0">
+                <DollarSign className="h-7 w-7" />
              </div>
              <div>
                 <div className="flex items-center gap-3">
-                   <Badge className="bg-white text-rose-600 font-semibold text-xs px-2 h-5 border-none">AUDIT ALERT</Badge>
-                   <span className="text-xs font-semibold text-rose-100  ">Margin Variance Detect (&gt;15%)</span>
+                   <Badge className="alert-surface-chip h-5 px-2 text-xs font-semibold">Audit Alert</Badge>
+                   <span className="alert-surface-meta text-sm font-medium">Margin Variance Detected (&gt;15%)</span>
                 </div>
-                <p className="text-white text-base font-semibold  mt-2 ">Perhatian: Terdeteksi deviasi margin operasional di regional Bali. Segera lakukan audit transaksi.</p>
+                <p className="alert-surface-copy mt-2 text-lg font-semibold">Perhatian: Terdeteksi deviasi margin operasional di regional Bali. Segera lakukan audit transaksi.</p>
              </div>
           </div>
-          <Button className="h-12 bg-white text-rose-600 hover:bg-slate-100 font-semibold text-sm   px-8 rounded-xl shadow-xl transition-all">
-             Mulai Investigasi →
+          <Button className="alert-surface-action h-12 rounded-xl px-8 text-sm font-semibold transition-all">
+             Mulai Investigasi
           </Button>
         </CardContent>
       </Card>
