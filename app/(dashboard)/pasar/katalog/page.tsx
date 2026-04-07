@@ -132,13 +132,13 @@ export default function KatalogKementerianPage() {
         </Card>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
+      <div className="space-y-5">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Volume per SKU</CardTitle>
             <CardDescription>Komoditas ditampilkan berdasarkan volume lintas supplier yang aktif pada scope sekarang.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartRows}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -150,7 +150,7 @@ export default function KatalogKementerianPage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {catalogRows.map((row) => (
             <Card key={row.commodityId} className="border-slate-200 bg-white">
               <CardContent className="p-4">

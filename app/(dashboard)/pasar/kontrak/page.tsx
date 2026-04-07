@@ -165,13 +165,13 @@ export default function KontrakKementerianPage() {
         </Card>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
+      <div className="space-y-5">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Fulfillment per Kontrak</CardTitle>
             <CardDescription>Progress kontrak ikut berubah saat filter scope pasar berubah.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartRows}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -188,7 +188,7 @@ export default function KontrakKementerianPage() {
             <CardTitle>Feed Pengawasan</CardTitle>
             <CardDescription>Ringkasan kontrak prioritas tanpa panel gelap.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="grid gap-4 xl:grid-cols-2">
             {contracts.slice(0, 6).map((contract) => (
               <div key={contract.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-center justify-between gap-3">

@@ -154,6 +154,7 @@ const navigation: { section: string; items: NavItem[] }[] = [
         label: "AI Assistant",
         icon: Zap,
         children: [
+          { label: "AI Command Hub", href: "/assistant" },
           { label: "Konsultasi Pertanian", href: "/assistant/konsultasi" },
           { label: "Laporan Otomatis", href: "/assistant/laporan" },
           { label: "Notifikasi Cerdas", href: "/assistant/notifikasi" },

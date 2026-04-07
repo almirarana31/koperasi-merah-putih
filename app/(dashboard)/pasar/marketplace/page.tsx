@@ -158,13 +158,13 @@ export default function MarketplacePage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-5 xl:grid-cols-[1fr_1fr]">
+      <div className="space-y-5">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Stok per Regional</CardTitle>
             <CardDescription>Perbandingan ketersediaan marketplace lintas wilayah dengan filter aktif.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={regionalStock}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -181,7 +181,7 @@ export default function MarketplacePage() {
             <CardTitle>Listing Terpilih</CardTitle>
             <CardDescription>Grid ini membaca listing lintas desa yang sama dengan chart dan KPI di atas.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
+          <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {listings.slice(0, 6).map((listing) => (
               <div key={listing.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-start justify-between gap-3">

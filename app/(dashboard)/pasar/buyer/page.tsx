@@ -122,13 +122,13 @@ export default function BuyerPage() {
         </Card>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+      <div className="space-y-5">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Distribusi Tipe Buyer</CardTitle>
             <CardDescription>Komposisi buyer dihitung dari transaksi aktif pada scope pasar yang sama.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={buyerTypeSeries}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />

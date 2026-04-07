@@ -88,7 +88,7 @@ export default function ProdusenPage() {
 
       {showHierarchyFilter && <KementerianFilterBar filters={filters} setFilters={setFilters} />}
 
-      <Card className="border-slate-200 bg-white">
+      <Card className="surface-card">
         <CardContent className="grid gap-3 p-4 lg:grid-cols-[1.1fr_220px]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -113,28 +113,28 @@ export default function ProdusenPage() {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-slate-200 bg-white">
+        <Card className="surface-card">
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Produsen Aktif</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{producers.length}</p>
             <p className="mt-2 text-sm text-muted-foreground">Direktori tersaring pada scope saat ini</p>
           </CardContent>
         </Card>
-        <Card className="border-slate-200 bg-white">
+        <Card className="surface-card">
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Luas Lahan</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-600">{totalLand.toFixed(1)} ha</p>
             <p className="mt-2 text-sm text-muted-foreground">Total lahan produsen tersaring</p>
           </CardContent>
         </Card>
-        <Card className="border-slate-200 bg-white">
+        <Card className="surface-card">
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Produktivitas</p>
             <p className="mt-2 text-3xl font-semibold text-blue-600">{(totalProductivity / 1000).toFixed(1)} ton</p>
             <p className="mt-2 text-sm text-muted-foreground">Volume dari produsen di scope aktif</p>
           </CardContent>
         </Card>
-        <Card className="border-slate-200 bg-white">
+        <Card className="surface-card">
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Rata-rata Lahan</p>
             <p className="mt-2 text-3xl font-semibold text-slate-900">{averageLand.toFixed(1)} ha</p>
@@ -143,13 +143,13 @@ export default function ProdusenPage() {
         </Card>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
-        <Card className="border-slate-200 bg-white">
-          <CardHeader>
+      <div className="space-y-5">
+        <Card className="surface-card-strong overflow-hidden">
+          <CardHeader className="dashboard-section-header">
             <CardTitle>Komoditas Utama</CardTitle>
             <CardDescription>Jumlah produsen per komoditas mengikuti filter wilayah dan koperasi yang sama.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[340px] p-4 pt-3">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartRows}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -163,7 +163,7 @@ export default function ProdusenPage() {
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {producers.map((producer) => (
-            <Card key={producer.id} className="border-slate-200 bg-white">
+            <Card key={producer.id} className="surface-card">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -201,7 +201,7 @@ export default function ProdusenPage() {
         </div>
       </div>
 
-      <Card className="border-slate-200 bg-slate-50">
+      <Card className="surface-card-muted">
         <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-3">
             <div className="rounded-2xl bg-white p-3 shadow-sm">

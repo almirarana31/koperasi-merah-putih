@@ -201,13 +201,13 @@ export default function PasarPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+      <div className="space-y-5">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Pendapatan Bulanan</CardTitle>
             <CardDescription>Agregat revenue Pasar berubah langsung sesuai filter desa, koperasi, dan komoditas.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlySeries}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -224,7 +224,7 @@ export default function PasarPage() {
             <CardTitle>Perbandingan Wilayah</CardTitle>
             <CardDescription>Wilayah dibangun dari order yang ada, bukan angka statis per halaman.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {regionalComparison.map((region) => (
               <div key={region.region} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex items-center justify-between">

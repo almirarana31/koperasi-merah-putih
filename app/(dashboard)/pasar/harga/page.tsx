@@ -128,13 +128,13 @@ export default function HargaPasarPage() {
         </Card>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+      <div className="space-y-5">
         <Card className="border-slate-200 bg-white">
           <CardHeader>
             <CardTitle>Perbandingan Harga Regional</CardTitle>
             <CardDescription>Harga rata-rata lintas wilayah menggunakan volume nyata dari data pasar yang difilter.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={regionalComparison}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
@@ -151,7 +151,7 @@ export default function HargaPasarPage() {
             <CardTitle>Feed Perubahan Harga</CardTitle>
             <CardDescription>Semua catatan di bawah mengikuti kombinasi desa, koperasi, dan komoditas yang aktif.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="grid gap-4 xl:grid-cols-2">
             {filteredPrices.slice(0, 8).map((row) => {
               const change = ((row.currentPrice - row.previousPrice) / row.previousPrice) * 100
               const positive = change > 0
