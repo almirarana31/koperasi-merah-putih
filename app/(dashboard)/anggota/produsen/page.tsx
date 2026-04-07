@@ -113,34 +113,26 @@ export default function ProdusenPage() {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="surface-card">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Produsen Aktif</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{producers.length}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Direktori tersaring pada scope saat ini</p>
-          </CardContent>
-        </Card>
-        <Card className="surface-card">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Luas Lahan</p>
-            <p className="mt-2 text-3xl font-semibold text-emerald-600">{totalLand.toFixed(1)} ha</p>
-            <p className="mt-2 text-sm text-muted-foreground">Total lahan produsen tersaring</p>
-          </CardContent>
-        </Card>
-        <Card className="surface-card">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Produktivitas</p>
-            <p className="mt-2 text-3xl font-semibold text-blue-600">{(totalProductivity / 1000).toFixed(1)} ton</p>
-            <p className="mt-2 text-sm text-muted-foreground">Volume dari produsen di scope aktif</p>
-          </CardContent>
-        </Card>
-        <Card className="surface-card">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Rata-rata Lahan</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{averageLand.toFixed(1)} ha</p>
-            <p className="mt-2 text-sm text-muted-foreground">Per produsen dalam direktori terpilih</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'PRODUSEN NASIONAL', value: producers.length, sub: 'UNIT TERDAFTAR', icon: Users, tone: 'slate' },
+          { label: 'TOTAL LUAS LAHAN', value: `${totalLand.toFixed(1)} HA`, sub: 'AREA PRODUKTIF', icon: LandPlot, tone: 'emerald' },
+          { label: 'PRODUKTIVITAS ESTIMASI', value: `${(totalProductivity / 1000).toFixed(1)} TON`, sub: 'VOLUME OUTPUT', icon: Leaf, tone: 'blue' },
+          { label: 'RATA-RATA KEPEMILIKAN', value: `${averageLand.toFixed(1)} HA`, sub: 'PER PRODUSEN', icon: Activity, tone: 'slate' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'}`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className="h-4 w-4 text-slate-400 group-hover:text-slate-900 transition-colors" />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[10px] font-bold text-slate-500 mt-1">{stat.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <div className="space-y-5">
@@ -216,6 +208,13 @@ export default function ProdusenPage() {
           </div>
           <Badge variant="outline" className="w-fit border-slate-200 bg-white text-slate-700">
             {chartRows.length} komoditas aktif
+          </Badge>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+           {chartRows.length} komoditas aktif
           </Badge>
         </CardContent>
       </Card>

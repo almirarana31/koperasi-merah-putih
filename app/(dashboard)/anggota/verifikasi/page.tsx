@@ -229,18 +229,22 @@ export default function VerifikasiPage() {
       {/* Stats KPI */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
-          { label: 'Menunggu Verifikasi', value: pendingItems.length, icon: Clock, tone: 'amber' },
-          { label: 'Ditolak / Perbaikan', value: rejectedItems.length, icon: XCircle, tone: 'rose' },
-          { label: 'Approved (Scope)', value: historyItems.length, icon: CheckCircle, tone: 'emerald' },
-          { label: 'SLA Rata-rata', value: '1.2H', icon: Activity, tone: 'slate' },
-        ].map((kpi, i) => (
-          <Card key={i} className="surface-card overflow-hidden">
-            <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-              <p className="text-xs font-semibold text-slate-400  ">{kpi.label}</p>
-              <kpi.icon className={`h-3.5 w-3.5 ${kpi.tone === 'rose' ? 'text-rose-500' : kpi.tone === 'emerald' ? 'text-emerald-500' : kpi.tone === 'amber' ? 'text-amber-500' : 'text-slate-400'}`} />
+          { label: 'MENUNGGU VERIFIKASI', value: pendingItems.length, icon: Clock, tone: 'amber' },
+          { label: 'DITOLAK / PERBAIKAN', value: rejectedItems.length, icon: XCircle, tone: 'rose' },
+          { label: 'APPROVED (SCOPE)', value: historyItems.length, icon: CheckCircle, tone: 'emerald' },
+          { label: 'SLA RATA-RATA', value: '1.2H', icon: Activity, tone: 'slate' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${stat.tone === 'rose' ? 'bg-rose-500' : stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'amber' ? 'bg-amber-500' : 'bg-slate-900'}`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : stat.tone === 'amber' ? 'text-amber-500' : 'text-slate-900'}`} />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-2xl font-semibold text-slate-900 ">{kpi.value}</p>
+              <p className="text-[10px] font-bold text-slate-500 mt-1">REAL-TIME AUDIT</p>
             </CardContent>
           </Card>
         ))}

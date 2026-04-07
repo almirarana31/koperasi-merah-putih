@@ -216,21 +216,22 @@ export default function AnggotaPage() {
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: 'Total Anggota', value: filteredMembers.length.toLocaleString('id-ID'), sub: '+5% vs bln lalu', icon: Users, tone: 'emerald' },
-          { label: 'Produsen Aktif', value: filteredMembers.filter(m => m.role === 'produsen' && m.status === 'active').length.toLocaleString('id-ID'), sub: `Tersebar di ${new Set(filteredMembers.map(m => m.village)).size} Desa`, icon: Activity, tone: 'slate' },
-          { label: 'Pending KYC', value: filteredMembers.filter(m => m.status === 'pending').length.toLocaleString('id-ID'), sub: 'Perlu verifikasi', icon: AlertCircle, tone: 'rose' },
-          { label: 'Total Simpanan', value: formatCurrency(filteredMembers.reduce((sum, m) => sum + m.financial.savings, 0)), sub: 'Akumulasi Dana', icon: TrendingUp, tone: 'emerald' },
+          { label: 'TOTAL ANGGOTA NASIONAL', value: Math.floor(filteredMembers.length * (isKementerian ? 1 : 1)).toLocaleString('id-ID'), sub: '+5.2% VS PREVIOUS MONTH', icon: Users, tone: 'emerald' },
+          { label: 'PRODUSEN AKTIF', value: Math.floor(filteredMembers.filter(m => m.role === 'produsen' && m.status === 'active').length * (isKementerian ? 1 : 1)).toLocaleString('id-ID'), sub: `DISTRIBUSI DI ${new Set(filteredMembers.map(m => m.village)).size} DESA`, icon: Activity, tone: 'slate' },
+          { label: 'PENDING KYC / AUDIT', value: filteredMembers.filter(m => m.status === 'pending').length.toLocaleString('id-ID'), sub: 'MEMERLUKAN INTERVENSI', icon: AlertCircle, tone: 'rose' },
+          { label: 'AKUMULASI SIMPANAN', value: formatCurrency(filteredMembers.reduce((sum, m) => sum + m.financial.savings, 0)), sub: 'TOTAL DANA TERKUMPUL', icon: TrendingUp, tone: 'emerald' },
         ].map((stat, i) => (
-          <Card key={i} className="surface-card overflow-hidden">
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${stat.tone === 'rose' ? 'bg-rose-500' : stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
-                <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
-                <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-400'}`} />
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-900'}`} />
               </div>
-              <CardTitle className="text-2xl font-semibold text-slate-900  mt-1">{stat.value}</CardTitle>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className={`text-xs font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
+              <p className={`text-[10px] font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
                 {stat.sub}
               </p>
             </CardContent>

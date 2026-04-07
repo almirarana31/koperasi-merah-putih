@@ -139,19 +139,22 @@ export default function JadwalPanenPage() {
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: 'Total Jadwal', value: totals.schedules, sub: 'Batch Penjemputan', icon: Calendar, tone: 'slate' },
-          { label: 'Item Panen', value: totals.itemsCount, sub: 'Komoditas Terdata', icon: Leaf, tone: 'emerald' },
-          { label: 'Volume Estimasi', value: `${(totals.est / 1000).toFixed(1)} TON`, sub: 'Proyeksi Beban Logistik', icon: Clock, tone: 'emerald' },
-          { label: 'Status Hub', value: 'OPTIMAL', sub: 'Kesiapan Armada', icon: CheckCircle2, tone: 'emerald' },
+          { label: 'TOTAL JADWAL', value: totals.schedules, sub: 'BATCH PENJEMPUTAN', icon: Calendar, tone: 'slate' },
+          { label: 'ITEM PANEN', value: totals.itemsCount, sub: 'KOMODITAS TERDATA', icon: Leaf, tone: 'emerald' },
+          { label: 'VOLUME ESTIMASI', value: `${(totals.est / 1000).toFixed(1)} TON`, sub: 'PROYEKSI LOGISTIK', icon: Clock, tone: 'emerald' },
+          { label: 'STATUS HUB', value: 'OPTIMAL', sub: 'KESIAPAN ARMADA', icon: CheckCircle2, tone: 'emerald' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)]">
-            <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-              <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
-              <stat.icon className="h-3.5 w-3.5 text-slate-400" />
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className={`h-4 w-4 ${stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-900'}`} />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-2xl font-semibold text-slate-900 ">{stat.value}</p>
-              <p className="text-xs font-bold text-slate-500  mt-1 ">{stat.sub}</p>
+              <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase">{stat.sub}</p>
             </CardContent>
           </Card>
         ))}

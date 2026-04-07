@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useToast } from '@/components/ui/use-toast'
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -43,6 +44,7 @@ const pembayaranKeluar = [
 
 export default function PembayaranPage() {
   const { user } = useAuth()
+  const { toast } = useToast()
   const isKementerian = user?.role === 'kementerian'
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<ScopeFilters>({
@@ -99,11 +101,20 @@ export default function PembayaranPage() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-           <Button variant="outline" size="sm" className="h-10 text-xs font-semibold   text-slate-600 border-slate-200">
+           <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200 rounded-none shadow-sm"
+            onClick={() => toast({ title: "Compliance Report", description: "Menyiapkan laporan pajak nasional..." })}
+          >
             <FileText className="h-4 w-4 mr-2 text-rose-600" />
             Tax Report
           </Button>
-          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold   px-6 shadow-lg">
+          <Button 
+            size="sm" 
+            className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all"
+            onClick={() => toast({ title: "Ledger Export", description: "Mengekspor buku besar keuangan..." })}
+          >
             <Download className="h-4 w-4 mr-2" />
             Export Ledger
           </Button>
@@ -116,21 +127,26 @@ export default function PembayaranPage() {
       {/* High-Density KPI Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total Inflow', value: (stats.totalIn / 1000000).toFixed(1), sub: 'Juta IDR', icon: ArrowDownLeft, color: 'text-emerald-600' },
-          { label: 'Total Outflow', value: (stats.totalOut / 1000000).toFixed(1), sub: 'Juta IDR', icon: ArrowUpRight, color: 'text-rose-600' },
-          { label: 'Net Cashflow', value: (stats.net / 1000000).toFixed(1), sub: 'Juta IDR', icon: Wallet, color: 'text-slate-900' },
-          { label: 'Pending Audit', value: stats.pendingCount, sub: 'Vouchers', icon: Clock, color: 'text-amber-600' },
+          { label: 'Total Inflow', value: (stats.totalIn / 1000000).toFixed(1), sub: 'Juta IDR', icon: ArrowDownLeft, color: 'text-emerald-600', tone: 'emerald' },
+          { label: 'Total Outflow', value: (stats.totalOut / 1000000).toFixed(1), sub: 'Juta IDR', icon: ArrowUpRight, color: 'text-rose-600', tone: 'rose' },
+          { label: 'Net Cashflow', value: (stats.net / 1000000).toFixed(1), sub: 'Juta IDR', icon: Wallet, color: 'text-slate-900', tone: 'slate' },
+          { label: 'Pending Audit', value: stats.pendingCount, sub: 'Vouchers', icon: Clock, color: 'text-amber-600', tone: 'amber' },
         ].map((s, i) => (
-          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
+            <div className={`h-1 w-full border-t-4 ${
+              s.tone === 'emerald' ? 'border-emerald-500' : 
+              s.tone === 'rose' ? 'border-rose-500' : 
+              s.tone === 'amber' ? 'border-amber-500' : 'border-slate-900'
+            }`} />
             <CardContent className="p-4 flex items-center gap-4">
-              <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-none bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
                 <s.icon className={`h-5 w-5 ${s.color}`} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-slate-400  ">{s.label}</p>
-                <div className="flex items-baseline gap-1">
-                  <span className={`text-xl font-semibold  ${s.color}`}>{s.value}</span>
-                  <span className="text-xs font-bold text-slate-500 ">{s.sub}</span>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                <div className="flex items-baseline gap-1 mt-0.5">
+                  <span className={`text-xl font-black ${s.color}`}>{s.value}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{s.sub}</span>
                 </div>
               </div>
             </CardContent>
@@ -296,7 +312,11 @@ export default function PembayaranPage() {
                     ))}
                  </div>
                  <div className="p-4 bg-white/5 border-t border-white/5 text-center">
-                    <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-white   h-10">
+                    <Button 
+                      variant="ghost" 
+                      className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-10 rounded-none"
+                      onClick={() => toast({ title: "Settlement Hub", description: "Menginisialisasi konsol penyelesaian..." })}
+                    >
                        Buka Konsol Settlement →
                     </Button>
                  </div>
@@ -344,7 +364,10 @@ export default function PembayaranPage() {
                 <p className="alert-surface-copy mt-2 text-lg font-semibold">Perhatian: Terdeteksi batch transaksi yang belum direkonsiliasi di wilayah Sumatera Utara (Rp 1.2M).</p>
              </div>
           </div>
-          <Button className="alert-surface-action h-12 rounded-xl px-8 text-sm font-semibold transition-all">
+          <Button 
+            className="alert-surface-action h-12 rounded-none px-8 text-[10px] font-black uppercase tracking-widest transition-all"
+            onClick={() => toast({ title: "Compliance Audit", description: "Mengaudit rekonsiliasi batch Sumatera Utara..." })}
+          >
              Audit Settlement
           </Button>
         </CardContent>

@@ -144,34 +144,26 @@ export default function MemberProfilPage() {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Akun Aktif</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{healthStats.active}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Dalam scope filter saat ini</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Perlu Review</p>
-            <p className="mt-2 text-3xl font-semibold text-amber-600">{healthStats.review}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Akun dengan follow-up terjadwal</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Butuh Audit</p>
-            <p className="mt-2 text-3xl font-semibold text-rose-600">{healthStats.audit}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Akun yang menunggu verifikasi lanjutan</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Health Coverage</p>
-            <p className="mt-2 text-3xl font-semibold text-blue-600">{healthStats.utilization}%</p>
-            <p className="mt-2 text-sm text-muted-foreground">Rasio akun aktif terhadap direktori</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'AKUN AKTIF', value: healthStats.active, sub: 'TERVERIFIKASI SISTEM', tone: 'slate' },
+          { label: 'PERLU REVIEW', value: healthStats.review, sub: 'SCHEDULED FOLLOW-UP', tone: 'amber' },
+          { label: 'BUTUH AUDIT', value: healthStats.audit, sub: 'PENDING VERIFICATION', tone: 'rose' },
+          { label: 'HEALTH COVERAGE', value: `${healthStats.utilization}%`, sub: 'RATIO DIREKTORI AKTIF', tone: 'blue' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${stat.tone === 'rose' ? 'bg-rose-500' : stat.tone === 'blue' ? 'bg-blue-500' : stat.tone === 'amber' ? 'bg-amber-500' : 'bg-slate-900'}`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <div className={`h-2 w-2 rounded-full ${stat.tone === 'rose' ? 'bg-rose-500' : stat.tone === 'blue' ? 'bg-blue-500' : stat.tone === 'amber' ? 'bg-amber-500' : 'bg-slate-900'}`} />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[10px] font-bold text-slate-500 mt-1">{stat.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
@@ -284,6 +276,14 @@ export default function MemberProfilPage() {
                   ))}
                 </div>
               </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+           </div>
             )}
           </CardContent>
         </Card>

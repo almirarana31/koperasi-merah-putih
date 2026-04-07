@@ -82,19 +82,21 @@ export default function TambahAnggotaPage() {
       <form onSubmit={handleSubmit}>
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Data Pribadi */}
-          <Card>
+          <Card className="border-none bg-white shadow-sm overflow-hidden">
+            <div className="h-1 w-full bg-slate-900" />
             <CardHeader>
-              <CardTitle>Data Pribadi</CardTitle>
-              <CardDescription>
-                Informasi identitas anggota
+              <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">DATA PRIBADI ANGGOTA</CardTitle>
+              <CardDescription className="text-xs font-bold text-slate-500">
+                IDENTITAS RESMI BERDASARKAN E-KTP
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="nik">NIK</Label>
+                <Label htmlFor="nik" className="text-[10px] font-black uppercase tracking-widest text-slate-400">NOMOR INDUK KEPENDUDUKAN (NIK)</Label>
                 <Input
                   id="nik"
-                  placeholder="Masukkan 16 digit NIK"
+                  placeholder="16 DIGIT NIK"
+                  className="h-10 text-xs font-semibold bg-slate-50 border-slate-100"
                   value={formData.nik}
                   onChange={(e) =>
                     setFormData({ ...formData, nik: e.target.value })
@@ -103,10 +105,11 @@ export default function TambahAnggotaPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="nama">Nama Lengkap</Label>
+                <Label htmlFor="nama" className="text-[10px] font-black uppercase tracking-widest text-slate-400">NAMA LENGKAP</Label>
                 <Input
                   id="nama"
-                  placeholder="Masukkan nama lengkap"
+                  placeholder="NAMA SESUAI IDENTITAS"
+                  className="h-10 text-xs font-semibold bg-slate-50 border-slate-100"
                   value={formData.nama}
                   onChange={(e) =>
                     setFormData({ ...formData, nama: e.target.value })
@@ -114,29 +117,30 @@ export default function TambahAnggotaPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="tipe">Tipe Anggota</Label>
+                <Label htmlFor="tipe" className="text-[10px] font-black uppercase tracking-widest text-slate-400">TIPE KEANGGOTAAN</Label>
                 <Select
                   value={formData.tipe}
                   onValueChange={(value) =>
                     setFormData({ ...formData, tipe: value })
                   }
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih tipe anggota" />
+                  <SelectTrigger className="h-10 text-xs font-semibold bg-slate-50 border-slate-100">
+                    <SelectValue placeholder="PILIH TIPE" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="petani">Petani</SelectItem>
-                    <SelectItem value="nelayan">Nelayan</SelectItem>
+                    <SelectItem value="petani">PETANI</SelectItem>
+                    <SelectItem value="nelayan">NELAYAN</SelectItem>
                     <SelectItem value="umkm">UMKM</SelectItem>
-                    <SelectItem value="pengepul">Pengepul</SelectItem>
+                    <SelectItem value="pengepul">PENGEPUL</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="noHp">Nomor HP</Label>
+                <Label htmlFor="noHp" className="text-[10px] font-black uppercase tracking-widest text-slate-400">NOMOR TELEPON / WA</Label>
                 <Input
                   id="noHp"
-                  placeholder="08xxxxxxxxxx"
+                  placeholder="08XXXXXXXXXX"
+                  className="h-10 text-xs font-semibold bg-slate-50 border-slate-100"
                   value={formData.noHp}
                   onChange={(e) =>
                     setFormData({ ...formData, noHp: e.target.value })
@@ -147,19 +151,21 @@ export default function TambahAnggotaPage() {
           </Card>
 
           {/* Alamat */}
-          <Card>
+          <Card className="border-none bg-white shadow-sm overflow-hidden">
+            <div className="h-1 w-full bg-slate-900" />
             <CardHeader>
-              <CardTitle>Alamat</CardTitle>
-              <CardDescription>
-                Lokasi tempat tinggal anggota
+              <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">GEOLOKASI & ALAMAT</CardTitle>
+              <CardDescription className="text-xs font-bold text-slate-500">
+                DOMISILI OPERASIONAL ANGGOTA
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="alamat">Alamat Lengkap</Label>
+                <Label htmlFor="alamat" className="text-[10px] font-black uppercase tracking-widest text-slate-400">ALAMAT LENGKAP</Label>
                 <Textarea
                   id="alamat"
-                  placeholder="Jalan, nomor rumah, RT/RW"
+                  placeholder="JALAN, NO, RT/RW"
+                  className="text-xs font-semibold bg-slate-50 border-slate-100 min-h-[80px]"
                   value={formData.alamat}
                   onChange={(e) =>
                     setFormData({ ...formData, alamat: e.target.value })
@@ -168,10 +174,11 @@ export default function TambahAnggotaPage() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="desa">Desa/Kelurahan</Label>
+                  <Label htmlFor="desa" className="text-[10px] font-black uppercase tracking-widest text-slate-400">DESA / KELURAHAN</Label>
                   <Input
                     id="desa"
-                    placeholder="Nama desa"
+                    placeholder="NAMA DESA"
+                    className="h-10 text-xs font-semibold bg-slate-50 border-slate-100"
                     value={formData.desa}
                     onChange={(e) =>
                       setFormData({ ...formData, desa: e.target.value })
@@ -179,10 +186,11 @@ export default function TambahAnggotaPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="kecamatan">Kecamatan</Label>
+                  <Label htmlFor="kecamatan" className="text-[10px] font-black uppercase tracking-widest text-slate-400">KECAMATAN</Label>
                   <Input
                     id="kecamatan"
-                    placeholder="Nama kecamatan"
+                    placeholder="NAMA KECAMATAN"
+                    className="h-10 text-xs font-semibold bg-slate-50 border-slate-100"
                     value={formData.kecamatan}
                     onChange={(e) =>
                       setFormData({ ...formData, kecamatan: e.target.value })
@@ -194,21 +202,23 @@ export default function TambahAnggotaPage() {
           </Card>
 
           {/* Data Usaha */}
-          <Card>
+          <Card className="border-none bg-white shadow-sm overflow-hidden">
+            <div className="h-1 w-full bg-emerald-500" />
             <CardHeader>
-              <CardTitle>Data Usaha</CardTitle>
-              <CardDescription>
-                Informasi usaha/lahan anggota
+              <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">PROFIL KOMODITAS</CardTitle>
+              <CardDescription className="text-xs font-bold text-slate-500">
+                KAPASITAS PRODUKSI & LUAS LAHAN
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="luasLahan">Luas Lahan (Hektar)</Label>
+                <Label htmlFor="luasLahan" className="text-[10px] font-black uppercase tracking-widest text-slate-400">ESTIMASI LUAS LAHAN (HA)</Label>
                 <Input
                   id="luasLahan"
                   type="number"
                   step="0.1"
                   placeholder="0.0"
+                  className="h-10 text-xs font-semibold bg-slate-50 border-slate-100"
                   value={formData.luasLahan}
                   onChange={(e) =>
                     setFormData({ ...formData, luasLahan: e.target.value })
@@ -216,51 +226,48 @@ export default function TambahAnggotaPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="komoditas">Komoditas Utama</Label>
+                <Label htmlFor="komoditas" className="text-[10px] font-black uppercase tracking-widest text-slate-400">KOMODITAS UTAMA</Label>
                 <Input
                   id="komoditas"
-                  placeholder="Pisahkan dengan koma (Padi, Jagung)"
+                  placeholder="PADI, JAGUNG, CABAI"
+                  className="h-10 text-xs font-semibold bg-slate-50 border-slate-100"
                   value={formData.komoditas}
                   onChange={(e) =>
                     setFormData({ ...formData, komoditas: e.target.value })
                   }
                 />
-                <p className="text-xs text-muted-foreground">
-                  Contoh: Padi, Jagung, Cabai
-                </p>
               </div>
             </CardContent>
           </Card>
 
           {/* Simpanan */}
-          <Card>
+          <Card className="border-none bg-white shadow-sm overflow-hidden">
+            <div className="h-1 w-full bg-emerald-500" />
             <CardHeader>
-              <CardTitle>Simpanan Awal</CardTitle>
-              <CardDescription>
-                Setoran simpanan saat pendaftaran
+              <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">KONTRIBUSI AWAL</CardTitle>
+              <CardDescription className="text-xs font-bold text-slate-500">
+                PERMODALAN AWAL ANGGOTA
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="simpananPokok">Simpanan Pokok</Label>
+                <Label htmlFor="simpananPokok" className="text-[10px] font-black uppercase tracking-widest text-slate-400">SIMPANAN POKOK (MIN RP 500.000)</Label>
                 <Input
                   id="simpananPokok"
                   type="number"
+                  className="h-10 text-xs font-semibold bg-slate-50 border-slate-100"
                   value={formData.simpananPokok}
                   onChange={(e) =>
                     setFormData({ ...formData, simpananPokok: e.target.value })
                   }
                 />
-                <p className="text-xs text-muted-foreground">
-                  Minimal Rp 500.000 (wajib)
-                </p>
               </div>
-              <div className="rounded-lg bg-muted p-4">
-                <p className="text-sm font-medium">Informasi</p>
-                <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                  <li>- Simpanan pokok dibayar sekali saat mendaftar</li>
-                  <li>- Simpanan wajib dibayar setiap bulan</li>
-                  <li>- Anggota berhak mendapat SHU tahunan</li>
+              <div className="rounded-xl bg-slate-900 p-4 text-white">
+                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">REGULASI KOPERASI</p>
+                <ul className="mt-2 space-y-1 text-[10px] font-bold text-slate-400 leading-tight">
+                  <li>• SIMPANAN POKOK BERSIFAT WAJIB SEKALI DAFTAR</li>
+                  <li>• ANGGOTA BERHAK ATAS PEMBAGIAN SHU TAHUNAN</li>
+                  <li>• AKSES PENUH KE EKOSISTEM PASAR & GUDANG</li>
                 </ul>
               </div>
             </CardContent>
@@ -268,13 +275,13 @@ export default function TambahAnggotaPage() {
         </div>
 
         {/* Submit Button */}
-        <div className="mt-6 flex justify-end gap-4">
-          <Button variant="outline" asChild>
-            <Link href="/anggota">Batal</Link>
+        <div className="mt-6 flex justify-end gap-3">
+          <Button variant="outline" className="h-10 text-xs font-semibold border-slate-200" asChild>
+            <Link href="/anggota">BATAL</Link>
           </Button>
-          <Button type="submit">
+          <Button type="submit" className="h-10 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold px-8">
             <Save className="mr-2 h-4 w-4" />
-            Simpan Anggota
+            SIMPAN DATABASE
           </Button>
         </div>
       </form>

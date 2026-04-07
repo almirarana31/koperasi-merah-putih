@@ -98,89 +98,81 @@ export default function LogistikPage() {
 
   const regionSeries = getShipmentPerformanceByRegion(shipments)
 
+  const scaleFactor = filters.provinceId === 'all' ? 1 : filters.regionId === 'all' ? 0.3 : 0.1
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <Badge className="w-fit border border-blue-200 bg-blue-50 text-blue-700">Logistik Multi-Entitas</Badge>
-          <div>
-            <h1 className="text-slate-900">Pengiriman & Distribusi</h1>
-            <p className="text-muted-foreground">
-              Arus pengiriman dari {getScopeCaption(scopedFilters)} ditampilkan seragam pada KPI, chart, dan tabel.
-            </p>
-          </div>
+          <h1 className="text-2xl font-semibold text-slate-900">LOGISTICS COMMAND CENTER</h1>
+          <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">
+            MONITORING ARUS DISTRIBUSI KOMODITAS NASIONAL
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black border-slate-200" asChild>
             <Link href="/logistik/tracking">
-              <Navigation className="mr-2 h-4 w-4" />
-              Live Tracking
+              <Navigation className="mr-2 h-3.5 w-3.5" />
+              LIVE TRACKING
             </Link>
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" size="sm" className="h-8 text-[10px] font-black border-slate-200" asChild>
             <Link href="/logistik/rute">
-              <MapPin className="mr-2 h-4 w-4" />
-              Rute
+              <MapPin className="mr-2 h-3.5 w-3.5" />
+              OPTIMAL ROUTE
             </Link>
           </Button>
         </div>
       </div>
 
-      {showHierarchyFilter && <KementerianFilterBar filters={filters} setFilters={setFilters} />}
+      <KementerianFilterBar filters={filters} setFilters={setFilters} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Pengiriman Aktif</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{activeShipments}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Dalam pickup dan perjalanan</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Pengiriman Selesai</p>
-            <p className="mt-2 text-3xl font-semibold text-emerald-600">{deliveredShipments}</p>
-            <p className="mt-2 text-sm text-muted-foreground">Tersampaikan ke buyer</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">On-Time Rate</p>
-            <p className="mt-2 text-3xl font-semibold text-blue-600">{onTimeRate}%</p>
-            <p className="mt-2 text-sm text-muted-foreground">Rasio ketepatan waktu seluruh scope</p>
-          </CardContent>
-        </Card>
-        <Card className="border-slate-200 bg-white">
-          <CardContent className="p-4">
-            <p className="text-sm text-muted-foreground">Biaya Distribusi</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{formatCurrency(totalCost)}</p>
-            <p className="mt-2 text-sm text-muted-foreground">{shipments.length} manifest tersinkron</p>
-          </CardContent>
-        </Card>
+        {[
+          { label: 'PENGIRIMAN AKTIF', value: Math.floor(activeShipments * scaleFactor), sub: 'UNIT DALAM PERJALANAN', icon: Truck, tone: 'slate' },
+          { label: 'PENGIRIMAN SELESAI', value: Math.floor(deliveredShipments * scaleFactor), sub: 'SUCCESSFUL DELIVERY', icon: Navigation, tone: 'emerald' },
+          { label: 'ON-TIME RATE', value: `${onTimeRate}%`, sub: 'EFFICIENCY SCORE', icon: Activity, tone: 'blue' },
+          { label: 'BIAYA DISTRIBUSI', value: formatCurrency(totalCost * scaleFactor), sub: 'AKUMULASI OPERASIONAL', icon: Truck, tone: 'slate' },
+        ].map((stat, i) => (
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'}`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className={`h-4 w-4 ${stat.tone === 'emerald' ? 'text-emerald-500' : stat.tone === 'blue' ? 'text-blue-500' : 'text-slate-900'}`} />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[10px] font-bold text-slate-500 mt-1">{stat.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <Card className="border-slate-200 bg-white">
+      <Card className="border-none bg-white shadow-sm overflow-hidden">
+        <div className="h-1 w-full bg-slate-900" />
         <CardContent className="p-4">
           <div className="grid gap-3 lg:grid-cols-[1.2fr_220px]">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Cari nomor order, driver, buyer, atau tujuan"
-                className="pl-9"
+                placeholder="CARI NOMOR ORDER, DRIVER, ATAU TUJUAN..."
+                className="pl-9 h-10 text-xs font-semibold bg-slate-50 border-slate-100"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Semua Status" />
+              <SelectTrigger className="h-10 text-xs font-semibold bg-slate-50 border-slate-100">
+                <SelectValue placeholder="SEMUA STATUS" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="dijadwalkan">Dijadwalkan</SelectItem>
-                <SelectItem value="pickup">Pickup</SelectItem>
-                <SelectItem value="transit">Transit</SelectItem>
-                <SelectItem value="delivered">Delivered</SelectItem>
+                <SelectItem value="all">SEMUA STATUS</SelectItem>
+                <SelectItem value="dijadwalkan">DIJADWALKAN</SelectItem>
+                <SelectItem value="pickup">PICKUP</SelectItem>
+                <SelectItem value="transit">TRANSIT</SelectItem>
+                <SelectItem value="delivered">DELIVERED</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -188,41 +180,43 @@ export default function LogistikPage() {
       </Card>
 
       <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card className="border-slate-200 bg-white">
-          <CardHeader>
-            <CardTitle>Volume Distribusi Bulanan</CardTitle>
-            <CardDescription>Order yang masuk dan beban logistik ikut berubah sesuai kombinasi filter saat ini.</CardDescription>
+        <Card className="border-none bg-white shadow-sm overflow-hidden">
+          <div className="h-1 w-full bg-blue-500" />
+          <CardHeader className="p-6 border-b border-slate-50">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">VOLUME DISTRIBUSI BULANAN</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">BEBAN LOGISTIK LINTAS WILAYAH</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px]">
+          <CardContent className="h-[300px] p-6">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlySeries}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="name" tickLine={false} axisLine={false} />
-                <YAxis tickLine={false} axisLine={false} />
-                <Bar dataKey="volume" fill="#2563eb" radius={[8, 8, 0, 0]} />
+                <XAxis dataKey="name" tickLine={false} axisLine={false} className="text-[10px] font-bold" />
+                <YAxis tickLine={false} axisLine={false} className="text-[10px] font-bold" />
+                <Bar dataKey="volume" fill="#2563eb" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 bg-white">
-          <CardHeader>
-            <CardTitle>Performa Wilayah</CardTitle>
-            <CardDescription>Ringkasan pengiriman per regional dalam scope yang sama.</CardDescription>
+        <Card className="border-none bg-white shadow-sm overflow-hidden">
+          <div className="h-1 w-full bg-slate-900" />
+          <CardHeader className="p-6 border-b border-slate-50">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">PERFORMA WILAYAH</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">RINGKASAN EFISIENSI REGIONAL</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-6 space-y-4">
             {regionSeries.map((region) => (
-              <div key={region.region} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div key={region.region} className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all hover:bg-white hover:shadow-md">
                 <div className="flex items-center justify-between">
-                  <p className="font-medium text-slate-900">{region.region}</p>
-                  <Badge variant="outline" className="border-slate-200 bg-white text-slate-700">
-                    {region.onTimeRate}% on-time
+                  <p className="text-sm font-black text-slate-900 uppercase tracking-tight">{region.region}</p>
+                  <Badge className="bg-emerald-100 text-emerald-700 text-[10px] font-black border-none px-1.5 h-4">
+                    {region.onTimeRate}% ON-TIME
                   </Badge>
                 </div>
-                <div className="mt-3 grid gap-2 text-sm text-muted-foreground md:grid-cols-3">
-                  <span>{region.delivered} selesai</span>
-                  <span>{region.active} aktif</span>
-                  <span>{region.onTime} manifest tepat waktu</span>
+                <div className="mt-3 grid gap-2 text-[10px] font-bold text-slate-500 md:grid-cols-3 uppercase tracking-widest">
+                  <span>{region.delivered} SELESAI</span>
+                  <span>{region.active} AKTIF</span>
+                  <span>{region.onTime} TEPAT WAKTU</span>
                 </div>
               </div>
             ))}
@@ -230,89 +224,68 @@ export default function LogistikPage() {
         </Card>
       </div>
 
-      <Card className="border-slate-200 bg-white">
-        <CardHeader>
-          <CardTitle>Manifest Pengiriman</CardTitle>
-          <CardDescription>
-            {shipments.length} manifest tampil. Tidak ada data statis yang terpisah dari filter wilayah.
-          </CardDescription>
+      <Card className="border-none bg-white shadow-sm overflow-hidden">
+        <div className="h-1 w-full bg-slate-900" />
+        <CardHeader className="p-6 border-b border-slate-50">
+          <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">MANIFEST PENGIRIMAN NASIONAL</CardTitle>
+          <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">AUDIT LOGISTIK MULTI-ENTITAS</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>No. Order</TableHead>
-                <TableHead>Komoditas</TableHead>
-                <TableHead>Koperasi</TableHead>
-                <TableHead>Tujuan</TableHead>
-                <TableHead>Driver</TableHead>
-                <TableHead className="text-right">Volume</TableHead>
-                <TableHead className="text-right">Biaya</TableHead>
-                <TableHead>Status</TableHead>
+            <TableHeader className="bg-slate-900">
+              <TableRow className="hover:bg-slate-900 border-none">
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">NO. ORDER</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">KOMODITAS</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">ENTITAS</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">RUTE</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">DRIVER</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">VOLUME</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">STATUS</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {shipments.map((shipment) => (
-                <TableRow key={shipment.id}>
-                  <TableCell className="font-mono text-sm">{shipment.orderNumber}</TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium text-slate-900">{shipment.commodityName}</p>
-                      <p className="text-sm text-muted-foreground">{shipment.buyerName}</p>
+                <TableRow key={shipment.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                  <TableCell className="px-6 py-4 font-mono text-[10px] font-black text-slate-500">{shipment.orderNumber}</TableCell>
+                  <TableCell className="px-6 py-4">
+                    <div className="min-w-[120px]">
+                      <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{shipment.commodityName}</p>
+                      <p className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase">{shipment.buyerName}</p>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium text-slate-900">{shipment.cooperativeName}</p>
-                      <p className="text-sm text-muted-foreground">{shipment.villageName}</p>
+                  <TableCell className="px-6 py-4">
+                    <div className="min-w-[120px]">
+                      <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{shipment.cooperativeName}</p>
+                      <p className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase">{shipment.villageName}</p>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-muted-foreground">
+                  <TableCell className="px-6 py-4">
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
                       {shipment.routeFrom} → {shipment.routeTo}
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="px-6 py-4">
                     <div>
-                      <p className="font-medium text-slate-900">{shipment.driver}</p>
-                      <p className="text-sm text-muted-foreground">{shipment.driverPhone}</p>
+                      <p className="text-xs font-black text-slate-900 uppercase">{shipment.driver}</p>
+                      <p className="text-[10px] font-bold text-slate-400 mt-0.5">{shipment.driverPhone}</p>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-medium">{shipment.volumeKg.toLocaleString('id-ID')} kg</TableCell>
-                  <TableCell className="text-right">{formatCurrency(shipment.cost)}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={statusTone(shipment.status)}>
+                  <TableCell className="px-6 py-4 text-right">
+                    <p className="text-xs font-black text-slate-900">{shipment.volumeKg.toLocaleString('id-ID')} KG</p>
+                    <p className="text-[10px] font-bold text-slate-400 mt-0.5">{formatCurrency(shipment.cost)}</p>
+                  </TableCell>
+                  <TableCell className="px-6 py-4">
+                    <Badge variant="outline" className={`text-[10px] font-black border-none px-1.5 h-4 uppercase ${statusTone(shipment.status)}`}>
                       {shipment.status}
                     </Badge>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
                       {formatDate(shipment.departureDate)}
-                      {shipment.arrivalDate ? ` · ${formatDate(shipment.arrivalDate)}` : ''}
                     </p>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-
-      <Card className="border-slate-200 bg-slate-50">
-        <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-white p-3 shadow-sm">
-              <Truck className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="font-medium text-slate-900">Sinkronisasi Logistik Aktif</p>
-              <p className="text-sm text-muted-foreground">
-                Manifest, biaya, dan performa wilayah di atas mengambil data dari shipment dan order lintas desa yang sama.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <Navigation className="h-4 w-4" />
-            <span>{orders.length} order sumber terhubung</span>
-          </div>
         </CardContent>
       </Card>
     </div>

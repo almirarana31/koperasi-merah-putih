@@ -95,29 +95,28 @@ export default function AgregasiPage() {
       {/* Summary Metrics */}
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: 'Agregasi Aktif', value: agregasiData.filter(a => a.status === 'berjalan').length.toString(), sub: 'Batch berjalan', icon: Target, tone: 'emerald' },
-          { label: 'Volume Target', value: `${(totalTarget / 1000).toFixed(1)} TON`, sub: 'Akumulasi Nasional', icon: BarChart3, tone: 'slate' },
-          { label: 'Total Terkumpul', value: `${(totalTerkumpul / 1000).toFixed(1)} TON`, sub: `${((totalTerkumpul / totalTarget) * 100).toFixed(0)}% Progress`, icon: Package, tone: 'emerald' },
-          { label: 'Nilai Ekonomi', value: `Rp ${(totalNilai / 1000000).toFixed(0)} JT`, sub: 'Estimasi Valuasi', icon: TrendingUp, tone: 'emerald' },
+          { label: 'AGREGASI AKTIF', value: agregasiData.filter(a => a.status === 'berjalan').length.toString(), sub: 'BATCH BERJALAN', icon: Target, tone: 'emerald' },
+          { label: 'VOLUME TARGET', value: `${(totalTarget / 1000).toFixed(1)} TON`, sub: 'AKUMULASI NASIONAL', icon: BarChart3, tone: 'slate' },
+          { label: 'TOTAL TERKUMPUL', value: `${(totalTerkumpul / 1000).toFixed(1)} TON`, sub: `${((totalTerkumpul / totalTarget) * 100).toFixed(0)}% PROGRESS`, icon: Package, tone: 'emerald' },
+          { label: 'NILAI EKONOMI', value: `RP ${(totalNilai / 1000000).toFixed(0)} JT`, sub: 'ESTIMASI VALUASI', icon: TrendingUp, tone: 'emerald' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
-                <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
-                <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-400'}`} />
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className={`h-4 w-4 ${stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-900'}`} />
               </div>
-              <CardTitle className="text-2xl font-semibold text-slate-900  mt-1">{stat.value}</CardTitle>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              {stat.label === 'Total Terkumpul' ? (
+              {stat.label === 'TOTAL TERKUMPUL' ? (
                 <div className="space-y-1.5">
                   <Progress value={(totalTerkumpul / totalTarget) * 100} className="h-1 bg-slate-100" />
-                  <p className="text-xs font-bold text-emerald-600">{stat.sub}</p>
+                  <p className="text-[10px] font-bold text-emerald-600 uppercase">{stat.sub}</p>
                 </div>
               ) : (
-                <p className={`text-xs font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
-                  {stat.sub}
-                </p>
+                <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase">{stat.sub}</p>
               )}
             </CardContent>
           </Card>
@@ -207,6 +206,10 @@ export default function AgregasiPage() {
           )
         })}
       </div>
+    </div>
+  )
+}
+   </div>
     </div>
   )
 }

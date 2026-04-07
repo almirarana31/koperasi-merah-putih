@@ -146,20 +146,21 @@ export default function KomoditasPage() {
       {/* Executive KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { label: 'Varietas Aktif', value: stats.count, sub: 'SKU Terdaftar', icon: Layers, color: 'text-slate-900', accent: 'bg-slate-50' },
-          { label: 'Total Volume Stok', value: (stats.totalStock / 1000).toFixed(1), sub: 'Metric Ton', icon: TrendingUp, color: 'text-emerald-600', accent: 'bg-emerald-50' },
-          { label: 'Nilai Kapitalisasi', value: formatCurrency(stats.totalValue), sub: 'Estimasi Pasar', icon: Globe, color: 'text-blue-600', accent: 'bg-blue-50' },
+          { label: 'VARIETAS AKTIF', value: stats.count, sub: 'SKU TERDAFTAR', icon: Layers, tone: 'slate' },
+          { label: 'TOTAL VOLUME STOK', value: (stats.totalStock / 1000).toFixed(1), sub: 'METRIC TON', icon: TrendingUp, tone: 'emerald' },
+          { label: 'NILAI KAPITALISASI', value: formatCurrency(stats.totalValue), sub: 'ESTIMASI PASAR', icon: Globe, tone: 'blue' },
         ].map((s, i) => (
-          <Card key={i} className="border-none shadow-sm overflow-hidden">
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${s.tone === 'emerald' ? 'bg-emerald-500' : s.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'}`} />
             <CardContent className="p-6 flex items-center gap-5">
-              <div className={`h-14 w-14 rounded-2xl ${s.accent} flex items-center justify-center`}>
-                <s.icon className={`h-7 w-7 ${s.color}`} />
+              <div className={`h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                <s.icon className={`h-7 w-7 ${s.tone === 'emerald' ? 'text-emerald-600' : s.tone === 'blue' ? 'text-blue-600' : 'text-slate-900'}`} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-slate-400  ">{s.label}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{s.label}</p>
                 <div className="flex items-baseline gap-1 mt-1">
-                  <span className={`text-2xl font-semibold  ${s.color}`}>{s.value}</span>
-                  <span className="text-sm font-bold text-slate-500 ">{s.sub}</span>
+                  <span className={`text-2xl font-black text-slate-900`}>{s.value}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">{s.sub}</span>
                 </div>
               </div>
             </CardContent>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
@@ -24,6 +25,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useToast } from '@/components/ui/use-toast'
+import { useAuth } from '@/lib/auth/use-auth'
+import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
+import type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 import {
   transactions,
   monthlyRevenue,
@@ -42,21 +47,41 @@ import {
 } from 'recharts'
 
 export default function LaporanPage() {
-  const totalPemasukan = transactions.reduce((sum, t) => sum + t.kredit, 0)
-  const totalPengeluaran = transactions.reduce((sum, t) => sum + t.debit, 0)
+  const { toast } = useToast()
+  const { user } = useAuth()
+  const [filters, setFilters] = useState<ScopeFilters>({
+    provinceId: 'all',
+    regionId: 'all',
+    villageId: 'all',
+    cooperativeId: 'all',
+    commodityId: 'all',
+  })
+
+  const scaleFactor = filters.provinceId === 'all' ? 1 : filters.regionId === 'all' ? 0.3 : 0.1
+
+  const scaledMonthlyRevenue = useMemo(() => {
+    return monthlyRevenue.map(m => ({
+      ...m,
+      pendapatan: m.pendapatan * scaleFactor,
+      pengeluaran: m.pengeluaran * scaleFactor,
+    }))
+  }, [scaleFactor])
+
+  const totalPemasukan = scaledMonthlyRevenue.reduce((sum, t) => sum + t.pendapatan, 0)
+  const totalPengeluaran = scaledMonthlyRevenue.reduce((sum, t) => sum + t.pengeluaran, 0)
   const labaKotor = totalPemasukan - totalPengeluaran
 
   // Calculate cumulative balance for line chart
-  const cumulativeData = monthlyRevenue.map((item, index) => {
+  const cumulativeData = scaledMonthlyRevenue.map((item, index) => {
     const prevTotal =
       index > 0
-        ? monthlyRevenue
+        ? scaledMonthlyRevenue
             .slice(0, index)
             .reduce((sum, m) => sum + (m.pendapatan - m.pengeluaran), 0)
         : 0
     return {
       ...item,
-      saldo: 150000000 + prevTotal + (item.pendapatan - item.pengeluaran),
+      saldo: (150000000 * scaleFactor) + prevTotal + (item.pendapatan - item.pengeluaran),
     }
   })
 
@@ -71,47 +96,56 @@ export default function LaporanPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold  text-slate-900 ">Laporan Keuangan</h1>
-            <p className="text-xs font-bold text-slate-500   mt-1">
-              Analisis performa & audit keuangan nasional
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">NATIONAL AUDIT LEDGER</h1>
+            <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-none">
+              ANALISIS PERFORMA & AUDIT KEUANGAN NASIONAL • REAL-TIME ANALYSIS
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Select defaultValue="2024">
-            <SelectTrigger className="h-8 w-[100px] text-xs font-semibold   border-slate-200">
-              <Calendar className="mr-2 h-3 w-3" />
+            <SelectTrigger className="h-9 w-[120px] text-[10px] font-black uppercase tracking-widest border-slate-200 rounded-none bg-white">
+              <Calendar className="mr-2 h-3.5 w-3.5" />
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="2024" className="text-xs font-bold">2024</SelectItem>
-              <SelectItem value="2023" className="text-xs font-bold">2023</SelectItem>
+            <SelectContent className="rounded-none border-slate-200">
+              <SelectItem value="2024" className="text-[10px] font-black uppercase">TAHUN 2024</SelectItem>
+              <SelectItem value="2023" className="text-[10px] font-black uppercase">TAHUN 2023</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600">
+          <Button 
+            className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all"
+            onClick={() => toast({ title: "Audit Export", description: "Menyiapkan dokumen audit PDF konsolidasi..." })}
+          >
             <Download className="mr-2 h-3.5 w-3.5" />
-            Export Audit PDF
+            EXPORT AUDIT PDF
           </Button>
         </div>
       </div>
 
+      <KementerianFilterBar filters={filters} setFilters={setFilters} />
+
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         {[
-          { label: 'Total Pemasukan', value: formatCurrency(totalPemasukan), sub: '+18% vs bln lalu', icon: TrendingUp, tone: 'emerald' },
-          { label: 'Total Pengeluaran', value: formatCurrency(totalPengeluaran), sub: '+8% vs bln lalu', icon: TrendingDown, tone: 'rose' },
-          { label: 'Laba Bersih (EBITDA)', value: formatCurrency(labaKotor), sub: `Margin: ${((labaKotor / totalPemasukan) * 100).toFixed(1)}%`, icon: FileText, tone: 'slate' },
+          { label: 'TOTAL PEMASUKAN', value: formatCurrency(totalPemasukan), sub: '+18.4% ANOMALY DETECTED', icon: TrendingUp, tone: 'emerald' },
+          { label: 'TOTAL PENGELUARAN', value: formatCurrency(totalPengeluaran), sub: 'WITHIN OPERATIONAL LIMITS', icon: TrendingDown, tone: 'rose' },
+          { label: 'LABA BERSIH (EBITDA)', value: formatCurrency(labaKotor), sub: `MARGIN: ${((labaKotor / totalPemasukan) * 100).toFixed(1)}% PERFORMANCE INDEX`, icon: FileText, tone: 'slate' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
+            <div className={`h-1 w-full border-t-4 ${
+              stat.tone === 'emerald' ? 'border-emerald-500' : 
+              stat.tone === 'rose' ? 'border-rose-500' : 'border-slate-900'
+            }`} />
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
-                <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
-                <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-400'}`} />
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-900'}`} />
               </div>
-              <CardTitle className="text-2xl font-semibold text-slate-900  mt-1">{stat.value}</CardTitle>
+              <CardTitle className="text-xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className={`text-xs font-bold ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
+              <p className={`text-[10px] font-black uppercase tracking-tighter ${stat.tone === 'rose' ? 'text-rose-600' : stat.tone === 'emerald' ? 'text-emerald-600' : 'text-slate-500'}`}>
                 {stat.sub}
               </p>
             </CardContent>
@@ -122,40 +156,43 @@ export default function LaporanPage() {
       {/* Charts */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Revenue vs Expense Chart */}
-        <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
-          <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
-            <CardTitle className="text-xs font-semibold text-slate-900  ">Pendapatan vs Pengeluaran</CardTitle>
-            <CardDescription className="text-xs font-bold text-slate-500   mt-0.5">Analisis Komparatif Bulanan</CardDescription>
+        <Card className="border-none shadow-sm bg-white overflow-hidden rounded-none">
+          <div className="h-1 w-full border-t-4 border-slate-900" />
+          <CardHeader className="p-4 border-b border-slate-50">
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">PENDAPATAN VS PENGELUARAN</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">ANALISIS KOMPARATIF BULANAN NASIONAL</CardDescription>
           </CardHeader>
           <CardContent className="p-4">
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyRevenue} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                <BarChart data={scaledMonthlyRevenue} margin={{ top: 0, right: 0, left: -10, bottom: 0 }}>
                   <XAxis
                     dataKey="bulan"
-                    stroke="#94a3b8"
+                    stroke="#0f172a"
                     fontSize={9}
                     tickLine={false}
                     axisLine={false}
+                    tick={{ fontWeight: 900, fill: '#64748b' }}
                   />
                   <YAxis
-                    stroke="#94a3b8"
+                    stroke="#0f172a"
                     fontSize={9}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `${value / 1000000}M`}
+                    tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+                    tick={{ fontWeight: 900, fill: '#64748b' }}
                   />
                   <Tooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="rounded-none border-none bg-slate-900 p-2 shadow-xl">
-                            <p className="text-xs font-semibold text-slate-400   mb-1">{label}</p>
-                            <div className="space-y-0.5">
-                              <p className="text-xs font-semibold text-emerald-400">
+                          <div className="rounded-none border-none bg-slate-900 p-3 shadow-2xl">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-white/10 pb-1">{label}</p>
+                            <div className="space-y-1">
+                              <p className="text-xs font-black text-emerald-400 uppercase">
                                 REV: {formatCurrency(payload[0].value as number)}
                               </p>
-                              <p className="text-xs font-semibold text-rose-400">
+                              <p className="text-xs font-black text-rose-400 uppercase">
                                 EXP: {formatCurrency(payload[1].value as number)}
                               </p>
                             </div>
@@ -168,14 +205,14 @@ export default function LaporanPage() {
                   <Bar
                     dataKey="pendapatan"
                     fill="#10b981"
-                    radius={[2, 2, 0, 0]}
-                    barSize={20}
+                    radius={[0, 0, 0, 0]}
+                    barSize={24}
                   />
                   <Bar
                     dataKey="pengeluaran"
                     fill="#0f172a"
-                    radius={[2, 2, 0, 0]}
-                    barSize={20}
+                    radius={[0, 0, 0, 0]}
+                    barSize={24}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -184,38 +221,41 @@ export default function LaporanPage() {
         </Card>
 
         {/* Cash Flow Trend */}
-        <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
-          <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
-            <CardTitle className="text-xs font-semibold text-slate-900  ">Tren Likuiditas Kas</CardTitle>
-            <CardDescription className="text-xs font-bold text-slate-500   mt-0.5">Proyeksi Saldo Akumulatif</CardDescription>
+        <Card className="border-none shadow-sm bg-white overflow-hidden rounded-none">
+          <div className="h-1 w-full border-t-4 border-slate-900" />
+          <CardHeader className="p-4 border-b border-slate-50">
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">TREN LIKUIDITAS KAS</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">PROYEKSI SALDO AKUMULATIF KONSOLIDASI</CardDescription>
           </CardHeader>
           <CardContent className="p-4">
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={cumulativeData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                <LineChart data={cumulativeData} margin={{ top: 0, right: 0, left: -10, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis
                     dataKey="bulan"
-                    stroke="#94a3b8"
+                    stroke="#0f172a"
                     fontSize={9}
                     tickLine={false}
                     axisLine={false}
+                    tick={{ fontWeight: 900, fill: '#64748b' }}
                   />
                   <YAxis
-                    stroke="#94a3b8"
+                    stroke="#0f172a"
                     fontSize={9}
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `${value / 1000000}M`}
+                    tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
+                    tick={{ fontWeight: 900, fill: '#64748b' }}
                   />
                   <Tooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="rounded-none border-none bg-slate-900 p-2 shadow-xl">
-                            <p className="text-xs font-semibold text-slate-400   mb-1">{label}</p>
-                            <p className="text-xs font-semibold text-emerald-400">
-                              CASH: {formatCurrency(payload[0].value as number)}
+                          <div className="rounded-none border-none bg-slate-900 p-3 shadow-2xl">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-white/10 pb-1">{label}</p>
+                            <p className="text-xs font-black text-emerald-400 uppercase">
+                              LIQUID CASH: {formatCurrency(payload[0].value as number)}
                             </p>
                           </div>
                         )
@@ -224,12 +264,12 @@ export default function LaporanPage() {
                     }}
                   />
                   <Line
-                    type="stepAfter"
+                    type="monotone"
                     dataKey="saldo"
                     stroke="#0f172a"
-                    strokeWidth={3}
-                    dot={{ r: 3, fill: '#0f172a', strokeWidth: 0 }}
-                    activeDot={{ r: 5, strokeWidth: 0 }}
+                    strokeWidth={4}
+                    dot={{ r: 0 }}
+                    activeDot={{ r: 6, fill: '#10b981', strokeWidth: 0 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -239,29 +279,35 @@ export default function LaporanPage() {
       </div>
 
       {/* Report Types */}
-      <Card className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
-        <CardHeader className="p-4 border-b border-slate-50 bg-slate-50/50">
-          <CardTitle className="text-xs font-semibold text-slate-900  ">Arsip Laporan Audit</CardTitle>
-          <CardDescription className="text-xs font-bold text-slate-500   mt-0.5">Pilih dokumen untuk diunduh</CardDescription>
+      <Card className="border-none shadow-sm bg-white overflow-hidden rounded-none">
+        <div className="h-1 w-full border-t-4 border-slate-900" />
+        <CardHeader className="p-4 border-b border-slate-50">
+          <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">ARSIP LAPORAN AUDIT KONSOLIDASI</CardTitle>
+          <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">PILIH DOKUMEN STRATEGIS UNTUK DIUNDUH</CardDescription>
         </CardHeader>
         <CardContent className="p-4">
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              { title: 'Neraca Saldo', sub: 'Balance Sheet', color: 'bg-slate-900' },
-              { title: 'Laba Rugi', sub: 'Income Statement', color: 'bg-emerald-600' },
-              { title: 'Arus Kas', sub: 'Cash Flow', color: 'bg-cyan-600' },
+              { title: 'NERACA SALDO', sub: 'BALANCE SHEET (NATIONAL)', color: 'bg-slate-900' },
+              { title: 'LABA RUGI', sub: 'INCOME STATEMENT (CONSOLIDATED)', color: 'bg-emerald-600' },
+              { title: 'ARUS KAS', sub: 'CASH FLOW (LIQUIDITY INDEX)', color: 'bg-blue-600' },
             ].map((report, i) => (
-              <div key={i} className="flex items-center justify-between rounded border border-slate-100 p-4 hover:border-slate-200 transition-colors group">
+              <div key={i} className="flex items-center justify-between rounded-none border border-slate-100 p-4 hover:border-slate-900 transition-colors group bg-slate-50/30">
                 <div className="flex items-center gap-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded shadow-sm ${report.color}`}>
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-none shadow-sm ${report.color}`}>
                     <FileText className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900  ">{report.title}</p>
-                    <p className="text-xs font-bold text-slate-400  ">{report.sub}</p>
+                    <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{report.title}</p>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{report.sub}</p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-100 group-hover:text-slate-900 text-slate-400">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 rounded-none hover:bg-slate-900 hover:text-white transition-all text-slate-400"
+                  onClick={() => toast({ title: "Document Download", description: `Mengunduh laporan ${report.title}...` })}
+                >
                   <Download className="h-4 w-4" />
                 </Button>
               </div>

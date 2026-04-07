@@ -125,19 +125,22 @@ export default function KelompokTaniPage() {
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: 'Total Kelompok', value: totals.groups, sub: `${filteredKelompok.filter(k => k.status === 'aktif').length} Unit Aktif`, icon: Building2, tone: 'slate' },
-          { label: 'Total Anggota', value: totals.members.toLocaleString(), sub: 'Produsen Terdaftar', icon: Users, tone: 'emerald' },
-          { label: 'Luas Lahan (Ha)', value: totals.land.toFixed(1), sub: 'Area Produktif', icon: Target, tone: 'emerald' },
-          { label: 'Efisiensi Produksi', value: `${totals.avgProd}%`, sub: 'Rata-rata Output', icon: BarChart3, tone: 'emerald' },
+          { label: 'TOTAL KELOMPOK NASIONAL', value: totals.groups, sub: `${filteredKelompok.filter(k => k.status === 'aktif').length} UNIT OPERASIONAL`, icon: Building2, tone: 'slate' },
+          { label: 'TOTAL ANGGOTA TERDAFTAR', value: totals.members.toLocaleString(), sub: 'PRODUSEN TERVERIFIKASI', icon: Users, tone: 'emerald' },
+          { label: 'AKUMULASI LUAS LAHAN', value: `${totals.land.toFixed(1)} HA`, sub: 'AREA PRODUKTIF AKTIF', icon: Target, tone: 'emerald' },
+          { label: 'EFISIENSI OUTPUT', value: `${totals.avgProd}%`, sub: 'RATA-RATA PRODUKTIVITAS', icon: BarChart3, tone: 'emerald' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
-            <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-              <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
-              <stat.icon className="h-3.5 w-3.5 text-slate-400" />
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className="h-4 w-4 text-slate-400 group-hover:text-slate-900 transition-colors" />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-2xl font-semibold text-slate-900 ">{stat.value}</p>
-              <p className="text-xs font-bold text-slate-500  mt-1 ">{stat.sub}</p>
+              <p className="text-[10px] font-bold text-slate-500 mt-1">{stat.sub}</p>
             </CardContent>
           </Card>
         ))}

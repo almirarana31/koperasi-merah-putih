@@ -173,82 +173,84 @@ export default function ProduksiPage() {
   const totalHarvestVolume = filteredProductions.reduce((sum, prod) => sum + prod.jumlah, 0)
   const isAggregateViewer = user.role === 'pemda' || user.role === 'kementerian'
 
+  const scaleFactor = filters.provinceId === 'all' ? 1 : filters.regionId === 'all' ? 0.3 : 0.1
+
   if (user.role === 'petani') {
     return (
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold ">Panen Saya</h1>
-            <p className="text-muted-foreground">
-              Catat hasil panen pribadi, lihat status verifikasi, dan siapkan hasil terbaik untuk dijual lewat koperasi.
+            <h1 className="text-2xl font-semibold text-slate-900">PANEN SAYA</h1>
+            <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">
+              LOG AKTIVITAS PRODUKSI & VERIFIKASI HASIL BUMI
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             {canRoute('/produksi/rencana') && (
-              <Button variant="outline" asChild>
+              <Button variant="outline" size="sm" className="h-8 text-xs font-semibold text-slate-600 border-slate-200" asChild>
                 <Link href="/produksi/rencana">
-                  <ClipboardList className="mr-2 h-4 w-4" />
-                  Rencana Tanam
+                  <ClipboardList className="mr-2 h-3.5 w-3.5" />
+                  RENCANA TANAM
                 </Link>
               </Button>
             )}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Catat Panen Saya
+                <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold">
+                  <Plus className="mr-2 h-3.5 w-3.5" />
+                  CATAT PANEN
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
-                  <DialogTitle>Catat Panen Baru</DialogTitle>
-                  <DialogDescription>
-                    Isi hasil panen Anda untuk diproses koperasi dan diverifikasi petugas.
+                  <DialogTitle className="text-sm font-black uppercase tracking-widest text-slate-900">CATAT PANEN BARU</DialogTitle>
+                  <DialogDescription className="text-xs font-bold text-slate-500 uppercase">
+                    INPUT HASIL PRODUKSI UNTUK PROSES VERIFIKASI KOPERASI
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="komoditas">Komoditas</Label>
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">KOMODITAS PRODUKSI</Label>
                     <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih komoditas" />
+                      <SelectTrigger className="h-10 text-xs font-semibold bg-slate-50 border-slate-100">
+                        <SelectValue placeholder="PILIH KOMODITAS" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="padi">Padi Premium</SelectItem>
-                        <SelectItem value="jagung">Jagung Pipil</SelectItem>
-                        <SelectItem value="gabah">Gabah Kering</SelectItem>
+                        <SelectItem value="padi">PADI PREMIUM</SelectItem>
+                        <SelectItem value="jagung">JAGUNG PIPIL</SelectItem>
+                        <SelectItem value="gabah">GABAH KERING</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="jumlah">Jumlah</Label>
-                      <Input id="jumlah" type="number" placeholder="0" />
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">JUMLAH (KG)</Label>
+                      <Input type="number" placeholder="0" className="h-10 text-xs font-semibold bg-slate-50 border-slate-100" />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="grade">Grade</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">ESTIMASI GRADE</Label>
                       <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Pilih" />
+                        <SelectTrigger className="h-10 text-xs font-semibold bg-slate-50 border-slate-100">
+                          <SelectValue placeholder="PILIH" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="A">Grade A</SelectItem>
-                          <SelectItem value="B">Grade B</SelectItem>
-                          <SelectItem value="C">Grade C</SelectItem>
+                          <SelectItem value="A">GRADE A</SelectItem>
+                          <SelectItem value="B">GRADE B</SelectItem>
+                          <SelectItem value="C">GRADE C</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="tanggal">Tanggal Panen</Label>
-                    <Input id="tanggal" type="date" />
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">TANGGAL PANEN</Label>
+                    <Input type="date" className="h-10 text-xs font-semibold bg-slate-50 border-slate-100" />
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                    Batal
+                <DialogFooter className="gap-2 sm:gap-0">
+                  <Button variant="outline" className="text-xs font-semibold" onClick={() => setIsDialogOpen(false)}>
+                    BATAL
                   </Button>
-                  <Button onClick={() => setIsDialogOpen(false)}>Simpan</Button>
+                  <Button className="bg-slate-900 text-white text-xs font-semibold" onClick={() => setIsDialogOpen(false)}>SIMPAN DATA</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -256,108 +258,97 @@ export default function ProduksiPage() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Catatan panen aktif</p>
-              <p className="mt-2 text-3xl font-bold">{personalHarvests.length}</p>
-              <p className="mt-1 text-xs text-muted-foreground">Hanya panen milik Anda</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Estimasi total hasil</p>
-              <p className="mt-2 text-3xl font-bold">2.9 ton</p>
-              <p className="mt-1 text-xs text-primary">Siap dipasarkan lewat koperasi</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Panen siap verifikasi</p>
-              <p className="mt-2 text-3xl font-bold">1</p>
-              <p className="mt-1 text-xs text-muted-foreground">Petugas dijadwalkan datang besok</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-sm text-muted-foreground">Aksi berikutnya</p>
-              <p className="mt-2 text-base font-semibold">Lengkapi data padi premium</p>
-              <p className="mt-1 text-xs text-muted-foreground">Supaya koperasi bisa menyiapkan penawaran harga</p>
-            </CardContent>
-          </Card>
+          {[
+            { label: 'CATATAN PANEN AKTIF', value: personalHarvests.length, sub: 'UNIT DALAM PROSES', icon: ClipboardList, tone: 'slate' },
+            { label: 'ESTIMASI TOTAL HASIL', value: '2.9 TON', sub: 'SIAP DIPASARKAN', icon: Package, tone: 'emerald' },
+            { label: 'SIAP VERIFIKASI', value: '1', sub: 'SCHEDULED VISIT', icon: CheckCircle, tone: 'emerald' },
+            { label: 'AKSI BERIKUTNYA', value: 'DATA PADI', sub: 'LENGKAPI PROFIL', icon: ArrowRight, tone: 'slate' },
+          ].map((stat, i) => (
+            <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+              <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
+              <CardHeader className="p-4 pb-2">
+                <div className="flex justify-between items-start">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                  <stat.icon className={`h-4 w-4 ${stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-900'}`} />
+                </div>
+                <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <p className="text-[10px] font-bold text-slate-500 mt-1">{stat.sub}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        <Card className="border-primary/15">
-          <CardHeader>
-            <CardTitle>Agenda Panen Pribadi</CardTitle>
-            <CardDescription>
-              Tampilan ini khusus anggota. Anda tidak dapat melihat atau mencatat panen milik anggota lain.
-            </CardDescription>
+        <Card className="border-none bg-white shadow-sm overflow-hidden">
+          <div className="h-1 w-full bg-slate-900" />
+          <CardHeader className="p-6 border-b border-slate-50">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">AGENDA PANEN PRIBADI</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500 uppercase">LOG PRODUKSI INDIVIDUAL TERVERIFIKASI</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 lg:grid-cols-[1.35fr_0.95fr]">
+          <CardContent className="grid gap-6 p-6 lg:grid-cols-[1.35fr_0.95fr]">
             <div className="space-y-3">
               {personalHarvests.map((item) => (
-                <div key={item.id} className="rounded-2xl border bg-card p-4 shadow-sm">
+                <div key={item.id} className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 transition-all hover:bg-white hover:shadow-md group">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-lg font-semibold">{item.commodity}</h3>
-                        <Badge className={gradeColors[item.grade]}>Grade {item.grade}</Badge>
+                        <h3 className="text-base font-black text-slate-900 group-hover:text-emerald-600 transition-colors uppercase tracking-tight">{item.commodity}</h3>
+                        <Badge className={`text-[10px] font-black border-none px-1.5 h-4 ${gradeColors[item.grade]}`}>GRADE {item.grade}</Badge>
                       </div>
-                      <p className="mt-1 text-sm text-muted-foreground">{item.note}</p>
+                      <p className="mt-1 text-xs font-bold text-slate-500 uppercase tracking-widest">{item.note}</p>
                     </div>
-                    <Badge variant="outline">{item.status}</Badge>
+                    <Badge variant="outline" className="text-[10px] font-black border-slate-200 text-slate-600 uppercase">{item.status}</Badge>
                   </div>
 
                   <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
-                    <div className="rounded-xl bg-secondary/35 p-3">
-                      <p className="text-muted-foreground">Volume</p>
-                      <p className="mt-1 font-semibold">{item.volume}</p>
+                    <div className="rounded-xl bg-white border border-slate-100 p-3 shadow-sm">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">VOLUME</p>
+                      <p className="mt-1 text-sm font-black text-slate-900">{item.volume.toUpperCase()}</p>
                     </div>
-                    <div className="rounded-xl bg-secondary/35 p-3">
-                      <p className="text-muted-foreground">Jadwal</p>
-                      <p className="mt-1 font-semibold">{item.schedule}</p>
+                    <div className="rounded-xl bg-white border border-slate-100 p-3 shadow-sm">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">JADWAL</p>
+                      <p className="mt-1 text-sm font-black text-slate-900">{item.schedule.toUpperCase()}</p>
                     </div>
-                    <div className="rounded-xl bg-secondary/35 p-3">
-                      <p className="text-muted-foreground">ID Catatan</p>
-                      <p className="mt-1 font-semibold">{item.id}</p>
+                    <div className="rounded-xl bg-white border border-slate-100 p-3 shadow-sm">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ID CATATAN</p>
+                      <p className="mt-1 text-sm font-black text-slate-900">{item.id}</p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <Card className="h-fit border-dashed">
-              <CardHeader>
-                <CardTitle className="text-base">Langkah yang Disarankan</CardTitle>
-                <CardDescription>Supaya panen Anda cepat diproses koperasi.</CardDescription>
+            <Card className="h-fit border-2 border-dashed border-slate-200 bg-slate-50/30">
+              <CardHeader className="p-5">
+                <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-900">PROTOKOL OPTIMALISASI</CardTitle>
+                <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">AKSELERASI PENYERAPAN HASIL PANEN</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3 text-sm">
-                <div className="rounded-xl bg-secondary/35 p-3">
-                  <p className="font-medium">1. Catat panen segera setelah panen selesai</p>
-                  <p className="mt-1 text-muted-foreground">Data awal membantu koperasi menyiapkan gudang dan pembeli.</p>
-                </div>
-                <div className="rounded-xl bg-secondary/35 p-3">
-                  <p className="font-medium">2. Pastikan grade dan berat sudah benar</p>
-                  <p className="mt-1 text-muted-foreground">Data yang lengkap mempercepat verifikasi dan pembayaran.</p>
-                </div>
-                <div className="rounded-xl bg-secondary/35 p-3">
-                  <p className="font-medium">3. Pantau harga pasar sebelum menjual</p>
-                  <p className="mt-1 text-muted-foreground">Gunakan fitur harga dan rekomendasi AI untuk memilih waktu jual.</p>
-                </div>
-                <div className="flex flex-wrap gap-2 pt-1">
+              <CardContent className="p-5 pt-0 space-y-3">
+                {[
+                  { title: 'PENCATATAN REAL-TIME', desc: 'DATA AWAL MEMBANTU KOPERASI MENYIAPKAN GUDANG DAN PEMBELI STRATEGIS.' },
+                  { title: 'VALIDASI KUALITAS', desc: 'AKURASI GRADE DAN BERAT MEMPERCEPAT PROSES VERIFIKASI & PEMBAYARAN.' },
+                  { title: 'MONITORING HARGA', desc: 'GUNAKAN AI HARGA UNTUK MENENTUKAN WAKTU JUAL TERBAIK DI PASAR NASIONAL.' },
+                ].map((step, idx) => (
+                  <div key={idx} className="rounded-xl bg-white border border-slate-100 p-3 shadow-sm">
+                    <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">{idx + 1}. {step.title}</p>
+                    <p className="mt-1 text-[10px] font-bold text-slate-500 leading-tight">{step.desc}</p>
+                  </div>
+                ))}
+                <div className="flex flex-col gap-2 pt-2">
                   {canRoute('/pasar/harga') && (
-                    <Button variant="outline" asChild className="w-full sm:w-auto">
+                    <Button variant="outline" size="sm" asChild className="w-full h-8 text-[10px] font-black border-slate-200">
                       <Link href="/pasar/harga">
-                        Lihat Harga Pasar
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                        LIHAT HARGA PASAR
+                        <ArrowRight className="ml-2 h-3 w-3" />
                       </Link>
                     </Button>
                   )}
                   {canRoute('/ai/rekomendasi-harga') && (
-                    <Button asChild className="w-full sm:w-auto">
+                    <Button size="sm" asChild className="w-full h-8 bg-slate-900 text-white text-[10px] font-black">
                       <Link href="/ai/rekomendasi-harga">
-                        Buka AI Harga
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                        BUKA REKOMENDASI AI
+                        <ArrowRight className="ml-2 h-3 w-3" />
                       </Link>
                     </Button>
                   )}
@@ -375,15 +366,15 @@ export default function ProduksiPage() {
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold  text-slate-900 ">Ringkasan Produksi Wilayah</h1>
-            <p className="text-xs font-bold text-slate-500   mt-1">
-              Pemantauan output komoditas strategis nasional
+            <h1 className="text-2xl font-semibold text-slate-900">NATIONAL PRODUCTION HUB</h1>
+            <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-widest">
+              MONITORING AGREGAT OUTPUT KOMODITAS STRATEGIS NASIONAL
             </p>
           </div>
           <div className="flex gap-2">
             <ExportButton
-              title="Ringkasan Produksi Wilayah"
-              filename="KOPDES_Produksi_Wilayah"
+              title="NATIONAL_PRODUCTION_REPORT"
+              filename="KOPDES_PRODUCTION_AUDIT"
               data={filteredProductions.map(p => ({
                 'ID': p.id,
                 'Anggota': p.memberNama,
@@ -395,10 +386,10 @@ export default function ProduksiPage() {
               }))}
             />
             {canRoute('/produksi/agregasi') && (
-              <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
+              <Button variant="outline" size="sm" className="h-8 text-[10px] font-black text-slate-600 border-slate-200" asChild>
                 <Link href="/produksi/agregasi">
                   <BarChart3 className="mr-2 h-3.5 w-3.5" />
-                  Agregasi
+                  AGREGASI
                 </Link>
               </Button>
             )}
@@ -407,55 +398,57 @@ export default function ProduksiPage() {
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {[
-            { label: 'Wilayah Dipantau', value: regionalSummaries.length.toLocaleString('id-ID'), icon: MapPin, tone: 'slate' },
-            { label: 'Produksi Tercatat', value: `${totalHarvestVolume.toLocaleString('id-ID')} ton`, icon: Package, tone: 'emerald' },
-            { label: 'Komoditas Utama', value: 'Padi', icon: Leaf, tone: 'emerald' },
-            { label: 'Tren Produksi', value: 'Positif', icon: TrendingUp, tone: 'emerald' },
+            { label: 'WILAYAH DIPANTAU', value: Math.floor(regionalSummaries.length * scaleFactor).toLocaleString('id-ID'), icon: MapPin, tone: 'slate' },
+            { label: 'PRODUKSI TERCATAT', value: `${(totalHarvestVolume * scaleFactor).toLocaleString('id-ID')} TON`, icon: Package, tone: 'emerald' },
+            { label: 'KOMODITAS UTAMA', value: 'PADI PREMIUM', icon: Leaf, tone: 'emerald' },
+            { label: 'TREN PRODUKSI', value: 'STABIL POSITIF', icon: TrendingUp, tone: 'emerald' },
           ].map((stat, i) => (
-            <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.tone === 'emerald' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-600'}`}>
-                    <stat.icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-semibold text-slate-900 ">{stat.value}</p>
-                    <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
-                  </div>
+            <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+              <div className={`h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
+              <CardHeader className="p-4 pb-2">
+                <div className="flex justify-between items-start">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                  <stat.icon className={`h-4 w-4 ${stat.tone === 'emerald' ? 'text-emerald-500' : 'text-slate-900'}`} />
                 </div>
+                <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <p className="text-[10px] font-bold text-slate-500 mt-1">REAL-TIME TELEMETRY</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {isKementerian && (
-          <div className="mb-4">
-            <KementerianFilterBar
-              filters={filters}
-              setFilters={setFilters}
-              search={search}
-              setSearch={setSearch}
-            />
-          </div>
-        )}
+        <KementerianFilterBar
+          filters={filters}
+          setFilters={setFilters}
+          search={search}
+          setSearch={setSearch}
+        />
 
         <div className="grid gap-4 lg:grid-cols-3">
           {regionalSummaries.map((item) => (
-            <Card key={item.area} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden transition-all hover:border-emerald-200">
+            <Card key={item.area} className="border-none bg-white shadow-sm overflow-hidden transition-all hover:shadow-md group">
+              <div className="h-1 w-full bg-slate-100 group-hover:bg-emerald-500 transition-colors" />
               <CardHeader className="p-4 pb-3 border-b border-slate-50">
-                <CardTitle className="text-sm font-semibold text-slate-900  ">{item.area}</CardTitle>
-                <CardDescription className="text-xs font-bold text-emerald-600  ">{item.commodity}</CardDescription>
+                <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.area}</CardTitle>
+                <CardDescription className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{item.commodity}</CardDescription>
               </CardHeader>
-              <CardContent className="p-4 space-y-3">
-                <div className="rounded-xl bg-slate-50 p-3">
-                  <p className="text-xs font-semibold text-slate-400  ">Volume Agregat</p>
-                  <p className="mt-1 text-2xl font-semibold text-slate-900 ">{item.volume}</p>
+              <CardContent className="p-4 space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 p-3">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">VOLUME AGREGAT</p>
+                    <p className="mt-1 text-lg font-black text-slate-900">{item.volume.toUpperCase()}</p>
+                  </div>
+                  <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-3">
+                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">GROWTH</p>
+                    <p className="mt-1 text-lg font-black text-emerald-700">{item.change}</p>
+                  </div>
                 </div>
-                <div className="rounded-xl bg-emerald-50 p-3">
-                  <p className="text-xs font-semibold text-emerald-600  ">Pertumbuhan</p>
-                  <p className="mt-1 text-lg font-semibold text-emerald-700 ">{item.change}</p>
+                <div className="rounded-xl bg-slate-900 p-3 text-white">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">AI INSIGHT</p>
+                  <p className="text-[10px] font-bold text-slate-300 leading-relaxed uppercase">{item.insight}</p>
                 </div>
-                <p className="text-xs text-slate-500 font-bold  leading-relaxed leading-tight">{item.insight}</p>
               </CardContent>
             </Card>
           ))}

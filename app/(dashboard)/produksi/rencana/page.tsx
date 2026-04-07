@@ -158,19 +158,22 @@ export default function RencanaTanamPage() {
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         {[
-          { label: 'Rencana Aktif', value: totals.count, sub: `${totals.berjalan} Dalam Proses`, icon: Target, tone: 'slate' },
-          { label: 'Akumulasi Lahan', value: `${totals.luas.toFixed(1)} Ha`, sub: 'Area Terencana', icon: Leaf, tone: 'emerald' },
-          { label: 'Proyeksi Output', value: `${totals.estHasil} Ton`, sub: 'Est. Panen Global', icon: BarChart3, tone: 'emerald' },
-          { label: 'Risk Alert', value: '1', sub: 'Terlambat Jadwal', icon: AlertTriangle, tone: 'rose' },
+          { label: 'RENCANA AKTIF', value: totals.count, sub: `${totals.berjalan} DALAM PROSES`, icon: Target, tone: 'slate' },
+          { label: 'AKUMULASI LAHAN', value: `${totals.luas.toFixed(1)} HA`, sub: 'AREA TERENCANA', icon: Leaf, tone: 'emerald' },
+          { label: 'PROYEKSI OUTPUT', value: `${totals.estHasil} TON`, sub: 'EST. PANEN GLOBAL', icon: BarChart3, tone: 'emerald' },
+          { label: 'RISK ALERT', value: '1', sub: 'TERLAMBAT JADWAL', icon: AlertTriangle, tone: 'rose' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
-            <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between space-y-0">
-              <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
-              <stat.icon className={`h-3.5 w-3.5 ${stat.tone === 'rose' ? 'text-rose-500' : 'text-slate-400'}`} />
+          <Card key={i} className="border-none bg-white shadow-sm overflow-hidden group">
+            <div className={`h-1 w-full ${stat.tone === 'rose' ? 'bg-rose-500' : stat.tone === 'emerald' ? 'bg-emerald-500' : 'bg-slate-900'}`} />
+            <CardHeader className="p-4 pb-2">
+              <div className="flex justify-between items-start">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
+                <stat.icon className={`h-4 w-4 ${stat.tone === 'rose' ? 'text-rose-500' : 'text-slate-400'} group-hover:text-slate-900 transition-colors`} />
+              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-              <p className="text-2xl font-semibold text-slate-900 ">{stat.value}</p>
-              <p className={`text-xs font-bold  mt-1  ${stat.tone === 'rose' ? 'text-rose-600' : 'text-slate-500'}`}>{stat.sub}</p>
+              <p className={`text-[10px] font-bold mt-1 uppercase ${stat.tone === 'rose' ? 'text-rose-600' : 'text-slate-500'}`}>{stat.sub}</p>
             </CardContent>
           </Card>
         ))}

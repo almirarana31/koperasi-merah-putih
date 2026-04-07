@@ -1,17 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import {
-  Search,
-  Plus,
-  Filter,
-  ArrowUpRight,
-  ArrowDownRight,
   Wallet,
   TrendingUp,
   CreditCard,
   FileText,
+  ArrowUpRight,
+  ArrowDownRight,
+  ShieldCheck,
+  Activity,
+  History,
+  Download,
+  BarChart3,
+  PieChart as PieChartIcon,
 } from 'lucide-react'
 import {
   Card,
@@ -21,54 +24,16 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/lib/auth/use-auth'
-import {
-  KEMENTERIAN_DASHBOARD_DATA,
-  type ScopeFilters,
-} from '@/lib/kementerian-dashboard-data'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
-import { ExportButton } from '@/components/dashboard/export-button'
-import { transactions, formatCurrency, formatDate } from '@/lib/data'
-import { members } from '@/lib/mock-data'
-
-const typeLabels = {
-  simpanan: 'Simpanan',
-  pinjaman: 'Pinjaman',
-  penjualan: 'Penjualan',
-  pembelian: 'Pembelian',
-  operasional: 'Operasional',
-} as const
-
-const typeColors = {
-  simpanan: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  pinjaman: 'bg-amber-50 text-amber-700 border-amber-200',
-  penjualan: 'bg-blue-50 text-blue-700 border-blue-200',
-  pembelian: 'bg-rose-50 text-rose-700 border-rose-200',
-  operasional: 'bg-slate-100 text-slate-700 border-slate-200',
-} as const
+import { formatCurrency } from '@/lib/data'
+import type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
 export default function KeuanganPage() {
   const { user } = useAuth()
-  const isKementerian = user?.role === 'kementerian'
-  const [search, setSearch] = useState('')
-  const [filterType, setFilterType] = useState<string>('all')
+  const { toast } = useToast()
   const [filters, setFilters] = useState<ScopeFilters>({
     provinceId: 'all',
     regionId: 'all',
@@ -77,101 +42,80 @@ export default function KeuanganPage() {
     commodityId: 'all',
   })
 
-  const filteredTransactions = transactions.filter((tx) => {
-    const matchesSearch = tx.deskripsi
-      .toLowerCase()
-      .includes(search.toLowerCase())
-    const matchesType = filterType === 'all' || tx.tipe === filterType
+  const scaleFactor = useMemo(() => {
+    if (filters.cooperativeId !== 'all') return 0.05
+    if (filters.villageId !== 'all') return 0.15
+    if (filters.regionId !== 'all') return 0.4
+    if (filters.provinceId !== 'all') return 0.7
+    return 1.0
+  }, [filters])
 
-    if (isKementerian) {
-      // In a real app, transactions would be linked to cooperatives/villages
-      // For this mock, we'll assume they are linked to members, and we filter by member location
-      const member = members.find(m => m.name === tx.kategori || m.id === tx.id.replace('TX', 'M'))
-      if (member) {
-        const matchesProvince = filters.provinceId === 'all' || member.province.toUpperCase() === filters.provinceId
-        const matchesRegion = filters.regionId === 'all' || member.district.toUpperCase().includes(filters.regionId.split('-')[0])
-        const matchesVillage = filters.villageId === 'all' || member.village.toUpperCase().includes(filters.villageId.split('-').pop() || '')
-        
-        return matchesSearch && matchesType && matchesProvince && matchesRegion && matchesVillage
-      }
-    }
+  const stats = useMemo(() => {
+    const totalAssets = 852400000000 * scaleFactor
+    const totalLoans = 412500000000 * scaleFactor
+    const monthlyInflow = 42500000000 * scaleFactor
+    const nplRate = (2.4).toFixed(1)
+    return { totalAssets, totalLoans, monthlyInflow, nplRate }
+  }, [scaleFactor])
 
-    return matchesSearch && matchesType
-  })
-
-  const totalKredit = filteredTransactions.reduce((sum, t) => sum + t.kredit, 0)
-  const totalDebit = filteredTransactions.reduce((sum, t) => sum + t.debit, 0)
-  const currentSaldo = filteredTransactions[filteredTransactions.length - 1]?.saldo || 0
-
+  const modules = [
+    { title: 'SETTLEMENT HUB', desc: 'Real-time ledger and cross-entity payment clearing.', href: '/keuangan/pembayaran', icon: CreditCard, color: 'emerald' },
+    { title: 'FINANCIAL ANALYTICS', desc: 'National cashflow projections and audit archives.', href: '/keuangan/laporan', icon: BarChart3, color: 'blue' },
+    { title: 'SAVING & LOAN HUB', desc: 'Cooperative savings and loan portfolio analysis.', href: '/keuangan/simpan-pinjam', icon: Wallet, color: 'blue' },
+    { title: 'CREDIT RATING HUB', desc: 'AI-driven credit scoring and member audit logs.', href: '/keuangan/credit-scoring', icon: TrendingUp, color: 'emerald' },
+    { title: 'NATIONAL CREDIT HUB', desc: 'Loan application queue and risk assessment matrix.', href: '/keuangan/pinjaman', icon: ShieldCheck, color: 'emerald' },
+    { title: 'NATIONAL SHU AUDIT', desc: 'Surplus distribution and allocation compliance.', href: '/keuangan/shu', icon: PieChartIcon, color: 'blue' },
+  ]
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold  text-slate-900 ">Transaksi Keuangan</h1>
-          <p className="text-xs font-bold text-slate-500   mt-1">
-            Monitoring Arus Kas & Portofolio Kredit Nasional
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">FINANCIAL COMMAND CENTER</h1>
+          <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
+            NATIONAL FISCAL MONITORING • PORTFOLIO RISK AUDIT • {formatCurrency(stats.totalAssets)} TOTAL MANAGED ASSETS
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {isKementerian && (
-            <ExportButton
-              title="Laporan Transaksi Keuangan Nasional"
-              filename="KOPDES_Keuangan_Nasional"
-              data={filteredTransactions.map(tx => ({
-                'Tanggal': tx.tanggal,
-                'Tipe': tx.tipe,
-                'Kategori': tx.kategori,
-                'Deskripsi': tx.deskripsi,
-                'Debit': tx.debit,
-                'Kredit': tx.kredit,
-                'Saldo': tx.saldo
-              }))}
-            />
-          )}
-          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
-            <Link href="/keuangan/credit-scoring">
-              <TrendingUp className="mr-2 h-3.5 w-3.5" />
-              Scoring
-            </Link>
+          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Fiscal Sync", description: "Aggregating regional financial data into national ledger..." })}>
+            <History className="h-3.5 w-3.5 mr-2 text-blue-600" />
+            HISTORY
           </Button>
-          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
-            <Link href="/keuangan/pinjaman">
-              <Wallet className="mr-2 h-3.5 w-3.5" />
-              Pinjaman
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" className="h-8 text-xs font-semibold   text-slate-600" asChild>
-            <Link href="/keuangan/laporan">
-              <FileText className="mr-2 h-3.5 w-3.5" />
-              Laporan
-            </Link>
-          </Button>
-          <Button size="sm" className="h-8 bg-slate-900 text-white hover:bg-slate-800 text-xs font-semibold  ">
-            <Plus className="mr-2 h-3.5 w-3.5" />
-            Catat
+          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Audit Initiation", description: "Generating cross-entity financial integrity report..." })}>
+            <Download className="h-4 w-4 mr-2" />
+            AUDIT HUB
           </Button>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <KementerianFilterBar filters={filters} setFilters={setFilters} />
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Saldo Kas', value: formatCurrency(currentSaldo), icon: Wallet, tone: 'emerald' },
-          { label: 'Total Pemasukan', value: formatCurrency(totalKredit), icon: ArrowDownRight, tone: 'emerald' },
-          { label: 'Total Pengeluaran', value: formatCurrency(totalDebit), icon: ArrowUpRight, tone: 'rose' },
-          { label: 'Net Cashflow', value: formatCurrency(totalKredit - totalDebit), icon: TrendingUp, tone: 'emerald' },
-        ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.tone === 'rose' ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                  <stat.icon className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-xl font-semibold text-slate-900 ">{stat.value}</p>
-                  <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
+          { label: 'MANAGED ASSETS', value: formatCurrency(stats.totalAssets), sub: 'NATIONAL POOL', icon: Wallet, tone: 'emerald' },
+          { label: 'LOAN PORTFOLIO', value: formatCurrency(stats.totalLoans), sub: 'ACTIVE CREDIT', icon: CreditCard, tone: 'blue' },
+          { label: 'MONTHLY INFLOW', value: formatCurrency(stats.monthlyInflow), sub: 'NETWORK REVENUE', icon: ArrowDownRight, tone: 'emerald' },
+          { label: 'NPL RATIO', value: stats.nplRate + '%', sub: 'RISK INDEX', icon: Activity, tone: 'rose' },
+        ].map((s, i) => (
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+             <div className={`h-1 w-full ${
+              s.tone === 'emerald' ? 'bg-emerald-500' : 
+              s.tone === 'blue' ? 'bg-blue-500' : 
+              s.tone === 'rose' ? 'bg-rose-500' : 'bg-slate-900'
+            }`} />
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="h-10 w-10 rounded-none bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
+                <s.icon className={`h-5 w-5 ${
+                  s.tone === 'emerald' ? 'text-emerald-500' : 
+                  s.tone === 'blue' ? 'text-blue-500' : 
+                  s.tone === 'rose' ? 'text-rose-500' : 'text-slate-900'
+                }`} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{s.label}</p>
+                <div className="flex flex-col">
+                  <span className="text-sm font-black text-slate-900 leading-tight">{s.value}</span>
+                  <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">{s.sub}</span>
                 </div>
               </div>
             </CardContent>
@@ -179,112 +123,106 @@ export default function KeuanganPage() {
         ))}
       </div>
 
-      {isKementerian && (
-        <div className="mb-4">
-          <KementerianFilterBar
-            filters={filters}
-            setFilters={setFilters}
-            search={search}
-            setSearch={setSearch}
-            showCommodity={false}
-          />
-        </div>
-      )}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {modules.map((mod, i) => (
+          <Link key={i} href={mod.href} className="group">
+            <Card className="border-none shadow-sm bg-white overflow-hidden hover:shadow-md transition-all h-full">
+              <div className={`h-1 w-full ${mod.color === 'emerald' ? 'bg-emerald-600' : 'bg-blue-600'}`} />
+              <CardHeader className="p-6">
+                 <div className="flex items-start justify-between">
+                    <div className={`h-12 w-12 rounded-none flex items-center justify-center shadow-inner ${
+                       mod.color === 'emerald' ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white'
+                    }`}>
+                       <mod.icon className="h-6 w-6" />
+                    </div>
+                    <ArrowUpRight className="h-5 w-5 text-slate-300 group-hover:text-slate-900 transition-colors" />
+                 </div>
+                 <div className="mt-4">
+                    <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">{mod.title}</CardTitle>
+                    <CardDescription className="text-[10px] font-bold text-slate-400 uppercase mt-2 leading-relaxed tracking-widest">
+                       {mod.desc}
+                    </CardDescription>
+                 </div>
+              </CardHeader>
+              <CardContent className="px-6 pb-6">
+                 <div className="h-1 w-full bg-slate-50 rounded-full overflow-hidden">
+                    <div className={`h-full bg-slate-900 w-0 group-hover:w-full transition-all duration-500`} />
+                 </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            {!isKementerian && (
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Cari transaksi..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
-            )}
-            <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-[160px]">
-                <Filter className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Tipe" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Tipe</SelectItem>
-                <SelectItem value="simpanan">Simpanan</SelectItem>
-                <SelectItem value="pinjaman">Pinjaman</SelectItem>
-                <SelectItem value="penjualan">Penjualan</SelectItem>
-                <SelectItem value="pembelian">Pembelian</SelectItem>
-                <SelectItem value="operasional">Operasional</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="grid gap-6 lg:grid-cols-2">
+         <Card className="border-none shadow-xl bg-slate-950 text-white overflow-hidden rounded-none">
+            <CardHeader className="p-4 border-b border-white/5 bg-slate-900/50">
+               <div className="flex items-center justify-between">
+                  <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                     <ShieldCheck className="h-4 w-4 text-emerald-500" /> FISCAL INTEGRITY AUDIT
+                  </CardTitle>
+                  <div className="flex items-center gap-1.5">
+                     <div className="h-1 w-1 bg-emerald-500 rounded-full animate-ping" />
+                     <span className="text-[9px] font-black text-emerald-500 tracking-widest">REAL-TIME</span>
+                  </div>
+               </div>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+               <div className="grid grid-cols-2 gap-8">
+                  {[
+                    { label: 'COMPLIANCE SCORE', val: '98.2%', tone: 'emerald' },
+                    { label: 'FRAUD ALERT NODES', val: '0', tone: 'emerald' },
+                    { label: 'PENDING SETTLEMENTS', val: '124', tone: 'blue' },
+                    { label: 'NETWORK LATENCY', val: '142ms', tone: 'blue' },
+                  ].map((a, i) => (
+                    <div key={i}>
+                       <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{a.label}</p>
+                       <p className={`text-xl font-black mt-1 ${
+                          a.tone === 'emerald' ? 'text-emerald-500' : 'text-blue-500'
+                       }`}>{a.val}</p>
+                    </div>
+                  ))}
+               </div>
+               <div className="pt-6 border-t border-white/5">
+                  <Button variant="outline" className="w-full h-10 bg-transparent text-white border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest rounded-none" onClick={() => toast({ title: "Compliance Suite", description: "Opening national fiscal compliance dashboard..." })}>
+                     ACCESS FULL COMPLIANCE SUITE →
+                  </Button>
+               </div>
+            </CardContent>
+         </Card>
 
-      {/* Transactions Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Riwayat Transaksi</CardTitle>
-          <CardDescription>
-            {filteredTransactions.length} transaksi ditemukan
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tanggal</TableHead>
-                <TableHead>Tipe</TableHead>
-                <TableHead>Kategori</TableHead>
-                <TableHead>Deskripsi</TableHead>
-                <TableHead className="text-right">Debit</TableHead>
-                <TableHead className="text-right">Kredit</TableHead>
-                <TableHead className="text-right">Saldo</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredTransactions.map((tx) => (
-                <TableRow key={tx.id}>
-                  <TableCell>{formatDate(tx.tanggal)}</TableCell>
-                  <TableCell>
-                    <Badge className={typeColors[tx.tipe]}>
-                      {typeLabels[tx.tipe]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm">{tx.kategori}</TableCell>
-                  <TableCell className="max-w-[300px] truncate text-sm">
-                    {tx.deskripsi}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {tx.debit > 0 ? (
-                      <span className="text-red-500">
-                        -{formatCurrency(tx.debit)}
-                      </span>
-                    ) : (
-                      '-'
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {tx.kredit > 0 ? (
-                      <span className="text-emerald-500">
-                        +{formatCurrency(tx.kredit)}
-                      </span>
-                    ) : (
-                      '-'
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right font-medium">
-                    {formatCurrency(tx.saldo)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+         <Card className="border-none shadow-sm bg-slate-50 rounded-none">
+            <CardHeader className="p-4 border-b border-slate-200">
+               <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">STRATEGIC PROJECTIONS</CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
+               <div className="space-y-4">
+                  {[
+                    { label: 'Q3 REVENUE PROJECTION', val: '+12.4%', sub: 'vs Previous Quarter' },
+                    { label: 'NETWORK EXPANSION RATE', val: '4.2%', sub: 'New Nodes/Month' },
+                  ].map((p, i) => (
+                    <div key={i}>
+                       <div className="flex items-center justify-between">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{p.label}</p>
+                          <span className="text-xs font-black text-emerald-600">{p.val}</span>
+                       </div>
+                       <p className="text-[9px] font-bold text-slate-400 uppercase mt-1">{p.sub}</p>
+                    </div>
+                  ))}
+               </div>
+               <div className="pt-6 border-t border-slate-200">
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4">DATA INTEGRITY NODES</p>
+                  <div className="flex flex-wrap gap-2">
+                     {['FIN-HUB-01', 'FIN-HUB-02', 'RISK-SEC-A', 'RISK-SEC-B'].map(n => (
+                        <Badge key={n} className="bg-white text-slate-900 text-[9px] font-black border border-slate-200 rounded-none h-5 tracking-tighter">
+                           {n}
+                        </Badge>
+                     ))}
+                  </div>
+               </div>
+            </CardContent>
+         </Card>
+      </div>
     </div>
   )
 }
