@@ -221,7 +221,7 @@ export default function AnggotaPage() {
           { label: 'Pending KYC', value: filteredMembers.filter(m => m.status === 'pending').length.toLocaleString('id-ID'), sub: 'Perlu verifikasi', icon: AlertCircle, tone: 'rose' },
           { label: 'Total Simpanan', value: formatCurrency(filteredMembers.reduce((sum, m) => sum + m.financial.savings, 0)), sub: 'Akumulasi Dana', icon: TrendingUp, tone: 'emerald' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-[0_4px_12px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+          <Card key={i} className="surface-card overflow-hidden">
             <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
                 <p className="text-xs font-semibold text-slate-400  ">{stat.label}</p>
@@ -251,7 +251,7 @@ export default function AnggotaPage() {
       )}
 
       {/* Local Filters */}
-      <Card className="border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_14px_28px_-24px_rgba(137,114,111,0.22)]">
+      <Card className="surface-card">
         <CardContent className="p-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             {!isKementerian && (
@@ -295,8 +295,8 @@ export default function AnggotaPage() {
       </Card>
 
       {/* Table */}
-      <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.24)]">
-        <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
+      <Card className="surface-card-strong overflow-hidden">
+        <CardHeader className="dashboard-section-header p-4">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-sm font-semibold text-slate-900  ">Database Anggota</CardTitle>
@@ -306,10 +306,10 @@ export default function AnggotaPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="bg-white p-0">
+        <CardContent className="p-4 pt-3">
           <Table>
-            <TableHeader className="bg-white">
-              <TableRow className="border-[var(--dashboard-secondary-border)]/70 bg-white">
+            <TableHeader className="bg-[var(--dashboard-surface-muted)]">
+              <TableRow className="border-[var(--dashboard-surface-border)] bg-[var(--dashboard-surface-muted)]">
                 <TableHead className="text-xs font-semibold text-slate-400  h-10 px-4">Anggota</TableHead>
                 <TableHead className="text-xs font-semibold text-slate-400  h-10">ID Anggota</TableHead>
                 <TableHead className="text-xs font-semibold text-slate-400  h-10">Peran</TableHead>
@@ -322,7 +322,7 @@ export default function AnggotaPage() {
             </TableHeader>
             <TableBody>
               {filteredMembers.map((member) => (
-                <TableRow key={member.id} className="group border-[var(--dashboard-secondary-border)]/60 bg-white transition-colors hover:bg-slate-50">
+                <TableRow key={member.id} className="group border-[var(--dashboard-surface-border)]/70 bg-[var(--dashboard-surface)] transition-colors hover:bg-[var(--dashboard-surface-muted)]">
                   <TableCell className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8 border-none bg-slate-100">

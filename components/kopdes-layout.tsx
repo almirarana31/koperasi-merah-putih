@@ -14,7 +14,7 @@ export function KopdesLayout({ children }: KopdesLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="app-shell min-h-screen bg-[var(--dashboard-secondary-muted)]">
+    <div className="app-shell dashboard-canvas min-h-screen">
       <div className="pointer-events-none fixed inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top_left,color-mix(in_oklab,var(--dashboard-primary)_11%,transparent),transparent_48%),radial-gradient(circle_at_top_right,color-mix(in_oklab,var(--dashboard-tertiary)_8%,transparent),transparent_34%)]" />
       <KopdesSidebarCustom open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

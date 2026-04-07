@@ -274,7 +274,7 @@ export default function ExecutiveCommandCenterPage() {
       <KementerianFilterBar filters={filters} setFilters={setFilters} />
 
       {/* Real-time Status Banner */}
-      <Card className="relative overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_18px_40px_-24px_rgba(137,114,111,0.22)]">
+      <Card className="surface-card-strong relative overflow-hidden">
         <div className="absolute top-0 right-0 p-4 opacity-5">
           <Globe className="h-24 w-24 text-[var(--dashboard-primary)]" />
         </div>
@@ -304,14 +304,15 @@ export default function ExecutiveCommandCenterPage() {
         </CardContent>
       </Card>
 
-      <div className={`grid gap-6 ${showMonitoringPanels && showAuditPanels ? 'lg:grid-cols-[1fr_380px]' : 'grid-cols-1'}`}>
+      <div className="space-y-6">
+        <div className={`grid gap-6 ${showMonitoringPanels && showAuditPanels ? 'xl:grid-cols-[minmax(0,1.22fr)_minmax(360px,0.88fr)]' : 'grid-cols-1'}`}>
         {showMonitoringPanels && (
         <div className="space-y-6">
           {/* Main Monitoring Panels */}
           <div className="grid gap-6 md:grid-cols-2">
             {/* Production Aggregation */}
-            <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.26)]">
-              <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
+            <Card className="surface-card-strong overflow-hidden">
+              <CardHeader className="dashboard-section-header p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Package className="h-4 w-4 text-[var(--dashboard-secondary)]" />
@@ -340,8 +341,8 @@ export default function ExecutiveCommandCenterPage() {
             </Card>
 
             {/* Financial Health Matrix */}
-            <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.26)]">
-              <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
+            <Card className="surface-card-strong overflow-hidden">
+              <CardHeader className="dashboard-section-header p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <DollarSign className="h-4 w-4 text-[var(--dashboard-primary)]" />
@@ -356,7 +357,7 @@ export default function ExecutiveCommandCenterPage() {
                   { label: 'Outflow Operasional', val: totals.outflow, tone: 'rose', trend: '+4.2%' },
                   { label: 'Saldo Bersih', val: totals.net, tone: 'tertiary', trend: 'Stabil' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-xl border border-[var(--dashboard-secondary-border)] bg-white p-4 shadow-[0_10px_20px_-18px_rgba(137,114,111,0.22)]">
+                  <div key={i} className="dashboard-inner-surface flex items-center justify-between p-4">
                     <div>
                       <p className="text-xs font-semibold text-slate-500">{item.label}</p>
                       <p className={`mt-1 text-lg font-semibold ${item.tone === 'rose' ? 'text-[var(--dashboard-primary)]' : item.tone === 'secondary' ? 'text-[var(--dashboard-secondary)]' : 'text-[var(--dashboard-tertiary)]'}`}>
@@ -373,8 +374,8 @@ export default function ExecutiveCommandCenterPage() {
           </div>
 
           {/* Regional Performance Heatmap */}
-          <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.26)]">
-             <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
+          <Card className="surface-card-strong overflow-hidden">
+             <CardHeader className="dashboard-section-header p-4">
                <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-xs font-semibold text-slate-900">Distribusi & Logistik Nasional</CardTitle>
@@ -396,7 +397,7 @@ export default function ExecutiveCommandCenterPage() {
                   { region: 'Bali', load: 92, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
                   { region: 'Kalimantan', load: 38, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
                 ].map((reg, i) => (
-                  <div key={i} className="group rounded-xl border border-[var(--dashboard-secondary-border)] bg-white p-4 transition-all hover:border-[var(--dashboard-secondary)]/30 hover:shadow-[0_14px_26px_-20px_rgba(137,114,111,0.24)]">
+                  <div key={i} className="dashboard-inner-surface group p-4 transition-all hover:border-[var(--dashboard-secondary)]/30">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-xs font-semibold text-slate-900">{reg.region}</span>
                       <div className={`h-2 w-2 rounded-full ${reg.color}`} />
@@ -419,8 +420,8 @@ export default function ExecutiveCommandCenterPage() {
         {/* War Room Side Panel */}
         {showAuditPanels && (
         <div className="space-y-6">
-          <Card className="flex h-full max-h-[800px] flex-col overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_20px_40px_-16px_rgba(137,114,111,0.22)]">
-            <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-5">
+          <Card className="surface-card-strong flex min-h-[440px] flex-col overflow-hidden">
+            <CardHeader className="dashboard-section-header p-5">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                   <Activity className="h-4 w-4 text-[var(--dashboard-primary)]" /> Live Audit Feed
@@ -434,7 +435,7 @@ export default function ExecutiveCommandCenterPage() {
             <CardContent className="p-0 flex-1 overflow-y-auto scrollbar-hide">
               <div className="divide-y divide-slate-100">
                 {logs.map((log, i) => (
-                  <div key={i} className="group cursor-pointer bg-white p-5 transition-colors hover:bg-slate-50">
+                  <div key={i} className="group cursor-pointer bg-[var(--dashboard-surface)] p-5 transition-colors hover:bg-[var(--dashboard-surface-muted)]">
                     <div className="flex items-center justify-between mb-2">
                       <Badge className={`h-4 rounded border-none px-1.5 text-xs font-semibold ${
                         log.status === 'success' ? 'bg-emerald-50 text-emerald-700' :
@@ -462,33 +463,46 @@ export default function ExecutiveCommandCenterPage() {
               )}
             </div>
           </Card>
+        </div>
+        )}
+        </div>
 
-          {/* Critical Risk Matrix */}
-          <Card className="overflow-hidden border border-[var(--dashboard-secondary-border)] bg-white shadow-[0_16px_30px_-24px_rgba(137,114,111,0.26)]">
-            <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-white p-4">
-              <CardTitle className="flex items-center gap-2 text-xs font-semibold text-rose-900">
-                <AlertTriangle className="h-3.5 w-3.5" /> High-Impact Risks
-              </CardTitle>
+        {showAuditPanels && (
+          <Card className="surface-card-strong overflow-hidden">
+            <CardHeader className="dashboard-section-header p-4">
+              <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-sm font-semibold text-rose-900">
+                    <AlertTriangle className="h-3.5 w-3.5" /> High-Impact Risks
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-500">
+                    Strategic risks that need executive attention across the national network.
+                  </CardDescription>
+                </div>
+                <Badge variant="outline" className="h-6 w-fit border-rose-200 bg-rose-50 text-xs font-semibold text-rose-700">
+                  3 Active Risks
+                </Badge>
+              </div>
             </CardHeader>
-            <CardContent className="p-4 space-y-3">
+            <CardContent className="grid gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
               {[
-                { label: 'Volatilitas Harga Jagung', scope: 'Lampung', impact: 'High' },
-                { label: 'Logistik Terhambat', scope: 'Sumatera', impact: 'Medium' },
-                { label: 'Anomali Kredit Baru', scope: 'Nasional', impact: 'Low' },
+                { label: 'Volatilitas Harga Jagung', scope: 'Lampung', impact: 'High', note: 'Harga bergerak 18% di atas baseline mingguan.' },
+                { label: 'Logistik Terhambat', scope: 'Sumatera', impact: 'Medium', note: 'Lead time distribusi naik 9 jam pada koridor utama.' },
+                { label: 'Anomali Kredit Baru', scope: 'Nasional', impact: 'Low', note: 'Pola approval baru perlu verifikasi tambahan batch ini.' },
               ].map((risk, i) => (
-                <div key={i} className="flex items-center justify-between rounded-lg border border-[var(--dashboard-secondary-border)] bg-white p-3 shadow-[0_10px_20px_-18px_rgba(137,114,111,0.25)]">
-                  <div>
-                    <p className="text-xs font-semibold text-slate-900">{risk.label}</p>
-                    <p className="mt-0.5 text-xs font-medium text-slate-500">{risk.scope}</p>
+                <div key={i} className="dashboard-inner-surface flex h-full items-start justify-between gap-4 p-4">
+                  <div className="space-y-1.5">
+                    <p className="text-sm font-semibold text-slate-900">{risk.label}</p>
+                    <p className="text-xs font-medium text-slate-500">{risk.scope}</p>
+                    <p className="text-xs leading-relaxed text-slate-500">{risk.note}</p>
                   </div>
-                  <Badge variant="outline" className={`text-xs font-semibold ${risk.impact === 'High' ? 'border-rose-200 bg-rose-50 text-rose-700' : risk.impact === 'Medium' ? 'border-amber-200 bg-amber-50 text-amber-700' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>
+                  <Badge variant="outline" className={`shrink-0 text-xs font-semibold ${risk.impact === 'High' ? 'border-rose-200 bg-rose-50 text-rose-700' : risk.impact === 'Medium' ? 'border-amber-200 bg-amber-50 text-amber-700' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>
                     {risk.impact}
                   </Badge>
                 </div>
               ))}
             </CardContent>
           </Card>
-        </div>
         )}
       </div>
     </div>

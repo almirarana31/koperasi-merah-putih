@@ -7,6 +7,7 @@
 :root {
   --background: #fdf4f1;
   --foreground: #3b2b29;
+  --dashboard-canvas: #f7ebe8;
   --dashboard-primary: #dc3935;
   --dashboard-primary-hover: #c4322f;
   --dashboard-primary-soft: #f7dedd;
@@ -20,9 +21,14 @@
   --dashboard-tertiary-soft: #dcecf4;
   --dashboard-neutral: #89726f;
   --dashboard-neutral-soft: #efe4e2;
-  --card: #fff9f7;
+  --dashboard-surface: #ffffff;
+  --dashboard-surface-subtle: #fffaf8;
+  --dashboard-surface-muted: #fff3f0;
+  --dashboard-surface-border: #e2c5bf;
+  --dashboard-surface-border-strong: #d9b7b0;
+  --card: var(--dashboard-surface);
   --card-foreground: #3b2b29;
-  --popover: #fffaf8;
+  --popover: var(--dashboard-surface);
   --popover-foreground: #3b2b29;
   --primary: #dc3935;
   --primary-foreground: #fff8f7;
@@ -34,8 +40,8 @@
   --accent-foreground: #604542;
   --destructive: #c54a45;
   --destructive-foreground: #fff8f7;
-  --border: #e7d5d0;
-  --input: #fffdfa;
+  --border: var(--dashboard-surface-border);
+  --input: var(--dashboard-surface);
   --ring: #dc3935;
   --chart-1: #dc3935;
   --chart-2: #be5850;
@@ -79,9 +85,15 @@
 .dark {
   --background: #f8eeeb;
   --foreground: #3b2b29;
-  --card: #fff8f6;
+  --dashboard-canvas: #f5e8e4;
+  --dashboard-surface: #ffffff;
+  --dashboard-surface-subtle: #fff9f7;
+  --dashboard-surface-muted: #fff1ed;
+  --dashboard-surface-border: #dec0ba;
+  --dashboard-surface-border-strong: #d5b1aa;
+  --card: var(--dashboard-surface);
   --card-foreground: #3b2b29;
-  --popover: #fff8f6;
+  --popover: var(--dashboard-surface);
   --popover-foreground: #3b2b29;
   --primary: #dc3935;
   --primary-foreground: #fff8f7;
@@ -93,8 +105,8 @@
   --accent-foreground: #604542;
   --destructive: #c54a45;
   --destructive-foreground: #fff8f7;
-  --border: #e4d0cb;
-  --input: #fff8f6;
+  --border: var(--dashboard-surface-border);
+  --input: var(--dashboard-surface);
   --ring: #dc3935;
   --chart-1: #dc3935;
   --chart-2: #be5850;
@@ -303,7 +315,7 @@
 
   .surface-card {
     border-radius: var(--surface-radius-sm);
-    box-shadow: var(--surface-shadow-soft);
+    box-shadow: var(--surface-shadow);
     @apply border border-border bg-card;
   }
 
@@ -316,7 +328,45 @@
   .surface-card-muted {
     border-radius: var(--surface-radius-sm);
     box-shadow: var(--surface-shadow-soft);
-    @apply border border-border bg-secondary/40;
+    @apply border border-border;
+    background-color: var(--dashboard-surface-muted);
+  }
+
+  .dashboard-canvas {
+    background-color: var(--dashboard-canvas);
+  }
+
+  .dashboard-surface {
+    border-radius: var(--surface-radius-sm);
+    border: 1px solid var(--dashboard-surface-border);
+    background-color: var(--dashboard-surface);
+    box-shadow: var(--surface-shadow);
+  }
+
+  .dashboard-surface-strong {
+    border-radius: var(--surface-radius);
+    border: 1px solid var(--dashboard-surface-border-strong);
+    background-color: var(--dashboard-surface);
+    box-shadow: var(--surface-shadow-strong);
+  }
+
+  .dashboard-inner-surface {
+    border-radius: var(--surface-radius-sm);
+    border: 1px solid var(--dashboard-surface-border);
+    background-color: var(--dashboard-surface-subtle);
+    box-shadow: var(--surface-shadow-soft);
+  }
+
+  .dashboard-section-header {
+    border-bottom: 1px solid var(--dashboard-surface-border);
+    background-color: var(--dashboard-surface-muted);
+  }
+
+  .dashboard-table-shell {
+    border-radius: var(--surface-radius-sm);
+    border: 1px solid var(--dashboard-surface-border);
+    background-color: var(--dashboard-surface-subtle);
+    box-shadow: var(--surface-shadow-soft);
   }
 
   .form-panel {
