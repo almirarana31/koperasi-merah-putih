@@ -3,9 +3,75 @@ const normalizeScope = (scopeLabel?: string) => {
   return cleaned && cleaned.length > 0 ? cleaned : "scope aktif"
 }
 
+const normalizeQuery = (query: string) => query.toLowerCase().replace(/\s+/g, " ").trim()
+
 export const getAIResponse = (query: string, scopeLabel?: string): string => {
-  const lowerQuery = query.toLowerCase()
+  const lowerQuery = normalizeQuery(query)
   const scope = normalizeScope(scopeLabel)
+  const exactResponses: Record<string, string> = {
+    "ringkasan performa nasional hari ini": `Ringkasan Performa Nasional Hari Ini untuk ${scope}:
+
+- Total unit aktif: 1.248
+- NPL agregat: 2,4%
+- Anggota baru bulan berjalan: 1.240
+- Produksi agregat: 12.500 ton
+- Ketersediaan stok strategis: 94% dari target buffer
+
+Prioritas tindak lanjut:
+- Audit preventif tiga koperasi dengan kenaikan NPL mingguan
+- Jaga suplai wilayah timur yang tumbuh 8,2% di atas target
+- Optimalkan distribusi Jawa-Bali untuk menjaga margin harian`,
+    "audit efisiensi logistik rute 04": `Audit Efisiensi Logistik Rute 04:
+
+- Load factor: 78%
+- Ketepatan waktu: 91%
+- Biaya per ton-km: Rp428
+- Deviasi waktu bongkar: +18 menit
+
+Temuan utama:
+- Dua titik transit masih menciptakan idle time berlebih
+- Return trip belum terisi optimal pada 3 dari 5 perjalanan terakhir
+- Konsolidasi muatan antarkoperasi masih bisa dinaikkan 12%
+
+Tindak lanjut:
+- Gabungkan pickup pagi pada node Garut Selatan
+- Geser slot keberangkatan 35 menit lebih awal
+- Isi muatan balik dengan stok kering prioritas`,
+    "forecast ketahanan pangan q3 2026": `Forecast Ketahanan Pangan Q3 2026:
+
+- Proyeksi produksi nasional: 38.400 ton
+- Cadangan aman: 11,2 minggu
+- Wilayah paling kuat: Jawa Barat, Jawa Tengah, Sulawesi Selatan
+- Wilayah paling sensitif: Sumatra Barat dan Nusa Tenggara Timur
+
+Risiko kuartal:
+- Curah hujan tidak merata pada awal Agustus
+- Volatilitas cabai dan bawang tetap tinggi
+- Kebutuhan cold-chain naik menjelang puncak panen hortikultura
+
+Rekomendasi:
+- Tambah buffer distribusi untuk komoditas cepat rusak
+- Kunci kontrak pasok antarwilayah mulai akhir Juni
+- Pantau stok beras dan jagung mingguan secara ketat`,
+    "analisis anomali stok koperasi sumatra": `Analisis Anomali Stok Koperasi Sumatra:
+
+- Terdeteksi 4 unit dengan selisih stok di atas ambang 6%
+- Komoditas paling terdampak: cabai merah, bawang merah, dan beras medium
+- Pola anomali dominan muncul pada pembaruan stok malam hari
+
+Unit prioritas:
+1. Koperasi Tani Makmur - selisih 8,4%
+2. Koperasi Pangan Sejahtera - selisih 7,1%
+3. Koperasi Rantai Tani Barat - selisih 6,8%
+
+Tindak lanjut:
+- Cocokkan manifest keluar masuk 72 jam terakhir
+- Audit fisik gudang cabai dan bawang terlebih dahulu
+- Bekukan koreksi manual sampai rekonsiliasi selesai`,
+  }
+
+  const exactResponse = exactResponses[lowerQuery]
+  if (exactResponse) return exactResponse
 
   if (lowerQuery.includes("performa nasional") || lowerQuery.includes("ringkasan")) {
     return `Ringkasan Kinerja untuk ${scope}:

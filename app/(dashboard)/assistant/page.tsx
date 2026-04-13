@@ -73,7 +73,10 @@ export default function AssistantPage() {
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      const viewport = scrollRef.current.querySelector('[data-slot="scroll-area-viewport"]')
+      if (viewport instanceof HTMLDivElement) {
+        viewport.scrollTop = viewport.scrollHeight
+      }
     }
   }, [messages, loading])
 
@@ -145,16 +148,16 @@ export default function AssistantPage() {
       <KementerianFilterBar filters={filters} setFilters={setFilters} />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_350px]">
-        <Card className="rounded-none border-none shadow-sm bg-white flex flex-col h-[calc(100vh-280px)]">
+        <Card className="rounded-none border-none shadow-sm bg-white flex flex-col h-[min(40rem,calc(100vh-320px))]">
           <div className="h-1.5 w-full bg-emerald-500" />
           <CardHeader className="py-3 px-5 border-b border-slate-50 flex-shrink-0 bg-slate-50/50">
             <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900 flex items-center gap-2">
               <Terminal className="h-3.5 w-3.5" /> Terminal Instruksi AI
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col p-0 overflow-hidden relative">
-            <ScrollArea className="flex-1 px-5 py-6" ref={scrollRef}>
-              <div className="space-y-8">
+          <CardContent className="flex-1 min-h-0 flex flex-col p-0 overflow-hidden relative">
+            <ScrollArea className="min-h-0 flex-1" ref={scrollRef}>
+              <div className="space-y-8 px-5 py-6">
                 {messages.map((message, index) => (
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className="max-w-[85%]">
@@ -205,13 +208,13 @@ export default function AssistantPage() {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-1.5 mt-4">
+              <div className="mt-4 flex gap-1.5 overflow-x-auto pb-1">
                 {strategicPrompts.map((q) => (
                   <Button
                     key={q}
                     variant="outline"
                     onClick={() => handleSend(q)}
-                    className="h-7 rounded-none border-slate-200 bg-white text-[9px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-900 hover:text-white transition-colors"
+                    className="h-7 shrink-0 rounded-none border-slate-200 bg-white text-[9px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-900 hover:text-white transition-colors"
                   >
                     {q}
                   </Button>
