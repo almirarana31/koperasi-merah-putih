@@ -95,20 +95,20 @@ export default function SupplyDemandForecastKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="flex items-center gap-2 text-3xl font-semibold  text-slate-900 ">
+            <h1 className="flex items-center gap-2 text-3xl font-black text-slate-900 ">
               <BrainCircuit className="h-8 w-8 text-[var(--dashboard-secondary)]" />
-              Supply & Demand Intelligence
+              Intelijen Supply & Demand
             </h1>
             <p className="font-medium text-slate-500">
-              Forecast nasional untuk keseimbangan pasokan, defisit komoditas, dan dampak harga.
+              Forecast nasional untuk keseimbangan pasokan, defisit komoditas, dan audit dampak harga.
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="border-2 font-bold">
-              <Download className="mr-2 h-4 w-4" /> Export Forecast
+            <Button variant="outline" className="border-2 font-bold rounded-none">
+              <Download className="mr-2 h-4 w-4" /> Ekspor Forecast
             </Button>
-            <Button className="bg-[var(--dashboard-secondary)] font-bold text-white hover:bg-[#394B54]">
-              <Zap className="mr-2 h-4 w-4" /> Recalculate AI
+            <Button className="bg-[var(--dashboard-secondary)] font-bold text-white hover:bg-[#394B54] rounded-none">
+              <Zap className="mr-2 h-4 w-4" /> Kalkulasi Ulang AI
             </Button>
           </div>
         </div>
@@ -123,10 +123,10 @@ export default function SupplyDemandForecastKementerianPage() {
           { label: 'Gap Bersih', value: `${projectedData.reduce((sum, item) => sum + item.gap, 0)} T`, icon: AlertTriangle, tone: 'primary' },
           { label: 'AI Confidence', value: '88%', icon: BrainCircuit, tone: 'secondary' },
         ].map((item) => (
-          <Card key={item.label} className="border-slate-200 bg-white shadow-sm">
+          <Card key={item.label} className="border-slate-200 bg-white shadow-sm rounded-none">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
-                <div className={`rounded-xl p-2 ${
+                <div className={`rounded-none p-2 ${
                   item.tone === 'primary'
                     ? 'bg-[var(--dashboard-primary)]/10 text-[var(--dashboard-primary)]'
                     : item.tone === 'tertiary'
@@ -135,19 +135,19 @@ export default function SupplyDemandForecastKementerianPage() {
                 }`}>
                   <item.icon className="h-5 w-5" />
                 </div>
-                <Badge className="border-none bg-slate-100 text-slate-600">{item.label}</Badge>
+                <Badge className="border-none bg-slate-100 text-slate-600 rounded-none uppercase text-[10px] font-bold tracking-wider">{item.label}</Badge>
               </div>
-              <p className="mt-4 text-3xl font-semibold  text-slate-950">{item.value}</p>
+              <p className="mt-4 text-3xl font-black text-slate-950">{item.value}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <Card className="border-slate-200 bg-white shadow-sm">
+        <Card className="border-slate-200 bg-white shadow-sm rounded-none">
           <CardHeader>
-            <CardTitle>Neraca Supply vs Demand</CardTitle>
-            <CardDescription>Proyeksi 6 minggu berdasarkan cakupan filter aktif.</CardDescription>
+            <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-wider">Neraca Supply vs Demand</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-400">Proyeksi 6 minggu berdasarkan cakupan filter aktif.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[320px] w-full">
@@ -164,31 +164,31 @@ export default function SupplyDemandForecastKementerianPage() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="week" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="supply" stroke="#455A64" fill="url(#supplyArea)" strokeWidth={3} />
-                  <Area type="monotone" dataKey="demand" stroke="#D32F2F" fill="url(#demandArea)" strokeWidth={3} />
+                  <XAxis dataKey="week" tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 800 }} />
+                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 800 }} />
+                  <Tooltip contentStyle={{ borderRadius: '0px', fontWeight: 'bold' }} />
+                  <Area type="monotone" dataKey="supply" stroke="#455A64" fill="url(#supplyArea)" strokeWidth={3} name="Supply" />
+                  <Area type="monotone" dataKey="demand" stroke="#D32F2F" fill="url(#demandArea)" strokeWidth={3} name="Demand" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 bg-white shadow-sm">
+        <Card className="border-slate-200 bg-white shadow-sm rounded-none">
           <CardHeader>
-            <CardTitle>Skenario Dampak Harga</CardTitle>
-            <CardDescription>Model respons harga terhadap surplus dan defisit pasokan.</CardDescription>
+            <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-wider">Skenario Dampak Harga</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-400">Model respons harga terhadap surplus dan defisit pasokan.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[320px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={scenarioImpact}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="scenario" tickLine={false} axisLine={false} />
-                  <YAxis tickLine={false} axisLine={false} />
-                  <Tooltip />
-                  <Bar dataKey="priceChange" name="Price Change (%)" radius={[8, 8, 0, 0]}>
+                  <XAxis dataKey="scenario" tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 800 }} />
+                  <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 800 }} />
+                  <Tooltip contentStyle={{ borderRadius: '0px', fontWeight: 'bold' }} />
+                  <Bar dataKey="priceChange" name="Price Change (%)" radius={[0, 0, 0, 0]}>
                     {scenarioImpact.map((entry) => (
                       <Cell
                         key={entry.scenario}
@@ -203,10 +203,10 @@ export default function SupplyDemandForecastKementerianPage() {
         </Card>
       </div>
 
-      <Card className="border-slate-200 bg-white shadow-sm">
+      <Card className="border-slate-200 bg-white shadow-sm rounded-none">
         <CardHeader>
-          <CardTitle>Prioritas Komoditas</CardTitle>
-          <CardDescription>AI menilai gap pasokan, keyakinan model, dan tindakan yang disarankan.</CardDescription>
+          <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-wider">Prioritas Komoditas</CardTitle>
+          <CardDescription className="text-xs font-bold text-slate-400">AI menilai gap pasokan, keyakinan model, dan tindakan yang disarankan.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 lg:grid-cols-2">
           {commodityCards.map((commodity) => {
@@ -215,7 +215,7 @@ export default function SupplyDemandForecastKementerianPage() {
             return (
               <div
                 key={commodity.name}
-                className={`rounded-2xl border p-5 ${
+                className={`rounded-none border p-5 ${
                   critical
                     ? 'border-[var(--dashboard-primary)]/20 bg-[var(--dashboard-primary)]/5'
                     : 'border-[var(--dashboard-secondary)]/15 bg-[var(--dashboard-secondary)]/5'
@@ -223,26 +223,26 @@ export default function SupplyDemandForecastKementerianPage() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-sm font-semibold  text-slate-900">{commodity.name}</h3>
+                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">{commodity.name}</h3>
                     <p className="mt-1 text-xs font-medium text-slate-500">{commodity.recommendation}</p>
                   </div>
-                  <Badge className={critical ? 'bg-[var(--dashboard-primary)] text-white' : 'bg-[var(--dashboard-secondary)] text-white'}>
+                  <Badge className={`rounded-none font-bold uppercase tracking-wider ${critical ? 'bg-[var(--dashboard-primary)] text-white' : 'bg-[var(--dashboard-secondary)] text-white'}`}>
                     {critical ? 'Defisit' : 'Terkendali'}
                   </Badge>
                 </div>
 
                 <div className="mt-4 grid grid-cols-3 gap-3">
-                  <div className="rounded-xl bg-white p-3">
-                    <p className="text-xs font-semibold  text-slate-400">Supply</p>
-                    <p className="mt-1 text-lg font-semibold text-slate-900">{commodity.supply} T</p>
+                  <div className="rounded-none bg-white p-3 border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Supply</p>
+                    <p className="mt-1 text-lg font-black text-slate-900">{commodity.supply} T</p>
                   </div>
-                  <div className="rounded-xl bg-white p-3">
-                    <p className="text-xs font-semibold  text-slate-400">Demand</p>
-                    <p className="mt-1 text-lg font-semibold text-slate-900">{commodity.demand} T</p>
+                  <div className="rounded-none bg-white p-3 border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Demand</p>
+                    <p className="mt-1 text-lg font-black text-slate-900">{commodity.demand} T</p>
                   </div>
-                  <div className="rounded-xl bg-white p-3">
-                    <p className="text-xs font-semibold  text-slate-400">Gap</p>
-                    <p className={`mt-1 text-lg font-semibold ${critical ? 'text-[var(--dashboard-primary)]' : 'text-[var(--dashboard-secondary)]'}`}>
+                  <div className="rounded-none bg-white p-3 border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Gap</p>
+                    <p className={`mt-1 text-lg font-black ${critical ? 'text-[var(--dashboard-primary)]' : 'text-[var(--dashboard-secondary)]'}`}>
                       {commodity.gap > 0 ? '+' : ''}
                       {commodity.gap} T
                     </p>
@@ -251,10 +251,10 @@ export default function SupplyDemandForecastKementerianPage() {
 
                 <div className="mt-4 flex items-center justify-between gap-4">
                   <div className="flex-1">
-                    <p className="mb-2 text-xs font-semibold  text-slate-400">Confidence</p>
-                    <Progress value={commodity.confidence} className="h-2" />
+                    <p className="mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Confidence</p>
+                    <Progress value={commodity.confidence} className="h-2 rounded-none" />
                   </div>
-                  <span className="text-sm font-semibold text-slate-900">{commodity.confidence}%</span>
+                  <span className="text-sm font-black text-slate-900">{commodity.confidence}%</span>
                 </div>
               </div>
             )

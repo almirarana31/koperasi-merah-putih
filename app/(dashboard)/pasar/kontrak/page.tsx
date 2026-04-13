@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Activity, Clock, FileText, Search, ShieldCheck } from 'lucide-react'
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
 import { useAuth } from '@/lib/auth/use-auth'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -43,6 +43,13 @@ function statusTone(status: string) {
   if (status === 'aktif') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
   if (status === 'review') return 'bg-amber-50 text-amber-700 border-amber-200'
   return 'bg-blue-50 text-blue-700 border-blue-200'
+}
+
+function statusLabel(status: string) {
+  if (status === 'aktif') return 'AKTIF'
+  if (status === 'review') return 'TINJAUAN'
+  if (status === 'selesai') return 'SELESAI'
+  return status.toUpperCase()
 }
 
 export default function KontrakKementerianPage() {
@@ -101,7 +108,7 @@ export default function KontrakKementerianPage() {
   const activeValue = contracts.reduce((total, contract) => total + contract.value, 0)
   const chartRows = contracts.map((contract) => ({
     name: contract.regionName,
-    fulfillment: contract.fulfillment,
+    pemenuhan: contract.fulfillment,
   }))
 
   return (
@@ -109,7 +116,7 @@ export default function KontrakKementerianPage() {
       <div className="space-y-2">
         <Badge className="w-fit rounded-none border border-blue-200 bg-blue-50 text-blue-700 font-black uppercase tracking-widest text-[10px]">Manajemen Kontrak Niaga Nasional</Badge>
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Monitoring Kontrak</h1>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900">Monitoring Kontrak Strategis</h1>
           <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
             Pengawasan Pemenuhan Kontrak Jaringan Koperasi: {getScopeCaption(scopedFilters)}
           </p>
@@ -134,10 +141,10 @@ export default function KontrakKementerianPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: 'KONTRAK AKTIF', value: Math.round(contracts.length * scaleFactor).toLocaleString('id-ID'), sub: 'PERJANJIAN NIAGA BERJALAN', icon: FileText, tone: 'slate' },
-          { label: 'NILAI PIPELINE', value: formatCurrency(activeValue), sub: 'VALUASI KONTRAK TERJAMIN', icon: ShieldCheck, tone: 'emerald' },
-          { label: 'PERLU REVIEW', value: Math.round(contracts.filter((c) => c.status === 'review').length * scaleFactor).toLocaleString('id-ID'), sub: 'KONTRAK KRITIS / LOW FULFILLMENT', icon: Clock, tone: 'rose' },
-          { label: 'RATA FULFILLMENT', value: `${contracts.length === 0 ? 0 : Math.round(contracts.reduce((t, c) => t + c.fulfillment, 0) / contracts.length)}%`, sub: 'EFEKTIVITAS PEMENUHAN NASIONAL', icon: Activity, tone: 'blue' },
+          { label: 'Kontrak Aktif', value: Math.round(contracts.length * scaleFactor).toLocaleString('id-ID'), sub: 'Perjanjian Niaga Berjalan', icon: FileText, tone: 'slate' },
+          { label: 'Nilai Pipeline', value: formatCurrency(activeValue), sub: 'Valuasi Kontrak Terjamin', icon: ShieldCheck, tone: 'emerald' },
+          { label: 'Perlu Tinjauan', value: Math.round(contracts.filter((c) => c.status === 'review').length * scaleFactor).toLocaleString('id-ID'), sub: 'Kontrak Kritis / Low Fulfillment', icon: Clock, tone: 'rose' },
+          { label: 'Rata Pemenuhan', value: `${contracts.length === 0 ? 0 : Math.round(contracts.reduce((t, c) => t + c.fulfillment, 0) / contracts.length)}%`, sub: 'Efektivitas Pemenuhan Nasional', icon: Activity, tone: 'blue' },
         ].map((stat, i) => (
           <Card key={i} className="rounded-none border-none bg-white shadow-sm overflow-hidden group border-t-4 border-t-slate-900">
             <div className={`absolute top-0 left-0 h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'rose' ? 'bg-rose-500' : stat.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'}`} />
@@ -159,7 +166,7 @@ export default function KontrakKementerianPage() {
         <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
           <CardHeader className="bg-slate-50/50 border-b border-slate-100">
             <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Persentase Pemenuhan per Wilayah</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Fulfillment Kontrak Berdasarkan Lokasi Produksi Koperasi</CardDescription>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Pemenuhan Kontrak Berdasarkan Lokasi Produksi Koperasi</CardDescription>
           </CardHeader>
           <CardContent className="h-[320px] p-4 pt-6">
             <ResponsiveContainer width="100%" height="100%">
@@ -167,7 +174,11 @@ export default function KontrakKementerianPage() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
                 <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
-                <Bar dataKey="fulfillment" fill="#2563eb" radius={0} />
+                <Tooltip 
+                  cursor={{fill: '#f8fafc'}}
+                  contentStyle={{ borderRadius: '0px', border: '1px solid #e2e8f0', fontSize: '12px', fontWeight: 'bold' }}
+                />
+                <Bar dataKey="pemenuhan" name="Pemenuhan" fill="#2563eb" radius={[0, 0, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -188,13 +199,13 @@ export default function KontrakKementerianPage() {
                       <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{contract.buyerName} · {contract.destinationRegion}</p>
                     </div>
                     <Badge variant="outline" className={`rounded-none text-[9px] font-black uppercase tracking-widest ${statusTone(contract.status)}`}>
-                      {contract.status}
+                      {statusLabel(contract.status)}
                     </Badge>
                   </div>
                   <div className="mt-3 space-y-1 text-[10px] font-bold text-slate-500 uppercase">
                     <p className="text-slate-900">{contract.cooperativeName}</p>
                     <p>{contract.commodityMix.join(', ')}</p>
-                    <p>UPDATE TERAKHIR {formatDate(contract.lastUpdate)}</p>
+                    <p>Update Terakhir {formatDate(contract.lastUpdate)}</p>
                   </div>
                 </div>
               ))}
@@ -213,8 +224,8 @@ export default function KontrakKementerianPage() {
             <TableHeader className="bg-slate-50">
               <TableRow>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest">No. Kontrak</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Buyer/Pembeli</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Koperasi/Pemasok</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Pembeli (Buyer)</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest">Pemasok (Koperasi)</TableHead>
                 <TableHead className="text-[10px] font-black uppercase tracking-widest">Komoditas</TableHead>
                 <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Nilai</TableHead>
                 <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">PO</TableHead>
@@ -234,7 +245,7 @@ export default function KontrakKementerianPage() {
                   <TableCell className="text-right text-[11px] font-black">{contract.fulfillment}%</TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`rounded-none text-[9px] font-black uppercase tracking-widest ${statusTone(contract.status)}`}>
-                      {contract.status}
+                      {statusLabel(contract.status)}
                     </Badge>
                   </TableCell>
                 </TableRow>

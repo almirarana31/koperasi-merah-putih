@@ -82,7 +82,7 @@ export function CreateOrderDialog({ open, onOpenChange, onSave }: DialogSaveProp
       items: orderItems,
       totalAmount,
       id: `ORD${Date.now().toString().slice(-8)}`,
-      status: 'Pending',
+      status: 'Tertunda',
       createdAt: new Date().toISOString(),
     }
 

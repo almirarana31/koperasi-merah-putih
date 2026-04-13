@@ -96,9 +96,9 @@ export default function LaporanPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">BUKU BESAR AUDIT NASIONAL</h1>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Buku Besar Audit Nasional</h1>
             <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-none">
-              ANALISIS PERFORMA & AUDIT KEUANGAN NASIONAL • ANALISIS REAL-TIME
+              Analisis Performa & Audit Keuangan Nasional • Analisis Real-Time
             </p>
           </div>
         </div>
@@ -109,8 +109,8 @@ export default function LaporanPage() {
               <SelectValue placeholder="Tahun" />
             </SelectTrigger>
             <SelectContent className="rounded-none border-slate-200">
-              <SelectItem value="2024" className="text-[10px] font-black uppercase">TAHUN 2024</SelectItem>
-              <SelectItem value="2023" className="text-[10px] font-black uppercase">TAHUN 2023</SelectItem>
+              <SelectItem value="2024" className="text-[10px] font-black uppercase">Tahun 2024</SelectItem>
+              <SelectItem value="2023" className="text-[10px] font-black uppercase">Tahun 2023</SelectItem>
             </SelectContent>
           </Select>
           <Button 
@@ -118,7 +118,7 @@ export default function LaporanPage() {
             onClick={() => toast({ title: "Ekspor Audit", description: "Menyiapkan dokumen audit PDF konsolidasi..." })}
           >
             <Download className="mr-2 h-3.5 w-3.5" />
-            EKSPOR AUDIT PDF
+            Ekspor Audit PDF
           </Button>
         </div>
       </div>
@@ -128,9 +128,9 @@ export default function LaporanPage() {
       {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         {[
-          { label: 'TOTAL PEMASUKAN', value: formatCurrency(totalPemasukan), sub: '+18.4% ANOMALI TERDETEKSI', icon: TrendingUp, tone: 'emerald' },
-          { label: 'TOTAL PENGELUARAN', value: formatCurrency(totalPengeluaran), sub: 'DALAM BATAS OPERASIONAL', icon: TrendingDown, tone: 'rose' },
-          { label: 'LABA BERSIH (EBITDA)', value: formatCurrency(labaKotor), sub: `MARGIN: ${((labaKotor / totalPemasukan) * 100).toFixed(1)}% INDEKS PERFORMA`, icon: FileText, tone: 'slate' },
+          { label: 'Total Arus Masuk', value: formatCurrency(totalPemasukan), sub: '+18.4% ANOMALI TERDETEKSI', icon: TrendingUp, tone: 'emerald' },
+          { label: 'Total Arus Keluar', value: formatCurrency(totalPengeluaran), sub: 'DALAM BATAS OPERASIONAL', icon: TrendingDown, tone: 'rose' },
+          { label: 'Laba Bersih (EBITDA)', value: formatCurrency(labaKotor), sub: `MARGIN: ${((labaKotor / totalPemasukan) * 100).toFixed(1)}% INDEKS PERFORMA`, icon: FileText, tone: 'slate' },
         ].map((stat, i) => (
           <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
             <div className={`h-1 w-full border-t-4 ${
@@ -159,8 +159,8 @@ export default function LaporanPage() {
         <Card className="border-none shadow-sm bg-white overflow-hidden rounded-none">
           <div className="h-1 w-full border-t-4 border-slate-900" />
           <CardHeader className="p-4 border-b border-slate-50">
-            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">PENDAPATAN VS PENGELUARAN</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">ANALISIS KOMPARATIF BULANAN NASIONAL</CardDescription>
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Pendapatan vs Pengeluaran</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">Analisis Komparatif Bulanan Nasional</CardDescription>
           </CardHeader>
           <CardContent className="p-4">
             <div className="h-[250px]">
@@ -191,10 +191,10 @@ export default function LaporanPage() {
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-white/10 pb-1">{label}</p>
                             <div className="space-y-1">
                               <p className="text-xs font-black text-emerald-400 uppercase">
-                                REV: {formatCurrency(payload[0].value as number)}
+                                PENDAPATAN: {formatCurrency(payload[0].value as number)}
                               </p>
                               <p className="text-xs font-black text-rose-400 uppercase">
-                                EXP: {formatCurrency(payload[1].value as number)}
+                                PENGELUARAN: {formatCurrency(payload[1].value as number)}
                               </p>
                             </div>
                           </div>
@@ -225,8 +225,8 @@ export default function LaporanPage() {
         <Card className="border-none shadow-sm bg-white overflow-hidden rounded-none">
           <div className="h-1 w-full border-t-4 border-slate-900" />
           <CardHeader className="p-4 border-b border-slate-50">
-            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">TREN LIKUIDITAS KAS</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">PROYEKSI SALDO AKUMULATIF KONSOLIDASI</CardDescription>
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Tren Arus Kas</CardTitle>
+            <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">Proyeksi Saldo Akumulatif Konsolidasi</CardDescription>
           </CardHeader>
           <CardContent className="p-4">
             <div className="h-[250px]">
@@ -257,7 +257,7 @@ export default function LaporanPage() {
                           <div className="rounded-none border-none bg-slate-900 p-3 shadow-2xl">
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 border-b border-white/10 pb-1">{label}</p>
                             <p className="text-xs font-black text-emerald-400 uppercase">
-                              LIQUID CASH: {formatCurrency(payload[0].value as number)}
+                              KAS LIKUID: {formatCurrency(payload[0].value as number)}
                             </p>
                           </div>
                         )
@@ -284,15 +284,15 @@ export default function LaporanPage() {
       <Card className="border-none shadow-sm bg-white overflow-hidden rounded-none">
         <div className="h-1 w-full border-t-4 border-slate-900" />
         <CardHeader className="p-4 border-b border-slate-50">
-          <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">ARSIP LAPORAN AUDIT KONSOLIDASI</CardTitle>
-          <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">PILIH DOKUMEN STRATEGIS UNTUK DIUNDUH</CardDescription>
+          <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Arsip Laporan Audit Konsolidasi</CardTitle>
+          <CardDescription className="text-[10px] font-bold text-slate-500 mt-0.5 uppercase tracking-tight">Pilih Dokumen Strategis Untuk Diunduh</CardDescription>
         </CardHeader>
         <CardContent className="p-4">
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              { title: 'NERACA SALDO', sub: 'LAPORAN POSISI KEUANGAN (NASIONAL)', color: 'bg-slate-900' },
-              { title: 'LABA RUGI', sub: 'LAPORAN OPERASIONAL (KONSOLIDASI)', color: 'bg-emerald-600' },
-              { title: 'ARUS KAS', sub: 'INDEKS LIKUIDITAS KAS', color: 'bg-blue-600' },
+              { title: 'Neraca Saldo', sub: 'LAPORAN POSISI KEUANGAN (NASIONAL)', color: 'bg-slate-900' },
+              { title: 'Laba Rugi', sub: 'LAPORAN OPERASIONAL (KONSOLIDASI)', color: 'bg-emerald-600' },
+              { title: 'Arus Kas', sub: 'INDEKS LIKUIDITAS KAS', color: 'bg-blue-600' },
             ].map((report, i) => (
               <div key={i} className="flex items-center justify-between rounded-none border border-slate-100 p-4 hover:border-slate-900 transition-colors group bg-slate-50/30">
                 <div className="flex items-center gap-3">

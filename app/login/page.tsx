@@ -221,7 +221,8 @@ export default function LoginPage() {
                 <Leaf className="h-6 w-6" />
               </div>
               <div>
-                <p className="text-xs font-medium text-[#7b5c57]">Koperasi Merah Putih</p>
+                <p className="text-xs font-semibold tracking-[0.18em] text-[#930010]">KOPDES</p>
+                <p className="text-xs font-medium text-[#7b5c57]">Koperasi Digital</p>
                 <p className="text-xl font-semibold text-slate-950">Portal Akses Role</p>
               </div>
             </div>
@@ -314,7 +315,8 @@ export default function LoginPage() {
                 <Leaf className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-xs font-medium text-[#7b5c57]">Koperasi Merah Putih</p>
+                <p className="text-xs font-semibold tracking-[0.18em] text-[#930010]">KOPDES</p>
+                <p className="text-xs font-medium text-[#7b5c57]">Koperasi Digital</p>
                 <p className="text-lg font-semibold text-slate-950">Portal Akses Role</p>
               </div>
             </div>

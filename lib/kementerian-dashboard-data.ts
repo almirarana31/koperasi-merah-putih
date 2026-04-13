@@ -615,7 +615,7 @@ function buildCooperativeAlerts(
       scopeLabel: cooperative.name,
       cooperativeId: cooperative.id,
       cooperativeName: cooperative.name,
-      title: 'NPL tinggi',
+      title: 'NPL kritis',
       message: `${cooperative.name} mencatat NPL ${roundNumber(cooperative.nplRatio)}%, melewati ambang intervensi nasional.`,
       recommendation: 'Lakukan review portofolio pinjaman, penagihan terarah, dan pendampingan manajemen kredit.',
       metric: `${roundNumber(cooperative.nplRatio)}%`,
@@ -629,7 +629,7 @@ function buildCooperativeAlerts(
       scopeLabel: cooperative.name,
       cooperativeId: cooperative.id,
       cooperativeName: cooperative.name,
-      title: 'NPL naik',
+      title: 'NPL dalam pantauan',
       message: `${cooperative.name} berada pada NPL ${roundNumber(cooperative.nplRatio)}% dan perlu pemantauan ketat.`,
       recommendation: 'Pantau debitur menunggak dan perketat validasi pinjaman baru.',
       metric: `${roundNumber(cooperative.nplRatio)}%`,
@@ -645,7 +645,7 @@ function buildCooperativeAlerts(
       scopeLabel: cooperative.name,
       cooperativeId: cooperative.id,
       cooperativeName: cooperative.name,
-      title: 'Pendapatan anggota turun tajam',
+      title: 'Penurunan pendapatan drastis',
       message: `Pendapatan rata-rata anggota di ${cooperative.name} turun ${Math.abs(roundNumber(incomeDropPct))}% dibanding bulan sebelumnya.`,
       recommendation: 'Aktifkan pendampingan usaha, evaluasi pasar, dan verifikasi anggota yang terdampak.',
       metric: `${roundNumber(incomeDropPct)}%`,
@@ -659,7 +659,7 @@ function buildCooperativeAlerts(
       scopeLabel: cooperative.name,
       cooperativeId: cooperative.id,
       cooperativeName: cooperative.name,
-      title: 'Pendapatan anggota melambat',
+      title: 'Perlambatan pendapatan anggota',
       message: `Pendapatan anggota di ${cooperative.name} menurun ${Math.abs(roundNumber(incomeDropPct))}% dalam satu bulan.`,
       recommendation: 'Lihat profil anggota berisiko dan siapkan intervensi usaha jangka pendek.',
       metric: `${roundNumber(incomeDropPct)}%`,
@@ -675,7 +675,7 @@ function buildCooperativeAlerts(
       scopeLabel: cooperative.name,
       cooperativeId: cooperative.id,
       cooperativeName: cooperative.name,
-      title: 'Rasio keuangan kritis',
+      title: 'Status kesehatan kritis',
       message: `${cooperative.name} memiliki skor kesehatan ${Math.round(cooperative.healthScore)} dan memerlukan intervensi pengawasan.`,
       recommendation: 'Fokus pada likuiditas, efisiensi biaya, dan penguatan struktur aset.',
       metric: `${Math.round(cooperative.healthScore)}/100`,
@@ -689,7 +689,7 @@ function buildCooperativeAlerts(
       scopeLabel: cooperative.name,
       cooperativeId: cooperative.id,
       cooperativeName: cooperative.name,
-      title: 'Rasio keuangan perlu perhatian',
+      title: 'Status kesehatan waspada',
       message: `${cooperative.name} menunjukkan kesehatan keuangan level warning dengan skor ${Math.round(cooperative.healthScore)}.`,
       recommendation: 'Monitor arus kas dan efisiensi operasional sampai indikator kembali hijau.',
       metric: `${Math.round(cooperative.healthScore)}/100`,
@@ -1031,7 +1031,7 @@ function buildRegionalAlerts(regionSummaries: GroupSummary[]): EarlyWarningAlert
         severity: region.avgNpl >= 8 ? 'critical' : 'warning',
         scopeType: 'region',
         scopeLabel: region.label,
-        title: 'Wilayah dengan tren NPL naik',
+        title: 'Tren NPL wilayah meningkat',
         message: `${region.label} berada pada NPL rata-rata ${roundNumber(region.avgNpl)}% dan perlu pengawasan lintas koperasi.`,
         recommendation: 'Koordinasikan pendampingan kredit dan review portofolio di tingkat wilayah.',
         metric: `${roundNumber(region.avgNpl)}%`,
@@ -1069,7 +1069,7 @@ function buildScopeAlerts(summary: GroupSummary, trend: TrendPoint[], scopeLabel
       severity: summary.avgNpl >= 8 ? 'critical' : 'warning',
       scopeType: summary.level === 'national' ? 'national' : summary.level,
       scopeLabel,
-      title: 'Rata-rata NPL perlu perhatian',
+      title: 'Perhatian: Rata-rata NPL tinggi',
       message: `${scopeLabel} memiliki rata-rata NPL ${roundNumber(summary.avgNpl)}% pada cakupan saat ini.`,
       recommendation: 'Prioritaskan pengawasan koperasi dengan tunggakan tertinggi di cakupan ini.',
       metric: `${roundNumber(summary.avgNpl)}%`,
@@ -1083,7 +1083,7 @@ function buildScopeAlerts(summary: GroupSummary, trend: TrendPoint[], scopeLabel
       severity: incomeDropPct <= -8 ? 'critical' : 'warning',
       scopeType: summary.level === 'national' ? 'national' : summary.level,
       scopeLabel,
-      title: 'Pendapatan anggota melemah',
+      title: 'Pelemahan pendapatan anggota',
       message: `Pendapatan rata-rata anggota pada ${scopeLabel} turun ${Math.abs(roundNumber(incomeDropPct))}% dari bulan sebelumnya.`,
       recommendation: 'Lihat koperasi dengan penurunan terdalam dan aktifkan intervensi kesejahteraan.',
       metric: `${roundNumber(incomeDropPct)}%`,
@@ -1097,7 +1097,7 @@ function buildScopeAlerts(summary: GroupSummary, trend: TrendPoint[], scopeLabel
       severity: summary.overallHealth === 'critical' ? 'critical' : 'warning',
       scopeType: summary.level === 'national' ? 'national' : summary.level,
       scopeLabel,
-      title: 'Skor kesehatan di bawah target',
+      title: 'Kesehatan di bawah standar target',
       message: `${scopeLabel} memiliki skor kesehatan rata-rata ${Math.round(summary.overallScore)} dengan ${summary.alertCount} alert aktif.`,
       recommendation: 'Pantau koperasi dengan rasio likuiditas dan rentabilitas terendah.',
       metric: `${Math.round(summary.overallScore)}/100`,
@@ -1135,7 +1135,7 @@ function buildAiInsights(
     {
       id: `${scopeLabel}-AI-1`,
       type: 'warning',
-      title: highestRiskRegion ? `${highestRiskRegion.label} menjadi kantong risiko utama` : 'Tidak ada wilayah risiko tinggi',
+      title: highestRiskRegion ? `Risiko Utama di ${highestRiskRegion.label}` : 'Risiko Wilayah Terkendali',
       description: highestRiskRegion
         ? `AI mendeteksi kenaikan NPL rata-rata ${roundNumber(highestRiskRegion.avgNpl)}% di ${highestRiskRegion.label}; intervensi kredit dan pendampingan koperasi perlu dipercepat.`
         : 'Semua wilayah berada pada rentang risiko terkendali.',
@@ -1145,7 +1145,7 @@ function buildAiInsights(
     {
       id: `${scopeLabel}-AI-2`,
       type: 'insight',
-      title: bestGrowthRegion ? `${bestGrowthRegion.label} memimpin pertumbuhan anggota` : 'Pertumbuhan anggota stabil',
+      title: bestGrowthRegion ? `Pertumbuhan Terkuat di ${bestGrowthRegion.label}` : 'Pertumbuhan Anggota Stabil',
       description: bestGrowthRegion
         ? `Wilayah ini mencatat pertumbuhan anggota ${roundNumber(bestGrowthRegion.memberGrowthPct)}% dengan peningkatan kesejahteraan ${roundNumber(bestGrowthRegion.incomeImprovementPct)}%.`
         : 'Tidak ada perbedaan ekstrem pada pertumbuhan anggota.',
@@ -1155,7 +1155,7 @@ function buildAiInsights(
     {
       id: `${scopeLabel}-AI-3`,
       type: 'recommendation',
-      title: weakestCooperative ? `${weakestCooperative.label} perlu pendampingan intensif` : 'Tidak ada koperasi yang perlu intervensi khusus',
+      title: weakestCooperative ? `Intervensi Intensif: ${weakestCooperative.label}` : 'Kesehatan Unit Terjaga',
       description: weakestCooperative
         ? `Skor kesehatan ${Math.round(weakestCooperative.overallScore)} dan NPL ${roundNumber(weakestCooperative.avgNpl)}% menunjukkan perlunya audit rasio serta rencana pemulihan operasional.`
         : 'Seluruh koperasi berada pada skor sehat.',
@@ -1165,7 +1165,7 @@ function buildAiInsights(
     {
       id: `${scopeLabel}-AI-4`,
       type: 'opportunity',
-      title: bestIncomeCooperative ? `${bestIncomeCooperative.label} layak jadi model replikasi` : 'Belum ada kandidat model replikasi',
+      title: bestIncomeCooperative ? `Model Replikasi: ${bestIncomeCooperative.label}` : 'Peluang Model Baru',
       description: bestIncomeCooperative
         ? `Peningkatan pendapatan anggota ${roundNumber(bestIncomeCooperative.incomeImprovementPct)}% menunjukkan pola yang bisa direplikasi ke koperasi dengan performa menengah.`
         : 'Masih perlu penguatan data sebelum menentukan model replikasi.',

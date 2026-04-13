@@ -90,19 +90,19 @@ export default function PembayaranPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT PENYELESAIAN NASIONAL</h1>
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Pusat Penyelesaian Nasional</h1>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            MONITORING ARUS KAS & PENYELESAIAN TRANSAKSI ANTAR WILAYAH • BUKU BESAR KEUANGAN LANGSUNG
+            Pemantauan Arus Kas & Penyelesaian Transaksi Antar Wilayah • Buku Besar Keuangan Langsung
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
            <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none shadow-sm" onClick={() => toast({ title: "Audit Pajak", description: "Menyiapkan laporan kepatuhan pajak nasional..." })}>
             <FileText className="h-3.5 w-3.5 mr-2 text-rose-600" />
-            LAPORAN PAJAK
+            Laporan Pajak
           </Button>
           <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Ekspor Buku Besar", description: "Mengekspor buku besar keuangan nasional untuk periode aktif..." })}>
             <Download className="h-4 w-4 mr-2" />
-            EKSPOR BUKU BESAR
+            Ekspor Buku Besar
           </Button>
         </div>
       </div>
@@ -111,10 +111,10 @@ export default function PembayaranPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'TOTAL INFLOW', value: (stats.totalIn / 1000000).toFixed(1), sub: 'JUTA IDR', icon: ArrowDownLeft, tone: 'emerald' },
-          { label: 'TOTAL OUTFLOW', value: (stats.totalOut / 1000000).toFixed(1), sub: 'JUTA IDR', icon: ArrowUpRight, tone: 'rose' },
-          { label: 'ARUS KAS BERSIH', value: (stats.net / 1000000).toFixed(1), sub: 'JUTA IDR', icon: Wallet, tone: 'slate' },
-          { label: 'AUDIT TERTUNDA', value: stats.pendingCount, sub: 'VOUCHER', icon: Clock, tone: 'amber' },
+          { label: 'Total Inflow', value: (stats.totalIn / 1000000).toFixed(1), sub: 'Juta IDR', icon: ArrowDownLeft, tone: 'emerald' },
+          { label: 'Total Outflow', value: (stats.totalOut / 1000000).toFixed(1), sub: 'Juta IDR', icon: ArrowUpRight, tone: 'rose' },
+          { label: 'Arus Kas Bersih', value: (stats.net / 1000000).toFixed(1), sub: 'Juta IDR', icon: Wallet, tone: 'slate' },
+          { label: 'Audit Tertunda', value: stats.pendingCount, sub: 'Voucher', icon: Clock, tone: 'amber' },
         ].map((s, i) => (
           <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
             <div className={`h-1 w-full ${
@@ -131,10 +131,10 @@ export default function PembayaranPage() {
                 }`} />
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
-                <div className="flex items-baseline gap-1 mt-0.5">
-                  <span className="text-xl font-black text-slate-900">{s.value}</span>
-                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">{s.sub}</span>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{s.label}</p>
+                <div className="flex flex-col">
+                  <span className="text-sm font-black text-slate-900 leading-tight">{s.value}</span>
+                  <span className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">{s.sub}</span>
                 </div>
               </div>
             </CardContent>
@@ -151,7 +151,7 @@ export default function PembayaranPage() {
                     <div className="relative flex-1">
                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                        <Input
-                         placeholder="CARI ENTITAS, INVOICE, ATAU DESKRIPSI TRANSAKSI..."
+                         placeholder="Cari Entitas, Invoice, Atau Deskripsi Transaksi..."
                          value={search}
                          onChange={(e) => setSearch(e.target.value)}
                          className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
@@ -159,7 +159,7 @@ export default function PembayaranPage() {
                     </div>
                     {!isKementerian && (
                       <Button className="h-11 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all">
-                        <Plus className="h-4 w-4 mr-2" /> CATAT TRANSAKSI
+                        <Plus className="h-4 w-4 mr-2" /> Catat Transaksi
                       </Button>
                     )}
                  </div>
@@ -169,10 +169,10 @@ export default function PembayaranPage() {
            <Tabs defaultValue="masuk" className="w-full">
               <TabsList className="bg-slate-100 p-1 h-11 rounded-none shadow-inner w-full flex">
                  <TabsTrigger value="masuk" className="flex-1 rounded-none font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-md gap-2">
-                    <ArrowDownLeft className="h-3 w-3" /> INFLOW NASIONAL
+                    <ArrowDownLeft className="h-3 w-3" /> Inflow Nasional
                  </TabsTrigger>
                  <TabsTrigger value="keluar" className="flex-1 rounded-none font-black text-[10px] uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:shadow-md gap-2">
-                    <ArrowUpRight className="h-3 w-3" /> OUTFLOW OPERASIONAL
+                    <ArrowUpRight className="h-3 w-3" /> Outflow Operasional
                  </TabsTrigger>
               </TabsList>
 
@@ -208,7 +208,7 @@ export default function PembayaranPage() {
                                 <Badge className={`h-4 text-[9px] font-black px-1.5 rounded-none border-none uppercase ${
                                   payment.status === 'verified' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                                 }`}>
-                                   {payment.status}
+                                   {payment.status.toUpperCase()}
                                 </Badge>
                                 <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-300 group-hover:text-slate-900 rounded-none group-hover:bg-slate-50 transition-all">
                                    <ArrowRight className="h-3.5 w-3.5" />
@@ -251,7 +251,7 @@ export default function PembayaranPage() {
                              </div>
                              <div className="flex flex-col items-center gap-1.5">
                                 <Badge className="h-4 text-[9px] font-black px-1.5 rounded-none border-none bg-emerald-100 text-emerald-700 uppercase">
-                                   COMPLETED
+                                   SELESAI
                                 </Badge>
                                 <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-300 group-hover:text-slate-900 rounded-none group-hover:bg-slate-50 transition-all">
                                    <ArrowRight className="h-3.5 w-3.5" />
@@ -269,29 +269,29 @@ export default function PembayaranPage() {
            <Card className="border-none shadow-xl bg-slate-950 text-white overflow-hidden rounded-none">
               <CardHeader className="p-4 border-b border-white/5 bg-slate-900/50">
                  <div className="flex items-center justify-between">
-                     <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                        <Activity className="h-4 w-4 text-emerald-500" /> FEED ARUS KAS
-                     </CardTitle>
-                     <div className="flex items-center gap-1.5">
-                        <div className="h-1 w-1 bg-emerald-500 rounded-full animate-ping" />
-                        <span className="text-[9px] font-black text-emerald-500 tracking-widest">LANGSUNG</span>
-                     </div>
+                      <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                         <Activity className="h-4 w-4 text-emerald-500" /> Feed Arus Kas
+                      </CardTitle>
+                      <div className="flex items-center gap-1.5">
+                         <div className="h-1 w-1 bg-emerald-500 rounded-full animate-ping" />
+                         <span className="text-[9px] font-black text-emerald-500 tracking-widest">Langsung</span>
+                      </div>
                  </div>
               </CardHeader>
               <CardContent className="p-0">
                  <div className="divide-y divide-white/5">
                     {[
-                      { time: '14:30', action: 'BCA Settlement: PM-042', status: 'SUCCESS', val: '+4.2M' },
-                      { time: '14:15', action: 'Vendor Payout: PK-012', status: 'COMPLETED', val: '-120JT' },
-                      { time: '13:58', action: 'Anomaly: Large Outflow', status: 'WARN', val: '-850JT' },
-                      { time: '13:42', action: 'Invoice Batch Sync', status: 'INFO', val: '42 ITEMS' },
+                      { time: '14:30', action: 'Settlement BCA: PM-042', status: 'Berhasil', val: '+4.2M' },
+                      { time: '14:15', action: 'Pembayaran Vendor: PK-012', status: 'Selesai', val: '-120JT' },
+                      { time: '13:58', action: 'Anomali: Outflow Besar', status: 'Waspada', val: '-850JT' },
+                      { time: '13:42', action: 'Sinkronisasi Batch Invoice', status: 'Info', val: '42 Item' },
                     ].map((log, i) => (
                       <div key={i} className="p-4 hover:bg-white/5 transition-colors cursor-pointer group">
                          <div className="flex items-center justify-between mb-2">
                             <Badge className={`text-[9px] font-black px-1.5 h-4 border-none rounded-none tracking-widest ${
-                              log.status === 'WARN' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
+                              log.status === 'Waspada' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
                             }`}>
-                               {log.status}
+                               {log.status.toUpperCase()}
                             </Badge>
                             <span className="text-[9px] font-mono text-slate-600 group-hover:text-slate-400">{log.time}</span>
                          </div>
@@ -304,9 +304,9 @@ export default function PembayaranPage() {
                     <Button 
                       variant="ghost" 
                       className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-9 rounded-none"
-                      onClick={() => toast({ title: "Settlement Hub", description: "Menginisialisasi konsol penyelesaian nasional..." })}
+                      onClick={() => toast({ title: "Hub Settlement", description: "Menginisialisasi konsol penyelesaian nasional..." })}
                     >
-                       BUKA KONSOL SETTLEMENT →
+                       Buka Konsol Settlement →
                     </Button>
                  </div>
               </CardContent>
@@ -314,13 +314,13 @@ export default function PembayaranPage() {
 
            <Card className="border-none shadow-sm bg-slate-50 rounded-none">
               <CardHeader className="p-4 border-b border-slate-200">
-                 <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">PEMERIKSAAN API PEMBAYARAN</CardTitle>
+                 <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Pemeriksaan API Pembayaran</CardTitle>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                  {[
-                   { label: 'GATEWAY BANK', val: '99.9%', status: 'ONLINE' },
-                   { label: 'KALKULASI PPN', val: 'AKTIF', status: 'SINKRON' },
-                   { label: 'KEPATUHAN AUDIT', val: '100%', status: 'BERSIH' },
+                   { label: 'Gateway Bank', val: '99.9%', status: 'Online' },
+                   { label: 'Kalkulasi PPN', val: 'Aktif', status: 'Sinkron' },
+                   { label: 'Kepatuhan Audit', val: '100%', status: 'Bersih' },
                  ].map((h, i) => (
                     <div key={i} className="flex items-center justify-between">
                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{h.label}</span>
@@ -346,14 +346,14 @@ export default function PembayaranPage() {
              </div>
              <div>
                 <div className="flex items-center gap-3">
-                   <Badge className="bg-rose-600 text-white text-[10px] font-black px-2 h-5 rounded-none tracking-widest border-none">PERINGATAN KEPATUHAN</Badge>
-                   <span className="text-[10px] font-black text-rose-900 uppercase tracking-widest">BATCH TIDAK TERKONSILIASI TERDETEKSI</span>
+                   <Badge className="bg-rose-600 text-white text-[10px] font-black px-2 h-5 rounded-none tracking-widest border-none">Peringatan Kepatuhan</Badge>
+                   <span className="text-[10px] font-black text-rose-900 uppercase tracking-widest">Batch Tidak Terkonsiliasi Terdeteksi</span>
                 </div>
-                <p className="mt-2 text-lg font-black text-rose-900 uppercase tracking-tight">PERHATIAN: TERDETEKSI BATCH TRANSAKSI YANG BELUM DIREKONSILIASI DI WILAYAH SUMATERA UTARA (RP 1.2M).</p>
+                <p className="mt-2 text-lg font-black text-rose-900 uppercase tracking-tight">Perhatian: Terdeteksi batch transaksi yang belum direkonsiliasi di wilayah Sumatera Utara (Rp 1.2M).</p>
               </div>
            </div>
            <Button className="bg-rose-900 text-white hover:bg-rose-800 h-12 rounded-none px-8 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-rose-200 transition-all">
-              AUDIT PENYELESAIAN
+              Audit Penyelesaian
            </Button>
         </CardContent>
       </Card>

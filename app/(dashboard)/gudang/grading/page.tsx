@@ -91,7 +91,7 @@ export default function GradingQCKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h1 className="flex items-center gap-3 text-2xl font-black text-slate-900 uppercase tracking-tight">
+            <h1 className="flex items-center gap-3 text-2xl font-black text-slate-900 tracking-tight">
               <ClipboardCheck className="h-7 w-7 text-slate-900" />
               Audit Grading & QC Nasional
             </h1>
@@ -103,14 +103,14 @@ export default function GradingQCKementerianPage() {
             <Button
               variant="outline"
               onClick={() => handleAction('Log Kepatuhan')}
-              className="h-10 rounded-none border-2 border-slate-200 bg-white px-5 text-[10px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50"
+              className="h-10 rounded-none border-2 border-slate-200 bg-white px-5 text-[10px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 shadow-none"
             >
               <History className="mr-2 h-4 w-4 text-slate-400" />
               Log Kepatuhan
             </Button>
             <Button
               onClick={() => handleAction('Re-Grading Global')}
-              className="h-10 rounded-none bg-slate-900 px-6 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800"
+              className="h-10 rounded-none bg-slate-900 px-6 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 shadow-none"
             >
               <Zap className="mr-2 h-4 w-4 text-amber-400" />
               Re-Grading Global
@@ -123,10 +123,10 @@ export default function GradingQCKementerianPage() {
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
-          { label: 'ANTREAN AGREGAT', value: processedData.pendingCount, sub: 'MENUNGGU VERIFIKASI', tone: 'slate' },
-          { label: 'SELESAI HARI INI', value: processedData.processedToday, sub: 'TARGET THROUGHPUT TERCAPAI', tone: 'emerald' },
-          { label: 'SKOR QC JARINGAN', value: '91.4%', sub: 'KONSISTENSI TINGGI', tone: 'emerald', icon: Star },
-          { label: 'INDEKS REJECT', value: '1.8%', sub: 'DI BAWAH AMBANG BATAS 2%', tone: 'rose' },
+          { label: 'Antrean Agregat', value: processedData.pendingCount, sub: 'MENUNGGU VERIFIKASI', tone: 'slate' },
+          { label: 'Selesai Hari Ini', value: processedData.processedToday, sub: 'TARGET THROUGHPUT TERCAPAI', tone: 'emerald' },
+          { label: 'Skor QC Jaringan', value: '91.4%', sub: 'KONSISTENSI TINGGI', tone: 'emerald', icon: Star },
+          { label: 'Indeks Reject', value: '1.8%', sub: 'DI BAWAH AMBANG BATAS 2%', tone: 'rose' },
         ].map((stat, i) => (
           <Card key={i} className="rounded-none border-none shadow-sm bg-white overflow-hidden">
             <div className={`h-1.5 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'rose' ? 'bg-rose-500' : 'bg-slate-900'}`} />
@@ -143,16 +143,16 @@ export default function GradingQCKementerianPage() {
       </div>
 
       <Tabs defaultValue="queue" className="w-full">
-        <TabsList className="h-12 w-fit bg-slate-100 p-1 rounded-none">
+        <TabsList className="h-12 w-fit bg-slate-100 p-1 rounded-none shadow-inner">
           <TabsTrigger
             value="queue"
-            className="rounded-none h-10 px-6 text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white"
+            className="rounded-none h-10 px-6 text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white shadow-none"
           >
             Antrean Nasional ({processedData.queue.length})
           </TabsTrigger>
           <TabsTrigger
             value="history"
-            className="rounded-none h-10 px-6 text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white"
+            className="rounded-none h-10 px-6 text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-slate-900 data-[state=active]:text-white shadow-none"
           >
             Riwayat Audit QC
           </TabsTrigger>
@@ -166,7 +166,7 @@ export default function GradingQCKementerianPage() {
                   <div className="grid md:grid-cols-[300px_1fr_250px]">
                     <div className="p-6 space-y-4 border-r border-slate-50">
                       <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none bg-slate-100 text-slate-900 border border-slate-200">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none bg-slate-100 text-slate-900 border border-slate-200 shadow-inner">
                           <Scale className="h-6 w-6" />
                         </div>
                         <div className="min-w-0">
@@ -183,15 +183,15 @@ export default function GradingQCKementerianPage() {
 
                     <div className="flex flex-col justify-center gap-4 p-6 bg-slate-50/30">
                       <div className="grid gap-2 text-[10px] font-black uppercase tracking-widest sm:grid-cols-[160px_1fr]">
-                        <p className="text-slate-400">SIMPUL KOPERASI</p>
+                        <p className="text-slate-400">Simpul Koperasi</p>
                         <p className="text-slate-900">{item.cooperative}</p>
                       </div>
                       <div className="grid gap-2 text-[10px] font-black uppercase tracking-widest sm:grid-cols-[160px_1fr]">
-                        <p className="text-slate-400">ENTITAS PRODUSEN</p>
+                        <p className="text-slate-400">Entitas Produsen</p>
                         <p className="text-slate-900">{item.produsen}</p>
                       </div>
                       <div className="bg-white border border-slate-100 rounded-none px-4 py-3 text-[10px] font-black uppercase tracking-widest grid gap-2 sm:grid-cols-[160px_1fr]">
-                        <p className="text-slate-400">VOLUME AUDIT</p>
+                        <p className="text-slate-400">Volume Audit</p>
                         <p className="text-sm font-black text-slate-900">
                           {(item.jumlah / 1000).toLocaleString()} TON
                         </p>
@@ -202,13 +202,13 @@ export default function GradingQCKementerianPage() {
                       {item.status === 'proses' ? (
                         <div className="space-y-2">
                           <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                            <span className="text-blue-600">SEDANG DIPROSES</span>
+                            <span className="text-blue-600">Sedang Diproses</span>
                             <span className="text-slate-900">{item.progress}%</span>
                           </div>
                           <Progress value={item.progress} className="h-2 bg-blue-50 rounded-none" />
                         </div>
                       ) : (
-                        <Badge className="rounded-none w-fit border-none bg-amber-100 text-[10px] font-black uppercase tracking-widest text-amber-700 h-6 px-3">
+                        <Badge className="rounded-none w-fit border-none bg-amber-100 text-[10px] font-black uppercase tracking-widest text-amber-700 h-6 px-3 shadow-none">
                           MENUNGGU START
                         </Badge>
                       )}
@@ -216,13 +216,13 @@ export default function GradingQCKementerianPage() {
                         <Button
                           variant="outline"
                           onClick={() => handleAction(`Audit Sensor ${item.batchCode}`)}
-                          className="h-10 rounded-none border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-900 hover:text-white transition-all"
+                          className="h-10 rounded-none border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-900 hover:text-white transition-all shadow-none"
                         >
                           Audit Sensor
                         </Button>
                         <Button
                           onClick={() => handleAction(`Mulai QC ${item.batchCode}`)}
-                          className="h-10 rounded-none bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg"
+                          className="h-10 rounded-none bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 shadow-none"
                         >
                           Mulai QC
                         </Button>
@@ -251,7 +251,7 @@ export default function GradingQCKementerianPage() {
                       </div>
                       <div>
                         <div className="mb-2 flex flex-wrap items-center gap-3">
-                          <Badge className="rounded-none border-none bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest h-6 px-3">
+                          <Badge className="rounded-none border-none bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest h-6 px-3 shadow-none">
                             {item.batchCode}
                           </Badge>
                           <CardTitle className="text-xl font-black text-slate-900 uppercase tracking-tight">{item.komoditas}</CardTitle>
@@ -262,7 +262,7 @@ export default function GradingQCKementerianPage() {
                       </div>
                     </div>
                     <div className="bg-white border border-slate-100 rounded-none px-6 py-4 text-right shadow-inner">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">SKOR AUDIT QC</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Skor Audit QC</p>
                       <p className={`text-3xl font-black ${item.qcScore >= 90 ? 'text-emerald-700' : 'text-amber-700'}`}>
                         {item.qcScore}%
                       </p>
@@ -271,7 +271,7 @@ export default function GradingQCKementerianPage() {
                 </CardHeader>
                 <CardContent className="grid gap-6 p-6 md:grid-cols-2">
                   <div className="bg-slate-50 rounded-none border border-slate-100 p-5">
-                    <p className="mb-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">Analisis Yield Per Grade</p>
+                    <p className="mb-5 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2">Analisis Hasil Per Grade</p>
                     <div className="space-y-4">
                       {Object.entries(item.hasil).map(([grade, val]) => (
                         <div key={grade} className="grid items-center gap-4 sm:grid-cols-[auto_1fr_auto_150px]">
@@ -310,7 +310,7 @@ export default function GradingQCKementerianPage() {
                     <Button
                       variant="outline"
                       onClick={() => handleAction(`Laporan Telemetri ${item.batchCode}`)}
-                      className="mt-6 h-10 w-full rounded-none border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-900 hover:text-white transition-all"
+                      className="mt-6 h-10 w-full rounded-none border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-900 hover:text-white transition-all shadow-none"
                     >
                       Lihat Laporan Telemetri Penuh
                     </Button>
@@ -331,20 +331,20 @@ export default function GradingQCKementerianPage() {
           </div>
           <div className="p-8 bg-white">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
-              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Ringkasan Standar QC Nasional</h3>
-              <Badge className="rounded-none border-none bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest h-6 px-4">
+              <h3 className="text-xl font-black text-slate-900 tracking-tight">Ringkasan Standar QC Nasional</h3>
+              <Badge className="rounded-none border-none bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest h-6 px-4 shadow-none">
                 SEMUA WILAYAH PATUH STANDAR
               </Badge>
             </div>
             <div className="grid gap-6 md:grid-cols-2">
               <div className="bg-slate-50 rounded-none border-l-4 border-l-slate-900 p-5 shadow-sm">
-                <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3">PENEGAKAN STANDAR NASIONAL</p>
+                <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-3">Penegakan Standar Nasional</p>
                 <p className="text-xs font-black uppercase tracking-tight leading-relaxed text-slate-600">
                   SISTEM GRADING OTOMATIS TELAH MENGURANGI MISKLASIFIKASI GRADE DI SELURUH JARINGAN NASIONAL SEBESAR 14.5% KUARTAL INI. PENETAPAN HARGA BERDASARKAN HASIL QC AI TELAH DITEGAKKAN SEPENUHNYA.
                 </p>
               </div>
               <div className="bg-slate-50 rounded-none border-l-4 border-l-blue-500 p-5 shadow-sm">
-                <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-3">PERFORMA REGIONAL STRATEGIS</p>
+                <p className="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-3">Performa Regional Strategis</p>
                 <p className="text-xs font-black uppercase tracking-tight leading-relaxed text-slate-600">
                   SIMPUL JAWA BARAT MELAPORKAN YIELD GRADE A TERTINGGI, SAAT INI 8% DI ATAS RATA-RATA NASIONAL. DATA VARIETAS DAN KONDISI TANAH SEDANG DIKAJI UNTUK REPLIKASI NASIONAL.
                 </p>

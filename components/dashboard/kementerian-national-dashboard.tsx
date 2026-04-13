@@ -86,11 +86,10 @@ function scoreToStatus(score: number) {
   return 'critical'
 }
 
-const SURFACE_CARD = 'overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_10px_24px_-18px_rgba(15,23,42,0.18)]'
 const PORTFOLIO_HEALTH_COLORS = {
-  healthy: '#BE5850',
-  warning: '#006E9D',
-  critical: '#DC3935',
+  healthy: '#10b981',
+  warning: '#f59e0b',
+  critical: '#ef4444',
 } as const
 
 export function KementerianNationalDashboard() {
@@ -111,116 +110,32 @@ export function KementerianNationalDashboard() {
     return () => window.clearInterval(intervalId)
   }, [])
 
-  const commodityOptions = [
-    { id: 'all', label: 'Semua Komoditas' },
-    { id: 'beras', label: 'Beras' },
-    { id: 'jagung', label: 'Jagung' },
-    { id: 'cabai', label: 'Cabai' },
-    { id: 'bawang', label: 'Bawang' },
-  ]
-
   const provinceOptions = KEMENTERIAN_DASHBOARD_DATA.provinceOptions
   const regionOptions = KEMENTERIAN_DASHBOARD_DATA.regionOptions.filter(
     (option) => filters.provinceId === 'all' || option.provinceId === filters.provinceId,
   )
-  const villageOptions = KEMENTERIAN_DASHBOARD_DATA.villageOptions.filter((option) => {
-    const matchesProvince = filters.provinceId === 'all' || option.provinceId === filters.provinceId
-    const matchesRegion = filters.regionId === 'all' || option.regionId === filters.regionId
-    return matchesProvince && matchesRegion
-  })
-  const cooperativeOptions = KEMENTERIAN_DASHBOARD_DATA.cooperativeOptions.filter((option) => {
-    const matchesProvince = filters.provinceId === 'all' || option.provinceId === filters.provinceId
-    const matchesRegion = filters.regionId === 'all' || option.regionId === filters.regionId
-    const matchesVillage = filters.villageId === 'all' || option.villageId === filters.villageId
-    return matchesProvince && matchesRegion && matchesVillage
-  })
 
   const snapshot = getKementerianDashboardSnapshot(filters)
 
-  const drillInto = (row: GroupSummary) => {
-    if (row.level === 'region') {
-      setFilters(prev => ({ ...prev, provinceId: row.province, regionId: row.id, villageId: 'all', cooperativeId: 'all' }))
-    } else if (row.level === 'village') {
-      setFilters(prev => ({ ...prev, regionId: row.region, villageId: row.id, cooperativeId: 'all' }))
-    } else if (row.level === 'cooperative') {
-      setSelectedCooperative(row)
-      setIsAuditDialogOpen(true)
-    }
-  }
-
-  const rowContext = (row: GroupSummary) => {
-    if (row.level === 'region') return row.province
-    if (row.level === 'village') return `${row.province} / ${row.region}`
-    if (row.level === 'cooperative') return `${row.region} / ${row.village}`
-    return ''
-  }
-
-  const actionLabel = (row: GroupSummary) => {
-    if (row.level === 'region') return 'Drill-down Desa'
-    if (row.level === 'village') return 'Drill-down Koperasi'
-    if (row.level === 'cooperative') return 'Buka Dashboard'
-    return 'Lihat'
-  }
-
-  // Selected Comparison State
-  const [villageComparisonIds, setVillageComparisonIds] = useState<string[]>([])
-  const [cooperativeComparisonIds, setCooperativeComparisonIds] = useState<string[]>([])
-
-  const toggleVillageComparison = (id: string) => {
-    setVillageComparisonIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
-  }
-  const toggleCooperativeComparison = (id: string) => {
-    setCooperativeComparisonIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
-  }
-
-  const villageComparisonOptions = snapshot.villageComparisons.slice(0, 10)
-  const cooperativeComparisonOptions = snapshot.cooperativeComparisons.slice(0, 10)
-
-  const selectedVillageComparisons = snapshot.villageComparisons.filter(v => villageComparisonIds.includes(v.id))
-  const selectedCooperativeComparisons = snapshot.cooperativeComparisons.filter(c => cooperativeComparisonIds.includes(c.id))
-
-  const weakestCooperatives = [...snapshot.cooperativeComparisons].sort((a, b) => a.overallScore - b.overallScore).slice(0, 5)
-  const topGrowthRegions = [...snapshot.regionComparisons].sort((a, b) => b.incomeImprovementPct - a.incomeImprovementPct).slice(0, 5)
   const portfolioHealthData = [
     { label: 'Sangat Sehat', count: 450, color: PORTFOLIO_HEALTH_COLORS.healthy },
     { label: 'Waspada / Audit', count: 620, color: PORTFOLIO_HEALTH_COLORS.warning },
     { label: 'Intervensi Segera', count: 178, color: PORTFOLIO_HEALTH_COLORS.critical },
   ]
 
-  const nplTone = snapshot.summary.avgNpl > 5 ? 'rose' : snapshot.summary.avgNpl > 3 ? 'sand' : 'emerald'
-  const healthTone = snapshot.summary.overallScore > 80 ? 'emerald' : snapshot.summary.overallScore > 65 ? 'sand' : 'rose'
-
-  const ratioOverview = snapshot.selectedCooperative 
-    ? snapshot.selectedCooperative.ratioScores 
-    : [
-        { label: 'Likuiditas', score: snapshot.summary.avgLiquidityScore, status: scoreToStatus(snapshot.summary.avgLiquidityScore), valueLabel: 'Ratio Lancar' },
-        { label: 'Solvabilitas', score: snapshot.summary.avgSolvencyScore, status: scoreToStatus(snapshot.summary.avgSolvencyScore), valueLabel: 'Debt/Equity' },
-        { label: 'Rentabilitas', score: snapshot.summary.avgProfitabilityScore, status: scoreToStatus(snapshot.summary.avgProfitabilityScore), valueLabel: 'Margin Laba' },
-      ]
-
-  const formatCurrency = (val: number) => currencyFormatter.format(val)
-  const insightToneClass = (idx: number) => {
-    const tones = ['border-sky-100 bg-sky-50/30', 'border-emerald-100 bg-emerald-50/30', 'border-amber-100 bg-amber-50/30']
-    return tones[idx % tones.length]
-  }
-  const severityAlertClass = (s: AlertSeverity) => s === 'critical' ? 'border-[var(--dashboard-primary)]/12 bg-[var(--dashboard-primary)]/6 text-rose-950' : 'border-amber-100 bg-amber-50/50 text-amber-950'
-  const severityBadgeClass = (s: AlertSeverity) => s === 'critical' ? 'bg-[var(--dashboard-primary)]' : 'bg-amber-600'
-
-  const SUBTLE_PANEL = 'rounded-xl border border-slate-200 bg-white shadow-[0_8px_18px_-16px_rgba(15,23,42,0.16)]'
-
   const handleDownloadAuditPdf = async () => {
     setIsDownloadingAudit(true)
     toast.info(`Menyiapkan Audit PDF Untuk ${snapshot.scopeLabel}...`)
 
     const result = await exportToPDF({
-      title: 'Audit Lintas Unit Kerja',
-      subtitle: `Ringkasan ${snapshot.scopeLabel}`,
-      filename: `audit-lintas-unit-${filters.provinceId}-${Date.now()}.pdf`,
+      title: 'Audit Lintas Unit Kerja Nasional',
+      subtitle: `Ringkasan Strategis ${snapshot.scopeLabel}`,
+      filename: `audit-nasional-${filters.provinceId}-${Date.now()}.pdf`,
       orientation: 'landscape',
       data: snapshot.cooperativeComparisons.slice(0, 12).map((row) => ({
         'Unit Koperasi': row.label,
         Desa: row.village,
-        Status: row.overallHealth,
+        Status: row.overallHealth === 'good' ? 'SEHAT' : row.overallHealth === 'warning' ? 'WASPADA' : 'KRITIS',
         Anggota: row.totalMembers.toLocaleString('id-ID'),
         'Pendapatan / Anggota': formatCompactCurrency(row.avgIncomeAfter),
         'Rasio NPL': `${row.avgNpl.toFixed(1)}%`,
@@ -237,61 +152,52 @@ export function KementerianNationalDashboard() {
     setIsDownloadingAudit(false)
   }
 
+  const severityAlertClass = (s: AlertSeverity) => s === 'critical' ? 'border-rose-100 bg-rose-50/50 text-rose-900' : 'border-amber-100 bg-amber-50/50 text-amber-900'
+
   return (
-    <div className="flex min-h-screen flex-col gap-4 bg-[var(--dashboard-secondary-muted)] p-4 lg:p-5">
-      {/* HEADER SECTION - COMPACT */}
-      <div className="flex flex-col justify-between gap-4 rounded-2xl border border-[var(--dashboard-secondary-border)] bg-white/92 p-4 shadow-[0_14px_30px_-22px_rgba(137,114,111,0.24)] md:flex-row md:items-center">
+    <div className="flex min-h-screen flex-col gap-4 bg-slate-50 p-4 lg:p-5">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col justify-between gap-4 rounded-none border border-slate-200 bg-white p-4 shadow-sm md:flex-row md:items-center">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-[1.45rem] font-semibold text-foreground">Ringkasan Kementerian</h1>
-            <Badge variant="outline" className="border-[var(--dashboard-primary)]/18 bg-[var(--dashboard-primary)]/8 px-2 py-0 text-xs font-medium text-[var(--dashboard-primary)]">Live</Badge>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase">Pusat Komando Kementerian</h1>
+            <Badge variant="outline" className="border-emerald-500 bg-emerald-50 px-2 py-0 text-[10px] font-black uppercase tracking-widest text-emerald-700">Live</Badge>
           </div>
-          <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <p className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">
             <RefreshCw className="h-3 w-3 animate-spin-slow" /> 
-            Data Terpusat: {snapshot.scopeLabel} | Sinkron {Math.floor((Date.now() - clock)/60000)} Menit Lalu
+            DATA TERPUSAT: {snapshot.scopeLabel.toUpperCase()} | SINKRONISASI {Math.floor((Date.now() - clock)/60000)} MENIT LALU
           </p>
         </div>
         
-        <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 bg-white p-1.5 shadow-[0_10px_22px_-18px_rgba(15,23,42,0.16)]">
-          <div className="flex items-center gap-1.5 border-r border-slate-200 px-2">
-            <span className="text-xs font-medium text-slate-500">Provinsi</span>
+        <div className="flex flex-wrap items-center gap-1.5 rounded-none border border-slate-200 bg-white p-1.5 shadow-sm">
+          <div className="flex items-center gap-1.5 border-r border-slate-200 px-3">
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Provinsi</span>
             <Select value={filters.provinceId} onValueChange={(v) => setFilters(prev => ({...prev, provinceId: v, regionId: 'all', villageId: 'all', cooperativeId: 'all'}))}>
-              <SelectTrigger className="h-8 w-[120px] border-none bg-transparent px-0 text-sm font-medium shadow-none">
-                <SelectValue placeholder="Semua" />
+              <SelectTrigger className="h-8 w-[140px] border-none bg-transparent px-0 text-[11px] font-black uppercase tracking-tight shadow-none rounded-none">
+                <SelectValue placeholder="SEMUA" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua</SelectItem>
-                {provinceOptions.map(opt => <SelectItem key={opt.id} value={opt.id}>{opt.label}</SelectItem>)}
+              <SelectContent className="rounded-none">
+                <SelectItem value="all" className="text-[10px] font-black uppercase tracking-widest">SEMUA</SelectItem>
+                {provinceOptions.map(opt => <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-widest">{opt.label.toUpperCase()}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-1.5 border-r border-slate-200 px-2">
-            <span className="text-xs font-medium text-slate-500">Kab/Kota</span>
+          <div className="flex items-center gap-1.5 px-3">
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Kab/Kota</span>
             <Select value={filters.regionId} onValueChange={(v) => setFilters(prev => ({...prev, regionId: v, villageId: 'all', cooperativeId: 'all'}))}>
-              <SelectTrigger className="h-8 w-[120px] border-none bg-transparent px-0 text-sm font-medium shadow-none">
-                <SelectValue placeholder="Semua" />
+              <SelectTrigger className="h-8 w-[140px] border-none bg-transparent px-0 text-[11px] font-black uppercase tracking-tight shadow-none rounded-none">
+                <SelectValue placeholder="SEMUA" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua</SelectItem>
-                {regionOptions.map(opt => <SelectItem key={opt.id} value={opt.id}>{opt.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-1.5 border-r border-slate-200 px-2">
-            <span className="text-xs font-medium text-slate-500">Komoditas</span>
-            <Select value={filters.commodityId} onValueChange={(v) => setFilters(prev => ({...prev, commodityId: v}))}>
-              <SelectTrigger className="h-8 w-[120px] border-none bg-transparent px-0 text-sm font-medium shadow-none">
-                <SelectValue placeholder="Semua" />
-              </SelectTrigger>
-              <SelectContent>
-                {commodityOptions.map(opt => <SelectItem key={opt.id} value={opt.id}>{opt.label}</SelectItem>)}
+              <SelectContent className="rounded-none">
+                <SelectItem value="all" className="text-[10px] font-black uppercase tracking-widest">SEMUA</SelectItem>
+                {regionOptions.map(opt => <SelectItem key={opt.id} value={opt.id} className="text-[10px] font-black uppercase tracking-widest">{opt.label.toUpperCase()}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <Button 
             size="sm" 
             variant="ghost" 
-            className="h-8 w-8 p-0 hover:bg-[var(--dashboard-primary)]/8 hover:text-[var(--dashboard-primary)]"
+            className="h-8 w-8 p-0 hover:bg-slate-100 rounded-none border-l border-slate-200"
             onClick={() => setFilters({provinceId: 'all', regionId: 'all', villageId: 'all', cooperativeId: 'all', commodityId: 'all'})}
           >
             <RefreshCw className="h-4 w-4" />
@@ -299,278 +205,183 @@ export function KementerianNationalDashboard() {
         </div>
       </div>
 
-      {/* TOP ROW - KPI AGGREGATES */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+      {/* KPI SECTION */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
         {[
-          { label: 'Total Koperasi', value: snapshot.summary.cooperatives.toLocaleString('id-ID'), icon: Building2, trend: '+12', tone: 'secondary' },
-          { label: 'Anggota Aktif', value: snapshot.summary.totalMembers.toLocaleString('id-ID'), icon: Users, trend: formatPercent(snapshot.summary.memberGrowthPct), tone: 'secondary' },
-          { label: 'Pendapatan / Anggota', value: formatCompactCurrency(snapshot.summary.avgIncomeAfter), icon: Wallet, trend: '+14%', tone: 'tertiary' },
-          { label: 'Pendapatan / Koperasi', value: formatCompactCurrency(snapshot.summary.avgMonthlyRevenue), icon: BarChart3, trend: '+8.2%', tone: 'tertiary' },
-          { label: 'Rata-rata NPL', value: `${snapshot.summary.avgNpl.toFixed(1)}%`, icon: ShieldAlert, trend: '-0.2%', tone: snapshot.summary.avgNpl > 3 ? 'primary' : 'secondary' },
-          { label: 'Skor Kesehatan', value: `${Math.round(snapshot.summary.overallScore)}`, icon: HeartPulse, trend: 'Optimal', tone: 'secondary' },
+          { label: 'Total Koperasi', value: snapshot.summary.cooperatives.toLocaleString('id-ID'), icon: Building2, trend: '+12', tone: 'secondary', sub: 'UNIT TERDATA' },
+          { label: 'Anggota Aktif', value: snapshot.summary.totalMembers.toLocaleString('id-ID'), icon: Users, trend: formatPercent(snapshot.summary.memberGrowthPct), tone: 'secondary', sub: 'PERSONEL KYC' },
+          { label: 'Pendapatan / Anggota', value: formatCompactCurrency(snapshot.summary.avgIncomeAfter), icon: Wallet, trend: '+14%', tone: 'tertiary', sub: 'RATA-RATA KESEJAHTERAAN' },
+          { label: 'Omzet / Koperasi', value: formatCompactCurrency(snapshot.summary.avgMonthlyRevenue), icon: BarChart3, trend: '+8.2%', tone: 'tertiary', sub: 'PRODUKTIVITAS AGREGAT' },
+          { label: 'Rasio NPL', value: snapshot.summary.avgNpl.toFixed(1) + '%', icon: ShieldAlert, trend: '-0.2%', tone: 'primary', sub: 'TINGKAT RISIKO KREDIT' },
+          { label: 'Skor Kesehatan', value: Math.round(snapshot.summary.overallScore), icon: HeartPulse, trend: 'Optimal', tone: 'secondary', sub: 'INDEX STABILITAS UNIT' },
         ].map((kpi, idx) => (
-          <Card key={idx} className={`${SURFACE_CARD} transition-all hover:border-rose-200 hover:shadow-[0_14px_26px_-18px_rgba(15,23,42,0.18)]`}>
-            <CardContent className="p-4">
+          <Card key={idx} className="rounded-none border-none bg-white shadow-sm overflow-hidden group border-t-4 border-t-slate-900">
+            <CardHeader className="p-4 pb-2">
               <div className="flex justify-between items-start">
-                <div className={`rounded-xl p-2 ${
-                  kpi.tone === 'primary'
-                    ? 'bg-[var(--dashboard-primary)]/10 text-[var(--dashboard-primary)]'
-                    : kpi.tone === 'tertiary'
-                      ? 'bg-[var(--dashboard-tertiary)]/10 text-[var(--dashboard-tertiary)]'
-                      : 'bg-[var(--dashboard-secondary)]/10 text-[var(--dashboard-secondary)]'
-                }`}>
-                  <kpi.icon className="h-4 w-4" />
-                </div>
-                <Badge className={`text-xs font-medium ${
-                  kpi.tone === 'primary'
-                    ? 'bg-[var(--dashboard-primary)]/10 text-[var(--dashboard-primary)]'
-                    : kpi.tone === 'tertiary'
-                      ? 'bg-[var(--dashboard-tertiary)]/10 text-[var(--dashboard-tertiary)]'
-                      : 'bg-[var(--dashboard-secondary)]/10 text-[var(--dashboard-secondary)]'
-                }`}>
-                  {kpi.trend}
-                </Badge>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 leading-none">{kpi.label}</p>
+                <kpi.icon className="h-4 w-4 text-slate-300 group-hover:text-slate-900 transition-colors" />
               </div>
-              <div className="mt-3">
-                <p className="text-xs font-medium text-slate-500">{kpi.label}</p>
-                <p className="mt-0.5 text-[1.55rem] font-semibold text-slate-900">{kpi.value}</p>
-              </div>
+              <CardTitle className="text-2xl font-black text-slate-900 mt-2 leading-none uppercase">{kpi.value}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0">
+              <p className="text-[9px] font-black text-slate-500 mt-1.5 uppercase tracking-tighter leading-none">{kpi.sub}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* MIDDLE SECTION - CHARTS & EWS */}
+      {/* MIDDLE SECTION */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-        {/* MAIN CHART - 8 COLS */}
-        <Card className={`${SURFACE_CARD} lg:col-span-8 flex flex-col`}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-slate-200 p-4">
-            <div className="space-y-0.5">
-              <CardTitle className="text-sm font-semibold text-slate-900">Performa Pertumbuhan Nasional</CardTitle>
-              <CardDescription className="text-xs text-slate-500">Korelasi Anggota Baru vs Produksi Beras Secara Agregat</CardDescription>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--dashboard-secondary)]">
-                <div className="h-2 w-2 rounded-full bg-[var(--dashboard-secondary)]" /> Anggota
-              </div>
-              <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--dashboard-primary)]">
-                <div className="h-2 w-2 rounded-full bg-[var(--dashboard-primary)]" /> Risiko
-              </div>
-            </div>
+        <Card className="rounded-none border-none shadow-sm lg:col-span-8 overflow-hidden border-t-4 border-t-slate-900 bg-white">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+            <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Performa Pertumbuhan Anggota Nasional</CardTitle>
+            <CardDescription className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Tren Akumulasi Personel Terverifikasi vs Kapasitas Produksi</CardDescription>
           </CardHeader>
-          <CardContent className="p-4 flex-1">
-            <div className="h-[280px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={snapshot.trend}>
-                  <defs>
-                    <linearGradient id="colorMembers" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--dashboard-secondary)" stopOpacity={0.16}/>
-                      <stop offset="95%" stopColor="var(--dashboard-secondary)" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="month" fontSize={11} axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
-                  <YAxis yAxisId="left" hide />
-                  <YAxis yAxisId="right" orientation="right" hide />
-                  <Tooltip 
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }} 
-                    cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }}
-                  />
-                  <Area yAxisId="left" type="monotone" dataKey="members" stroke="var(--dashboard-secondary)" strokeWidth={3} fill="url(#colorMembers)" isAnimationActive={false} />
-                  <Area yAxisId="right" type="monotone" dataKey="npl" stroke="var(--dashboard-primary)" strokeWidth={2} fill="transparent" isAnimationActive={false} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+          <CardContent className="h-[300px] p-6">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={snapshot.trend}>
+                <defs>
+                  <linearGradient id="colorMembers" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0f172a" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#0f172a" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="month" fontSize={10} axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900, fill: '#64748b' }} />
+                <YAxis hide />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '0', border: '1px solid #e2e8f0', boxShadow: 'none', fontSize: '9px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.05em' }} 
+                  labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
+                />
+                <Area name="TOTAL ANGGOTA" type="monotone" dataKey="members" stroke="#0f172a" strokeWidth={3} fill="url(#colorMembers)" isAnimationActive={false} />
+              </AreaChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* EWS - 4 COLS */}
-        <Card className={`${SURFACE_CARD} lg:col-span-4 flex flex-col`}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)] p-4">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-              <ShieldAlert className="h-4 w-4 text-[var(--dashboard-primary)]" /> Early Warning
-            </CardTitle>
-            <Badge variant="destructive" className="h-5 rounded-full px-2 text-xs font-medium">3 Kritis</Badge>
-          </CardHeader>
-          <CardContent className="p-0 flex-1 overflow-y-auto">
-            <div className="divide-y divide-slate-100">
-              {snapshot.topAlerts.slice(0, 4).map((alert) => (
-                <div key={alert.id} className="group cursor-pointer p-3.5 transition-colors hover:bg-[var(--dashboard-secondary-muted)]/55">
-                  <div className="flex items-start gap-3">
-                    <div className={`mt-0.5 rounded-lg p-1.5 ${alert.severity === 'critical' ? 'bg-[var(--dashboard-primary)]/10 text-[var(--dashboard-primary)]' : 'bg-amber-50 text-amber-600'}`}>
-                      <AlertTriangle className="h-3 w-3" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="truncate text-sm font-semibold text-slate-900">{alert.title}</p>
-                        <span className="whitespace-nowrap text-xs text-slate-400">2 Jam Lalu</span>
-                      </div>
-                      <p className="mt-1 text-xs font-medium leading-tight text-slate-500 line-clamp-2">{alert.message}</p>
-                      <div className="mt-2 flex items-center gap-2">
-                        <span className="rounded bg-rose-50 px-1.5 py-0.5 text-xs font-medium text-rose-700">{alert.scopeLabel}</span>
-                        <ChevronRight className="h-3 w-3 text-slate-300 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-          <div className="border-t border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)]/45 p-3">
-            <Button variant="ghost" className="h-8 w-full text-xs font-medium text-slate-600 transition-all hover:bg-white hover:text-[var(--dashboard-primary)]" asChild>
-              <Link href="/command-center">
-                Buka Command Center <ArrowRight className="ml-2 h-3 w-3" />
-              </Link>
-            </Button>
-          </div>
-        </Card>
-      </div>
-
-      {/* BOTTOM SECTION - TABLES & ANALYTICS */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-        {/* CROSS KOPERASI TABLE - 8 COLS */}
-        <Card className={`${SURFACE_CARD} lg:col-span-8 flex flex-col`}>
-          <CardHeader className="border-b border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)] p-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <CardTitle className="text-sm font-semibold text-slate-900">Audit Lintas Unit Kerja</CardTitle>
-                <CardDescription className="text-xs text-slate-500">Monitoring 1.248 Unit Nasional. Filter Aktif: {snapshot.scopeLabel}</CardDescription>
-              </div>
-              <Button
-                size="sm"
-                className="h-9 rounded-lg bg-[var(--dashboard-primary)] px-4 text-xs font-medium text-white shadow-[0_12px_24px_-18px_rgba(145,0,15,0.42)] hover:bg-[var(--dashboard-primary-hover)]"
-                onClick={handleDownloadAuditPdf}
-                disabled={isDownloadingAudit}
-              >
-                {isDownloadingAudit ? 'Menyiapkan PDF...' : 'Download Audit PDF'}
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0 overflow-x-auto">
-            <div className="min-w-[800px]">
-              <Table>
-                <TableHeader className="bg-[var(--dashboard-secondary-muted)]/75">
-                <TableRow className="border-none hover:bg-transparent">
-                  <TableHead className="h-10 px-4 text-xs font-medium text-slate-500">Unit Koperasi</TableHead>
-                  <TableHead className="h-10 text-center text-xs font-medium text-slate-500">Status</TableHead>
-                  <TableHead className="h-10 text-right text-xs font-medium text-slate-500">Anggota</TableHead>
-                  <TableHead className="h-10 text-right text-xs font-medium text-slate-500">Pendapatan / Anggota</TableHead>
-                  <TableHead className="h-10 text-right text-xs font-medium text-slate-500">Rasio NPL</TableHead>
-                  <TableHead className="h-10 px-4 text-right text-xs font-medium text-slate-500">Skor</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {snapshot.cooperativeComparisons.slice(0, 6).map((row) => (
-                  <TableRow key={row.id} className="group cursor-pointer border-slate-100 transition-colors hover:bg-[var(--dashboard-secondary-muted)]/45">
-                    <TableCell className="px-4 py-3">
-                      <div className="min-w-[140px]">
-                        <p className="truncate text-sm font-semibold text-slate-900 transition-colors group-hover:text-[var(--dashboard-primary)]">{row.label}</p>
-                        <p className="text-xs text-slate-400">{row.village}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge className={`h-5 px-1.5 text-xs font-medium ${healthBadgeClass(row.overallHealth)}`}>
-                        {row.overallHealth}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right text-sm font-medium text-slate-600">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
-                    <TableCell className="text-right text-sm font-semibold text-[var(--dashboard-secondary)]">{formatCompactCurrency(row.avgIncomeAfter)}</TableCell>
-                    <TableCell className={`text-right text-sm font-semibold ${row.avgNpl > 3 ? 'text-[var(--dashboard-primary)]' : 'text-slate-900'}`}>{row.avgNpl.toFixed(1)}%</TableCell>
-                    <TableCell className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <div className="w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
-                          <div className={`h-full rounded-full ${row.overallScore > 80 ? 'bg-[var(--dashboard-secondary)]' : row.overallScore > 60 ? 'bg-[var(--dashboard-tertiary)]' : 'bg-[var(--dashboard-primary)]'}`} style={{ width: `${row.overallScore}%` }} />
-                        </div>
-                        <span className="text-xs font-semibold text-slate-900">{Math.round(row.overallScore)}</span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-          <div className="border-t border-[var(--dashboard-secondary-border)] bg-[var(--dashboard-secondary-muted)]/55 p-3 text-center">
-
-            <Button variant="link" className="h-auto p-0 text-xs font-medium text-[var(--dashboard-primary)] hover:no-underline" asChild>
-              <Link href="/anggota">Audit Seluruh Database Unit (1.248)</Link>
-            </Button>
-          </div>
-        </Card>
-
-        {/* DEMOGRAPHICS & HEALTH - 4 COLS */}
-        <div className="flex flex-col gap-4 lg:col-span-4">
-          <Card className={`${SURFACE_CARD} flex-1`}>
-            <CardHeader className="border-b border-slate-200 p-4 pb-3">
-                <CardTitle className="text-sm font-semibold text-slate-900">Kesehatan Portofolio</CardTitle>
+        <div className="lg:col-span-4 flex flex-col gap-4">
+          <Card className="rounded-none border-none shadow-sm flex-1 border-t-4 border-t-slate-900 bg-white">
+            <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+              <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Segmentasi Kesehatan Portofolio</CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-6">
               <div className="h-[140px] w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie
-                      data={portfolioHealthData}
-                      innerRadius={45}
-                      outerRadius={60}
-                      paddingAngle={5}
-                      dataKey="count"
-                    >
-                      {portfolioHealthData.map((item) => (
-                        <Cell key={item.label} fill={item.color} />
-                      ))}
+                    <Pie data={portfolioHealthData} innerRadius={45} outerRadius={60} paddingAngle={5} dataKey="count">
+                      {portfolioHealthData.map((item) => <Cell key={item.label} fill={item.color} />)}
                     </Pie>
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-lg font-semibold text-slate-900">1,248</span>
-                  <span className="text-xs font-medium text-slate-400">Unit</span>
+                  <span className="text-xl font-black text-slate-900 leading-none">1,248</span>
+                  <span className="text-[9px] font-black text-slate-400 uppercase mt-1">UNIT</span>
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-1.5 mt-2">
+              <div className="grid grid-cols-1 gap-1.5 mt-4">
                 {portfolioHealthData.map((item) => (
-                  <div key={item.label} className="flex items-center justify-between rounded-lg border border-[var(--dashboard-secondary-border)] bg-white p-2 shadow-[0_8px_18px_-18px_rgba(137,114,111,0.22)]">
+                  <div key={item.label} className="flex items-center justify-between border-b border-slate-50 py-2">
                     <div className="flex items-center gap-2">
-                      <div className="h-2.5 w-2.5 rounded-full border border-white/80 shadow-sm" style={{ backgroundColor: item.color }} />
-                      <span className="text-sm font-medium text-slate-600">{item.label}</span>
+                      <div className="h-2 w-2 rounded-none" style={{ backgroundColor: item.color }} />
+                      <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{item.label}</span>
                     </div>
-                    <span className="text-sm font-semibold text-slate-900">{item.count}</span>
+                    <span className="text-[10px] font-black text-slate-900 uppercase">{item.count}</span>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
-
-          <Card className={`${SURFACE_CARD} border-rose-200 bg-white`}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b border-rose-100 bg-rose-50/25 p-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-rose-900">
-                <Sparkles className="h-4 w-4 text-[var(--dashboard-primary)]" /> Insight AI
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 space-y-3">
-              <div className="space-y-1">
-                <p className="text-sm font-semibold leading-tight text-slate-900">Deteksi Anomali Pendapatan</p>
-                <p className="text-xs leading-relaxed text-slate-600">
-                  Tren pendapatan di Wilayah Timur melampaui forecast 12%. Disarankan alokasi modal tambahan untuk infrastruktur pasca-panen.
-                </p>
-              </div>
-              <div className="border-t border-rose-100 pt-2">
-                <Button
-                  asChild
-                  className="h-9 w-full rounded-xl bg-[var(--dashboard-primary)] text-xs font-medium text-white shadow-[0_12px_22px_-18px_rgba(190,24,93,0.38)] hover:bg-[var(--dashboard-primary-hover)]"
-                >
-                  <Link href="/assistant">Konsultasi Strategi AI</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
-      <AuditDetailDialog 
-        cooperative={selectedCooperative} 
-        open={isAuditDialogOpen} 
-        onOpenChange={setIsAuditDialogOpen} 
-      />
+
+      {/* TABLE SECTION */}
+      <Card className="rounded-none border-none shadow-sm overflow-hidden border-t-4 border-t-slate-900 bg-white">
+        <CardHeader className="bg-slate-50/50 border-b border-slate-100 px-6 py-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Audit Kepatuhan Unit Kerja Nasional</CardTitle>
+              <CardDescription className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Monitor Integritas Data & Rasio Keuangan Unit Terpusat</CardDescription>
+            </div>
+            <Button size="sm" className="rounded-none bg-slate-900 hover:bg-slate-800 text-white font-black text-[10px] uppercase tracking-widest h-9 px-6 shadow-xl" onClick={handleDownloadAuditPdf}>
+              EKSPOR LAPORAN AUDIT NASIONAL
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-slate-50 transition-none">
+                <TableRow className="border-none">
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest h-12 px-6">Unit Koperasi</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest text-center h-12 px-6">Status Kesehatan</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest text-right h-12 px-6">Total Anggota</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest text-right h-12 px-6">Pendapatan / Personel</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest text-right h-12 px-6">Rasio NPL</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest text-right h-12 px-6">Skor Audit</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {snapshot.cooperativeComparisons.slice(0, 10).map((row) => (
+                  <TableRow key={row.id} className="hover:bg-slate-50 transition-colors border-b border-slate-50">
+                    <TableCell className="px-6 py-4">
+                      <p className="text-[11px] font-black text-slate-900 uppercase leading-none">{row.label}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">{row.village}, {row.region}</p>
+                    </TableCell>
+                    <TableCell className="text-center px-6 py-4">
+                      <Badge className={`rounded-none border-none shadow-none text-[9px] font-black uppercase tracking-widest px-2 h-5 ${
+                        row.overallHealth === 'good' ? 'bg-emerald-100 text-emerald-700' : row.overallHealth === 'warning' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'
+                      }`}>
+                        {row.overallHealth === 'good' ? 'SEHAT' : row.overallHealth === 'warning' ? 'WASPADA' : 'KRITIS'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right px-6 py-4 text-[11px] font-black text-slate-900">{row.totalMembers.toLocaleString('id-ID')}</TableCell>
+                    <TableCell className="text-right px-6 py-4 text-[11px] font-black text-slate-900">{formatCompactCurrency(row.avgIncomeAfter)}</TableCell>
+                    <TableCell className={`text-right px-6 py-4 text-[11px] font-black ${row.avgNpl > 5 ? 'text-rose-600' : row.avgNpl > 3 ? 'text-amber-600' : 'text-emerald-600'}`}>{row.avgNpl.toFixed(1)}%</TableCell>
+                    <TableCell className="text-right px-6 py-4 text-[11px] font-black text-slate-900">{Math.round(row.overallScore)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* HORIZONTAL AUDIT FEED AT BOTTOM */}
+      <Card className="rounded-none border-none shadow-sm overflow-hidden border-t-4 border-t-slate-900 bg-white">
+        <CardHeader className="bg-slate-50/50 border-b border-slate-100 px-6 py-4">
+          <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">UMPAN AUDIT & MONITORING REAL-TIME</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-x divide-slate-50">
+            {snapshot.topAlerts.slice(0, 4).map((alert) => (
+              <div key={alert.id} className="group p-5 transition-colors hover:bg-slate-50 relative overflow-hidden">
+                <div className={`absolute left-0 top-0 h-full w-1 ${alert.severity === 'critical' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                <div className="flex items-start gap-4">
+                  <div className={`mt-0.5 rounded-none p-2 shadow-sm ${severityAlertClass(alert.severity)}`}>
+                    <AlertTriangle className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <p className="truncate text-[10px] font-black text-slate-900 uppercase tracking-tight">{alert.title}</p>
+                      <span className="whitespace-nowrap text-[8px] font-black text-slate-400 uppercase">AKTIF</span>
+                    </div>
+                    <p className="text-[10px] font-bold leading-tight text-slate-500 uppercase tracking-tighter line-clamp-2">{alert.message}</p>
+                    <div className="mt-3 flex items-center justify-between">
+                      <Badge className="rounded-none border-none bg-slate-100 text-[8px] font-black text-slate-500 uppercase px-1.5 py-0.5">{alert.scopeLabel.toUpperCase()}</Badge>
+                      <Button variant="ghost" size="icon" className="h-5 w-5 p-0 hover:bg-slate-200 rounded-none">
+                        <ChevronRight className="h-3 w-3 text-slate-400" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <AuditDetailDialog cooperative={selectedCooperative} open={isAuditDialogOpen} onOpenChange={setIsAuditDialogOpen} />
     </div>
   )
 }

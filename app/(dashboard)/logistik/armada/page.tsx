@@ -138,19 +138,19 @@ export default function ArmadaPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT KOMANDO ARMADA</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Pusat Komando Armada</h1>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            MONITORING ASET STRATEGIS & AUDIT PEMELIHARAAN • {stats.total} TOTAL UNIT DALAM JARINGAN NASIONAL
+            Monitoring Aset Strategis & Audit Pemeliharaan • {stats.total} Total Unit Dalam Jaringan Nasional
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Sinkronisasi Pemeliharaan", description: "Mengambil data kesehatan unit real-time..." })}>
             <History className="h-3.5 w-3.5 mr-2 text-blue-600" />
-            RIWAYAT
+            Riwayat
           </Button>
           <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Registrasi Unit", description: "Membuka portal pendaftaran aset baru..." })}>
             <Plus className="h-4 w-4 mr-2" />
-            DAFTAR UNIT
+            Daftar Unit
           </Button>
         </div>
       </div>
@@ -159,10 +159,10 @@ export default function ArmadaPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'TOTAL ARMADA', value: stats.total, sub: 'UNIT TERDAFTAR', icon: Truck, tone: 'slate' },
-          { label: 'UNIT OPERASIONAL', value: stats.ops, sub: 'SIAP MISI', icon: CheckCircle2, tone: 'emerald' },
-          { label: 'PEMELIHARAAN', value: stats.maint, sub: 'SERVIS AKTIF', icon: Wrench, tone: 'blue' },
-          { label: 'PERINGATAN KRITIS', value: stats.alert, sub: 'AUDIT SEGERA', icon: AlertTriangle, tone: 'rose' },
+          { label: 'Total Armada', value: stats.total, sub: 'UNIT TERDAFTAR', icon: Truck, tone: 'slate' },
+          { label: 'Unit Operasional', value: stats.ops, sub: 'SIAP MISI', icon: CheckCircle2, tone: 'emerald' },
+          { label: 'Pemeliharaan', value: stats.maint, sub: 'SERVIS AKTIF', icon: Wrench, tone: 'blue' },
+          { label: 'Peringatan Kritis', value: stats.alert, sub: 'AUDIT SEGERA', icon: AlertTriangle, tone: 'rose' },
         ].map((s, i) => (
           <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
              <div className={`h-1 w-full ${
@@ -197,11 +197,11 @@ export default function ArmadaPage() {
             <CardContent className="p-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <Input
+                <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="CARI BERDASARKAN ID ASET, NOMOR PLAT, ATAU NAMA OPERATOR..."
-                  className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
+                  placeholder="Cari berdasarkan id aset, nomor plat, atau nama operator..."
+                  className="w-full pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
             </CardContent>
@@ -224,7 +224,9 @@ export default function ArmadaPage() {
                                {armada.nama}
                             </CardTitle>
                             <div className="flex items-center gap-2 mt-0.5">
-                               <span className="text-[9px] font-black bg-slate-900 text-white px-1 py-0.5 tracking-tighter">{armada.platNomor}</span>
+                               <span className="inline-flex items-center border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[9px] font-black text-slate-700 tracking-tighter shadow-sm">
+                                 {armada.platNomor}
+                               </span>
                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{armada.tipe}</span>
                             </div>
                          </div>
@@ -264,12 +266,21 @@ export default function ArmadaPage() {
                         armada.kondisi >= 70 ? 'text-blue-600' : 'text-rose-600'
                       }`}>{armada.kondisi}%</span>
                     </div>
-                    <Progress value={armada.kondisi} className="h-1.5 bg-slate-100 rounded-none [&>div]:bg-slate-900" />
+                    <Progress
+                      value={armada.kondisi}
+                      className={`h-1.5 bg-slate-100 rounded-none ${
+                        armada.kondisi >= 90
+                          ? '[&>div]:bg-emerald-500'
+                          : armada.kondisi >= 70
+                            ? '[&>div]:bg-blue-500'
+                            : '[&>div]:bg-rose-500'
+                      }`}
+                    />
                   </div>
 
                   <div className="flex gap-2 pt-2">
                     <Button className="flex-1 h-9 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-800 transition-all" onClick={() => toast({ title: "Pusat Audit", description: "Menghasilkan laporan diagnostik pemeliharaan untuk " + armada.id })}>
-                      AUDIT UNIT
+                      Audit Unit
                     </Button>
                     <Button variant="outline" className="h-9 w-9 p-0 border-slate-200 rounded-none hover:bg-slate-50" onClick={() => toast({ title: "Konfigurasi Unit", description: "Mengakses parameter teknis untuk " + armada.id })}>
                       <Settings className="h-4 w-4 text-slate-600" />
@@ -286,11 +297,11 @@ export default function ArmadaPage() {
             <CardHeader className="p-4 border-b border-white/5 bg-slate-900/50">
                <div className="flex items-center justify-between">
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                     <Activity className="h-4 w-4 text-blue-500" /> FEED PEMELIHARAAN
+                     <Activity className="h-4 w-4 text-blue-500" /> Feed Pemeliharaan
                   </CardTitle>
                   <div className="flex items-center gap-1.5">
                      <div className="h-1 w-1 bg-blue-500 rounded-full animate-ping" />
-                     <span className="text-[9px] font-black text-blue-500 tracking-widest">SINKRONISASI</span>
+                     <span className="text-[9px] font-black text-blue-500 tracking-widest">Sinkronisasi</span>
                   </div>
                </div>
             </CardHeader>
@@ -319,7 +330,7 @@ export default function ArmadaPage() {
                </div>
                <div className="p-4 bg-white/5 border-t border-white/5">
                   <Button variant="ghost" className="w-full text-[10px] font-black text-slate-500 hover:text-white uppercase tracking-widest h-9 rounded-none" onClick={() => toast({ title: "Jadwal Induk", description: "Memuat kalender pemeliharaan nasional..." })}>
-                     LOG PEMELIHARAAN LENGKAP →
+                     Log Pemeliharaan Lengkap →
                   </Button>
                </div>
             </CardContent>
@@ -327,7 +338,7 @@ export default function ArmadaPage() {
 
           <Card className="border-none shadow-sm bg-slate-50 rounded-none">
              <CardHeader className="p-4 border-b border-slate-200">
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">KAPABILITAS ARMADA</CardTitle>
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Kapabilitas Armada</CardTitle>
              </CardHeader>
              <CardContent className="p-4 space-y-4">
                 {[

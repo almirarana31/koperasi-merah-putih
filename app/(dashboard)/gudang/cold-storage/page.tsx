@@ -86,25 +86,25 @@ export default function ColdStorageKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
               <Snowflake className="h-7 w-7 text-slate-900" />
               Monitoring Rantai Dingin Nasional
             </h1>
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2">
-              Audit Integritas Termal dan Kelembaban Komoditas Strategis Nasional
+              Audit Integritas Termal Dan Kelembaban Komoditas Strategis Nasional
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button 
               variant="outline" 
               onClick={() => handleAction('Sensor')}
-              className="rounded-none font-black border-2 text-[10px] uppercase tracking-widest h-10 border-slate-200 px-4"
+              className="rounded-none font-black border-2 text-[10px] uppercase tracking-widest h-10 border-slate-200 px-4 shadow-none"
             >
               <Activity className="mr-2 h-4 w-4 text-emerald-600" /> Sensor Real-Time
             </Button>
             <Button 
               onClick={() => handleAction('Energi')}
-              className="rounded-none bg-slate-900 font-black text-[10px] uppercase tracking-widest h-10 px-6 text-white"
+              className="rounded-none bg-slate-900 font-black text-[10px] uppercase tracking-widest h-10 px-6 text-white shadow-none"
             >
               <Zap className="mr-2 h-4 w-4 text-amber-400" /> Audit Energi
             </Button>
@@ -117,10 +117,10 @@ export default function ColdStorageKementerianPage() {
       {/* KPI Section */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
-          { label: 'FASILITAS AKTIF', value: processedData.units.length, sub: 'SIMPUL PENDINGINAN NASIONAL', tone: 'slate' },
-          { label: 'OKUPANSI AGREGAT', value: `${((processedData.totalTerpakai / processedData.totalKapasitas) * 100).toFixed(1)}%`, sub: 'PEMANFAATAN KAPASITAS', tone: 'blue', progress: (processedData.totalTerpakai / processedData.totalKapasitas) * 100 },
-          { label: 'KEPATUHAN TERMAL', value: processedData.normalCount, sub: 'ZONA SUHU STABIL', tone: 'emerald' },
-          { label: 'ALERTI ANOMALI', value: processedData.warningCount, sub: 'MEMBUTUHKAN TINDAKAN', tone: 'rose' },
+          { label: 'Fasilitas Aktif', value: processedData.units.length, sub: 'SIMPUL PENDINGINAN NASIONAL', tone: 'slate' },
+          { label: 'Okupansi Agregat', value: `${((processedData.totalTerpakai / processedData.totalKapasitas) * 100).toFixed(1)}%`, sub: 'PEMANFAATAN KAPASITAS', tone: 'blue', progress: (processedData.totalTerpakai / processedData.totalKapasitas) * 100 },
+          { label: 'Kepatuhan Termal', value: processedData.normalCount, sub: 'ZONA SUHU STABIL', tone: 'emerald' },
+          { label: 'Alert Anomali', value: processedData.warningCount, sub: 'MEMBUTUHKAN TINDAKAN', tone: 'rose' },
         ].map((stat, i) => (
           <Card key={i} className="rounded-none border-none shadow-sm bg-white overflow-hidden">
             <div className={`h-1.5 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'blue' ? 'bg-blue-500' : stat.tone === 'rose' ? 'bg-rose-500' : 'bg-slate-900'}`} />
@@ -152,28 +152,28 @@ export default function ColdStorageKementerianPage() {
                 <CardHeader className="p-5 bg-slate-50/30 border-b border-slate-100">
                   <div className="flex justify-between items-start">
                     <div>
-                      <Badge className="rounded-none bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest mb-1 h-5 px-2">{unit.id}</Badge>
+                      <Badge className="rounded-none bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest mb-1 h-5 px-2 border-none shadow-none">{unit.id}</Badge>
                       <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-tight">{unit.nama}</CardTitle>
                       <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-widest">{unit.cooperative}</p>
                     </div>
-                    <Badge className={`rounded-none text-[10px] font-black uppercase tracking-widest h-5 px-2 border-none ${unit.status === 'normal' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
+                    <Badge className={`rounded-none text-[10px] font-black uppercase tracking-widest h-5 px-2 border-none shadow-none ${unit.status === 'normal' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
                       {unit.status.toUpperCase()}
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="p-5 space-y-5">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-none flex items-center gap-3 group-hover:bg-white transition-colors">
+                    <div className="p-3 bg-blue-50/50 border border-blue-100 rounded-none flex items-center gap-3 group-hover:bg-white transition-colors shadow-inner">
                       <Thermometer className="h-6 w-6 text-blue-600" />
                       <div>
-                        <p className="text-[8px] font-black text-blue-400 uppercase tracking-widest mb-1">SUHU AKTUAL</p>
+                        <p className="text-[8px] font-black text-blue-400 uppercase tracking-widest mb-1">Suhu Aktual</p>
                         <p className="text-sm font-black text-blue-900">{unit.suhuAktual}°C</p>
                       </div>
                     </div>
-                    <div className="p-3 bg-cyan-50/50 border border-cyan-100 rounded-none flex items-center gap-3 group-hover:bg-white transition-colors">
+                    <div className="p-3 bg-cyan-50/50 border border-cyan-100 rounded-none flex items-center gap-3 group-hover:bg-white transition-colors shadow-inner">
                       <Droplets className="h-6 w-6 text-cyan-600" />
                       <div>
-                        <p className="text-[8px] font-black text-cyan-400 uppercase tracking-widest mb-1">KELEMBABAN</p>
+                        <p className="text-[8px] font-black text-cyan-400 uppercase tracking-widest mb-1">Kelembaban</p>
                         <p className="text-sm font-black text-cyan-900">{unit.kelembaban}%</p>
                       </div>
                     </div>
@@ -209,16 +209,16 @@ export default function ColdStorageKementerianPage() {
           <Card className="rounded-none border-none shadow-sm overflow-hidden bg-white border-t-4 border-t-rose-500">
             <CardHeader className="bg-rose-50/50 border-b border-rose-100 p-4">
               <CardTitle className="text-[10px] font-black text-rose-900 uppercase tracking-widest flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-rose-600" /> MONITORING KADALUARSA KRITIS
+                <AlertTriangle className="h-4 w-4 text-rose-600" /> Monitoring Kadaluarsa Kritis
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="divide-y divide-slate-100">
                 {expiringItems.map((item, idx) => (
-                  <div key={idx} className="p-5 hover:bg-slate-50 transition-colors">
+                  <div key={idx} className="p-5 hover:bg-slate-50 transition-colors cursor-pointer group">
                     <div className="flex justify-between items-start mb-2">
                       <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.nama}</p>
-                      <Badge className="rounded-none text-[8px] font-black text-rose-700 bg-rose-100 h-5 px-2 border-none uppercase tracking-widest">{item.sisaHari} HARI LAGI</Badge>
+                      <Badge className="rounded-none text-[8px] font-black text-rose-700 bg-rose-100 h-5 px-2 border-none uppercase tracking-widest shadow-none">{item.sisaHari} HARI LAGI</Badge>
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                       <MapPin className="h-3 w-3 text-slate-300" /> {item.lokasi} • {item.node}
@@ -227,12 +227,12 @@ export default function ColdStorageKementerianPage() {
                       <Button 
                         variant="outline" 
                         onClick={() => handleAction('Tracing')}
-                        className="h-9 flex-1 rounded-none font-black text-[10px] uppercase tracking-widest border-2 border-slate-200"
-                      >TRACING</Button>
+                        className="h-9 flex-1 rounded-none font-black text-[10px] uppercase tracking-widest border-2 border-slate-200 shadow-none"
+                      >Tracing</Button>
                       <Button 
                         onClick={() => handleAction('Market Push')}
-                        className="h-9 flex-1 rounded-none font-black text-[10px] uppercase tracking-widest bg-slate-900 text-white"
-                      >MARKET PUSH</Button>
+                        className="h-9 flex-1 rounded-none font-black text-[10px] uppercase tracking-widest bg-slate-900 text-white shadow-none"
+                      >Market Push</Button>
                     </div>
                   </div>
                 ))}
@@ -244,7 +244,7 @@ export default function ColdStorageKementerianPage() {
                 onClick={() => handleAction('View All')}
                 className="w-full h-8 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-900"
               >
-                LIHAT SEMUA STOK KADALUARSA
+                Lihat Semua Stok Kadaluarsa
               </Button>
             </div>
           </Card>
@@ -254,19 +254,19 @@ export default function ColdStorageKementerianPage() {
               <ShieldCheck className="h-24 w-24 text-emerald-400" />
             </div>
             <div className="space-y-5 relative z-10">
-              <h3 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border-b border-slate-800 pb-4">
+              <h3 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border-b border-white/10 pb-4">
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                AUDIT INTEGRITAS AI
+                Audit Integritas AI
               </h3>
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <p className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">METRIK EFISIENSI</p>
+                  <p className="text-[8px] font-black text-emerald-400 uppercase tracking-widest">Metrik Efisiensi</p>
                   <p className="text-xs font-black uppercase tracking-tight leading-relaxed text-slate-300">
                     KONSUMSI DAYA NASIONAL <span className="text-white">12% DI BAWAH</span> TAHUN LALU MELALUI OPTIMASI CYCLING AI.
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-[8px] font-black text-amber-400 uppercase tracking-widest">PENCEGAHAN LIMBAH</p>
+                  <p className="text-[8px] font-black text-amber-400 uppercase tracking-widest">Pencegahan Limbah</p>
                   <p className="text-xs font-black uppercase tracking-tight leading-relaxed text-slate-300">
                     SISTEM AI MENCEGAH <span className="text-white">1.4 TON</span> LIMBAH BULAN INI MELALUI MEKANISME EARLY PUSH.
                   </p>
@@ -274,9 +274,9 @@ export default function ColdStorageKementerianPage() {
               </div>
               <Button 
                 onClick={() => handleAction('Telemetry')}
-                className="w-full rounded-none bg-emerald-500 text-slate-900 font-black text-[10px] uppercase tracking-widest h-11 hover:bg-emerald-400 mt-4 transition-all"
+                className="w-full rounded-none bg-emerald-500 text-slate-900 font-black text-[10px] uppercase tracking-widest h-11 hover:bg-emerald-400 mt-4 transition-all shadow-none"
               >
-                AKSES TELEMETRI JARINGAN PENUH
+                Akses Telemetri Jaringan Penuh
               </Button>
             </div>
           </Card>

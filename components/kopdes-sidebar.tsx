@@ -169,7 +169,7 @@ export function KopdesSidebar() {
                   <Leaf className="h-5 w-5" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">KOPDES</span>
+                  <span className="font-semibold tracking-[0.18em]">KOPDES</span>
                   <span className="text-xs text-sidebar-foreground/70">Koperasi Digital</span>
                 </div>
               </Link>

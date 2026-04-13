@@ -184,7 +184,7 @@
     @apply border-border outline-ring/50;
   }
   html {
-    font-size: 16px;
+    font-size: 13.05px;
     scroll-behavior: smooth;
   }
   body {
@@ -620,6 +620,23 @@
     background-color: var(--dashboard-primary-hover) !important;
   }
 
+  .app-theme :is(
+      thead,
+      tr,
+      th,
+      [data-slot='table-header'],
+      [data-slot='table-row'],
+      [data-slot='table-head']
+    ):is(
+      [class*='hover:bg-slate-900'],
+      [class*='hover:bg-slate-800'],
+      [class*='hover:bg-[#394B54]'],
+      [class*='hover:bg-rose-700']
+    ):hover {
+    background-color: color-mix(in oklab, var(--dashboard-secondary-muted) 88%, white) !important;
+    color: var(--foreground) !important;
+  }
+
   .app-theme [class*='hover:bg-[var(--dashboard-neutral)]']:hover {
     background-color: color-mix(in oklab, var(--dashboard-secondary-muted) 84%, white) !important;
   }
@@ -973,6 +990,10 @@
   .app-theme [class~='py-6'] {
     padding-top: 1.25rem !important;
     padding-bottom: 1.25rem !important;
+  }
+
+  .app-theme [class~='rounded-none'] {
+    border-radius: 0 !important;
   }
 
   .app-theme [class~='rounded-3xl'] {

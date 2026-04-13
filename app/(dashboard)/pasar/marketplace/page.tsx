@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { DollarSign, Package, Search, ShoppingCart, Store, TrendingUp } from 'lucide-react'
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
 import { useAuth } from '@/lib/auth/use-auth'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -75,7 +75,7 @@ export default function MarketplacePage() {
       listing.regionId,
       {
         region: listing.regionName,
-        stock: Math.round(listings.filter((item) => item.regionId === listing.regionId).reduce((total, item) => total + item.stockKg, 0) * scaleFactor),
+        stok: Math.round(listings.filter((item) => item.regionId === listing.regionId).reduce((total, item) => total + item.stockKg, 0) * scaleFactor),
       },
     ]),
   ).values()]
@@ -85,7 +85,7 @@ export default function MarketplacePage() {
       <div className="space-y-2">
         <Badge className="w-fit rounded-none border border-emerald-200 bg-emerald-50 text-emerald-700 font-black uppercase tracking-widest text-[10px]">Integrasi Niaga & Marketplace Nasional</Badge>
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Hub Marketplace</h1>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900">Hub Marketplace Nasional</h1>
           <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
             Monitoring Listing Komoditas Lintas Koperasi: {getScopeCaption(scopedFilters)}
           </p>
@@ -96,10 +96,10 @@ export default function MarketplacePage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: 'LISTING AKTIF', value: Math.round(listings.length * scaleFactor).toLocaleString('id-ID'), sub: 'SKU TERPUBLIKASI', icon: Store, tone: 'slate' },
-          { label: 'STOK TERSEDIA', value: `${(totalStock / 1000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} TON`, sub: 'VOLUME SIAP DISTRIBUSI', icon: Package, tone: 'emerald' },
-          { label: 'NILAI LISTING', value: formatCurrency(totalValue), sub: 'VALUASI ASSET NIAGA', icon: DollarSign, tone: 'blue' },
-          { label: 'HARGA RATA-RATA', value: formatCurrency(avgPrice), sub: 'INDEX HARGA KATALOG', icon: TrendingUp, tone: 'slate' },
+          { label: 'Listing Aktif', value: Math.round(listings.length * scaleFactor).toLocaleString('id-ID'), sub: 'SKU Terpublikasi', icon: Store, tone: 'slate' },
+          { label: 'Stok Tersedia', value: `${(totalStock / 1000).toLocaleString('id-ID', { maximumFractionDigits: 1 })} TON`, sub: 'Volume Siap Distribusi', icon: Package, tone: 'emerald' },
+          { label: 'Nilai Listing', value: formatCurrency(totalValue), sub: 'Valuasi Aset Niaga', icon: DollarSign, tone: 'blue' },
+          { label: 'Harga Rata-Rata', value: formatCurrency(avgPrice), sub: 'Indeks Harga Katalog', icon: TrendingUp, tone: 'slate' },
         ].map((stat, i) => (
           <Card key={i} className="rounded-none border-none bg-white shadow-sm overflow-hidden group border-t-4 border-t-slate-900">
             <div className={`absolute top-0 left-0 h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'}`} />
@@ -129,20 +129,20 @@ export default function MarketplacePage() {
             />
           </div>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="rounded-none border-slate-200 font-semibold">
+            <SelectTrigger className="rounded-none border-slate-200 font-semibold text-xs">
               <SelectValue placeholder="Semua Kategori" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-none">
               <SelectItem value="all">Semua Kategori</SelectItem>
               <SelectItem value="Pangan">Pangan</SelectItem>
               <SelectItem value="Hortikultura">Hortikultura</SelectItem>
             </SelectContent>
           </Select>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="rounded-none border-slate-200 font-semibold">
+            <SelectTrigger className="rounded-none border-slate-200 font-semibold text-xs">
               <SelectValue placeholder="Urutkan" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-none">
               <SelectItem value="stock">Stok Terbesar</SelectItem>
               <SelectItem value="price-low">Harga Termurah</SelectItem>
               <SelectItem value="price-high">Harga Tertinggi</SelectItem>
@@ -164,7 +164,11 @@ export default function MarketplacePage() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
                 <XAxis dataKey="region" tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
                 <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
-                <Bar dataKey="stock" fill="#16a34a" radius={0} />
+                <Tooltip 
+                  cursor={{fill: '#f8fafc'}}
+                  contentStyle={{ borderRadius: '0px', border: '1px solid #e2e8f0', fontSize: '12px', fontWeight: 'bold' }}
+                />
+                <Bar dataKey="stok" name="Stok" fill="#16a34a" radius={[0, 0, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -173,7 +177,7 @@ export default function MarketplacePage() {
         <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
           <CardHeader className="bg-slate-50/50 border-b border-slate-100">
             <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Listing Komoditas Unggulan</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Produk dengan Rating dan Ketersediaan Stok Tertinggi</CardDescription>
+            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Produk dengan Skor dan Ketersediaan Stok Tertinggi</CardDescription>
           </CardHeader>
           <CardContent className="p-4 overflow-y-auto max-h-[320px]">
             <div className="space-y-3">

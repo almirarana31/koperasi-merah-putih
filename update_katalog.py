@@ -1,4 +1,6 @@
-'use client'
+import os
+
+content = """'use client'
 
 import { useState } from 'react'
 import { Layers, Package, Search, Sparkles, Users } from 'lucide-react'
@@ -213,3 +215,7 @@ export default function KatalogKementerianPage() {
     </div>
   )
 }
+\"\"\"
+
+with open('app/(dashboard)/pasar/katalog/page.tsx', 'w') as f:
+    f.write(content)

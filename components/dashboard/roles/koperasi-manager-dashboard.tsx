@@ -121,7 +121,7 @@ export function KoperasiManagerDashboard() {
             <div className="divide-y divide-slate-100">
               {[
                 { title: "Verifikasi Panen - Unit Sukatani", desc: "1.5 Ton Beras menanti validasi gudang.", time: "30 mnt lalu", status: "New" },
-                { title: "Onboarding Anggota - 8 Orang", desc: "Dokumen KTP belum lengkap untuk 3 orang.", time: "2 jam lalu", status: "Pending" },
+                 { title: "Onboarding Anggota - 8 Orang", desc: "Dokumen KTP belum lengkap untuk 3 orang.", time: "2 jam lalu", status: "Tertunda" },
                 { title: "Persetujuan Pinjaman", desc: "Ajukan Rp 15jt dari Pak Budi (Unit A).", time: "5 jam lalu", status: "Urgent" },
               ].map((item, idx) => (
                 <div key={idx} className="p-4 hover:bg-slate-50 transition-colors group cursor-pointer">

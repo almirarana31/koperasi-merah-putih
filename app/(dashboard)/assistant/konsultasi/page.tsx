@@ -14,15 +14,16 @@ import {
   MessageSquareText,
   TrendingUp,
   History,
-  Scale
+  Scale,
+  ArrowUpRight
 } from 'lucide-react'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import { type ScopeFilters } from '@/lib/kementerian-dashboard-data'
 
 const strategicTopics = [
   {
-    kategori: 'STRATEGI NASIONAL & KETAHANAN PANGAN',
-    priority: 'CRITICAL',
+    kategori: 'Strategi Nasional & Ketahanan Pangan',
+    priority: 'KRITIS',
     topics: [
       'Waktu optimal untuk penanaman komoditas strategis nasional',
       'Mitigasi kegagalan panen lintas provinsi',
@@ -32,8 +33,8 @@ const strategicTopics = [
     ],
   },
   {
-    kategori: 'OPTIMASI PASAR & INTERVENSI HARGA',
-    priority: 'HIGH',
+    kategori: 'Optimasi Pasar & Intervensi Harga',
+    priority: 'TINGGI',
     topics: [
       'Analisis target harga jual komoditas Grade A nasional',
       'Efektivitas intervensi harga pada pasar lokal',
@@ -43,8 +44,8 @@ const strategicTopics = [
     ],
   },
   {
-    kategori: 'LOGISTIK NASIONAL & COLD CHAIN AUDIT',
-    priority: 'MEDIUM',
+    kategori: 'Logistik Nasional & Audit Cold Chain',
+    priority: 'SEDANG',
     topics: [
       'Optimasi rute logistik nasional untuk efisiensi BBM',
       'Audit infrastruktur cold chain di wilayah Timur',
@@ -54,8 +55,8 @@ const strategicTopics = [
     ],
   },
   {
-    kategori: 'KEUANGAN MIKRO & INVESTASI STRATEGIS',
-    priority: 'HIGH',
+    kategori: 'Keuangan Mikro & Investasi Strategis',
+    priority: 'TINGGI',
     topics: [
       'Analisis kelayakan kredit usaha rakyat (KUR) massal',
       'Manajemen arus kas agregat ekosistem KOPDES',
@@ -72,26 +73,26 @@ const recentConsultations = [
     coop: 'KUD MANDIRI SEJAHTERA',
     topik: 'Anomali Harga Cabai di Pasar Induk',
     jawaban: 'Intervensi disarankan: Mobilisasi stok dari Jawa Tengah (Surplus 15%). Gunakan armada Logistik Nasional rute 04. Estimasi normalisasi harga: 48 jam.',
-    status: 'RESOLVED',
-    impact: 'HIGH',
-    time: '12 MIN LALU',
+    status: 'SELESAI',
+    impact: 'TINGGI',
+    time: '12 MENIT LALU',
   },
   {
     region: 'SULAWESI SELATAN',
     coop: 'KOPERASI TANI MAKMUR',
     topik: 'Optimasi Distribusi Beras Premium',
     jawaban: 'Rekomendasi: Alihkan 30% supply ke Balikpapan (Demand Gap 12%). Harga jual potensial: +Rp 800/kg. Efisiensi rute: 15%.',
-    status: 'IN-PROGRESS',
-    impact: 'MEDIUM',
-    time: '45 MIN LALU',
+    status: 'PROSES',
+    impact: 'SEDANG',
+    time: '45 MENIT LALU',
   },
   {
     region: 'NASIONAL',
     coop: 'PUSAT DATA KEMENTERIAN',
     topik: 'Simulasi Dampak El Nino Q3',
     jawaban: 'Vulnerabilitas terdeteksi pada 12% lahan padi. Disarankan percepatan masa tanam 2 minggu & optimalisasi embung di 450 titik prioritas.',
-    status: 'ADVISORY',
-    impact: 'CRITICAL',
+    status: 'SARAN',
+    impact: 'KRITIS',
     time: '2 JAM LALU',
   },
 ]
@@ -109,75 +110,78 @@ export default function KonsultasiPage() {
 
   const stats = [
     { 
-      label: 'STRATEGIC QUERIES', 
+      label: 'Kueri Strategis', 
       value: Math.floor(1254 * scaleFactor), 
       trend: '+12%', 
       icon: MessageSquareText,
-      color: 'text-emerald-600'
+      color: 'text-emerald-600',
+      tone: 'emerald'
     },
     { 
-      label: 'AI ACCURACY RATE', 
+      label: 'Tingkat Akurasi AI', 
       value: '98.2%', 
-      trend: 'STABLE', 
+      trend: 'STABIL', 
       icon: BrainCircuit,
-      color: 'text-blue-600'
+      color: 'text-blue-600',
+      tone: 'blue'
     },
     { 
-      label: 'RESOLVED ISSUES', 
+      label: 'Isu Terselesaikan', 
       value: Math.floor(892 * scaleFactor), 
       trend: '+5%', 
       icon: CheckCircle,
-      color: 'text-emerald-500'
+      color: 'text-emerald-500',
+      tone: 'emerald'
     },
     { 
-      label: 'RISK ALERTS', 
+      label: 'Peringatan Risiko', 
       value: Math.floor(42 * scaleFactor), 
       trend: '-18%', 
       icon: ShieldAlert,
-      color: 'text-rose-600'
+      color: 'text-rose-600',
+      tone: 'rose'
     },
   ]
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* HEADER SECTION */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold  text-slate-900 ">
-              STRATEGIC CONSULTATION HUB
-            </h1>
-            <p className="text-xs font-bold  text-slate-500 ">
-              PUSAT KONSULTASI STRATEGIS & INTELEJEN AI NASIONAL
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-xs font-semibold text-emerald-700">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Hub Konsultasi Strategis</h1>
+          <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
+            Pusat Konsultasi Strategis & Intelijen AI Nasional • Mesin AI: Aktif • Refresh: 60s
+          </p>
+        </div>
+        <div className="flex gap-2">
+            <Badge variant="outline" className="border-emerald-500/30 bg-emerald-50 text-[10px] font-black uppercase tracking-widest text-emerald-700 rounded-none">
               AI ENGINE: ACTIVE
             </Badge>
-            <Badge variant="outline" className="border-slate-300 bg-slate-50 text-xs font-semibold text-slate-700 ">
-              REFRESH: 60S
-            </Badge>
-          </div>
+            <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all">
+               Simulator Strategi
+            </Button>
         </div>
-
-        <KementerianFilterBar filters={filters} setFilters={setFilters} />
       </div>
 
-      {/* KPI GRID */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.label} className="border-none bg-white shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                <span className={`text-xs font-semibold  ${stat.trend.startsWith('+') ? 'text-emerald-600' : stat.trend.startsWith('-') ? 'text-rose-600' : 'text-slate-500'}`}>
-                  {stat.trend}
-                </span>
+      <KementerianFilterBar filters={filters} setFilters={setFilters} />
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {stats.map((s, i) => (
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
+             <div className={`h-1 w-full ${
+              s.tone === 'emerald' ? 'bg-emerald-500' : 
+              s.tone === 'blue' ? 'bg-blue-500' : 
+              s.tone === 'rose' ? 'bg-rose-500' : 'bg-slate-900'
+            }`} />
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="h-10 w-10 rounded-none bg-slate-50 flex items-center justify-center shrink-0 shadow-inner">
+                <s.icon className={`h-5 w-5 ${s.color}`} />
               </div>
-              <div className="mt-2">
-                <p className="text-xs font-semibold  text-slate-500 ">{stat.label}</p>
-                <p className="text-xl font-semibold  text-slate-900">{stat.value}</p>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{s.label}</p>
+                <div className="flex flex-col">
+                  <span className="text-sm font-black text-slate-900 leading-tight">{s.value}</span>
+                  <span className={`text-[8px] font-bold uppercase tracking-tighter ${s.trend.startsWith('+') ? 'text-emerald-600' : s.trend.startsWith('-') ? 'text-rose-600' : 'text-slate-500'}`}>{s.trend}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -185,23 +189,24 @@ export default function KonsultasiPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
-        {/* STRATEGIC KNOWLEDGE BASE */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-            <Scale className="h-4 w-4 text-slate-900" />
-            <h2 className="text-xs font-semibold  text-slate-900 ">STRATEGIC KNOWLEDGE BASE</h2>
+          <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+             <div className="flex items-center gap-2">
+                <Scale className="h-4 w-4 text-slate-900" />
+                <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Basis Pengetahuan Strategis</h2>
+             </div>
           </div>
           
-          <div className="grid gap-3">
+          <div className="grid gap-4">
             {strategicTopics.map((group) => (
-              <Card key={group.kategori} className="overflow-hidden border-none shadow-sm transition-all hover:shadow-md">
-                <div className={`h-1 w-full ${group.priority === 'CRITICAL' ? 'bg-rose-600' : group.priority === 'HIGH' ? 'bg-amber-500' : 'bg-blue-500'}`} />
-                <CardHeader className="py-3 px-4 bg-slate-50/50">
+              <Card key={group.kategori} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
+                <div className={`h-1 w-full ${group.priority === 'KRITIS' ? 'bg-rose-600' : group.priority === 'TINGGI' ? 'bg-amber-500' : 'bg-blue-500'}`} />
+                <CardHeader className="py-3 px-4 bg-slate-50/50 border-b border-slate-100">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs font-semibold  text-slate-900 ">
+                    <CardTitle className="text-[10px] font-black text-slate-900 uppercase tracking-tight">
                       {group.kategori}
                     </CardTitle>
-                    <Badge className={`text-xs font-semibold ${group.priority === 'CRITICAL' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'}`}>
+                    <Badge className={`text-[8px] font-black uppercase tracking-widest rounded-none ${group.priority === 'KRITIS' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'}`}>
                       {group.priority}
                     </Badge>
                   </div>
@@ -211,14 +216,14 @@ export default function KonsultasiPage() {
                     <Button
                       key={q}
                       variant="outline"
-                      className="group justify-start h-auto p-3 text-left border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/30"
+                      className="group justify-start h-auto p-3 text-left border-slate-200 hover:border-blue-500 hover:bg-blue-50/30 rounded-none transition-all"
                     >
-                      <div className="flex gap-3">
-                        <div className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-slate-100 group-hover:bg-emerald-100 transition-colors">
-                          <Lightbulb className="h-2.5 w-2.5 text-slate-600 group-hover:text-emerald-600" />
+                      <div className="flex gap-3 items-center">
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center bg-slate-100 group-hover:bg-blue-100 transition-colors">
+                          <Lightbulb className="h-3 w-3 text-slate-600 group-hover:text-blue-600" />
                         </div>
-                        <span className="text-xs font-bold leading-tight text-slate-700 group-hover:text-slate-900">
-                          {q.toUpperCase()}
+                        <span className="text-[10px] font-bold leading-tight text-slate-700 group-hover:text-slate-900 uppercase tracking-wide">
+                          {q}
                         </span>
                       </div>
                     </Button>
@@ -229,54 +234,53 @@ export default function KonsultasiPage() {
           </div>
         </div>
 
-        {/* LIVE STRATEGIC AUDIT FEED */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
             <History className="h-4 w-4 text-slate-900" />
-            <h2 className="text-xs font-semibold  text-slate-900 ">LIVE STRATEGIC AUDIT</h2>
+            <h2 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Audit Strategis Langsung</h2>
           </div>
 
           <div className="flex flex-col gap-3">
             {recentConsultations.map((cons, idx) => (
-              <Card key={idx} className="border-none shadow-sm">
+              <Card key={idx} className="border-none shadow-sm bg-white rounded-none overflow-hidden">
                 <CardHeader className="p-4 pb-0">
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold  text-emerald-600">{cons.region}</span>
-                        <span className="text-xs font-bold text-slate-400">•</span>
-                        <span className="text-xs font-semibold  text-slate-500">{cons.coop}</span>
+                        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{cons.region}</span>
+                        <span className="text-[10px] font-black text-slate-300">•</span>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{cons.coop}</span>
                       </div>
-                      <CardTitle className="text-sm font-semibold leading-tight text-slate-900 ">
+                      <CardTitle className="text-xs font-black leading-tight text-slate-900 uppercase tracking-tight">
                         {cons.topik}
                       </CardTitle>
                     </div>
-                    <Badge className={`text-xs font-semibold ${
-                      cons.status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-700' : 
-                      cons.status === 'ADVISORY' ? 'bg-blue-100 text-blue-700' : 
+                    <Badge className={`text-[8px] font-black uppercase tracking-widest rounded-none ${
+                      cons.status === 'SELESAI' ? 'bg-emerald-100 text-emerald-700' : 
+                      cons.status === 'SARAN' ? 'bg-blue-100 text-blue-700' : 
                       'bg-amber-100 text-amber-700'
                     }`}>
                       {cons.status}
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="p-4 space-y-3">
-                  <div className="rounded border border-slate-100 bg-slate-50/50 p-3">
-                    <p className="text-xs font-bold leading-relaxed text-slate-700  italic">
+                <CardContent className="p-4 space-y-4">
+                  <div className="p-3 bg-slate-50 border border-slate-100">
+                    <p className="text-[10px] font-bold leading-relaxed text-slate-600 italic">
                       " {cons.jawaban} "
                     </p>
                   </div>
                   
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-50">
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1">
-                        <ShieldAlert className={`h-3 w-3 ${cons.impact === 'CRITICAL' ? 'text-rose-600' : 'text-slate-400'}`} />
-                        <span className="text-xs font-semibold text-slate-500 ">IMPACT: {cons.impact}</span>
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1.5">
+                        <ShieldAlert className={`h-3 w-3 ${cons.impact === 'KRITIS' ? 'text-rose-600' : 'text-slate-400'}`} />
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Dampak: {cons.impact}</span>
                       </div>
-                      <span className="text-xs font-semibold text-slate-400">{cons.time}</span>
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{cons.time}</span>
                     </div>
-                    <Button variant="ghost" size="sm" className="h-6 text-xs font-semibold   hover:text-emerald-600">
-                      AUDIT DETAIL
+                    <Button variant="ghost" size="sm" className="h-6 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 p-0">
+                      Detail Audit
                     </Button>
                   </div>
                 </CardContent>
@@ -284,17 +288,17 @@ export default function KonsultasiPage() {
             ))}
           </div>
 
-          <Card className="border-dashed border-2 border-slate-200 bg-transparent">
-            <CardContent className="p-6 flex flex-col items-center justify-center text-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center">
-                <BrainCircuit className="h-5 w-5 text-slate-400" />
+          <Card className="border-2 border-dashed border-slate-200 bg-transparent rounded-none">
+            <CardContent className="p-6 flex flex-col items-center justify-center text-center gap-4">
+              <div className="h-12 w-12 bg-slate-100 flex items-center justify-center">
+                <BrainCircuit className="h-6 w-6 text-slate-400" />
               </div>
-              <div>
-                <p className="text-xs font-semibold text-slate-900 ">KONSULTASI STRATEGIS BARU</p>
-                <p className="text-xs font-bold text-slate-500 mt-1 ">HUBUNGKAN AI DENGAN PARAMETER KEBIJAKAN TERBARU</p>
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Konsultasi Strategis Baru</p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">Hubungkan AI dengan parameter kebijakan terbaru</p>
               </div>
-              <Button size="sm" className="bg-slate-900 hover:bg-slate-800 text-xs font-semibold  ">
-                LAUNCH STRATEGY SIMULATOR
+              <Button size="sm" className="bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-8 h-9 rounded-none">
+                Luncurkan Simulator Strategi
               </Button>
             </CardContent>
           </Card>

@@ -11,7 +11,7 @@ import { KementerianFilterBar, type ScopeFilters } from '@/components/dashboard/
 const routeOptimizations = [
   { rute: 'Rute Utama (Medan - Bekasi)', jarak: 1250, waktuSebelum: 28, waktuSesudah: 22, biayaSebelum: 2500000, biayaSesudah: 1925000, penghematan: 575000, efisiensi: 23, status: 'Aktif' },
   { rute: 'Rute Timur (Surabaya - Jakarta)', jarak: 780, waktuSebelum: 18, waktuSesudah: 14, biayaSebelum: 1560000, biayaSesudah: 1216000, penghematan: 344000, efisiensi: 22, status: 'Aktif' },
-  { rute: 'Rute Barat (Bandung - Jakarta)', jarak: 240, waktuSebelum: 6, waktuSesudah: 5, biayaSebelum: 480000, biayaSesudah: 405000, penghematan: 75000, efisiensi: 16, status: 'Pending' },
+   { rute: 'Rute Barat (Bandung - Jakarta)', jarak: 240, waktuSebelum: 6, waktuSesudah: 5, biayaSebelum: 480000, biayaSesudah: 405000, penghematan: 75000, efisiensi: 16, status: 'Tertunda' },
 ]
 
 const trafficData = [
@@ -70,20 +70,20 @@ export default function RouteOptimizationKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold  text-slate-900  flex items-center gap-2">
+            <h1 className="text-3xl font-black text-slate-900 flex items-center gap-2">
               <Navigation className="h-8 w-8 text-slate-900" />
-              National Logistics Optimizer
+              Optimasi Logistik Nasional
             </h1>
             <p className="text-slate-500 font-medium">
-              Efisiensi rantai pasok nasional melalui algoritma optimasi rute dan armada.
+              Efisiensi rantai pasok nasional melalui algoritma optimasi rute dan manajemen armada terpadu.
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="font-bold border-2">
-              <Globe className="mr-2 h-4 w-4" /> FLEET MAP
+            <Button variant="outline" className="font-bold border-2 rounded-none">
+              <Globe className="mr-2 h-4 w-4" /> Peta Armada
             </Button>
-            <Button className="bg-slate-900 font-bold">
-              <Zap className="mr-2 h-4 w-4" /> RE-OPTIMIZE ALL
+            <Button className="bg-slate-900 font-bold rounded-none">
+              <Zap className="mr-2 h-4 w-4" /> Optimasi Ulang Semua
             </Button>
           </div>
         </div>
@@ -93,85 +93,85 @@ export default function RouteOptimizationKementerianPage() {
 
       {/* KPI Section */}
       <div className="grid gap-4 md:grid-cols-4">
-        <Card className="border-l-4 border-l-slate-900 shadow-sm">
+        <Card className="border-l-4 border-l-slate-900 shadow-sm rounded-none">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold   text-slate-500">Monthly Cost Savings</CardDescription>
-            <CardTitle className="text-2xl font-semibold text-slate-900">
+            <CardDescription className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Penghematan Bulanan</CardDescription>
+            <CardTitle className="text-2xl font-black text-slate-900">
               Rp {processedData.totalSavings.toLocaleString()}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge className="bg-emerald-500 text-slate-900 font-semibold text-xs ">
-              <TrendingDown className="mr-1 h-3 w-3" /> -22% Cost Reduction
+            <Badge className="bg-emerald-500 text-slate-900 font-semibold text-xs rounded-none">
+              <TrendingDown className="mr-1 h-3 w-3" /> -22% Reduksi Biaya
             </Badge>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-blue-500 shadow-sm">
+        <Card className="border-l-4 border-l-blue-500 shadow-sm rounded-none">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold   text-slate-500">Transit Time Reduction</CardDescription>
-            <CardTitle className="text-2xl font-semibold text-slate-900">
-              {processedData.totalHours.toFixed(1)} <span className="text-sm font-bold text-slate-400">HRS</span>
+            <CardDescription className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Reduksi Waktu Transit</CardDescription>
+            <CardTitle className="text-2xl font-black text-slate-900">
+              {processedData.totalHours.toFixed(1)} <span className="text-sm font-bold text-slate-400">JAM</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs font-semibold text-slate-500 ">Faster Delivery Cycles</p>
+            <p className="text-xs font-semibold text-slate-500 ">Siklus Pengiriman Lebih Cepat</p>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-emerald-500 shadow-sm">
+        <Card className="border-l-4 border-l-emerald-500 shadow-sm rounded-none">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold   text-slate-500">Optimized Routes</CardDescription>
-            <CardTitle className="text-2xl font-semibold text-slate-900">{processedData.activeRoutes}</CardTitle>
+            <CardDescription className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Rute Teroptimasi</CardDescription>
+            <CardTitle className="text-2xl font-black text-slate-900">{processedData.activeRoutes}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs font-semibold text-emerald-600 ">Active Network Health: 100%</p>
+            <p className="text-xs font-semibold text-emerald-600 ">Kesehatan Jaringan Aktif: 100%</p>
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-amber-500 shadow-sm">
+        <Card className="border-l-4 border-l-amber-500 shadow-sm rounded-none">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs font-semibold   text-slate-500">Carbon Reduction</CardDescription>
-            <CardTitle className="text-2xl font-semibold text-slate-900">14.2 <span className="text-sm font-bold text-slate-400">TONS</span></CardTitle>
+            <CardDescription className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Reduksi Emisi Karbon</CardDescription>
+            <CardTitle className="text-2xl font-black text-slate-900">14.2 <span className="text-sm font-bold text-slate-400">TON</span></CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xs font-semibold text-amber-600 ">Estimated CO2 Saved</p>
+            <p className="text-xs font-semibold text-amber-600 ">Estimasi CO2 Terselamatkan</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Optimized Routes Table */}
-      <Card className="border-2 shadow-sm overflow-hidden">
+      <Card className="border-2 shadow-sm rounded-none overflow-hidden">
         <CardHeader className="border-b bg-slate-50/50">
-          <CardTitle className="text-sm font-semibold   text-slate-900">National Route Efficiency Matrix</CardTitle>
+          <CardTitle className="text-sm font-black text-slate-900">Matriks Efisiensi Rute Nasional</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-100/50 border-b">
-                  <th className="p-4 text-xs font-semibold  text-slate-500">Strategic Route</th>
-                  <th className="p-4 text-xs font-semibold  text-slate-500">Distance</th>
-                  <th className="p-4 text-xs font-semibold  text-slate-500">Before (H)</th>
-                  <th className="p-4 text-xs font-semibold  text-slate-500">After (H)</th>
-                  <th className="p-4 text-xs font-semibold  text-slate-500 text-right">Cost Reduction</th>
-                  <th className="p-4 text-xs font-semibold  text-slate-500 text-right">Efficiency %</th>
+                  <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider">Rute Strategis</th>
+                  <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider">Jarak</th>
+                  <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider">Sebelum (Jam)</th>
+                  <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider">Sesudah (Jam)</th>
+                  <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider text-right">Reduksi Biaya</th>
+                  <th className="p-4 text-xs font-black text-slate-500 uppercase tracking-wider text-right">Efisiensi %</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
                 {processedData.optimizations.map((route, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                  <tr key={idx} className="hover:bg-slate-50 transition-colors border-b last:border-0">
                     <td className="p-4">
-                      <p className="text-xs font-semibold text-slate-900 ">{route.rute}</p>
+                      <p className="text-xs font-bold text-slate-900 ">{route.rute}</p>
                     </td>
                     <td className="p-4 text-xs font-bold text-slate-700">{route.jarak} KM</td>
                     <td className="p-4 text-xs font-bold text-slate-400">{route.waktuSebelum}</td>
-                    <td className="p-4 text-xs font-semibold text-emerald-600">{route.waktuSesudah}</td>
-                    <td className="p-4 text-right text-xs font-semibold text-slate-900">
+                    <td className="p-4 text-xs font-bold text-emerald-600">{route.waktuSesudah}</td>
+                    <td className="p-4 text-right text-xs font-bold text-slate-900">
                       -Rp {route.penghematan.toLocaleString()}
                     </td>
                     <td className="p-4 text-right">
-                      <Badge className="bg-slate-900 text-white font-semibold text-xs">
+                      <Badge className="bg-slate-900 text-white font-bold text-xs rounded-none">
                         {route.efisiensi}%
                       </Badge>
                     </td>
@@ -185,10 +185,10 @@ export default function RouteOptimizationKementerianPage() {
 
       {/* Analysis Charts Section */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2 border-2 shadow-sm">
+        <Card className="lg:col-span-2 border-2 shadow-sm rounded-none">
           <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-sm font-semibold   text-slate-900">Cost Variance vs. Departure Time</CardTitle>
-            <CardDescription className="text-xs font-bold  text-slate-500">Optimizing dispatch windows to avoid congestion costs</CardDescription>
+            <CardTitle className="text-sm font-black text-slate-900">Variansi Biaya vs Waktu Keberangkatan</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500">Optimasi jendela pengiriman untuk menghindari biaya kemacetan</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <ResponsiveContainer width="100%" height={300}>
@@ -197,35 +197,35 @@ export default function RouteOptimizationKementerianPage() {
                 <XAxis dataKey="jam" tick={{ fill: "#64748b", fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: "#64748b", fontSize: 10, fontWeight: 800 }} axisLine={false} tickLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: "#0f172a", border: "none", borderRadius: "8px", color: "#fff" }}
+                  contentStyle={{ backgroundColor: "#0f172a", border: "none", borderRadius: "0px", color: "#fff" }}
                   itemStyle={{ fontSize: "10px", fontWeight: "600", textTransform: "" }}
                   formatter={(value: number) => `Rp ${value.toLocaleString()}`}
                 />
                 <Legend iconType="rect" wrapperStyle={{ paddingTop: "20px", fontSize: "10px", fontWeight: "600", textTransform: "" }} />
-                <Bar dataKey="biayaSebelum" fill="#cbd5e1" name="BEFORE OPTIMIZATION" radius={[2, 2, 0, 0]} />
-                <Bar dataKey="biayaSesudah" fill="#0f172a" name="AFTER OPTIMIZATION" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="biayaSebelum" fill="#cbd5e1" name="SEBELUM OPTIMASI" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="biayaSesudah" fill="#0f172a" name="SESUDAH OPTIMASI" radius={[0, 0, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="border-2 shadow-sm">
+        <Card className="border-2 shadow-sm rounded-none">
           <CardHeader className="border-b bg-slate-50/50">
-            <CardTitle className="text-sm font-semibold   text-slate-900">Optimized Transit Logic</CardTitle>
-            <CardDescription className="text-xs font-bold  text-slate-500">Sequential stop-point intelligence</CardDescription>
+            <CardTitle className="text-sm font-black text-slate-900">Logika Transit Teroptimasi</CardTitle>
+            <CardDescription className="text-xs font-bold text-slate-500">Inteligensi urutan titik pemberhentian</CardDescription>
           </CardHeader>
           <CardContent className="p-4">
             <div className="relative space-y-4">
               <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-slate-200 border-dashed" />
               {stopPoints.map((point, idx) => (
                 <div key={idx} className="relative flex items-center gap-4 pl-8 group">
-                  <div className="absolute left-2.5 h-3 w-3 rounded-full bg-slate-900 border-2 border-white ring-2 ring-slate-100 group-hover:scale-125 transition-transform" />
-                  <div className="flex-1 p-2 bg-slate-50 rounded border group-hover:border-slate-900 transition-colors">
+                  <div className="absolute left-2.5 h-3 w-3 rounded-none bg-slate-900 border-2 border-white ring-2 ring-slate-100 group-hover:scale-125 transition-transform" />
+                  <div className="flex-1 p-2 bg-slate-50 rounded-none border group-hover:border-slate-900 transition-colors">
                     <div className="flex justify-between items-start">
-                      <p className="text-xs font-semibold text-slate-900 ">{point.nama}</p>
+                      <p className="text-xs font-bold text-slate-900 ">{point.nama}</p>
                       <span className="text-xs font-bold text-slate-400">{point.waktu}</span>
                     </div>
-                    <Badge variant="outline" className="text-xs font-semibold  border-slate-300 h-4">
+                    <Badge variant="outline" className="text-xs font-bold border-slate-300 h-4 rounded-none">
                       {point.status}
                     </Badge>
                   </div>
@@ -233,15 +233,15 @@ export default function RouteOptimizationKementerianPage() {
               ))}
             </div>
             <div className="mt-6 flex flex-col gap-2">
-              <div className="flex items-center gap-2 p-3 bg-slate-900 text-white rounded-lg">
+              <div className="flex items-center gap-2 p-3 bg-slate-900 text-white rounded-none">
                 <Truck className="h-4 w-4 text-emerald-400" />
                 <div>
-                  <p className="text-xs font-semibold  text-slate-400 leading-none mb-1">Fleet Recommendation</p>
-                  <p className="text-sm font-bold">Deploy 2 Large Freight Units (Consolidated)</p>
+                  <p className="text-xs font-bold text-slate-400 leading-none mb-1">Rekomendasi Armada</p>
+                  <p className="text-sm font-black">Gunakan 2 Unit Freight Besar (Konsolidasi)</p>
                 </div>
               </div>
-              <Button className="w-full font-semibold text-xs  bg-slate-900">
-                DISPATCH INSTRUCTION
+              <Button className="w-full font-bold text-xs bg-slate-900 rounded-none">
+                INSTRUKSI PENGIRIMAN
               </Button>
             </div>
           </CardContent>
@@ -249,33 +249,33 @@ export default function RouteOptimizationKementerianPage() {
       </div>
 
       {/* AI Performance Insight */}
-      <Card className="border-2 border-slate-900 bg-slate-900 text-white overflow-hidden">
+      <Card className="border-2 border-slate-900 bg-slate-900 text-white rounded-none overflow-hidden">
         <div className="flex">
           <div className="p-6 bg-blue-500 flex items-center justify-center">
             <Zap className="h-12 w-12 text-slate-900" />
           </div>
           <div className="p-6 flex-1 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold  ">AI Network Optimization Summary</h3>
-              <Badge className="bg-emerald-500 text-slate-900 font-semibold">EFFICIENCY GAIN: +23.4%</Badge>
+              <h3 className="text-lg font-black">Ringkasan Optimasi Jaringan AI</h3>
+              <Badge className="bg-emerald-500 text-slate-900 font-bold rounded-none">PENINGKATAN EFISIENSI: +23.4%</Badge>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="p-3 bg-slate-800 rounded border border-slate-700">
+              <div className="p-3 bg-slate-800 rounded-none border border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
                   <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                  <p className="text-xs font-semibold text-slate-400 ">Operational Integrity</p>
+                  <p className="text-xs font-bold text-slate-400 ">Integritas Operasional</p>
                 </div>
                 <p className="text-xs font-medium text-slate-300">
-                  Consolidation logic successful. Estimated reduction of <span className="text-white font-bold">1,200KM</span> deadhead mileage across the filter scope this month.
+                  Logika konsolidasi berhasil. Estimasi pengurangan jarak kosong sebesar <span className="text-white font-black">1.200 KM</span> di seluruh cakupan filter bulan ini.
                 </p>
               </div>
-              <div className="p-3 bg-slate-800 rounded border border-slate-700">
+              <div className="p-3 bg-slate-800 rounded-none border border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
                   <Fuel className="h-4 w-4 text-blue-400" />
-                  <p className="text-xs font-semibold text-slate-400 ">Resource Audit</p>
+                  <p className="text-xs font-bold text-slate-400 ">Audit Sumber Daya</p>
                 </div>
                 <p className="text-xs font-medium text-slate-300">
-                   Fuel efficiency index improved by <span className="text-white font-bold">18.5%</span> through dynamic dispatching during non-peak congestion windows.
+                   Indeks efisiensi bahan bakar meningkat sebesar <span className="text-white font-black">18.5%</span> melalui penjadwalan dinamis pada jendela non-kemacetan.
                 </p>
               </div>
             </div>

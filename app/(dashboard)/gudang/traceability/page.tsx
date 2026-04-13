@@ -80,25 +80,25 @@ export default function TraceabilityKementerianPage() {
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-2">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
               <QrCode className="h-7 w-7 text-slate-900" />
-              Audit Traceability Nasional
+              Audit Penelusuran Nasional
             </h1>
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-2">
-              Audit Digital Asal-Usul dan Rantai Pasok Komoditas Strategis Nasional
+              Audit Digital Asal-Usul Dan Rantai Pasok Komoditas Strategis Nasional
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button 
               variant="outline" 
               onClick={() => handleAction('Sertifikat')}
-              className="rounded-none font-black border-2 text-[10px] uppercase tracking-widest h-10 border-slate-200 px-4"
+              className="rounded-none font-black border-2 text-[10px] uppercase tracking-widest h-10 border-slate-200 px-4 shadow-none"
             >
               <FileText className="mr-2 h-4 w-4" /> Sertifikat Batch
             </Button>
             <Button 
               onClick={() => handleAction('Blockchain')}
-              className="rounded-none bg-slate-900 font-black text-[10px] uppercase tracking-widest h-10 px-6 text-white"
+              className="rounded-none bg-slate-900 font-black text-[10px] uppercase tracking-widest h-10 px-6 text-white shadow-none"
             >
               <Zap className="mr-2 h-4 w-4 text-amber-400" /> Verifikasi Blockchain
             </Button>
@@ -119,15 +119,15 @@ export default function TraceabilityKementerianPage() {
           <div className="flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                placeholder="MASUKKAN ID BATCH NASIONAL (MISAL: BP-2026-001)..."
+              <input
+                placeholder="Masukkan id batch nasional (misal: bp-2026-001)..."
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value.toUpperCase())}
-                className="rounded-none pl-10 font-black border-2 border-slate-100 h-12 text-sm uppercase tracking-widest focus-visible:ring-slate-900"
+                className="w-full rounded-none pl-10 font-black border-2 border-slate-100 h-12 text-sm uppercase tracking-widest focus:outline-none focus:ring-1 focus:ring-slate-900"
               />
             </div>
             <Button 
-              className="rounded-none h-12 px-10 font-black text-[10px] uppercase tracking-widest bg-slate-900 hover:bg-slate-800 text-white" 
+              className="rounded-none h-12 px-10 font-black text-[10px] uppercase tracking-widest bg-slate-900 hover:bg-slate-800 text-white shadow-none" 
               onClick={() => {
                 setShowResult(true)
                 handleAction('Trace')
@@ -138,7 +138,7 @@ export default function TraceabilityKementerianPage() {
             <Button 
               variant="outline" 
               onClick={() => handleAction('QR Scan')}
-              className="rounded-none h-12 px-6 font-black text-[10px] uppercase tracking-widest border-2 border-slate-200 hover:bg-slate-50"
+              className="rounded-none h-12 px-6 font-black text-[10px] uppercase tracking-widest border-2 border-slate-200 hover:bg-slate-50 shadow-none"
             >
               <QrCode className="mr-2 h-4 w-4" /> Scan QR
             </Button>
@@ -157,7 +157,7 @@ export default function TraceabilityKementerianPage() {
                     <Package className="h-7 w-7 text-emerald-400" />
                   </div>
                   <div>
-                    <Badge className="rounded-none bg-slate-900 text-white font-black mb-1 h-5 px-2 text-[10px] uppercase tracking-widest">BATCH TERVERIFIKASI</Badge>
+                    <Badge className="rounded-none bg-slate-900 text-white font-black mb-1 h-5 px-2 text-[10px] uppercase tracking-widest border-none">BATCH TERVERIFIKASI</Badge>
                     <CardTitle className="text-2xl font-black text-slate-900 uppercase tracking-tight">{traceData.batchCode}</CardTitle>
                     <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-widest">{traceData.komoditas}</p>
                   </div>
@@ -165,11 +165,11 @@ export default function TraceabilityKementerianPage() {
                 <div className="flex gap-10">
                   <div className="text-right">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">STANDAR MUTU</p>
-                    <Badge className="rounded-none bg-emerald-600 text-white font-black h-6 text-[10px] uppercase tracking-widest px-3 border-0">GRADE {traceData.grade}</Badge>
+                    <Badge className="rounded-none bg-emerald-600 text-white font-black h-6 text-[10px] uppercase tracking-widest px-3 border-none shadow-none">GRADE {traceData.grade}</Badge>
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">VOLUME AGREGAT</p>
-                    <p className="text-2xl font-black text-slate-900 uppercase tracking-tight">{(traceData.jumlah / 1000).toLocaleString()} TON</p>
+                    <p className="text-2xl font-black text-slate-900 tracking-tight">{(traceData.jumlah / 1000).toLocaleString()} TON</p>
                   </div>
                 </div>
               </CardHeader>
@@ -203,7 +203,7 @@ export default function TraceabilityKementerianPage() {
                               </span>
                             </div>
                           </div>
-                          <Badge className="rounded-none bg-emerald-50 text-emerald-700 font-black text-[10px] uppercase tracking-widest h-5 px-2 border-emerald-100 border">
+                          <Badge className="rounded-none bg-emerald-50 text-emerald-700 font-black text-[10px] uppercase tracking-widest h-5 px-2 border-emerald-100 border shadow-none">
                             <CheckCircle2 className="mr-1.5 h-3 w-3" /> TERVERIFIKASI
                           </Badge>
                         </div>
@@ -230,7 +230,7 @@ export default function TraceabilityKementerianPage() {
             <Card className="rounded-none border-none shadow-sm bg-white overflow-hidden border-t-4 border-t-slate-900">
               <CardHeader className="border-b border-slate-100 bg-slate-900 text-white p-4">
                 <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" /> INTEGRITAS DIGITAL
+                  <ShieldCheck className="h-4 w-4 text-emerald-400" /> Integritas Digital
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-5 space-y-5">
@@ -243,13 +243,13 @@ export default function TraceabilityKementerianPage() {
                 </div>
                 <div className="p-4 bg-slate-50 rounded-none border border-slate-100">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">HASH BLOCKCHAIN</p>
-                  <p className="text-[10px] font-mono break-all text-slate-500 leading-relaxed font-bold">0X7A250D5630B4CF539739DF2C5DACB4C659F2488D</p>
+                  <p className="text-[10px] font-mono break-all text-slate-500 leading-relaxed font-bold">0x7A250D5630B4CF539739DF2C5DACB4C659F2488D</p>
                 </div>
                 <Button 
                   onClick={() => handleAction('Ledger')}
-                  className="w-full bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest h-11 hover:bg-slate-800 transition-all rounded-none"
+                  className="w-full bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest h-11 hover:bg-slate-800 transition-all rounded-none shadow-none"
                 >
-                  EKSPLORASI BUKU BESAR
+                  Eksplorasi Buku Besar
                 </Button>
               </CardContent>
             </Card>
@@ -257,49 +257,73 @@ export default function TraceabilityKementerianPage() {
             <Card className="rounded-none border-none shadow-sm overflow-hidden bg-white border-t-4 border-t-blue-500">
               <CardHeader className="border-b border-slate-100 bg-slate-50 p-4">
                 <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-slate-900">
-                  <BarChart3 className="h-4 w-4 text-slate-400" /> STATISTIK BATCH
+                  <BarChart3 className="h-4 w-4 text-slate-400" /> Statistik Batch
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0 divide-y divide-slate-100">
                 <div className="p-5 hover:bg-slate-50/50 transition-colors">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">NODE JARINGAN DILALUI</p>
                   <div className="flex justify-between items-center">
-                    <p className="text-2xl font-black text-slate-900 uppercase tracking-tight">08 TITIK</p>
+                    <p className="text-2xl font-black text-slate-900 tracking-tight">08 TITIK</p>
                     <Globe className="h-6 w-6 text-slate-200" />
                   </div>
                 </div>
                 <div className="p-5 hover:bg-slate-50/50 transition-colors">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">TOTAL WAKTU TRANSIT</p>
                   <div className="flex justify-between items-center">
-                    <p className="text-2xl font-black text-slate-900 uppercase tracking-tight">22.4 JAM</p>
+                    <p className="text-2xl font-black text-slate-900 tracking-tight">22.4 JAM</p>
                     <History className="h-6 w-6 text-slate-200" />
                   </div>
                 </div>
                 <div className="p-5 hover:bg-slate-50/50 transition-colors">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">JEJAK KARBON (EST)</p>
                   <div className="flex justify-between items-center">
-                    <p className="text-2xl font-black text-slate-900 uppercase tracking-tight">1.2 TON</p>
+                    <p className="text-2xl font-black text-slate-900 tracking-tight">1.2 TON</p>
                     <Leaf className="h-6 w-6 text-slate-200" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-none border-none bg-emerald-900 text-white p-6 shadow-xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Zap className="h-16 w-16" />
+            <Card className="relative overflow-hidden rounded-none border border-emerald-900/55 bg-[linear-gradient(180deg,#0b5f49_0%,#084c3b_100%)] shadow-xl">
+              <div className="absolute right-4 top-4 opacity-[0.06]">
+                <Zap className="h-20 w-20" />
               </div>
-              <h4 className="text-[10px] font-black uppercase tracking-widest mb-3 border-b border-emerald-800 pb-3">AI VERIFICATION INSIGHT</h4>
-              <p className="text-xs font-black uppercase tracking-tight leading-relaxed text-emerald-100">
-                ANALISIS MODEL MENGONFIRMASI BATCH <span className="text-white underline decoration-emerald-400/50 underline-offset-4">BP-2026-001</span> MEMENUHI 100% STANDAR PREMIUM IR64 NASIONAL. ASAL GEOGRAFIS TERVERIFIKASI MELALUI DATA SATELIT PANEN.
-              </p>
-              <Button 
-                variant="link" 
-                onClick={() => handleAction('Satellite')}
-                className="p-0 h-auto text-[10px] font-black uppercase tracking-widest text-emerald-300 flex items-center gap-2 mt-6 hover:no-underline hover:text-white transition-all"
-              >
-                LIHAT BUKTI SATELIT <ExternalLink className="h-3 w-3" />
-              </Button>
+              <div className="relative space-y-5 p-6">
+                <div className="border-b border-white/10 pb-4">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-100/75">
+                    Insight Verifikasi AI
+                  </p>
+                  <h4 className="mt-3 text-lg font-semibold leading-tight text-[#f4fff9]">
+                    Batch premium terkonfirmasi melalui verifikasi satelit panen.
+                  </h4>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Badge className="rounded-none border border-white/20 bg-[rgba(255,255,255,0.16)] px-2.5 py-1 text-[10px] font-semibold tracking-wide text-[#f8fffb] hover:bg-[rgba(255,255,255,0.16)] shadow-none">
+                    Batch BP-2026-001
+                  </Badge>
+                  <Badge className="rounded-none border border-emerald-200/30 bg-[rgba(110,231,183,0.14)] px-2.5 py-1 text-[10px] font-semibold tracking-wide text-[#e9fff6] hover:bg-[rgba(110,231,183,0.14)] shadow-none">
+                    100% Standar Premium
+                  </Badge>
+                  <Badge className="rounded-none border border-emerald-200/30 bg-[rgba(110,231,183,0.14)] px-2.5 py-1 text-[10px] font-semibold tracking-wide text-[#e9fff6] hover:bg-[rgba(110,231,183,0.14)] shadow-none">
+                    Geografi Terverifikasi
+                  </Badge>
+                </div>
+
+                <p className="text-sm leading-7 text-[#d9f6e8]">
+                  Analisis model mengonfirmasi bahwa batch <span className="font-semibold text-[#fff4d8]">BP-2026-001</span> memenuhi standar premium IR64 nasional. Asal geografisnya juga telah diverifikasi melalui data satelit panen.
+                </p>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => handleAction('Satellite')}
+                  className="h-10 rounded-none border border-white/10 bg-[#f7ece6] px-4 text-sm font-semibold text-[#0b5f49] shadow-none hover:bg-[#fff4ee]"
+                >
+                  Lihat Bukti Satelit
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </Card>
           </div>
         </div>
@@ -307,4 +331,3 @@ export default function TraceabilityKementerianPage() {
     </div>
   )
 }
-

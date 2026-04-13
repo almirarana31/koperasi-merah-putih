@@ -1,9 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Clock, FileText, Search, ShoppingCart, Store, TrendingUp, Users } from 'lucide-react'
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import { 
+  Clock, 
+  FileText, 
+  Search, 
+  ShoppingCart, 
+  Store, 
+  TrendingUp, 
+  Users,
+  Package,
+  Activity,
+  ShieldAlert,
+  Download,
+  ArrowRight
+} from 'lucide-react'
+import { 
+  Bar, 
+  BarChart, 
+  CartesianGrid, 
+  ResponsiveContainer, 
+  XAxis, 
+  YAxis,
+  Tooltip
+} from 'recharts'
 import { useAuth } from '@/lib/auth/use-auth'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -33,6 +54,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { toast } from 'sonner'
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -46,21 +68,12 @@ function formatDate(value: string) {
   return new Date(value).toLocaleDateString('id-ID', {
     day: '2-digit',
     month: 'short',
-    year: 'numeric',
   })
-}
-
-function statusTone(status: string) {
-  if (status === 'selesai') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
-  if (status === 'dikirim') return 'bg-blue-50 text-blue-700 border-blue-200'
-  if (status === 'diproses') return 'bg-amber-50 text-amber-700 border-amber-200'
-  return 'bg-slate-100 text-slate-700 border-slate-200'
 }
 
 export default function PasarPage() {
   const { user } = useAuth()
-  const showHierarchyFilter = user?.role === 'kementerian' || user?.role === 'pemda' || user?.role === 'sysadmin'
-
+  const isKementerian = user?.role === 'kementerian'
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [filters, setFilters] = useState<ScopeFilters>({
@@ -72,240 +85,271 @@ export default function PasarPage() {
   })
 
   const scopedFilters = resolveOperationalFilters(user, filters)
-  const scaleFactor = filters.provinceId === 'all' ? 1.0 : filters.regionId === 'all' ? 0.4 : filters.villageId === 'all' ? 0.15 : 0.05
+  const scaleFactor = useMemo(() => {
+    if (filters.cooperativeId !== 'all') return 0.05
+    if (filters.villageId !== 'all') return 0.1
+    if (filters.regionId !== 'all') return 0.25
+    if (filters.provinceId !== 'all') return 0.5
+    return 1.0
+  }, [filters])
   
   const scopedOrders = filterOrdersByScope(scopedFilters)
-  const filteredOrders = scopedOrders.filter((order) => {
-    const keyword = search.toLowerCase()
-    const matchesSearch =
-      order.orderNumber.toLowerCase().includes(keyword) ||
-      order.buyerName.toLowerCase().includes(keyword) ||
-      order.cooperativeName.toLowerCase().includes(keyword)
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter
-    return matchesSearch && matchesStatus
-  })
+  const filteredOrders = useMemo(() => {
+    return scopedOrders.filter((order) => {
+      const keyword = search.toLowerCase()
+      const matchesSearch =
+        order.orderNumber.toLowerCase().includes(keyword) ||
+        order.buyerName.toLowerCase().includes(keyword) ||
+        order.cooperativeName.toLowerCase().includes(keyword)
+      const matchesStatus = statusFilter === 'all' || order.status === statusFilter
+      return matchesSearch && matchesStatus
+    })
+  }, [scopedOrders, search, statusFilter])
 
-  const monthlySeries = getMonthlyOrderSeries(filteredOrders).map((item) => ({
-    name: item.month.replace(' 2026', ''),
-    revenue: Math.round((item.revenue * scaleFactor) / 1_000_000),
-  }))
+  const monthlySeries = useMemo(() => {
+    return getMonthlyOrderSeries(filteredOrders).map((item) => ({
+      name: item.month.replace(' 2026', '').toUpperCase(),
+      revenue: Math.round((item.revenue * scaleFactor) / 1_000_000),
+    }))
+  }, [filteredOrders, scaleFactor])
 
-  const regionalComparison = [...new Map(
-    filteredOrders.map((order) => [
-      order.regionId,
-      {
-        region: order.regionName,
-        revenue: filteredOrders
-          .filter((item) => item.regionId === order.regionId)
-          .reduce((total, item) => total + item.totalValue, 0) * scaleFactor,
-        orders: Math.round(filteredOrders.filter((item) => item.regionId === order.regionId).length * scaleFactor),
-      },
-    ]),
-  ).values()].sort((left, right) => right.revenue - left.revenue)
+  const regionalComparison = useMemo(() => {
+    return [...new Map(
+      filteredOrders.map((order) => [
+        order.regionId,
+        {
+          region: order.regionName,
+          revenue: filteredOrders
+            .filter((item) => item.regionId === order.regionId)
+            .reduce((total, item) => total + item.totalValue, 0) * scaleFactor,
+          orders: Math.round(filteredOrders.filter((item) => item.regionId === order.regionId).length * scaleFactor),
+        },
+      ]),
+    ).values()].sort((left, right) => right.revenue - left.revenue)
+  }, [filteredOrders, scaleFactor])
 
   const buyers = getBuyersFromOrders(filteredOrders)
-  const totalRevenue = filteredOrders.reduce((total, order) => total + order.totalValue, 0) * scaleFactor
+  const totalRevenue = useMemo(() => filteredOrders.reduce((total, order) => total + order.totalValue, 0) * scaleFactor, [filteredOrders, scaleFactor])
   const activeOrders = Math.round(filteredOrders.filter((order) => order.status !== 'selesai').length * scaleFactor)
   const displayOrderCount = Math.round(filteredOrders.length * scaleFactor)
   const avgOrderValue = displayOrderCount === 0 ? 0 : totalRevenue / displayOrderCount
 
+  const handleAction = (action: string) => {
+    toast.success(`Aksi ${action} berhasil diverifikasi secara nasional`)
+  }
+
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-2">
-          <Badge className="w-fit rounded-none border border-emerald-200 bg-emerald-50 text-emerald-700 font-bold uppercase tracking-wider text-[10px]">Pusat Niaga & Distribusi Nasional</Badge>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-none bg-slate-900 flex items-center justify-center shadow-xl">
+            <Store className="h-7 w-7 text-emerald-500" />
+          </div>
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase">Analitik Pasar Nasional</h1>
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-wide">
-              Monitoring Arus Komoditas dan Valuasi Pasar: {getScopeCaption(scopedFilters)}
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Analitik Pasar Nasional</h1>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
+              Monitoring Arus Komoditas & Valuasi Niaga • {displayOrderCount} Purchase Order
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" className="rounded-none border-slate-200 font-black uppercase text-[10px] tracking-widest" asChild>
-            <Link href="/pasar/buyer">
-              <Users className="mr-2 h-3 w-3" />
-              Direktori Buyer
-            </Link>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => handleAction('Audit Pasar')}
+            className="h-10 rounded-none text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200 shadow-none"
+          >
+            <ShieldAlert className="h-4 w-4 mr-2 text-rose-600" />
+            Audit Pasar
           </Button>
-          <Button variant="outline" className="rounded-none border-slate-200 font-black uppercase text-[10px] tracking-widest" asChild>
-            <Link href="/pasar/katalog">
-              <Store className="mr-2 h-3 w-3" />
-              Katalog SKU
-            </Link>
-          </Button>
-          <Button variant="outline" className="rounded-none border-slate-200 font-black uppercase text-[10px] tracking-widest" asChild>
-            <Link href="/pasar/harga">
-              <TrendingUp className="mr-2 h-3 w-3" />
-              Indeks Harga
-            </Link>
+          <Button 
+            size="sm" 
+            onClick={() => handleAction('PDF')}
+            className="h-10 rounded-none bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-none"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Eksport PDF
           </Button>
         </div>
       </div>
 
-      {showHierarchyFilter && <KementerianFilterBar filters={filters} setFilters={setFilters} />}
+      <KementerianFilterBar filters={filters} setFilters={setFilters} />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      {/* High-Density KPI Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'NILAI TRANSAKSI', value: formatCurrency(totalRevenue), sub: 'VALUASI PASAR AGREGAT', icon: ShoppingCart, tone: 'emerald' },
-          { label: 'ORDER AKTIF', value: activeOrders.toLocaleString('id-ID'), sub: 'PESANAN DALAM PROSES', icon: Clock, tone: 'blue' },
-          { label: 'BUYER TERHUBUNG', value: Math.round(buyers.length * scaleFactor).toLocaleString('id-ID'), sub: 'MITRA NIAGA STRATEGIS', icon: Users, tone: 'slate' },
-          { label: 'RATA-RATA ORDER', value: formatCurrency(avgOrderValue), sub: 'NILAI TRANSAKSI PER PO', icon: FileText, tone: 'slate' },
-        ].map((stat, i) => (
-          <Card key={i} className="rounded-none border-none bg-white shadow-sm overflow-hidden group border-t-4 border-t-slate-900">
-            <div className={`absolute top-0 left-0 h-1 w-full ${stat.tone === 'emerald' ? 'bg-emerald-500' : stat.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'}`} />
-            <CardHeader className="p-4 pb-2">
-              <div className="flex justify-between items-start">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
-                <stat.icon className="h-4 w-4 text-slate-400 group-hover:text-slate-900 transition-colors" />
+          { label: 'Nilai Transaksi', value: (totalRevenue / 1000000).toFixed(1), sub: 'JUTA IDR', icon: ShoppingCart, color: 'text-slate-900' },
+          { label: 'Order Aktif', value: activeOrders.toLocaleString(), sub: 'PESANAN BERJALAN', icon: Clock, color: 'text-emerald-600' },
+          { label: 'Buyer Terhubung', value: Math.round(buyers.length * scaleFactor).toLocaleString(), sub: 'MITRA NIAGA', icon: Users, color: 'text-blue-600' },
+          { label: 'Rata-Rata Order', value: (avgOrderValue / 1000000).toFixed(1), sub: 'JUTA PER PO', icon: FileText, color: 'text-blue-400' },
+        ].map((s, i) => (
+          <Card key={i} className="rounded-none border-none shadow-sm bg-white overflow-hidden">
+            <div className={`h-1.5 w-full ${s.color.includes('emerald') ? 'bg-emerald-500' : s.color.includes('blue') ? 'bg-blue-500' : 'bg-slate-900'}`} />
+            <CardContent className="p-4 flex items-center gap-4">
+              <div className="h-10 w-10 rounded-none bg-slate-50 flex items-center justify-center border border-slate-100">
+                <s.icon className={`h-5 w-5 ${s.color}`} />
               </div>
-              <CardTitle className="text-2xl font-black text-slate-900 mt-1">{stat.value}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-0">
-              <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-tighter">{stat.sub}</p>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
+                <div className="flex items-baseline gap-1 mt-1">
+                  <span className={`text-xl font-black ${s.color}`}>{s.value}</span>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">{s.sub}</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card className="rounded-none border-slate-200 shadow-sm">
-        <CardContent className="p-4">
-          <div className="grid gap-3 lg:grid-cols-[1.2fr_220px]">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Cari nomor PO, koperasi, atau buyer..."
-                className="pl-9 rounded-none border-slate-200 font-semibold"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="rounded-none border-slate-200 font-semibold">
-                <SelectValue placeholder="Semua Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="pending">Tertunda</SelectItem>
-                <SelectItem value="diproses">Diproses</SelectItem>
-                <SelectItem value="dikirim">Dikirim</SelectItem>
-                <SelectItem value="selesai">Selesai</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
-          <CardHeader className="bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Trend Pendapatan Bulanan</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Agregasi Omzet Pasar Nasional (Juta IDR)</CardDescription>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="rounded-none border-none shadow-sm bg-white overflow-hidden">
+          <CardHeader className="p-5 border-b border-slate-50">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Tren Omzet Bulanan</CardTitle>
           </CardHeader>
-          <CardContent className="h-[320px] p-4 pt-6">
+          <CardContent className="p-4 h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlySeries}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="name" tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
-                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
-                <Bar dataKey="revenue" fill="#16a34a" radius={0} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="name" fontSize={9} fontWeight={900} axisLine={false} tickLine={false} />
+                <YAxis fontSize={9} fontWeight={900} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ borderRadius: '0px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 900 }}
+                  formatter={(val: number) => [`${val.toLocaleString()} JT`, 'REVENUE']}
+                />
+                <Bar dataKey="revenue" fill="#16a34a" radius={[0, 0, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
-          <CardHeader className="bg-slate-50/50 border-b border-slate-100">
-            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Performa Wilayah Strategis</CardTitle>
-            <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Perbandingan Omzet Lintas Kabupaten/Kota</CardDescription>
+        <Card className="rounded-none border-none shadow-sm bg-white overflow-hidden">
+          <CardHeader className="p-5 border-b border-slate-50">
+            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Performa Wilayah Niaga</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 overflow-y-auto max-h-[320px]">
-            <div className="space-y-3">
-              {regionalComparison.map((region) => (
-                <div key={region.region} className="rounded-none border border-slate-100 bg-slate-50/50 p-3 flex items-center justify-between">
-                  <div>
-                    <p className="text-[11px] font-black text-slate-900 uppercase">{region.region}</p>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase mt-0.5">{region.orders} TRANSAKSI</p>
-                  </div>
-                  <p className="text-sm font-black text-slate-900">{formatCurrency(region.revenue)}</p>
+          <CardContent className="p-4 space-y-3 max-h-[300px] overflow-y-auto">
+            {regionalComparison.map((region, idx) => (
+              <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-none border border-slate-100">
+                <div>
+                  <p className="text-xs font-black text-slate-900 uppercase">{region.region}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{region.orders} PO SELESAI</p>
                 </div>
-              ))}
-            </div>
+                <p className="text-sm font-black text-slate-900">{(region.revenue / 1000000).toFixed(1)} JT</p>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>
 
-      <Card className="rounded-none border-slate-200 shadow-sm overflow-hidden border-t-4 border-t-slate-900">
-        <CardHeader className="bg-slate-50/50 border-b border-slate-100">
-          <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Log Transaksi Pasar Terbaru</CardTitle>
-          <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Daftar Purchase Order Jaringan Koperasi Nasional</CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
+      {/* Search & Action Bar */}
+      <Card className="rounded-none border-none shadow-sm bg-slate-50/50">
+        <CardContent className="p-4">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                placeholder="Cari nomor PO, buyer, atau koperasi..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-none pl-9 bg-white border-slate-200 h-11 text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-1 focus:ring-slate-900"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[180px] rounded-none h-11 bg-white border-slate-200 text-[10px] font-black uppercase tracking-widest">
+                  <SelectValue placeholder="STATUS" />
+                </SelectTrigger>
+                <SelectContent className="rounded-none border-slate-200">
+                  <SelectItem value="all">SEMUA STATUS</SelectItem>
+                  <SelectItem value="pending">TERTUNDA</SelectItem>
+                  <SelectItem value="diproses">DIPROSES</SelectItem>
+                  <SelectItem value="dikirim">DIKIRIM</SelectItem>
+                  <SelectItem value="selesai">SELESAI</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button 
+                onClick={() => handleAction('Buat Order')}
+                className="rounded-none h-11 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest px-6 shadow-none"
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" /> Buat Pesanan
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Main Data Table */}
+      <Card className="rounded-none border-none shadow-sm overflow-hidden bg-white">
+        <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">No. PO</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Buyer/Tujuan</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Koperasi/Asal</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Komoditas</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Tanggal</TableHead>
-                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Volume</TableHead>
-                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Nilai</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Status</TableHead>
+            <TableHeader className="bg-slate-100">
+              <TableRow className="border-none bg-slate-100 hover:bg-slate-100">
+                <TableHead className="h-12 px-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">NO PO</TableHead>
+                <TableHead className="h-12 px-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">BUYER / TUJUAN</TableHead>
+                <TableHead className="h-12 px-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">KOPERASI / ASAL</TableHead>
+                <TableHead className="h-12 px-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">KOMODITAS</TableHead>
+                <TableHead className="h-12 px-6 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">VOLUME</TableHead>
+                <TableHead className="h-12 px-6 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">NILAI</TableHead>
+                <TableHead className="h-12 px-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">STATUS</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredOrders.slice(0, 15).map((order) => (
-                <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
-                  <TableCell className="font-mono text-[11px] font-bold">{order.orderNumber}</TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="text-[11px] font-black text-slate-900 uppercase">{order.buyerName}</p>
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{order.destinationRegion}</p>
+                <TableRow key={order.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                  <TableCell className="px-6 py-4 font-mono text-[10px] font-black text-slate-400">{order.orderNumber}</TableCell>
+                  <TableCell className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{order.buyerName}</span>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{order.destinationRegion}</span>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="text-[11px] font-black text-slate-900 uppercase">{order.cooperativeName}</p>
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{order.villageName}</p>
+                  <TableCell className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className="text-xs font-black text-slate-600 uppercase tracking-tight">{order.cooperativeName}</span>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{order.villageName}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-[11px] font-bold uppercase">{order.commodityName}</TableCell>
-                  <TableCell className="text-[11px] font-bold uppercase">{formatDate(order.createdAt)}</TableCell>
-                  <TableCell className="text-right text-[11px] font-black">{(order.quantityKg * scaleFactor).toLocaleString('id-ID', { maximumFractionDigits: 1 })} KG</TableCell>
-                  <TableCell className="text-right text-[11px] font-black">{formatCurrency(order.totalValue * scaleFactor)}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={`rounded-none text-[9px] font-black uppercase tracking-widest ${statusTone(order.status)}`}>
-                      {order.status}
+                  <TableCell className="px-6 py-4 text-xs font-black text-slate-900 uppercase">{order.commodityName}</TableCell>
+                  <TableCell className="px-6 py-4 text-right">
+                    <span className="text-xs font-black text-slate-900">{(order.quantityKg * scaleFactor).toLocaleString()} KG</span>
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-right text-xs font-black text-slate-900">
+                    {formatCurrency(order.totalValue * scaleFactor)}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 text-center">
+                    <Badge className="rounded-none border-none shadow-none text-[9px] font-black uppercase tracking-widest px-2 h-5 bg-slate-100 text-slate-700">
+                      {order.status.toUpperCase()}
                     </Badge>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </CardContent>
+        </div>
       </Card>
 
-      <Card className="rounded-none border-none bg-slate-900 text-white shadow-xl">
-        <CardContent className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="rounded-none bg-slate-800 p-3">
-              <ShoppingCart className="h-5 w-5 text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-sm font-black uppercase tracking-widest text-white">Sinkronisasi Pasar Terintegrasi</p>
-              <p className="text-xs font-bold text-slate-400 uppercase mt-1">
-                Overview ini tersinkronisasi dengan modul Harga, Buyer, Marketplace, dan Katalog Nasional.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="outline" className="rounded-none border-slate-700 bg-slate-800 text-slate-400 font-black text-[10px] uppercase tracking-widest px-3 py-1">
-              {displayOrderCount} ORDER TERSAMBUNG
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Navigation Footer */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {[
+          { label: 'Direktori Buyer', icon: Users, path: '/pasar/buyer' },
+          { label: 'Katalog SKU', icon: Store, path: '/pasar/katalog' },
+          { label: 'Indeks Harga', icon: TrendingUp, path: '/pasar/harga' },
+        ].map((link) => (
+          <Link key={link.path} href={link.path} className="group">
+            <Card className="rounded-none border-slate-200 hover:border-slate-900 transition-all bg-white overflow-hidden">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 bg-slate-50 flex items-center justify-center border border-slate-100 text-slate-400 group-hover:text-slate-900 transition-colors">
+                    <link.icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 group-hover:text-slate-900">{link.label}</span>
+                </div>
+                <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
     </div>
   )
 }

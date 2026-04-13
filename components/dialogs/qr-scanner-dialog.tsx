@@ -60,7 +60,7 @@ export function QRScannerDialog({ open, onOpenChange, onScanComplete }: QRScanne
         expiryDate: '2026-03-15',
         batchNumber: 'B2026030501',
         warehouse: 'Gudang Pusat',
-        status: 'In Transit',
+        status: 'Dalam Perjalanan',
       }
       
       setScannedData(mockData)

@@ -265,7 +265,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
               <Leaf className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-sidebar-foreground">Kopdes</h1>
+              <h1 className="text-lg font-semibold tracking-[0.18em] text-sidebar-foreground">KOPDES</h1>
               <p className="text-sm text-sidebar-foreground/70">Koperasi Digital</p>
             </div>
           </Link>
@@ -297,7 +297,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                           className={cn(
                             "flex w-full items-center justify-between rounded-full px-4 py-3 text-[0.95rem] transition-all duration-200",
                             parentActive
-                              ? "border border-white/55 bg-[color-mix(in_oklab,white_88%,var(--dashboard-primary)_12%)] text-[var(--dashboard-primary)] shadow-[0_12px_24px_-18px_rgba(78,19,17,0.45)]"
+                              ? "rounded-[var(--surface-radius-sm)] border border-white/55 bg-[color-mix(in_oklab,white_88%,var(--dashboard-primary)_12%)] text-[var(--dashboard-primary)] shadow-[0_12px_24px_-18px_rgba(78,19,17,0.45)]"
                               : "text-sidebar-foreground hover:bg-white/8"
                           )}
                         >
@@ -330,7 +330,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                                   className={cn(
                                     "block w-full rounded-full px-4 py-2.5 text-left text-sm transition-all duration-200",
                                     isActive(child.href)
-                                      ? "border border-white/50 bg-[color-mix(in_oklab,white_88%,var(--dashboard-primary)_12%)] font-medium text-[var(--dashboard-primary)] shadow-[0_10px_22px_-18px_rgba(78,19,17,0.4)]"
+                                      ? "rounded-[var(--surface-radius-sm)] border border-white/50 bg-[color-mix(in_oklab,white_88%,var(--dashboard-primary)_12%)] font-medium text-[var(--dashboard-primary)] shadow-[0_10px_22px_-18px_rgba(78,19,17,0.4)]"
                                       : "text-sidebar-foreground/85 hover:bg-white/8 hover:text-sidebar-foreground"
                                   )}
                                 >
@@ -348,7 +348,7 @@ export function KopdesSidebarCustom({ open, onClose }: SidebarProps) {
                         className={cn(
                           "flex w-full items-center gap-3 rounded-full px-4 py-3 text-[0.95rem] transition-all duration-200",
                           isActive(item.href)
-                            ? "border border-white/55 bg-[color-mix(in_oklab,white_88%,var(--dashboard-primary)_12%)] font-medium text-[var(--dashboard-primary)] shadow-[0_12px_24px_-18px_rgba(78,19,17,0.45)]"
+                            ? "rounded-[var(--surface-radius-sm)] border border-white/55 bg-[color-mix(in_oklab,white_88%,var(--dashboard-primary)_12%)] font-medium text-[var(--dashboard-primary)] shadow-[0_12px_24px_-18px_rgba(78,19,17,0.45)]"
                             : "text-sidebar-foreground hover:bg-white/8"
                         )}
                       >

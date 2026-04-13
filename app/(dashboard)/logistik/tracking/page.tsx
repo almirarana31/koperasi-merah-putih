@@ -78,19 +78,46 @@ export default function TrackingPage() {
     return { activeCount, transitCount, pickupCount }
   }, [filteredShipments, scaleFactor])
 
+  const handleCommunicationConsole = async (driver: string, phone: string) => {
+    const sanitizedPhone = phone.replace(/[^\d+]/g, '')
+    let copied = false
+
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(phone)
+        copied = true
+      }
+    } catch {
+      copied = false
+    }
+
+    toast({
+      title: 'Konsol Komunikasi Aktif',
+      description: copied
+        ? `Nomor ${driver} (${phone}) telah disalin. Sistem juga mencoba membuka dialer.`
+        : `Menghubungi ${driver} di ${phone}. Jika dialer tidak terbuka, gunakan nomor ini secara manual.`,
+    })
+
+    if (typeof window !== 'undefined') {
+      window.setTimeout(() => {
+        window.location.href = `tel:${sanitizedPhone}`
+      }, 120)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT PELACAKAN LANGSUNG</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Pusat Pelacakan Langsung</h1>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            PEMANTAUAN ARMADA REAL-TIME & VISIBILITAS RANTAI PASOK • {stats.activeCount} UNIT DALAM PERJALANAN
+            Pemantauan Armada Real-Time & Visibilitas Rantai Pasok • {stats.activeCount} Unit Dalam Perjalanan
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
            <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none">
             <ShieldAlert className="h-3.5 w-3.5 mr-2 text-rose-600" />
-            PERINGATAN KETERLAMBATAN
+            Peringatan Keterlambatan
           </Button>
           <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Pusat Audit Diinisiasi", description: "Menghasilkan laporan armada lintas entitas..." })}>
             <Download className="h-4 w-4 mr-2" />
@@ -103,12 +130,12 @@ export default function TrackingPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'TOTAL DALAM PERJALANAN', value: stats.activeCount, sub: 'PENGIRIMAN AKTIF', icon: Truck, tone: 'slate' },
-          { label: 'DALAM TRANSIT', value: stats.transitCount, sub: 'DI JARINGAN JALAN', icon: Navigation, tone: 'blue' },
-          { label: 'MENUNGGU PENJEMPUTAN', value: stats.pickupCount, sub: 'DALAM ANTREAN MUAT', icon: Package, tone: 'amber' },
-          { label: 'TINGKAT TEPAT WAKTU', value: '96.2%', sub: 'RATA-RATA NASIONAL', icon: Activity, tone: 'emerald' },
+          { label: 'Total Dalam Perjalanan', value: stats.activeCount, sub: 'PENGIRIMAN AKTIF', icon: Truck, tone: 'slate' },
+          { label: 'Dalam Transit', value: stats.transitCount, sub: 'DI JARINGAN JALAN', icon: Navigation, tone: 'blue' },
+          { label: 'Menunggu Penjemputan', value: stats.pickupCount, sub: 'DALAM ANTREAN MUAT', icon: Package, tone: 'amber' },
+          { label: 'Tingkat Tepat Waktu', value: '96.2%', sub: 'RATA-RATA NASIONAL', icon: Activity, tone: 'emerald' },
         ].map((s, i) => (
-          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
              <div className={`h-1 w-full ${
               s.tone === 'emerald' ? 'bg-emerald-500' : 
               s.tone === 'blue' ? 'bg-blue-500' : 
@@ -147,7 +174,7 @@ export default function TrackingPage() {
                     </div>
                     <h3 className="text-lg font-black text-white uppercase tracking-widest">Peta Logistik Nasional</h3>
                     <p className="text-[10px] font-bold text-slate-500 uppercase mt-2 max-w-sm mx-auto tracking-widest leading-relaxed">
-                       INTEGRASI SATELIT REAL-TIME PEMANTAUAN RUTE DISTRIBUSI MULTI-WILAYAH.
+                       Integrasi Satelit Real-Time Pemantauan Rute Distribusi Multi-Wilayah.
                     </p>
                     <div className="mt-8 flex flex-wrap justify-center gap-2">
                        <Badge className="bg-blue-600 text-white font-black text-[9px] h-5 border-none rounded-none px-2 tracking-widest">32 TRANSIT</Badge>
@@ -159,16 +186,16 @@ export default function TrackingPage() {
               <div className="absolute bottom-6 left-6 flex items-center gap-4 bg-slate-900/90 p-3 rounded-none border border-white/10 backdrop-blur-md">
                  <div className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-                    <span className="text-[9px] font-black text-white uppercase tracking-widest">Live Feed Active</span>
+                    <span className="text-[9px] font-black text-white uppercase tracking-widest">Live Feed Aktif</span>
                  </div>
                  <div className="h-3 w-px bg-slate-700" />
-                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Last Sync: {new Date().toLocaleTimeString()}</span>
+                 <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Sinkronisasi Terakhir: {new Date().toLocaleTimeString()}</span>
               </div>
            </Card>
 
            <div className="grid gap-4 md:grid-cols-2">
               {filteredShipments.map((shipment) => (
-                  <Card key={shipment.id} className="border-none bg-white shadow-sm overflow-hidden group hover:shadow-md transition-all">
+                  <Card key={shipment.id} className="border-none bg-white shadow-sm overflow-hidden group hover:shadow-md transition-all rounded-none">
                     <div className={`h-1 w-full ${shipment.status === 'transit' ? 'bg-blue-500' : 'bg-amber-500'}`} />
                     <CardHeader className="p-4 pb-2">
                        <div className="flex items-start justify-between">
@@ -193,7 +220,7 @@ export default function TrackingPage() {
                     <CardContent className="p-4 space-y-4">
                        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-50">
                           <div>
-                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">DRIVER</p>
+                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">PENGEMUDI</p>
                              <p className="text-[10px] font-black text-slate-900 mt-1">{shipment.driver}</p>
                              <p className="text-[9px] font-bold text-slate-400 mt-0.5">{shipment.driverPhone}</p>
                           </div>
@@ -229,10 +256,11 @@ export default function TrackingPage() {
                        </div>
 
                        <Button 
+                         type="button"
                          className="w-full h-9 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-800 transition-all"
-                         onClick={() => toast({ title: "Konsol Komunikasi", description: `Menghubungi pengemudi ${shipment.driver} (${shipment.driverPhone})...` })}
+                         onClick={() => handleCommunicationConsole(shipment.driver, shipment.driverPhone)}
                        >
-                         KONSOL KOMUNIKASI
+                         Konsol Komunikasi
                        </Button>
                     </CardContent>
                   </Card>
@@ -246,26 +274,26 @@ export default function TrackingPage() {
                <CardHeader className="p-4 border-b border-white/5 bg-slate-900/50">
                   <div className="flex items-center justify-between">
                      <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                        <Activity className="h-4 w-4 text-emerald-500" /> FEED LOGISTIK
+                        <Activity className="h-4 w-4 text-emerald-500" /> Feed Logistik
                      </CardTitle>
                      <div className="flex items-center gap-1.5">
                         <div className="h-1 w-1 bg-emerald-500 rounded-full animate-ping" />
-                        <span className="text-[9px] font-black text-emerald-500 tracking-widest">SINKRONISASI</span>
+                        <span className="text-[9px] font-black text-emerald-500 tracking-widest">Sinkronisasi</span>
                      </div>
                   </div>
                </CardHeader>
               <CardContent className="p-0">
                  <div className="divide-y divide-white/5">
                     {[
-                      { time: '14:20', action: 'Tangerang -> Karawang', status: 'IN TRANSIT', unit: 'TRK-012' },
-                      { time: '14:15', action: 'Pickup Selesai: Subang', status: 'ON ROAD', unit: 'TRK-005' },
-                      { time: '13:58', action: 'Anomali Rute Terdeteksi', status: 'WARNING', unit: 'TRK-022' },
-                      { time: '13:42', action: 'Armada Siaga: Bandung', status: 'IDLE', unit: 'TRK-008' },
+                      { time: '14:20', action: 'Tangerang -> Karawang', status: 'DALAM TRANSIT', unit: 'TRK-012' },
+                      { time: '14:15', action: 'Penjemputan Selesai: Subang', status: 'DI JALAN', unit: 'TRK-005' },
+                      { time: '13:58', action: 'Anomali Rute Terdeteksi', status: 'PERINGATAN', unit: 'TRK-022' },
+                      { time: '13:42', action: 'Armada Siaga: Bandung', status: 'SIAGA', unit: 'TRK-008' },
                     ].map((log, i) => (
                       <div key={i} className="p-4 hover:bg-white/5 transition-colors cursor-pointer group">
                          <div className="flex items-center justify-between mb-2">
                             <Badge className={`text-[9px] font-black px-1.5 h-4 border-none rounded-none tracking-widest ${
-                              log.status === 'WARNING' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
+                              log.status === 'PERINGATAN' ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
                             }`}>
                                {log.status}
                             </Badge>
@@ -290,7 +318,7 @@ export default function TrackingPage() {
 
             <Card className="border-none shadow-sm bg-slate-50 rounded-none">
                <CardHeader className="p-4 border-b border-slate-200">
-                  <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">PEMERIKSAAN KESEHATAN: JARINGAN</CardTitle>
+                  <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Pemeriksaan Kesehatan: Jaringan</CardTitle>
                </CardHeader>
                <CardContent className="p-4 space-y-4">
                   {[
@@ -337,4 +365,3 @@ export default function TrackingPage() {
     </div>
   )
 }
-

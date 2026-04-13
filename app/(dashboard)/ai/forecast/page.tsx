@@ -100,24 +100,24 @@ export default function ForecastPage() {
       {/* Header Section */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center shadow-xl">
+          <div className="h-10 w-10 rounded-none bg-slate-900 flex items-center justify-center shadow-xl">
             <Brain className="h-6 w-6 text-emerald-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold  text-slate-900 ">AI Demand Forecast</h1>
-            <p className="text-xs font-bold text-slate-500   mt-1">
-              Predictive Market Intelligence • Data-Driven Supply Chain Management
+            <h1 className="text-3xl font-black text-slate-900 ">Prediksi Permintaan AI</h1>
+            <p className="text-xs font-bold text-slate-500 mt-1">
+              Intelijen Pasar Prediktif • Manajemen Rantai Pasok Berbasis Data
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-           <Button variant="outline" size="sm" className="h-10 text-xs font-semibold   text-slate-600 border-slate-200">
+           <Button variant="outline" size="sm" className="h-10 text-xs font-bold text-slate-600 border-slate-200 rounded-none">
             <FileText className="h-4 w-4 mr-2 text-rose-600" />
-            Forecast Report
+            Laporan Prediksi
           </Button>
-          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold   px-6 shadow-lg">
+          <Button size="sm" className="h-10 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-6 shadow-lg rounded-none">
             <Activity className="h-4 w-4 mr-2" />
-            Run Prediction
+            Jalankan Prediksi
           </Button>
         </div>
       </div>
@@ -130,18 +130,18 @@ export default function ForecastPage() {
         {[
           { label: 'Demand Agregat', value: stats.nationalDemand.toLocaleString(), sub: 'Unit/Bulan', icon: TrendingUp, color: 'text-slate-900' },
           { label: 'Proyeksi Pertumbuhan', value: stats.growthRate + '%', sub: 'YoY Forecast', icon: Activity, color: 'text-emerald-600' },
-          { label: 'Model Accuracy', value: stats.accuracy + '%', sub: 'Confidence', icon: Brain, color: 'text-blue-600' },
-          { label: 'Region Scope', value: filters.provinceId === 'all' ? 'Nasional' : filters.provinceId, sub: 'Coverage', icon: Globe, color: 'text-amber-600' },
+          { label: 'Akurasi Model', value: stats.accuracy + '%', sub: 'Confidence', icon: Brain, color: 'text-blue-600' },
+          { label: 'Cakupan Wilayah', value: filters.provinceId === 'all' ? 'Nasional' : filters.provinceId, sub: 'Coverage', icon: Globe, color: 'text-amber-600' },
         ].map((s, i) => (
-          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+          <Card key={i} className="border-none shadow-sm bg-white rounded-none overflow-hidden">
             <CardContent className="p-4 flex items-center gap-4">
-              <div className="h-10 w-10 rounded-lg bg-slate-50 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-none bg-slate-50 flex items-center justify-center">
                 <s.icon className={`h-5 w-5 ${s.color}`} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-slate-400  ">{s.label}</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{s.label}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-xl font-semibold  ${s.color}`}>{s.value}</span>
+                  <span className={`text-xl font-black ${s.color}`}>{s.value}</span>
                   <span className="text-xs font-bold text-slate-500 ">{s.sub}</span>
                 </div>
               </div>
@@ -153,14 +153,14 @@ export default function ForecastPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
         <div className="space-y-6">
            {/* Forecast Area Chart */}
-           <Card className="border-none shadow-sm overflow-hidden">
+           <Card className="border-none shadow-sm rounded-none overflow-hidden">
               <CardHeader className="p-6 border-b border-slate-50">
                  <div className="flex items-center justify-between">
                     <div>
-                       <CardTitle className="text-xs font-semibold text-slate-900  ">Analisis Tren & Proyeksi: {selectedKomoditas}</CardTitle>
-                       <CardDescription className="text-xs font-bold text-slate-400  mt-1">Komparasi Data Aktual vs Machine Learning Prediction</CardDescription>
+                       <CardTitle className="text-sm font-black text-slate-900 uppercase tracking-wider">Analisis Tren & Proyeksi: {selectedKomoditas}</CardTitle>
+                       <CardDescription className="text-xs font-bold text-slate-400 mt-1">Komparasi Data Aktual vs Prediksi Machine Learning</CardDescription>
                     </div>
-                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-100 text-xs font-semibold ">MODEL: ARIMA-PROPHET</Badge>
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-100 text-xs font-bold rounded-none">MODEL: ARIMA-PROPHET</Badge>
                  </div>
               </CardHeader>
               <CardContent className="p-6">
@@ -181,7 +181,7 @@ export default function ForecastPage() {
                         <XAxis dataKey="hari" fontSize={9} fontWeight={900} axisLine={false} tickLine={false} />
                         <YAxis fontSize={9} fontWeight={900} axisLine={false} tickLine={false} />
                         <Tooltip 
-                          contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
+                          contentStyle={{ borderRadius: '0px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 'bold' }}
                         />
                         <Area type="monotone" dataKey="aktual" stroke="#0f172a" strokeWidth={3} fill="url(#colorAktual)" name="Data Aktual" />
                         <Area type="monotone" dataKey="prediksi" stroke="#10b981" strokeWidth={3} fill="url(#colorPrediksi)" name="ML Forecast" />
@@ -196,7 +196,7 @@ export default function ForecastPage() {
               {filteredForecast.map((item) => (
                 <Card 
                   key={item.nama}
-                  className={`group cursor-pointer border-none shadow-sm hover:shadow-xl transition-all border-t-4 ${
+                  className={`group cursor-pointer border-none shadow-sm hover:shadow-xl transition-all border-t-4 rounded-none ${
                     selectedKomoditas === item.nama ? 'border-t-emerald-500 bg-emerald-50/20' : 'border-t-slate-900 bg-white'
                   }`}
                   onClick={() => setSelectedKomoditas(item.nama)}
@@ -204,33 +204,33 @@ export default function ForecastPage() {
                   <CardContent className="p-5">
                      <div className="flex items-start justify-between">
                         <div>
-                           <h3 className="text-xs font-semibold text-slate-900  ">{item.nama}</h3>
-                           <p className="text-xs font-bold text-slate-400   mt-1">Region: {item.region}</p>
+                           <h3 className="text-xs font-black text-slate-900 uppercase tracking-wider">{item.nama}</h3>
+                           <p className="text-xs font-bold text-slate-400 mt-1">Wilayah: {item.region}</p>
                         </div>
-                        <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${item.trend === 'up' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
+                        <div className={`h-8 w-8 rounded-none flex items-center justify-center ${item.trend === 'up' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
                            {item.trend === 'up' ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
                         </div>
                      </div>
                      
                      <div className="grid grid-cols-2 gap-4 mt-6">
                         <div>
-                           <p className="text-xs font-semibold text-slate-400  ">Current Demand</p>
-                           <p className="text-lg font-semibold text-slate-900 ">{item.current.toLocaleString()}</p>
+                           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Demand Saat Ini</p>
+                           <p className="text-lg font-black text-slate-900 ">{item.current.toLocaleString()}</p>
                         </div>
                         <div className="text-right">
-                           <p className="text-xs font-semibold text-slate-400  ">Forecast (30D)</p>
-                           <p className={`text-lg font-semibold  ${item.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>{item.forecast30.toLocaleString()}</p>
+                           <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Prediksi (30H)</p>
+                           <p className={`text-lg font-black ${item.trend === 'up' ? 'text-emerald-600' : 'text-rose-600'}`}>{item.forecast30.toLocaleString()}</p>
                         </div>
                      </div>
 
                      <div className="mt-4 flex items-center justify-between">
-                        <Badge className={`text-xs font-semibold  h-5 border-none ${
+                        <Badge className={`text-xs font-bold h-5 border-none rounded-none ${
                           item.trend === 'up' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
                         }`}>
-                           GROWTH: {item.change}
+                           PERTUMBUHAN: {item.change}
                         </Badge>
-                        <Button variant="ghost" className="h-6 text-xs font-semibold text-slate-400 group-hover:text-slate-900 transition-colors  px-0">
-                           Analyze Data <ArrowRight className="ml-1 h-3 w-3" />
+                        <Button variant="ghost" className="h-6 text-xs font-bold text-slate-400 group-hover:text-slate-900 transition-colors px-0 rounded-none">
+                           Analisis Data <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
                      </div>
                   </CardContent>
@@ -241,62 +241,62 @@ export default function ForecastPage() {
 
         {/* Intelligence Side Panel */}
         <div className="space-y-6">
-           <Card className="border-none shadow-xl bg-slate-950 text-white overflow-hidden">
+           <Card className="border-none shadow-xl bg-slate-950 text-white rounded-none overflow-hidden">
               <CardHeader className="p-5 border-b border-white/5 bg-slate-900/50">
                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xs font-semibold   flex items-center gap-2">
-                       <PieChart className="h-4 w-4 text-emerald-500" /> INSIGHT FEED
+                    <CardTitle className="text-xs font-black flex items-center gap-2 uppercase tracking-wider">
+                       <PieChart className="h-4 w-4 text-emerald-500" /> Aliran Intelijen
                     </CardTitle>
                     <div className="flex items-center gap-1.5">
                        <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-ping" />
-                       <span className="text-xs font-semibold text-emerald-500  ">LIVE</span>
+                       <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider">Live</span>
                     </div>
                  </div>
               </CardHeader>
               <CardContent className="p-0">
                  <div className="divide-y divide-white/5">
                     {[
-                      { type: 'OPPORTUNITY', title: 'Supply Gap: Beras A', region: 'Sumatera', impact: 'High' },
-                      { type: 'RISK', title: 'Demand Drop: Tomat', region: 'Bali', impact: 'Medium' },
-                      { type: 'ALERT', title: 'Price Volatility Spike', region: 'Jawa Timur', impact: 'High' },
-                      { type: 'INSIGHT', title: 'Seasonal Trend Shift', region: 'Nasional', impact: 'Low' },
+                      { type: 'PELUANG', title: 'Gap Pasokan: Beras A', region: 'Sumatera', impact: 'High' },
+                      { type: 'RISIKO', title: 'Penurunan Demand: Tomat', region: 'Bali', impact: 'Medium' },
+                      { type: 'PERINGATAN', title: 'Lonjakan Volatilitas Harga', region: 'Jawa Timur', impact: 'High' },
+                      { type: 'WAWASAN', title: 'Pergeseran Tren Musiman', region: 'Nasional', impact: 'Low' },
                     ].map((log, i) => (
                       <div key={i} className="p-5 hover:bg-white/5 transition-colors cursor-pointer group">
                          <div className="flex items-center justify-between mb-2">
-                            <Badge className={`text-xs font-semibold  px-1.5 h-4 border-none ${
-                              log.type === 'RISK' || log.type === 'ALERT' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'
+                            <Badge className={`text-xs font-bold px-1.5 h-4 border-none rounded-none ${
+                              log.type === 'RISIKO' || log.type === 'PERINGATAN' ? 'bg-rose-600 text-white' : 'bg-emerald-600 text-white'
                             }`}>
                                {log.type}
                             </Badge>
-                            <span className={`text-xs font-semibold  ${log.impact === 'High' ? 'text-rose-400' : 'text-slate-500'}`}>IMPACT: {log.impact}</span>
+                            <span className={`text-xs font-bold uppercase tracking-wider ${log.impact === 'High' ? 'text-rose-400' : 'text-slate-500'}`}>Dampak: {log.impact}</span>
                          </div>
-                         <p className="text-sm font-semibold text-slate-200  leading-tight group-hover:text-emerald-400 transition-colors">{log.title}</p>
-                         <p className="text-xs font-bold text-slate-500  mt-1 ">SCOPE: {log.region}</p>
+                         <p className="text-sm font-bold text-slate-200 leading-tight group-hover:text-emerald-400 transition-colors">{log.title}</p>
+                         <p className="text-xs font-bold text-slate-500 mt-1 uppercase tracking-wider">Cakupan: {log.region}</p>
                       </div>
                     ))}
                  </div>
                  <div className="p-4 bg-white/5 border-t border-white/5 text-center">
-                    <Button variant="ghost" className="w-full text-xs font-semibold text-slate-500 hover:text-white   h-10">
-                       Buka Intelligence Center →
+                    <Button variant="ghost" className="w-full text-xs font-bold text-slate-500 hover:text-white h-10 rounded-none">
+                       Buka Pusat Intelijen →
                     </Button>
                  </div>
               </CardContent>
            </Card>
 
-           <Card className="border-none shadow-sm bg-slate-50">
+           <Card className="border-none shadow-sm bg-slate-50 rounded-none">
               <CardHeader className="p-4 border-b border-slate-200">
-                 <CardTitle className="text-xs font-semibold   text-slate-900">AI Model Health</CardTitle>
+                 <CardTitle className="text-xs font-black text-slate-900 uppercase tracking-wider">Kesehatan Model AI</CardTitle>
               </CardHeader>
               <CardContent className="p-4 space-y-4">
                  {[
-                   { label: 'MAE Score', val: '0.042', status: 'Stable' },
-                   { label: 'Data Freshness', val: 'Real-time', status: 'Synced' },
-                   { label: 'Processing Time', val: '124ms', status: 'Optimal' },
+                   { label: 'Skor MAE', val: '0.042', status: 'Stabil' },
+                   { label: 'Kesegaran Data', val: 'Real-time', status: 'Sinkron' },
+                   { label: 'Waktu Pemrosesan', val: '124ms', status: 'Optimal' },
                  ].map((h, i) => (
                     <div key={i} className="flex items-center justify-between">
-                       <span className="text-xs font-bold text-slate-500 ">{h.label}</span>
+                       <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{h.label}</span>
                        <div className="text-right">
-                          <p className="text-xs font-semibold text-slate-900 ">{h.val}</p>
+                          <p className="text-xs font-black text-slate-900 ">{h.val}</p>
                           <p className="text-xs font-bold text-emerald-600 ">{h.status}</p>
                        </div>
                     </div>
@@ -307,24 +307,24 @@ export default function ForecastPage() {
       </div>
 
       {/* Critical AI Anomaly Banner */}
-      <Card className="alert-surface-banner border-none overflow-hidden relative group cursor-pointer">
+      <Card className="alert-surface-banner border-none overflow-hidden relative group cursor-pointer rounded-none">
         <div className="alert-surface-watermark absolute top-0 right-0 p-6 transition-transform duration-700 group-hover:scale-110">
           <ShieldAlert className="h-32 w-32" />
         </div>
         <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-8 relative">
           <div className="flex items-center gap-6">
-             <div className="alert-surface-icon flex h-14 w-14 items-center justify-center rounded-2xl shrink-0">
+             <div className="alert-surface-icon flex h-14 w-14 items-center justify-center rounded-none shrink-0">
                 <Activity className="h-7 w-7" />
              </div>
              <div>
                 <div className="flex items-center gap-3">
-                   <Badge className="alert-surface-chip h-5 px-2 text-xs font-semibold">Predictive Alert</Badge>
-                   <span className="alert-surface-meta text-sm font-medium">Supply-Demand Mismatch Forecast (&gt;20%)</span>
+                   <Badge className="alert-surface-chip h-5 px-2 text-xs font-bold rounded-none">Peringatan Prediktif</Badge>
+                   <span className="alert-surface-meta text-sm font-black uppercase tracking-wider">Prediksi Ketidaksesuaian Supply-Demand (&gt;20%)</span>
                 </div>
-                <p className="alert-surface-copy mt-2 text-lg font-semibold">Perhatian: AI memprediksi kelangkaan stok Cabai Merah di wilayah Sumatera Utara dalam 14 hari ke depan.</p>
+                <p className="alert-surface-copy mt-2 text-lg font-black">Perhatian: AI memprediksi kelangkaan stok Cabai Merah di wilayah Sumatera Utara dalam 14 hari ke depan.</p>
              </div>
           </div>
-          <Button className="alert-surface-action h-12 rounded-xl px-8 text-sm font-semibold transition-all">
+          <Button className="alert-surface-action h-12 rounded-none px-8 text-sm font-black transition-all">
              Optimasi Distribusi
           </Button>
         </CardContent>

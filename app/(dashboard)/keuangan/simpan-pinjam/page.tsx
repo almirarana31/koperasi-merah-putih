@@ -96,20 +96,20 @@ export default function SimpanPinjamPage() {
                 <ArrowLeft className="h-4 w-4 text-slate-600" />
               </Link>
             </Button>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">PUSAT SIMPAN PINJAM</h1>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Pusat Simpan Pinjam</h1>
           </div>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed ml-12">
-            MONITORING PORTOFOLIO KOPERASI NASIONAL • {formatCurrency(stats.totalSimpanan)} TOTAL MODAL DIKELOLA
+            Monitoring Portofolio Koperasi Nasional • {formatCurrency(stats.totalSimpanan)} Total Modal Dikelola
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Sinkronisasi Portofolio", description: "Mengambil data buku besar anggota real-time..." })}>
             <History className="h-3.5 w-3.5 mr-2 text-blue-600" />
-            RIWAYAT
+            Riwayat
           </Button>
           <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Pengajuan Pinjaman", description: "Membuka portal entri kredit..." })}>
             <Plus className="h-4 w-4 mr-2" />
-            PENGAJUAN BARU
+            Pengajuan Baru
           </Button>
         </div>
       </div>
@@ -118,12 +118,12 @@ export default function SimpanPinjamPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'TOTAL SIMPANAN', value: formatCurrency(stats.totalSimpanan), sub: 'MODAL DIKELOLA', icon: Wallet, tone: 'emerald' },
-          { label: 'TOTAL PINJAMAN', value: formatCurrency(stats.totalPinjaman), sub: 'KREDIT AKTIF', icon: CreditCard, tone: 'blue' },
-          { label: 'SALDO TERHUTANG', value: formatCurrency(stats.outstanding), sub: 'RISIKO PIUTANG', icon: AlertTriangle, tone: 'rose' },
-          { label: 'TINGKAT PENGEMBALIAN', value: stats.repaymentRate + '%', sub: 'RATA-RATA NASIONAL', icon: TrendingUp, tone: 'emerald' },
+          { label: 'Total Simpanan', value: formatCurrency(stats.totalSimpanan), sub: 'MODAL DIKELOLA', icon: Wallet, tone: 'emerald' },
+          { label: 'Total Pinjaman', value: formatCurrency(stats.totalPinjaman), sub: 'KREDIT AKTIF', icon: CreditCard, tone: 'blue' },
+          { label: 'Saldo Terhutang', value: formatCurrency(stats.outstanding), sub: 'RISIKO PIUTANG', icon: AlertTriangle, tone: 'rose' },
+          { label: 'Tingkat Pengembalian', value: stats.repaymentRate + '%', sub: 'RATA-RATA NASIONAL', icon: TrendingUp, tone: 'emerald' },
         ].map((s, i) => (
-          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
              <div className={`h-1 w-full ${
               s.tone === 'emerald' ? 'bg-emerald-500' : 
               s.tone === 'blue' ? 'bg-blue-500' : 
@@ -151,8 +151,8 @@ export default function SimpanPinjamPage() {
 
       <Tabs defaultValue="pinjaman" className="space-y-6">
         <TabsList className="bg-slate-100 p-1 h-11 rounded-none shadow-inner w-full sm:w-auto">
-          <TabsTrigger value="pinjaman" className="rounded-none font-black text-[10px] uppercase tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-md">BUKU BESAR KREDIT NASIONAL</TabsTrigger>
-          <TabsTrigger value="simpanan" className="rounded-none font-black text-[10px] uppercase tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-md">KUMPULAN MODAL DIKELOLA</TabsTrigger>
+          <TabsTrigger value="pinjaman" className="rounded-none font-black text-[10px] uppercase tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-md">Buku Besar Kredit Nasional</TabsTrigger>
+          <TabsTrigger value="simpanan" className="rounded-none font-black text-[10px] uppercase tracking-widest px-8 data-[state=active]:bg-white data-[state=active]:shadow-md">Kumpulan Modal Dikelola</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pinjaman" className="space-y-6">
@@ -164,7 +164,7 @@ export default function SimpanPinjamPage() {
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="CARI BERDASARKAN NAMA ANGGOTA ATAU ID PINJAMAN..."
+                  placeholder="Cari berdasarkan nama anggota atau id pinjaman..."
                   className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
                 />
               </div>
@@ -176,11 +176,11 @@ export default function SimpanPinjamPage() {
             <CardHeader className="p-6 border-b border-slate-50">
               <div className="flex items-center justify-between">
                  <div>
-                    <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">MANIFEST PORTOFOLIO KREDIT</CardTitle>
-                    <CardDescription className="text-[10px] font-bold text-slate-400 uppercase mt-1">AUDIT REAL-TIME AKUN PINJAMAN AKTIF</CardDescription>
+                    <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Manifest Portofolio Kredit</CardTitle>
+                    <CardDescription className="text-[10px] font-bold text-slate-400 uppercase mt-1">Audit Real-Time Akun Pinjaman Aktif</CardDescription>
                  </div>
                  <Button variant="outline" size="sm" className="h-8 text-[9px] font-black uppercase tracking-widest border-slate-200 rounded-none" onClick={() => toast({ title: "Inisiasi Ekspor", description: "Menyiapkan manifest pinjaman untuk audit nasional..." })}>
-                    <Download className="h-3 w-3 mr-2" /> EKSPOR MANIFEST
+                    <Download className="h-3 w-3 mr-2" /> Ekspor Manifest
                  </Button>
               </div>
             </CardHeader>
@@ -188,11 +188,11 @@ export default function SimpanPinjamPage() {
               <Table>
                 <TableHeader className="bg-slate-900">
                   <TableRow className="hover:bg-slate-900 border-none">
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">ANGGOTA / WILAYAH</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">POKOK</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">PENGEMBALIAN</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">STATUS</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">AUDIT</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">Anggota / Wilayah</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Pokok</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Pengembalian</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">Status</TableHead>
+                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Audit</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -230,7 +230,7 @@ export default function SimpanPinjamPage() {
                         </TableCell>
                         <TableCell className="px-6 py-4 text-right">
                           <Button variant="ghost" size="sm" className="h-8 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-white rounded-none group-hover:shadow-sm" onClick={() => toast({ title: "Audit Akun", description: "Memuat buku besar rinci untuk " + loan.id })}>
-                             DETAIL
+                             Detail
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -248,11 +248,11 @@ export default function SimpanPinjamPage() {
                  <CardHeader className="p-6 border-b border-white/5 bg-slate-900/50">
                     <div className="flex items-center justify-between">
                        <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                          <Activity className="h-4 w-4 text-emerald-500" /> FEED ALIRAN MODAL
+                          <Activity className="h-4 w-4 text-emerald-500" /> Feed Aliran Modal
                        </CardTitle>
                        <div className="flex items-center gap-1.5">
                           <div className="h-1 w-1 bg-emerald-500 rounded-full animate-ping" />
-                          <span className="text-[9px] font-black text-emerald-500 tracking-widest">SINKRONISASI</span>
+                          <span className="text-[9px] font-black text-emerald-500 tracking-widest">Sinkronisasi</span>
                        </div>
                     </div>
                  </CardHeader>
@@ -267,12 +267,12 @@ export default function SimpanPinjamPage() {
                                    </div>
                                    <div>
                                       <p className="text-[11px] font-black text-white uppercase tracking-tight">{m.nama}</p>
-                                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">SIMPANAN WAJIB • {m.status}</p>
+                                      <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Simpanan Wajib • {m.status}</p>
                                    </div>
                                 </div>
                                 <div className="text-right">
                                    <p className="text-xs font-black text-emerald-400">+{formatCurrency(m.simpananWajib)}</p>
-                                   <p className="text-[9px] font-bold text-slate-500 uppercase">SELESAI HARI INI</p>
+                                   <p className="text-[9px] font-bold text-slate-500 uppercase">Selesai Hari Ini</p>
                                 </div>
                              </div>
                           </div>
@@ -284,13 +284,13 @@ export default function SimpanPinjamPage() {
               <div className="space-y-6">
                  <Card className="border-none shadow-sm bg-slate-50 rounded-none">
                     <CardHeader className="p-4 border-b border-slate-200">
-                       <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">STRUKTUR MODAL</CardTitle>
+                       <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Struktur Modal</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
                        {[
-                         { label: 'POKOK (FONDASI)', val: '42.4%', color: 'bg-emerald-500' },
-                         { label: 'WAJIB (OPERASIONAL)', val: '38.6%', color: 'bg-blue-500' },
-                         { label: 'SUKARELA (LIKUID)', val: '19.0%', color: 'bg-slate-900' },
+                         { label: 'Pokok (Fondasi)', val: '42.4%', color: 'bg-emerald-500' },
+                         { label: 'Wajib (Operasional)', val: '38.6%', color: 'bg-blue-500' },
+                         { label: 'Sukarela (Likuid)', val: '19.0%', color: 'bg-slate-900' },
                        ].map((c, i) => (
                           <div key={i} className="space-y-2">
                              <div className="flex items-center justify-between">
@@ -307,12 +307,12 @@ export default function SimpanPinjamPage() {
 
                   <Card className="border-none shadow-sm bg-white rounded-none border border-slate-100">
                     <CardHeader className="p-4 border-b border-slate-100">
-                       <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">MITIGASI RISIKO</CardTitle>
+                       <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Mitigasi Risiko</CardTitle>
                     </CardHeader>
                     <CardContent className="p-4 space-y-4">
                        {[
-                         { label: 'RASIO CADANGAN', val: '12.4%', status: 'Optimal' },
-                         { label: 'INDEKS LIKUIDITAS', val: '1.82', status: 'Stabil' },
+                         { label: 'Rasio Cadangan', val: '12.4%', status: 'Optimal' },
+                         { label: 'Indeks Likuiditas', val: '1.82', status: 'Stabil' },
                        ].map((h, i) => (
                           <div key={i} className="flex items-center justify-between">
                              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{h.label}</span>
@@ -323,7 +323,7 @@ export default function SimpanPinjamPage() {
                           </div>
                        ))}
                        <Button variant="ghost" className="w-full text-[9px] font-black text-slate-500 hover:text-slate-900 uppercase tracking-widest h-8 rounded-none border-t border-slate-50 pt-2" onClick={() => toast({ title: "Modul Risiko", description: "Memuat heatmap risiko modal nasional..." })}>
-                          ANALITIK LENGKAP →
+                          Analitik Lengkap →
                        </Button>
                     </CardContent>
                  </Card>

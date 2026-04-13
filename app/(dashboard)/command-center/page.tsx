@@ -53,6 +53,7 @@ import { useAuth } from "@/lib/auth/use-auth"
 import { KementerianFilterBar } from "@/components/dashboard/kementerian-filter-bar"
 import { ScopeFilters } from "@/lib/kementerian-dashboard-data"
 import { canAccessRoute, canExport } from "@/lib/rbac"
+import { getScopeCaption } from "@/lib/cross-entity-operations"
 
 // Enhanced Mock Data for Cross-Entity Monitoring
 const initialProductionData = [
@@ -95,7 +96,7 @@ export default function ExecutiveCommandCenterPage() {
   const [activeView, setActiveView] = useState<"war-room" | "monitoring" | "audit">("war-room")
   const [isExporting, setIsExporting] = useState(false)
   const [logs, setLogs] = useState(initialLogs)
-  const scopeLabel = filters.provinceId === 'all' ? 'National Scope' : `Regional Scope: ${toTitleCase(filters.provinceId)}`
+  const scopeLabel = getScopeCaption(filters)
   const canExportPdf = role ? canExport(role, 'pdf') : false
   const canViewRouteDetails = role ? canAccessRoute(role, '/logistik/rute') : false
   const canOpenAuditConsole = role ? canAccessRoute(role, '/assistant') : false
@@ -182,11 +183,11 @@ export default function ExecutiveCommandCenterPage() {
     toast.info(`Compiling Global Report For ${scopeLabel}...`)
 
     const summaryRows = [
-      { Section: 'Summary', Metric: 'Active Units', Value: totals.activeUnits.toLocaleString('id-ID') },
-      { Section: 'Summary', Metric: 'Total Members', Value: totals.totalMembers.toLocaleString('id-ID') },
-      { Section: 'Summary', Metric: 'Inflow', Value: `Rp ${(totals.inflow / 1000000).toFixed(1)} JT` },
-      { Section: 'Summary', Metric: 'Outflow', Value: `Rp ${(totals.outflow / 1000000).toFixed(1)} JT` },
-      { Section: 'Summary', Metric: 'Net Position', Value: `Rp ${(totals.net / 1000000).toFixed(1)} JT` },
+      { Section: 'Ringkasan', Metric: 'Unit Aktif', Value: totals.activeUnits.toLocaleString('id-ID') },
+      { Section: 'Ringkasan', Metric: 'Total Anggota', Value: totals.totalMembers.toLocaleString('id-ID') },
+      { Section: 'Ringkasan', Metric: 'Arus Masuk', Value: `Rp ${(totals.inflow / 1000000).toFixed(1)} JT` },
+      { Section: 'Ringkasan', Metric: 'Arus Keluar', Value: `Rp ${(totals.outflow / 1000000).toFixed(1)} JT` },
+      { Section: 'Ringkasan', Metric: 'Posisi Bersih', Value: `Rp ${(totals.net / 1000000).toFixed(1)} JT` },
       ...productionData.map((row) => ({
         Section: 'Production Trend',
         Metric: row.month,
@@ -221,12 +222,15 @@ export default function ExecutiveCommandCenterPage() {
               <ShieldAlert className="h-5 w-5 text-[var(--dashboard-primary)]" />
             </div>
             <div>
-              <h1 className="text-2xl font-semibold text-slate-900">Executive Command Center</h1>
+              <h1 className="text-2xl font-semibold text-slate-900">Pusat Kendali Eksekutif</h1>
               <p className="mt-1 text-xs font-medium text-slate-500">
-                Real-Time Cross-Entity Visibility Hub | {scopeLabel}
+                Real-Time Cross-Entity Visibility Hub
               </p>
             </div>
           </div>
+          <Badge variant="outline" className="h-7 w-fit border-[var(--dashboard-secondary-border)] bg-white text-xs font-semibold text-[var(--dashboard-secondary)]">
+            {scopeLabel}
+          </Badge>
         </div>
         <div className="flex flex-wrap gap-2">
            <div className="flex rounded-xl border border-[var(--dashboard-secondary-border)] bg-white p-1 shadow-sm">
@@ -305,11 +309,8 @@ export default function ExecutiveCommandCenterPage() {
       </Card>
 
       <div className="space-y-6">
-        <div className={`grid gap-6 ${showMonitoringPanels && showAuditPanels ? 'xl:grid-cols-[minmax(0,1.22fr)_minmax(360px,0.88fr)]' : 'grid-cols-1'}`}>
         {showMonitoringPanels && (
-        <div className="space-y-6">
-          {/* Main Monitoring Panels */}
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 xl:grid-cols-2">
             {/* Production Aggregation */}
             <Card className="surface-card-strong overflow-hidden">
               <CardHeader className="dashboard-section-header p-4">
@@ -331,9 +332,9 @@ export default function ExecutiveCommandCenterPage() {
                       <Tooltip
                         contentStyle={{ borderRadius: '10px', border: '1px solid var(--dashboard-secondary-border)', boxShadow: '0 16px 28px -22px rgba(137,114,111,0.3)', fontSize: '11px', fontWeight: 600 }}
                       />
-                      <Bar dataKey="beras" fill="var(--dashboard-secondary)" name="Beras (T)" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="sayur" fill="var(--dashboard-primary)" name="Sayur (T)" radius={[2, 2, 0, 0]} />
-                      <Bar dataKey="buah" fill="var(--dashboard-tertiary)" name="Buah (T)" radius={[2, 2, 0, 0]} />
+                      <Bar dataKey="beras" fill="var(--dashboard-secondary)" name="Beras (T)" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="sayur" fill="var(--dashboard-primary)" name="Sayur (T)" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="buah" fill="var(--dashboard-tertiary)" name="Buah (T)" radius={[8, 8, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -372,100 +373,50 @@ export default function ExecutiveCommandCenterPage() {
               </CardContent>
             </Card>
           </div>
-
-          {/* Regional Performance Heatmap */}
-          <Card className="surface-card-strong overflow-hidden">
-             <CardHeader className="dashboard-section-header p-4">
-               <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-xs font-semibold text-slate-900">Distribusi & Logistik Nasional</CardTitle>
-                    <CardDescription className="text-xs font-medium text-slate-500">Monitoring pengiriman lintas provinsi</CardDescription>
-                  </div>
-                  {canViewRouteDetails && (
-                    <Button size="sm" variant="outline" className="h-8 border-[var(--dashboard-secondary-border)] bg-white text-xs font-semibold text-[var(--dashboard-secondary)] hover:bg-[var(--dashboard-secondary-muted)]" asChild>
-                      <Link href="/logistik/rute">Detail Rute</Link>
-                    </Button>
-                  )}
-               </div>
-             </CardHeader>
-             <CardContent className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {[
-                  { region: 'Jawa Barat', load: 85, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
-                  { region: 'Jawa Timur', load: 72, status: 'Delayed', color: 'bg-amber-500' },
-                  { region: 'Sulawesi', load: 45, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
-                  { region: 'Sumatera Utara', load: 60, status: 'Delayed', color: 'bg-rose-500' },
-                  { region: 'Bali', load: 92, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
-                  { region: 'Kalimantan', load: 38, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
-                ].map((reg, i) => (
-                  <div key={i} className="dashboard-inner-surface group p-4 transition-all hover:border-[var(--dashboard-secondary)]/30">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-semibold text-slate-900">{reg.region}</span>
-                      <div className={`h-2 w-2 rounded-full ${reg.color}`} />
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between text-xs font-semibold text-slate-500">
-                        <span>Load</span>
-                        <span>{reg.load}%</span>
-                      </div>
-                      <Progress value={reg.load} className="h-1 bg-slate-100" />
-                      <p className={`mt-2 text-xs font-semibold ${reg.status === 'On-Time' ? 'text-[var(--dashboard-tertiary)]' : 'text-[var(--dashboard-primary)]'}`}>{reg.status}</p>
-                    </div>
-                  </div>
-                ))}
-             </CardContent>
-          </Card>
-        </div>
         )}
 
-        {/* War Room Side Panel */}
-        {showAuditPanels && (
-        <div className="space-y-6">
-          <Card className="surface-card-strong flex min-h-[440px] flex-col overflow-hidden">
-            <CardHeader className="dashboard-section-header p-5">
+        {showMonitoringPanels && (
+          <Card className="surface-card-strong overflow-hidden">
+            <CardHeader className="dashboard-section-header p-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                  <Activity className="h-4 w-4 text-[var(--dashboard-primary)]" /> Live Audit Feed
-                </CardTitle>
-                <div className="flex items-center gap-1.5">
-                  <div className="h-1.5 w-1.5 rounded-full bg-[var(--dashboard-primary)] animate-pulse" />
-                  <span className="text-xs font-semibold text-[var(--dashboard-primary)]">Streaming</span>
+                <div>
+                  <CardTitle className="text-xs font-semibold text-slate-900">Distribusi & Logistik Nasional</CardTitle>
+                  <CardDescription className="text-xs font-medium text-slate-500">Monitoring pengiriman lintas provinsi</CardDescription>
                 </div>
+                {canViewRouteDetails && (
+                  <Button size="sm" variant="outline" className="h-8 border-[var(--dashboard-secondary-border)] bg-white text-xs font-semibold text-[var(--dashboard-secondary)] hover:bg-[var(--dashboard-secondary-muted)]" asChild>
+                    <Link href="/logistik/rute">Detail Rute</Link>
+                  </Button>
+                )}
               </div>
             </CardHeader>
-            <CardContent className="p-0 flex-1 overflow-y-auto scrollbar-hide">
-              <div className="divide-y divide-slate-100">
-                {logs.map((log, i) => (
-                  <div key={i} className="group cursor-pointer bg-[var(--dashboard-surface)] p-5 transition-colors hover:bg-[var(--dashboard-surface-muted)]">
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge className={`h-4 rounded border-none px-1.5 text-xs font-semibold ${
-                        log.status === 'success' ? 'bg-emerald-50 text-emerald-700' :
-                        log.status === 'warning' ? 'bg-amber-50 text-amber-700' :
-                        'bg-slate-100 text-slate-600'
-                      }`}>
-                        {toTitleCase(log.status)}
-                      </Badge>
-                      <span className="text-xs font-mono text-slate-400">{log.time}</span>
-                    </div>
-                    <p className="text-sm font-semibold leading-tight text-slate-900 transition-colors group-hover:text-[var(--dashboard-primary)]">{log.action}</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <p className="text-xs font-medium text-slate-500">User: {toTitleCase(log.role)}</p>
-                      <p className="text-xs font-medium text-slate-400">{log.entity}</p>
-                    </div>
+            <CardContent className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {[
+                { region: 'Jawa Barat', load: 85, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
+                { region: 'Jawa Timur', load: 72, status: 'Delayed', color: 'bg-amber-500' },
+                { region: 'Sulawesi', load: 45, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
+                { region: 'Sumatera Utara', load: 60, status: 'Delayed', color: 'bg-rose-500' },
+                { region: 'Bali', load: 92, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
+                { region: 'Kalimantan', load: 38, status: 'On-Time', color: 'bg-[var(--dashboard-tertiary)]' },
+              ].map((reg, i) => (
+                <div key={i} className="dashboard-inner-surface group p-4 transition-all hover:border-[var(--dashboard-secondary)]/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-semibold text-slate-900">{reg.region}</span>
+                    <div className={`h-2 w-2 rounded-full ${reg.color}`} />
                   </div>
-                ))}
-              </div>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-xs font-semibold text-slate-500">
+                      <span>Load</span>
+                      <span>{reg.load}%</span>
+                    </div>
+                    <Progress value={reg.load} className="h-1 bg-slate-100" />
+                    <p className={`mt-2 text-xs font-semibold ${reg.status === 'On-Time' ? 'text-[var(--dashboard-tertiary)]' : 'text-[var(--dashboard-primary)]'}`}>{reg.status}</p>
+                  </div>
+                </div>
+              ))}
             </CardContent>
-            <div className="border-t border-[var(--dashboard-secondary-border)] bg-white p-4">
-              {canOpenAuditConsole && (
-                <Button variant="ghost" className="h-10 w-full text-xs font-semibold text-slate-600 hover:bg-white hover:text-[var(--dashboard-primary)]" asChild>
-                  <Link href="/assistant">Buka Konsol Audit Lengkap</Link>
-                </Button>
-              )}
-            </div>
           </Card>
-        </div>
         )}
-        </div>
 
         {showAuditPanels && (
           <Card className="surface-card-strong overflow-hidden">
@@ -502,6 +453,55 @@ export default function ExecutiveCommandCenterPage() {
                 </div>
               ))}
             </CardContent>
+          </Card>
+        )}
+
+        {showAuditPanels && (
+          <Card className="surface-card-strong overflow-hidden">
+            <CardHeader className="dashboard-section-header p-5">
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900">
+                    <Activity className="h-4 w-4 text-[var(--dashboard-primary)]" /> Live Audit Feed
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-500">
+                    Stream audit dan kejadian operasional terbaru secara horizontal di seluruh jaringan.
+                  </CardDescription>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1.5 w-1.5 rounded-full bg-[var(--dashboard-primary)] animate-pulse" />
+                  <span className="text-xs font-semibold text-[var(--dashboard-primary)]">Streaming</span>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="grid gap-4 p-4 md:grid-cols-2 xl:grid-cols-3">
+              {logs.map((log, i) => (
+                <div key={i} className="dashboard-inner-surface group h-full cursor-pointer p-4 transition-colors hover:bg-[var(--dashboard-surface-muted)]">
+                  <div className="mb-2 flex items-center justify-between gap-3">
+                    <Badge className={`h-5 rounded border-none px-2 text-xs font-semibold ${
+                      log.status === 'success' ? 'bg-emerald-50 text-emerald-700' :
+                      log.status === 'warning' ? 'bg-amber-50 text-amber-700' :
+                      'bg-slate-100 text-slate-600'
+                    }`}>
+                      {toTitleCase(log.status)}
+                    </Badge>
+                    <span className="text-xs font-mono text-slate-400">{log.time}</span>
+                  </div>
+                  <p className="text-sm font-semibold leading-tight text-slate-900 transition-colors group-hover:text-[var(--dashboard-primary)]">{log.action}</p>
+                  <div className="mt-3 flex items-center justify-between gap-4">
+                    <p className="text-xs font-medium text-slate-500">User: {toTitleCase(log.role)}</p>
+                    <p className="text-xs font-medium text-slate-400">{log.entity}</p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+            <div className="border-t border-[var(--dashboard-secondary-border)] bg-white p-4">
+              {canOpenAuditConsole && (
+                <Button variant="ghost" className="h-10 w-full text-xs font-semibold text-slate-600 hover:bg-white hover:text-[var(--dashboard-primary)]" asChild>
+                  <Link href="/assistant">Buka Konsol Audit Lengkap</Link>
+                </Button>
+              )}
+            </div>
           </Card>
         )}
       </div>

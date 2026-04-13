@@ -59,7 +59,7 @@ export function LoanApplicationDialog({ open, onOpenChange, onSave }: DialogSave
       totalPayment,
       totalInterest,
       id: `LOAN${Date.now().toString().slice(-8)}`,
-      status: 'Pending',
+      status: 'Tertunda',
       createdAt: new Date().toISOString(),
     }
 

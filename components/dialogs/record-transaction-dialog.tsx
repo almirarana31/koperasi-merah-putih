@@ -71,7 +71,7 @@ export function RecordTransactionDialog({ open, onOpenChange, onSave }: DialogSa
     }
 
     onSave?.(transactionData)
-    toast.success(`${formData.type === 'income' ? 'Income' : 'Expense'} recorded successfully!`)
+    toast.success(`${formData.type === 'income' ? 'Pemasukan' : 'Pengeluaran'} berhasil dicatat!`)
     onOpenChange(false)
     
     // Reset form

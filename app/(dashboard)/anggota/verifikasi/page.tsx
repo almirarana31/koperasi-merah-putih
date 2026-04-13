@@ -6,20 +6,16 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  FileText,
   User,
   CreditCard,
   MapPin,
-  Eye,
   Check,
   X,
   Loader2,
   ShieldCheck,
-  AlertTriangle,
   Activity,
   ArrowLeft,
   Search,
-  Filter,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -38,11 +34,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from '@/components/ui/alert'
 import { useAuth } from '@/lib/auth/use-auth'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import { ScopeFilters } from '@/lib/kementerian-dashboard-data'
@@ -133,15 +124,15 @@ function getAvatarTone(name: string) {
 function formatDocumentLabel(key: string) {
   const labels: Record<string, string> = {
     ktp: 'KTP',
-    foto: 'Foto',
-    suratTanah: 'Surat Tanah',
+    foto: 'FOTO',
+    suratTanah: 'SURAT TANAH',
     skck: 'SKCK',
-    suratUsaha: 'Surat Usaha',
+    suratUsaha: 'SURAT USAHA',
     npwp: 'NPWP',
-    suratNelayan: 'Surat Nelayan',
+    suratNelayan: 'SURAT NELAYAN',
   }
 
-  return labels[key] ?? key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/\b\w/g, (char) => char.toUpperCase())
+  return labels[key] ?? key.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase()
 }
 
 export default function VerifikasiPage() {
@@ -158,20 +149,17 @@ export default function VerifikasiPage() {
 
   const [search, setSearch] = useState('')
   const [verifikasiData, setVerifikasiData] = useState<VerifikasiItem[]>(initialVerifikasiData)
-  const [selectedItem, setSelectedItem] = useState<VerifikasiItem | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [showRejectDialog, setShowRejectDialog] = useState(false)
   const [rejectReason, setRejectReason] = useState('')
   const [openDialogId, setOpenDialogId] = useState<string | null>(null)
 
-  // Cross-entity filtering logic
   const filteredData = useMemo(() => {
     return verifikasiData.filter(v => {
       const matchesSearch = v.nama.toLowerCase().includes(search.toLowerCase()) || v.memberId.includes(search)
       if (!isKementerian) return matchesSearch
 
       const matchesVillage = filters.villageId === 'all' || v.desa.toUpperCase().includes(filters.villageId.split('-').pop() || '')
-      // Simulated mapping for demo purposes
       const matchesKop = filters.cooperativeId === 'all' || v.koperasi.toUpperCase().includes(filters.cooperativeId.split('-').pop() || '')
       
       return matchesSearch && matchesVillage && matchesKop
@@ -201,32 +189,29 @@ export default function VerifikasiPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild className="shrink-0 h-8 w-8 rounded-none">
+          <Button variant="ghost" size="icon" asChild className="shrink-0 h-8 w-8 rounded-none transition-colors hover:bg-slate-100">
             <Link href="/anggota">
               <ArrowLeft className="h-4 w-4 text-slate-600" />
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-black uppercase tracking-tight text-slate-900">Otentikasi KYC Nasional</h1>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900">Otentikasi KYC Nasional</h1>
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1">
               Verifikasi Identitas Anggota Lintas Entitas Koperasi
             </p>
           </div>
         </div>
         {isKementerian && (
-          <Badge className="bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-none border-none px-3 py-1">
+          <Badge className="bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-none border-none px-4 py-1 shadow-lg">
             Supervisi Nasional
           </Badge>
         )}
       </div>
 
-      {/* Kementerian Filter Suite */}
       {isKementerian && <KementerianFilterBar filters={filters} setFilters={setFilters} search={search} setSearch={setSearch} />}
 
-      {/* Stats KPI */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
           { label: 'MENUNGGU VERIFIKASI', value: pendingItems.length, icon: Clock, tone: 'amber' },
@@ -250,29 +235,28 @@ export default function VerifikasiPage() {
         ))}
       </div>
 
-      {/* Main Content Tabs */}
       <Tabs defaultValue="pending" className="w-full">
         <div className="flex flex-col gap-4 border-b border-slate-200 pb-3 sm:flex-row sm:items-center sm:justify-between">
-          <TabsList className="bg-slate-100 h-auto gap-1 p-1 rounded-none">
+          <TabsList className="bg-slate-100 h-auto gap-1 p-1 rounded-none border border-slate-200 shadow-inner">
             {(['pending', 'rejected', 'history'] as const).map((tab) => (
               <TabsTrigger 
                 key={tab} 
                 value={tab} 
-                className="h-9 rounded-none px-4 text-[10px] font-black uppercase tracking-widest text-slate-500 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm"
+                className="h-9 rounded-none px-6 text-[10px] font-black uppercase tracking-widest text-slate-500 data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm transition-all"
               >
-                {TAB_META[tab] === 'Pending' ? 'Tertunda' : TAB_META[tab] === 'Rejected' ? 'Ditolak' : 'Riwayat'} ({tab === 'pending' ? pendingItems.length : tab === 'rejected' ? rejectedItems.length : historyItems.length})
+                {tab === 'pending' ? 'TERTUNDA' : tab === 'rejected' ? 'DITOLAK' : 'RIWAYAT'} ({tab === 'pending' ? pendingItems.length : tab === 'rejected' ? rejectedItems.length : historyItems.length})
               </TabsTrigger>
             ))}
           </TabsList>
           
           {!isKementerian && (
             <div className="relative w-full sm:w-64">
-              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <Input 
-                placeholder="Cari NAMA/NIK..." 
+                placeholder="CARI NAMA / NIK ANGGOTA..." 
                 value={search} 
                 onChange={e => setSearch(e.target.value)}
-                className="pl-8 h-9 text-xs font-bold uppercase tracking-tight border-slate-200 rounded-none bg-white" 
+                className="pl-9 h-10 text-[10px] font-black uppercase tracking-widest border-slate-200 rounded-none bg-white focus:ring-1 focus:ring-slate-900" 
               />
             </div>
           )}
@@ -280,18 +264,18 @@ export default function VerifikasiPage() {
 
         <TabsContent value="pending" className="mt-6 space-y-4">
           {pendingItems.length === 0 ? (
-            <div className="py-20 text-center bg-slate-50 rounded-none border-2 border-dashed border-slate-200">
+            <div className="py-24 text-center bg-slate-50 rounded-none border-2 border-dashed border-slate-200">
               <ShieldCheck className="mx-auto h-12 w-12 text-slate-200 mb-4" />
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Antrian Verifikasi Bersih</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Antrian Verifikasi KYC Bersih</p>
             </div>
           ) : (
             pendingItems.map((item) => (
-              <Card key={item.id} className="rounded-none border-slate-200 group overflow-hidden transition-all hover:border-slate-900 shadow-sm">
+              <Card key={item.id} className="rounded-none border-slate-200 group overflow-hidden transition-all hover:border-slate-900 shadow-sm border-l-4 border-l-amber-500">
                 <CardContent className="p-0">
                   <div className="flex flex-col lg:flex-row lg:items-center">
                     <div className="flex-1 p-5 lg:border-r lg:border-slate-100">
                       <div className="flex items-center gap-4">
-                        <Avatar className="h-12 w-12 rounded-none border border-slate-200">
+                        <Avatar className="h-12 w-12 rounded-none border border-slate-200 shadow-sm">
                           <AvatarFallback className={`text-xs font-black ${getAvatarTone(item.nama)}`}>
                             {getInitials(item.nama)}
                           </AvatarFallback>
@@ -299,23 +283,23 @@ export default function VerifikasiPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.nama}</h3>
-                            <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest px-1.5 h-4 rounded-none border-slate-200 text-slate-500">{item.tipe.toUpperCase()}</Badge>
+                            <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest px-2 h-5 rounded-none border-slate-200 text-slate-500 bg-white shadow-sm">{item.tipe.toUpperCase()}</Badge>
                           </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
                             <div className="flex items-center gap-1.5 text-slate-400">
                               <MapPin className="h-3 w-3" />
-                              <span className="text-[10px] font-bold uppercase tracking-tighter">{item.desa} · {item.koperasi}</span>
+                              <span className="text-[10px] font-bold uppercase tracking-tighter text-slate-500">{item.desa} · {item.koperasi}</span>
                             </div>
                             <div className="flex items-center gap-1.5 text-slate-400">
                               <Clock className="h-3 w-3" />
-                              <span className="text-[10px] font-bold uppercase tracking-tighter">Pendaftaran: {item.tanggalDaftar}</span>
+                              <span className="text-[10px] font-bold uppercase tracking-tighter text-slate-500">PENDAFTARAN: {item.tanggalDaftar}</span>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-slate-50/50 flex items-center justify-between gap-4 p-5 lg:w-[340px]">
+                    <div className="bg-slate-50/50 flex items-center justify-between gap-4 p-5 lg:w-[360px]">
                       <div className="space-y-2">
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Validasi Dokumen</p>
                         <div className="flex gap-1">
@@ -323,8 +307,8 @@ export default function VerifikasiPage() {
                             <div key={key} title={formatDocumentLabel(key)} className={`h-1.5 w-6 rounded-none ${val ? 'bg-emerald-500' : 'bg-slate-200'}`} />
                           ))}
                         </div>
-                        <p className="text-[9px] font-bold text-slate-500 uppercase">
-                          {Object.values(item.dokumen).filter(Boolean).length} / {Object.keys(item.dokumen).length} Dokumen Terdeteksi
+                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
+                          {Object.values(item.dokumen).filter(Boolean).length} / {Object.keys(item.dokumen).length} DOKUMEN OK
                         </p>
                       </div>
                       
@@ -339,71 +323,71 @@ export default function VerifikasiPage() {
                         }}
                       >
                         <DialogTrigger asChild>
-                          <Button size="sm" className="h-9 rounded-none bg-slate-900 px-6 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800">
+                          <Button size="sm" className="h-10 rounded-none bg-slate-900 px-8 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 shadow-lg">
                             Review
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl rounded-none border-slate-900 p-0 shadow-2xl">
-                          <DialogHeader className="bg-slate-900 text-white gap-1 px-5 py-4">
-                            <DialogTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
-                              <ShieldCheck className="h-4 w-4 text-emerald-400" /> Otentikasi KYC: {item.nama}
+                        <DialogContent className="max-w-2xl overflow-hidden rounded-none border border-slate-200 p-0 shadow-2xl">
+                          <DialogHeader className="gap-1 bg-slate-900 px-6 py-5 text-white">
+                            <DialogTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-tight">
+                              <ShieldCheck className="h-5 w-5 text-emerald-400" /> Otentikasi KYC: {item.nama}
                             </DialogTitle>
-                            <DialogDescription className="text-[10px] font-bold uppercase text-slate-400">
-                              Audit kelengkapan dokumen dan profil anggota lintas entitas
+                            <DialogDescription className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                              Audit Kelengkapan Dokumen Dan Profil Anggota Nasional
                             </DialogDescription>
                           </DialogHeader>
                           
-                          <div className="grid gap-5 p-5 md:grid-cols-[1.05fr_0.95fr]">
-                            <div className="bg-slate-50 space-y-4 p-4 border border-slate-100">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-14 w-14 rounded-none border border-white shadow-sm">
+                          <div className="grid gap-6 p-6 md:grid-cols-[1.05fr_0.95fr]">
+                            <div className="space-y-4 rounded-none border border-slate-100 bg-slate-50 p-5 shadow-inner">
+                              <div className="flex items-center gap-4">
+                                <Avatar className="h-16 w-14 rounded-none border border-white shadow-md">
                                   <AvatarFallback className={`text-sm font-black ${getAvatarTone(item.nama)}`}>
                                     {getInitials(item.nama)}
                                   </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                  <p className="text-sm font-black uppercase text-slate-900">{item.nama}</p>
-                                  <p className="text-[10px] font-bold uppercase text-slate-500">{item.alamat}</p>
+                                  <p className="text-sm font-black uppercase text-slate-900 tracking-tight">{item.nama}</p>
+                                  <p className="text-[10px] font-bold uppercase text-slate-500 leading-tight mt-1">{item.alamat}</p>
                                 </div>
                               </div>
                               <div className="grid gap-2 sm:grid-cols-2">
-                                <div className="border border-slate-200 bg-white p-3">
+                                <div className="rounded-none border border-slate-200 bg-white p-3 shadow-sm">
                                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Koperasi</p>
-                                  <p className="mt-1 text-xs font-black uppercase text-emerald-700">{item.koperasi}</p>
+                                  <p className="mt-1 text-xs font-black uppercase text-emerald-700 tracking-tighter">{item.koperasi}</p>
                                 </div>
-                                <div className="border border-slate-200 bg-white p-3">
-                                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Lokasi</p>
-                                  <p className="mt-1 text-xs font-black uppercase text-slate-900">{item.desa}</p>
+                                <div className="rounded-none border border-slate-200 bg-white p-3 shadow-sm">
+                                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Wilayah</p>
+                                  <p className="mt-1 text-xs font-black uppercase text-slate-900 tracking-tighter">{item.desa}</p>
                                 </div>
-                                <div className="border border-slate-200 bg-white p-3">
-                                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Tipe</p>
-                                  <p className="mt-1 text-xs font-black uppercase text-slate-900">{item.tipe.toUpperCase()}</p>
+                                <div className="rounded-none border border-slate-200 bg-white p-3 shadow-sm">
+                                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Klasifikasi</p>
+                                  <p className="mt-1 text-xs font-black uppercase text-slate-900 tracking-tighter">{item.tipe}</p>
                                 </div>
-                                <div className="border border-slate-200 bg-white p-3">
+                                <div className="rounded-none border border-slate-200 bg-white p-3 shadow-sm">
                                   <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Tgl Daftar</p>
-                                  <p className="mt-1 text-xs font-black uppercase text-slate-900">{item.tanggalDaftar}</p>
+                                  <p className="mt-1 text-xs font-black uppercase text-slate-900 tracking-tighter">{item.tanggalDaftar}</p>
                                 </div>
                               </div>
                             </div>
 
-                            <div className="bg-slate-50 space-y-3 p-4 border border-slate-100">
+                            <div className="space-y-4 rounded-none border border-slate-100 bg-slate-50 p-5 shadow-inner">
                               <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Validasi Fisik</p>
-                                <p className="text-[9px] font-bold uppercase text-slate-500">
-                                  Pemeriksaan keaslian dokumen kependudukan
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-900">Validasi Fisik Dokumen</p>
+                                <p className="text-[9px] font-bold uppercase text-slate-500 mt-1 leading-tight">
+                                  Pemeriksaan Integritas Citra Dan Keaslian Data Nasional.
                                 </p>
                               </div>
                               <div className="space-y-2">
                                 {Object.entries(item.dokumen).map(([k, v]) => (
-                                  <div key={k} className="flex items-center justify-between border border-slate-200 bg-white px-3 py-2">
-                                    <span className="text-[10px] font-black uppercase text-slate-700">{formatDocumentLabel(k)}</span>
+                                  <div key={k} className="flex items-center justify-between rounded-none border border-slate-200 bg-white px-3 py-2.5 shadow-sm transition-colors hover:border-slate-400">
+                                    <span className="text-[10px] font-black uppercase text-slate-700 tracking-tight">{formatDocumentLabel(k)}</span>
                                     {v ? (
                                       <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-emerald-600">
-                                        <Check className="h-3 w-3" /> Valid
+                                        <Check className="h-3 w-3" /> VALID
                                       </span>
                                     ) : (
-                                      <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-rose-600">
-                                        <X className="h-3 w-3" /> Perbaikan
+                                      <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-rose-600 animate-pulse">
+                                        <X className="h-3 w-3" /> PERBAIKAN
                                       </span>
                                     )}
                                   </div>
@@ -412,11 +396,11 @@ export default function VerifikasiPage() {
                             </div>
 
                             {showRejectDialog && (
-                              <div className="md:col-span-2 border border-rose-200 bg-rose-50 p-4 space-y-3">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-rose-700">Alasan Penolakan</Label>
+                              <div className="md:col-span-2 space-y-3 rounded-none border border-rose-200 bg-rose-50 p-5 shadow-inner">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-rose-700">Justifikasi Penolakan Dokumen</Label>
                                 <Textarea 
-                                  className="min-h-24 bg-white text-xs font-bold border-rose-200 rounded-none focus-visible:ring-rose-500" 
-                                  placeholder="Contoh: Lampiran KTP tidak terbaca..."
+                                  className="min-h-24 rounded-none border-rose-200 bg-white text-[11px] font-black uppercase tracking-tight focus-visible:ring-rose-500 placeholder:text-slate-300 shadow-sm" 
+                                  placeholder="MASUKKAN ALASAN PENOLAKAN (MISAL: KTP KABUR / TIDAK ASLI)..."
                                   value={rejectReason}
                                   onChange={e => setRejectReason(e.target.value)}
                                 />
@@ -424,25 +408,43 @@ export default function VerifikasiPage() {
                             )}
                           </div>
 
-                          <DialogFooter className="border-t border-slate-100 bg-slate-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                            <p className="text-[9px] font-bold uppercase text-slate-400 max-w-[200px]">
-                              Audit bersifat final dan akan tercatat pada log kementerian.
+                          <DialogFooter className="border-t border-slate-100 bg-slate-50 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+                            <p className="max-w-[240px] text-[9px] font-bold uppercase text-slate-400 leading-relaxed tracking-tighter">
+                              Audit KYC Ini Bersifat Final Dan Akan Tercatat Permanen Pada Log Audit Kementerian.
                             </p>
                             {showRejectDialog ? (
                               <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                                <Button variant="outline" onClick={() => setShowRejectDialog(false)} className="rounded-none text-[10px] font-black uppercase tracking-widest h-9">Batal</Button>
-                                <Button variant="destructive" onClick={() => handleReject(item)} disabled={!rejectReason || isProcessing} className="rounded-none text-[10px] font-black uppercase tracking-widest bg-rose-600 h-9">
-                                  {isProcessing ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <X className="h-3 w-3 mr-2" />}
-                                  Konfirmasi Tolak
-                                </Button>
+                                <button 
+                                  onClick={() => setShowRejectDialog(false)} 
+                                  className="h-10 rounded-none border border-slate-300 bg-white px-6 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all"
+                                >
+                                  BATAL
+                                </button>
+                                <button 
+                                  onClick={() => handleReject(item)} 
+                                  disabled={!rejectReason || isProcessing} 
+                                  className="h-10 rounded-none bg-rose-600 px-8 text-[10px] font-black uppercase tracking-widest text-white shadow-lg hover:bg-rose-700 disabled:opacity-50 transition-all"
+                                >
+                                  {isProcessing ? <Loader2 className="animate-spin h-3.5 w-3.5 mr-2 inline" /> : <X className="h-3.5 w-3.5 mr-2 inline" />}
+                                  KONFIRMASI TOLAK
+                                </button>
                               </div>
                             ) : (
                               <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                                <Button variant="outline" onClick={() => setShowRejectDialog(true)} className="h-9 rounded-none text-[10px] font-black uppercase tracking-widest border-rose-200 text-rose-600 hover:bg-rose-50">Tolak</Button>
-                                <Button onClick={() => handleApprove(item)} disabled={isProcessing} className="h-9 rounded-none bg-slate-900 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800">
-                                  {isProcessing ? <Loader2 className="animate-spin h-3 w-3 mr-2" /> : <ShieldCheck className="h-3.5 w-3.5 mr-2 text-emerald-400" />}
-                                  Setujui Anggota
-                                </Button>
+                                <button 
+                                  onClick={() => setShowRejectDialog(true)} 
+                                  className="h-10 rounded-none border border-rose-200 bg-white px-8 text-[10px] font-black uppercase tracking-widest text-rose-600 hover:bg-rose-50 transition-all"
+                                >
+                                  TOLAK
+                                </button>
+                                <button 
+                                  onClick={() => handleApprove(item)} 
+                                  disabled={isProcessing} 
+                                  className="h-10 rounded-none bg-slate-900 px-10 text-[10px] font-black uppercase tracking-widest text-white shadow-xl hover:bg-slate-800 disabled:opacity-50 transition-all"
+                                >
+                                  {isProcessing ? <Loader2 className="animate-spin h-3.5 w-3.5 mr-2 inline" /> : <ShieldCheck className="h-4 w-4 mr-2 text-emerald-400 inline" />}
+                                  SETUJUI ANGGOTA
+                                </button>
                               </div>
                             )}
                           </DialogFooter>
@@ -458,18 +460,18 @@ export default function VerifikasiPage() {
 
         <TabsContent value="rejected" className="mt-6 space-y-4">
           {rejectedItems.map(item => (
-            <Card key={item.id} className="surface-card overflow-hidden border-l-4 border-l-rose-500">
-              <CardContent className="p-4 flex items-center justify-between">
+            <Card key={item.id} className="rounded-none border-slate-200 border-l-4 border-l-rose-500 shadow-sm group">
+              <CardContent className="p-5 flex items-center justify-between bg-white">
                 <div className="flex items-center gap-4">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className={`${getAvatarTone(item.nama)} text-xs font-semibold`}>{getInitials(item.nama)}</AvatarFallback>
+                  <Avatar className="h-11 w-11 rounded-none border border-slate-100 shadow-sm">
+                    <AvatarFallback className={`${getAvatarTone(item.nama)} text-[10px] font-black`}>{getInitials(item.nama)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-xs font-semibold  text-slate-900">{item.nama}</p>
-                    <p className="text-xs font-bold text-rose-600   mt-0.5">Alasan: {item.alasanTolak}</p>
+                    <p className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.nama}</p>
+                    <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest mt-1">ALASAN: {item.alasanTolak}</p>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="h-8 text-xs font-semibold  border-slate-200">Hubungi Pemohon</Button>
+                <Button variant="outline" size="sm" className="h-9 rounded-none text-[9px] font-black uppercase tracking-widest border-slate-200 shadow-none hover:bg-slate-50">HUBUNGI ANGGOTA</Button>
               </CardContent>
             </Card>
           ))}
@@ -477,18 +479,18 @@ export default function VerifikasiPage() {
 
         <TabsContent value="history" className="mt-6 space-y-4">
           {historyItems.map(item => (
-            <Card key={item.id} className="surface-card overflow-hidden border-l-4 border-l-emerald-500">
-              <CardContent className="p-4 flex items-center justify-between">
+            <Card key={item.id} className="rounded-none border-slate-200 border-l-4 border-l-emerald-500 shadow-sm group">
+              <CardContent className="p-5 flex items-center justify-between bg-white">
                 <div className="flex items-center gap-4">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className={`${getAvatarTone(item.nama)} text-xs font-semibold`}>{getInitials(item.nama)}</AvatarFallback>
+                  <Avatar className="h-11 w-11 rounded-none border border-slate-100 shadow-sm">
+                    <AvatarFallback className={`${getAvatarTone(item.nama)} text-[10px] font-black`}>{getInitials(item.nama)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-xs font-semibold  text-slate-900">{item.nama}</p>
-                    <p className="text-xs font-bold text-slate-400   mt-0.5">Verified on: {item.tanggalVerifikasi?.split('T')[0]}</p>
+                    <p className="text-sm font-black text-slate-900 uppercase tracking-tight">{item.nama}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">DIVERIFIKASI PADA: {item.tanggalVerifikasi?.split('T')[0]}</p>
                   </div>
                 </div>
-                <Badge className="bg-emerald-100 text-emerald-700 text-xs font-semibold border-none">Completed</Badge>
+                <Badge className="bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-widest border-none h-6 px-3 rounded-none">SELESAI</Badge>
               </CardContent>
             </Card>
           ))}

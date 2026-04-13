@@ -101,7 +101,7 @@ export default function DaftarGudangPage() {
             <Warehouse className="h-7 w-7 text-emerald-500" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Pusat Inventaris Nasional</h1>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Pusat Inventaris Nasional</h1>
             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
               Monitoring Agregat Kapasitas Penyimpanan • {stats.count} Simpul Strategis Terdaftar
             </p>
@@ -112,7 +112,7 @@ export default function DaftarGudangPage() {
             variant="outline" 
             size="sm" 
             onClick={() => handleAction('Audit Stok')}
-            className="h-10 rounded-none text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200"
+            className="h-10 rounded-none text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200 shadow-none"
           >
             <ShieldAlert className="h-4 w-4 mr-2 text-rose-600" />
             Audit Stok
@@ -120,7 +120,7 @@ export default function DaftarGudangPage() {
           <Button 
             size="sm" 
             onClick={() => handleAction('PDF')}
-            className="h-10 rounded-none bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-lg shadow-slate-200"
+            className="h-10 rounded-none bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-none"
           >
             <Download className="h-4 w-4 mr-2" />
             Eksport PDF
@@ -133,10 +133,10 @@ export default function DaftarGudangPage() {
       {/* High-Density KPI Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'TOTAL FASILITAS', value: stats.count.toLocaleString(), sub: 'UNIT GUDANG AKTIF', icon: Warehouse, color: 'text-slate-900' },
-          { label: 'TOTAL KAPASITAS', value: (stats.totalCapacity / 1000).toLocaleString(), sub: 'METRIC TON (MT)', icon: Layers, color: 'text-blue-600' },
-          { label: 'TINGKAT OKUPANSI', value: stats.occupancyRate.toFixed(1), sub: '% TOTAL TERISI', icon: TrendingUp, color: 'text-emerald-600' },
-          { label: 'COLD STORAGE', value: stats.coldStorageCount.toLocaleString(), sub: 'UNIT TERVERIFIKASI', icon: Thermometer, color: 'text-blue-400' },
+          { label: 'Total Fasilitas', value: stats.count.toLocaleString(), sub: 'UNIT GUDANG AKTIF', icon: Warehouse, color: 'text-slate-900' },
+          { label: 'Total Kapasitas', value: (stats.totalCapacity / 1000).toLocaleString(), sub: 'METRIC TON (MT)', icon: Layers, color: 'text-blue-600' },
+          { label: 'Tingkat Okupansi', value: stats.occupancyRate.toFixed(1), sub: '% TOTAL TERISI', icon: TrendingUp, color: 'text-emerald-600' },
+          { label: 'Cold Storage', value: stats.coldStorageCount.toLocaleString(), sub: 'UNIT TERVERIFIKASI', icon: Thermometer, color: 'text-blue-400' },
         ].map((s, i) => (
           <Card key={i} className="rounded-none border-none shadow-sm bg-white overflow-hidden">
             <div className={`h-1.5 w-full ${s.color.includes('emerald') ? 'bg-emerald-500' : s.color.includes('blue') ? 'bg-blue-500' : 'bg-slate-900'}`} />
@@ -162,16 +162,16 @@ export default function DaftarGudangPage() {
           <div className="flex flex-col gap-4 md:flex-row md:items-center">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                placeholder="CARI NAMA GUDANG ATAU ALAMAT STRATEGIS..."
+              <input
+                placeholder="Cari nama gudang atau alamat strategis..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="rounded-none pl-9 bg-white border-slate-200 h-11 text-[10px] font-black uppercase tracking-widest focus:ring-slate-900"
+                className="w-full rounded-none pl-9 bg-white border-slate-200 h-11 text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-1 focus:ring-slate-900"
               />
             </div>
             {!isKementerian && (
-              <Button className="rounded-none h-11 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest px-6 shadow-lg">
-                <Plus className="h-4 w-4 mr-2" /> TAMBAH GUDANG
+              <Button className="rounded-none h-11 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest px-6 shadow-none">
+                <Plus className="h-4 w-4 mr-2" /> Tambah Gudang
               </Button>
             )}
           </div>
@@ -215,12 +215,12 @@ export default function DaftarGudangPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-1.5 pt-2">
-                    <Badge className={`rounded-none h-5 text-[8px] font-black uppercase tracking-widest px-2 border-none ${
+                    <Badge className={`rounded-none h-5 text-[8px] font-black uppercase tracking-widest px-2 border-none shadow-none ${
                       warehouse.tipe === 'cold-storage' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-700'
                     }`}>
                       {warehouse.tipe}
                     </Badge>
-                    <Badge className={`rounded-none h-5 text-[8px] font-black uppercase tracking-widest px-2 border-none ${
+                    <Badge className={`rounded-none h-5 text-[8px] font-black uppercase tracking-widest px-2 border-none shadow-none ${
                       warehouse.status === 'aktif' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
                     }`}>
                       {warehouse.status}
@@ -228,10 +228,10 @@ export default function DaftarGudangPage() {
                   </div>
 
                   {warehouse.suhu && (
-                    <div className="flex items-center justify-between p-3 rounded-none bg-blue-50/50 border border-blue-100">
+                    <div className="flex items-center justify-between p-3 rounded-none bg-blue-50/50 border border-blue-100 shadow-inner">
                        <div className="flex items-center gap-2">
                          <Thermometer className="h-4 w-4 text-blue-600" />
-                         <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Core Temp</span>
+                         <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Suhu Inti</span>
                        </div>
                        <span className="text-xl font-black text-blue-700">{warehouse.suhu}°C</span>
                     </div>
@@ -239,7 +239,7 @@ export default function DaftarGudangPage() {
 
                   <div className="space-y-2 pt-2">
                      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
-                        <span className="text-slate-400">LOAD FACTOR</span>
+                        <span className="text-slate-400">FAKTOR BEBAN</span>
                         <span className={usagePercent > 85 ? 'text-rose-600' : 'text-slate-900'}>{usagePercent}%</span>
                      </div>
                      <Progress
@@ -257,13 +257,13 @@ export default function DaftarGudangPage() {
                        <p className="text-lg font-black uppercase tracking-tight text-slate-900">
                          {((warehouse.kapasitas - warehouse.kapasitasTerpakai) / 1000).toFixed(1)}
                        </p>
-                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 text-center leading-none">TON VACANT</p>
+                       <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-1 text-center leading-none">TON KOSONG</p>
                     </div>
                   </div>
                </div>
                
                <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 group-hover:bg-slate-900 transition-colors flex items-center justify-between">
-                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-500">System Sync: OK</span>
+                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-500">Sinkronisasi Sistem: OK</span>
                   <Button 
                     variant="ghost" 
                     onClick={() => handleAction(`Audit ${warehouse.nama}`)}
@@ -280,7 +280,7 @@ export default function DaftarGudangPage() {
       {filteredWarehouses.length === 0 && (
         <Card className="rounded-none border-dashed py-24 bg-slate-50/50">
           <CardContent className="flex flex-col items-center justify-center text-center">
-            <div className="h-20 w-20 rounded-none bg-slate-100 flex items-center justify-center mb-6 text-slate-300">
+            <div className="h-20 w-20 rounded-none bg-slate-100 flex items-center justify-center mb-6 text-slate-300 shadow-inner">
               <Warehouse className="h-10 w-10" />
             </div>
             <h3 className="text-xl font-black text-slate-900 uppercase">Gudang Tidak Ditemukan</h3>
@@ -291,7 +291,7 @@ export default function DaftarGudangPage() {
                 setSearch('')
                 setFilters({ provinceId: 'all', regionId: 'all', villageId: 'all', cooperativeId: 'all', commodityId: 'all' })
               }}
-              className="mt-6 text-[10px] font-black uppercase tracking-widest text-emerald-600"
+              className="mt-6 text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-700"
             >
               Reset Semua Filter
             </Button>
@@ -311,13 +311,13 @@ export default function DaftarGudangPage() {
              </div>
              <div>
                 <div className="flex items-center gap-3">
-                   <Badge className="rounded-none alert-surface-chip h-5 px-2 text-[10px] font-black uppercase tracking-widest">KAPASITAS KRITIS</Badge>
+                   <Badge className="rounded-none alert-surface-chip h-5 px-2 text-[10px] font-black uppercase tracking-widest border-none">KAPASITAS KRITIS</Badge>
                    <span className="alert-surface-meta text-xs font-black uppercase tracking-widest">OKUPANSI MELEBIHI 92% (LINGKUP JAWA BARAT)</span>
                 </div>
-                <p className="alert-surface-copy mt-2 text-lg font-black uppercase tracking-tight">Anomali terdeteksi: Kapasitas penyimpanan di regional Jawa Barat mendekati batas kritis nasional.</p>
+                <p className="alert-surface-copy mt-2 text-lg font-black uppercase tracking-tight leading-tight">Anomali terdeteksi: Kapasitas penyimpanan di regional Jawa Barat mendekati batas kritis nasional.</p>
              </div>
           </div>
-          <Button className="rounded-none alert-surface-action h-12 px-10 text-[10px] font-black uppercase tracking-widest">
+          <Button className="rounded-none alert-surface-action h-12 px-10 text-[10px] font-black uppercase tracking-widest shadow-none">
              Jalankan Relokasi Stok
           </Button>
         </CardContent>
@@ -325,4 +325,3 @@ export default function DaftarGudangPage() {
     </div>
   )
 }
-

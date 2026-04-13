@@ -124,9 +124,9 @@ export default function InvoicePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">INVOICE HUB NASIONAL</h1>
+          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Invoice Hub Nasional</h1>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            MONITORING TAGIHAN DAN PIUTANG PENJUALAN NASIONAL
+            Pemantauan Tagihan Dan Piutang Penjualan Nasional
           </p>
         </div>
         <Button 
@@ -134,7 +134,7 @@ export default function InvoicePage() {
           onClick={() => toast({ title: "Generator Hub", description: "Membuka formulir pembuatan invoice nasional..." })}
         >
           <Plus className="mr-2 h-3.5 w-3.5" />
-          GENERASI INVOICE BARU
+          Generasi Invoice Baru
         </Button>
       </div>
 
@@ -142,10 +142,10 @@ export default function InvoicePage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: 'TOTAL INVOICE', value: totalInvoices, sub: 'DOKUMEN TERBIT', icon: FileText, tone: 'slate' },
-          { label: 'MENUNGGU PEMBAYARAN', value: formatCurrency(totalPending), sub: `${Math.ceil(filteredInvoices.filter(i => i.status === 'pending' || i.status === 'dikirim').length * scaleFactor * 50)} INVOICE AKTIF`, icon: Clock, tone: 'amber' },
-          { label: 'PIUTANG JATUH TEMPO', value: formatCurrency(totalOverdue), sub: 'MEMBUTUHKAN TINDAKAN', icon: AlertCircle, tone: 'rose' },
-          { label: 'TOTAL PELUNASAN', value: formatCurrency(totalLunas), sub: 'PENDAPATAN BERHASIL', icon: CheckCircle2, tone: 'emerald' },
+          { label: 'Total Invoice', value: totalInvoices, sub: 'Dokumen Terbit', icon: FileText, tone: 'slate' },
+          { label: 'Menunggu Pembayaran', value: formatCurrency(totalPending), sub: `${Math.ceil(filteredInvoices.filter(i => i.status === 'pending' || i.status === 'dikirim').length * scaleFactor * 50)} Invoice Aktif`, icon: Clock, tone: 'amber' },
+          { label: 'Piutang Jatuh Tempo', value: formatCurrency(totalOverdue), sub: 'Membutuhkan Tindakan', icon: AlertCircle, tone: 'rose' },
+          { label: 'Total Pelunasan', value: formatCurrency(totalLunas), sub: 'Pendapatan Berhasil', icon: CheckCircle2, tone: 'emerald' },
         ].map((stat, i) => (
           <Card key={i} className="border-none bg-white shadow-sm overflow-hidden rounded-none">
             <div className={`h-1 w-full border-t-4 ${
@@ -171,7 +171,7 @@ export default function InvoicePage() {
         ))}
       </div>
 
-      <Card className="border-none bg-white shadow-sm overflow-hidden">
+      <Card className="border-none bg-white shadow-sm overflow-hidden rounded-none">
         <div className="h-1 w-full bg-slate-900" />
         <CardContent className="p-4">
           <div className="relative">
@@ -179,29 +179,29 @@ export default function InvoicePage() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="CARI NOMOR INVOICE ATAU NAMA BUYER..."
+              placeholder="Cari Nomor Invoice Atau Nama Buyer..."
               className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
             />
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border-none bg-white shadow-sm overflow-hidden">
+      <Card className="border-none bg-white shadow-sm overflow-hidden rounded-none">
         <div className="h-1 w-full bg-slate-900" />
         <CardHeader className="p-6 border-b border-slate-50">
-          <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">MANIFEST INVOICE PENJUALAN</CardTitle>
-          <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">AUDIT TRANSAKSI DAN STATUS PELUNASAN</CardDescription>
+          <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Manifest Invoice Penjualan</CardTitle>
+          <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Audit Transaksi Dan Status Pelunasan</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-slate-900">
               <TableRow className="hover:bg-slate-900 border-none">
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">NO. INVOICE</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">BUYER / ORDER</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">NOMINAL</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">JATUH TEMPO</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">STATUS</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">AKSI</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">No. Invoice</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">Buyer / Order</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Nominal</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">Jatuh Tempo</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">Status</TableHead>
+                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -211,7 +211,7 @@ export default function InvoicePage() {
                   <TableCell className="px-6 py-4">
                     <div>
                       <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{invoice.buyer}</p>
-                      <p className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase">REF: {invoice.orderRef}</p>
+                      <p className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase">Ref: {invoice.orderRef}</p>
                     </div>
                   </TableCell>
                   <TableCell className="px-6 py-4 text-right">

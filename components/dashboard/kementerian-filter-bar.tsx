@@ -26,7 +26,7 @@ interface KementerianFilterBarProps {
 }
 
 const triggerClassName =
-  'h-9 rounded-md border border-[var(--dashboard-secondary-border)] bg-white px-3 text-sm font-medium text-[var(--dashboard-secondary)] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:bg-[var(--dashboard-secondary-muted)]'
+  'h-[2.6rem] w-full rounded-[var(--surface-radius-sm)] border border-[var(--dashboard-secondary-border)] bg-white px-3 text-sm font-medium text-[var(--dashboard-secondary)] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:bg-[var(--dashboard-secondary-muted)]'
 
 const contentClassName = 'border-[var(--dashboard-secondary)]/15 bg-white text-[var(--dashboard-secondary)]'
 const itemClassName =
@@ -74,23 +74,36 @@ export function KementerianFilterBar({
     if (setSearch) setSearch('')
   }
 
+  const gridClassName =
+    setSearch !== undefined
+      ? showCommodity
+        ? 'grid gap-3 xl:items-end xl:grid-cols-[minmax(0,1.15fr)_repeat(5,minmax(0,0.84fr))_auto]'
+        : 'grid gap-3 xl:items-end xl:grid-cols-[minmax(0,1.15fr)_repeat(4,minmax(0,0.84fr))_auto]'
+      : showCommodity
+        ? 'grid gap-3 xl:items-end xl:grid-cols-[repeat(5,minmax(0,1fr))_auto]'
+        : 'grid gap-3 xl:items-end xl:grid-cols-[repeat(4,minmax(0,1fr))_auto]'
+
   return (
     <div className="w-full">
-      <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-[var(--dashboard-secondary-border)] bg-white p-1.5 shadow-[0_8px_18px_-14px_rgba(137,114,111,0.22)]">
+      <div className="rounded-[var(--surface-radius)] border border-[var(--dashboard-secondary-border)] bg-white p-3 shadow-[0_8px_18px_-14px_rgba(137,114,111,0.22)]">
+        <div className={gridClassName}>
         {setSearch !== undefined && (
-          <div className="relative min-w-[220px] flex-1 border-r border-[var(--dashboard-secondary)]/10 pr-1.5">
+          <div className="min-w-0 space-y-1">
+            <span className="block text-[12px] font-medium text-[var(--dashboard-secondary)]/65">Pencarian</span>
+            <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--dashboard-secondary)]/45" />
             <Input
               placeholder="Cari data"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-9 border-none bg-transparent pl-9 text-sm font-medium text-[var(--dashboard-secondary)] placeholder:text-[var(--dashboard-secondary)]/45 shadow-none focus-visible:ring-0"
+              className="h-[2.6rem] rounded-[var(--surface-radius-sm)] border border-[var(--dashboard-secondary-border)] bg-white pl-9 text-sm font-medium text-[var(--dashboard-secondary)] placeholder:text-[var(--dashboard-secondary)]/45 shadow-none focus-visible:ring-[var(--dashboard-primary)]/20"
             />
+          </div>
           </div>
         )}
 
-        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
-          <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Provinsi</span>
+        <div className="min-w-0 space-y-1">
+          <span className="block text-[12px] font-medium text-[var(--dashboard-secondary)]/65">Provinsi</span>
           <Select
             value={filters.provinceId}
             onValueChange={(v) =>
@@ -103,7 +116,7 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className={`${triggerClassName} w-[140px]`}>
+            <SelectTrigger className={triggerClassName}>
               <SelectValue placeholder="Semua provinsi" />
             </SelectTrigger>
             <SelectContent className={contentClassName}>
@@ -119,8 +132,8 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
-          <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Kab/Kota</span>
+        <div className="min-w-0 space-y-1">
+          <span className="block text-[12px] font-medium text-[var(--dashboard-secondary)]/65">Kab/Kota</span>
           <Select
             value={filters.regionId}
             onValueChange={(v) =>
@@ -132,7 +145,7 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className={`${triggerClassName} w-[140px]`}>
+            <SelectTrigger className={triggerClassName}>
               <SelectValue placeholder="Semua kab/kota" />
             </SelectTrigger>
             <SelectContent className={contentClassName}>
@@ -148,8 +161,8 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
-          <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Desa</span>
+        <div className="min-w-0 space-y-1">
+          <span className="block text-[12px] font-medium text-[var(--dashboard-secondary)]/65">Desa</span>
           <Select
             value={filters.villageId}
             onValueChange={(v) =>
@@ -160,7 +173,7 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className={`${triggerClassName} w-[140px]`}>
+            <SelectTrigger className={triggerClassName}>
               <SelectValue placeholder="Semua desa" />
             </SelectTrigger>
             <SelectContent className={contentClassName}>
@@ -176,8 +189,8 @@ export function KementerianFilterBar({
           </Select>
         </div>
 
-        <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
-          <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Koperasi</span>
+        <div className="min-w-0 space-y-1">
+          <span className="block text-[12px] font-medium text-[var(--dashboard-secondary)]/65">Koperasi</span>
           <Select
             value={filters.cooperativeId}
             onValueChange={(v) =>
@@ -187,7 +200,7 @@ export function KementerianFilterBar({
               }))
             }
           >
-            <SelectTrigger className={`${triggerClassName} w-[160px]`}>
+            <SelectTrigger className={triggerClassName}>
               <SelectValue placeholder="Semua koperasi" />
             </SelectTrigger>
             <SelectContent className={contentClassName}>
@@ -204,13 +217,13 @@ export function KementerianFilterBar({
         </div>
 
         {showCommodity && (
-          <div className="flex items-center gap-2 border-r border-[var(--dashboard-secondary)]/10 px-2.5">
-            <span className="shrink-0 text-[13px] font-medium text-[var(--dashboard-secondary)]/60">Komoditas</span>
+          <div className="min-w-0 space-y-1">
+            <span className="block text-[12px] font-medium text-[var(--dashboard-secondary)]/65">Komoditas</span>
             <Select
               value={filters.commodityId}
               onValueChange={(v) => setFilters((prev) => ({ ...prev, commodityId: v }))}
             >
-              <SelectTrigger className={`${triggerClassName} w-[140px]`}>
+              <SelectTrigger className={triggerClassName}>
                 <SelectValue placeholder="Semua" />
               </SelectTrigger>
               <SelectContent className={contentClassName}>
@@ -224,14 +237,17 @@ export function KementerianFilterBar({
           </div>
         )}
 
-        <Button
-          size="sm"
-          variant="ghost"
-          className="ml-auto h-9 w-9 rounded-md p-0 text-[var(--dashboard-secondary)]/70 transition-all hover:bg-[var(--dashboard-primary)] hover:text-white"
-          onClick={resetFilters}
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-        </Button>
+        <div className="flex items-center justify-end xl:justify-self-end">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-[2.6rem] w-[2.6rem] rounded-[var(--surface-radius-sm)] p-0 text-[var(--dashboard-secondary)]/70 transition-all hover:bg-[var(--dashboard-primary)] hover:text-white"
+            onClick={resetFilters}
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+        </div>
       </div>
     </div>
   )

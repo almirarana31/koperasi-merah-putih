@@ -121,19 +121,19 @@ export default function RutePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">KOMANDO JARINGAN RUTE</h1>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Komando Jaringan Rute</h1>
           <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            OPTIMASI KORIDOR & ANALITIK TOPOLOGI LOGISTIK • {stats.activeCorridors} KORIDOR NASIONAL AKTIF
+            Optimasi Koridor & Analitik Topologi Logistik • {stats.activeCorridors} Koridor Nasional Aktif
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none" onClick={() => toast({ title: "Pemindaian Topologi", description: "Memetakan koridor distribusi nasional dan titik hambatan..." })}>
             <Maximize2 className="h-3.5 w-3.5 mr-2 text-blue-600" />
-            PANDANGAN TOPOLOGI
+            Pandangan Topologi
           </Button>
           <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" onClick={() => toast({ title: "Pembuatan Koridor", description: "Membuka suite desain rute untuk koneksi klaster baru..." })}>
             <Plus className="h-4 w-4 mr-2" />
-            DEFINISI KORIDOR
+            Definisi Koridor
           </Button>
         </div>
       </div>
@@ -142,12 +142,12 @@ export default function RutePage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'KORIDOR AKTIF', value: stats.activeCorridors, sub: 'JALUR TERVERIFIKASI', icon: Navigation, tone: 'emerald' },
-          { label: 'TOTAL JARINGAN', value: stats.totalDistance + ' KM', sub: 'JANGKAUAN OPERASIONAL', icon: MapPin, tone: 'blue' },
-          { label: 'FREKUENSI PERJALANAN', value: stats.tripFreq, sub: 'MISI MINGGUAN', icon: Activity, tone: 'slate' },
-          { label: 'EFISIENSI JARINGAN', value: stats.efficiency + '%', sub: 'OPTIMASI MUATAN', icon: Zap, tone: 'emerald' },
+          { label: 'Koridor Aktif', value: stats.activeCorridors, sub: 'JALUR TERVERIFIKASI', icon: Navigation, tone: 'emerald' },
+          { label: 'Total Jaringan', value: stats.totalDistance + ' KM', sub: 'JANGKAUAN OPERASIONAL', icon: MapPin, tone: 'blue' },
+          { label: 'Frekuensi Perjalanan', value: stats.tripFreq, sub: 'MISI MINGGUAN', icon: Activity, tone: 'slate' },
+          { label: 'Efisiensi Jaringan', value: stats.efficiency + '%', sub: 'OPTIMASI MUATAN', icon: Zap, tone: 'emerald' },
         ].map((s, i) => (
-          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden">
+          <Card key={i} className="border-none shadow-sm bg-white overflow-hidden rounded-none">
              <div className={`h-1 w-full ${
               s.tone === 'emerald' ? 'bg-emerald-500' : 
               s.tone === 'blue' ? 'bg-blue-500' : 'bg-slate-900'
@@ -178,11 +178,11 @@ export default function RutePage() {
             <CardContent className="p-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <Input
+                <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="SEARCH CORRIDORS BY NAME, ORIGIN, OR DESTINATION POINT..."
-                  className="pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus-visible:ring-slate-900"
+                  placeholder="Cari koridor berdasarkan nama, asal, atau titik tujuan..."
+                  className="w-full pl-9 h-11 text-[10px] font-black uppercase tracking-widest bg-slate-50 border-slate-100 rounded-none focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>
             </CardContent>
@@ -190,7 +190,7 @@ export default function RutePage() {
 
           <div className="space-y-4">
             {filteredRute.map((rute) => (
-              <Card key={rute.id} className="border-none bg-white shadow-sm overflow-hidden hover:shadow-md transition-all group">
+              <Card key={rute.id} className="border-none bg-white shadow-sm overflow-hidden hover:shadow-md transition-all group rounded-none">
                 <div className="h-1 w-full bg-slate-900" />
                 <CardHeader className="p-4 pb-2">
                   <div className="flex items-start justify-between">
@@ -251,10 +251,10 @@ export default function RutePage() {
 
                   <div className="flex gap-2">
                     <Button variant="outline" className="flex-1 h-9 border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-50" onClick={() => toast({ title: "Visualisasi Peta", description: "Memproyeksikan koridor " + rute.id + " ke lapisan GIS nasional..." })}>
-                       VISUALISASI PETA
+                       Visualisasi Peta
                     </Button>
                     <Button className="flex-1 h-9 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-none hover:bg-slate-800 transition-all" onClick={() => toast({ title: "Re-Optimasi Rute", description: "Menghitung ulang parameter misi untuk koridor " + rute.id })}>
-                       RE-OPTIMASI
+                       Re-Optimasi
                     </Button>
                   </div>
                 </CardContent>
@@ -268,19 +268,19 @@ export default function RutePage() {
             <CardHeader className="p-4 border-b border-white/5 bg-slate-900/50">
                <div className="flex items-center justify-between">
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                     <ShieldCheck className="h-4 w-4 text-emerald-500" /> NETWORK HEALTH
+                     <ShieldCheck className="h-4 w-4 text-emerald-500" /> Kesehatan Jaringan
                   </CardTitle>
                   <div className="flex items-center gap-1.5">
                      <div className="h-1 w-1 bg-emerald-500 rounded-full animate-ping" />
-                     <span className="text-[9px] font-black text-emerald-500 tracking-widest">STABLE</span>
+                     <span className="text-[9px] font-black text-emerald-500 tracking-widest">STABIL</span>
                   </div>
                </div>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
                {[
                  { label: 'NODE UPTIME', val: '99.9%', status: 'Normal' },
-                 { label: 'TRAFFIC LATENCY', val: '14 MIN', status: 'Low' },
-                 { label: 'THROUGHPUT', val: '240 T/Day', status: 'Active' },
+                 { label: 'TRAFFIC LATENCY', val: '14 MIN', status: 'Rendah' },
+                 { label: 'THROUGHPUT', val: '240 T/Hari', status: 'Aktif' },
                ].map((h, i) => (
                   <div key={i} className="flex items-center justify-between">
                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{h.label}</span>
@@ -291,7 +291,7 @@ export default function RutePage() {
                   </div>
                ))}
                <div className="pt-4 border-t border-white/5">
-                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">ACTIVE NODES</p>
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-3">NODE AKTIF</p>
                   <div className="flex flex-wrap gap-1.5">
                      {['JKT-HUB', 'BDG-AGR', 'CJR-STO', 'SUB-HUB'].map(n => (
                         <Badge key={n} className="bg-slate-900 text-slate-400 text-[8px] font-black border border-white/10 rounded-none h-4">
@@ -305,7 +305,7 @@ export default function RutePage() {
 
           <Card className="border-none shadow-sm bg-slate-50 rounded-none">
              <CardHeader className="p-4 border-b border-slate-200">
-                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">INFRASTRUCTURE AUDIT</CardTitle>
+                <CardTitle className="text-[10px] font-black uppercase tracking-widest text-slate-900">Audit Infrastruktur</CardTitle>
              </CardHeader>
              <CardContent className="p-4 space-y-4">
                 <div className="flex items-center gap-3">
@@ -314,11 +314,11 @@ export default function RutePage() {
                    </div>
                    <div className="flex-1">
                       <p className="text-[10px] font-black text-slate-900 uppercase">GIS ENGINE</p>
-                      <p className="text-[9px] font-bold text-slate-500 uppercase">V2.4.0 ACTIVE</p>
+                      <p className="text-[9px] font-bold text-slate-500 uppercase">V2.4.0 AKTIF</p>
                    </div>
                 </div>
                 <Button variant="outline" className="w-full h-8 text-[9px] font-black uppercase tracking-widest border-slate-200 rounded-none text-slate-600" onClick={() => toast({ title: "Infrastructure Report", description: "Generating national logistics asset inventory..." })}>
-                   FULL SYSTEM REPORT
+                   Laporan Sistem Lengkap
                 </Button>
              </CardContent>
           </Card>
