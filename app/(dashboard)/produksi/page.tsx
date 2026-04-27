@@ -32,14 +32,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -127,6 +120,86 @@ export default function ProduksiPage() {
   }, [search, filterStatus, filters, isKementerian])
 
   const totalHarvestVolume = useMemo(() => filteredProductions.reduce((sum, prod) => sum + prod.jumlah, 0), [filteredProductions])
+
+  type Production = (typeof productions)[number]
+  const productionColumns: DataTableColumn<Production>[] = [
+    {
+      key: 'id',
+      header: 'ID Log',
+      cell: (prod) => <span className="font-mono text-xs text-muted-foreground">{prod.id}</span>,
+    },
+    {
+      key: 'producer',
+      header: 'Produsen',
+      cell: (prod) => <span className="text-sm font-semibold text-foreground">{prod.memberNama}</span>,
+    },
+    {
+      key: 'commodity',
+      header: 'Komoditas',
+      cell: (prod) => <span className="text-sm">{prod.komoditasNama}</span>,
+    },
+    {
+      key: 'volume',
+      header: 'Volume',
+      cell: (prod) => (
+        <span className="tabular-nums">
+          {Math.round(prod.jumlah * scaleFactor).toLocaleString('id-ID')} {prod.satuan}
+        </span>
+      ),
+    },
+    {
+      key: 'grade',
+      header: 'Kualitas',
+      cell: (prod) => <Badge className={gradeColors[prod.grade]}>Grade {prod.grade}</Badge>,
+    },
+    {
+      key: 'date',
+      header: 'Tgl Panen',
+      cell: (prod) => <span className="text-xs text-muted-foreground">{formatDate(prod.tanggalPanen)}</span>,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      align: 'center',
+      cell: (prod) => <Badge variant="outline">{prod.status}</Badge>,
+    },
+    {
+      key: 'actions',
+      header: '',
+      align: 'right',
+      cell: (prod) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={(e) => e.stopPropagation()}
+              aria-label={`Aksi untuk ${prod.id}`}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuItem
+              onClick={() => {
+                setSelectedHarvest(prod)
+                setDetailDialogOpen(true)
+              }}
+            >
+              <Eye className="mr-2 h-3.5 w-3.5" /> Lihat detail
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleAction(`Verifikasi ${prod.id}`)}
+              className="text-[color:var(--success)]"
+            >
+              <CheckCircle className="mr-2 h-3.5 w-3.5" /> Verifikasi
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ]
 
   const scaleFactor = useMemo(() => {
     if (filters.cooperativeId !== 'all') return 0.05
@@ -313,74 +386,15 @@ export default function ProduksiPage() {
         </CardContent>
       </Card>
 
-      <Card className="rounded-none border-none shadow-sm overflow-hidden bg-white">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-slate-900">
-              <TableRow className="hover:bg-slate-900 border-none">
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase tracking-widest h-12 px-6">ID LOG</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase tracking-widest h-12 px-6">PRODUSEN</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase tracking-widest h-12 px-6">KOMODITAS</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase tracking-widest h-12 px-6">VOLUME</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase tracking-widest h-12 px-6">KUALITAS</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase tracking-widest h-12 px-6">TGL PANEN</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase tracking-widest h-12 px-6 text-center">STATUS</TableHead>
-                <TableHead className="text-[10px] font-black text-slate-400 uppercase tracking-widest h-12 px-6 text-right">AKSI</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredProductions.map((prod) => (
-                <TableRow key={prod.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <TableCell className="px-6 py-4 font-mono text-[10px] font-black text-slate-400">{prod.id}</TableCell>
-                  <TableCell className="px-6 py-4">
-                    <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{prod.memberNama}</span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-xs font-black text-slate-600 uppercase">{prod.komoditasNama}</TableCell>
-                  <TableCell className="px-6 py-4">
-                    <span className="text-xs font-black text-slate-900">{Math.round(prod.jumlah * scaleFactor).toLocaleString()} {prod.satuan.toUpperCase()}</span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <Badge className={`rounded-none border-none shadow-none text-[9px] font-black uppercase tracking-widest px-2 h-5 ${gradeColors[prod.grade]}`}>
-                      GRADE {prod.grade}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-xs font-black text-slate-500">{formatDate(prod.tanggalPanen).toUpperCase()}</TableCell>
-                  <TableCell className="px-6 py-4 text-center">
-                    <Badge className={`rounded-none border-none shadow-none text-[9px] font-black uppercase tracking-widest px-2 h-5 bg-slate-100 text-slate-700`}>
-                      {prod.status.toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none text-slate-400 hover:text-slate-900">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="rounded-none border-slate-200">
-                        <DropdownMenuItem 
-                          onClick={() => {
-                            setSelectedHarvest(prod)
-                            setDetailDialogOpen(true)
-                          }}
-                          className="text-[10px] font-black uppercase tracking-widest"
-                        >
-                          <Eye className="mr-2 h-3.5 w-3.5" /> LIHAT DETAIL
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={() => handleAction(`Verifikasi ${prod.id}`)}
-                          className="text-[10px] font-black uppercase tracking-widest text-emerald-600"
-                        >
-                          <CheckCircle className="mr-2 h-3.5 w-3.5" /> VERIFIKASI
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+      <Card>
+        <CardContent>
+          <DataTable
+            data={filteredProductions}
+            columns={productionColumns}
+            rowKey={(prod) => prod.id}
+            empty="Tidak ada catatan produksi yang cocok dengan filter."
+          />
+        </CardContent>
       </Card>
 
       <HarvestDetailDialog

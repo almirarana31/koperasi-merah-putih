@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Activity, MapPin, Navigation, Search, Truck } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
@@ -27,14 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -66,8 +59,6 @@ export default function LogistikPage() {
 
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState('10')
   const [filters, setFilters] = useState<ScopeFilters>({
     provinceId: 'all',
     regionId: 'all',
@@ -103,24 +94,77 @@ export default function LogistikPage() {
   const regionSeries = getShipmentPerformanceByRegion(shipments)
 
   const scaleFactor = filters.provinceId === 'all' ? 1 : filters.regionId === 'all' ? 0.3 : 0.1
-  const totalPages = Math.max(1, Math.ceil(shipments.length / Number(pageSize)))
-  const currentPage = Math.min(page, totalPages)
-  const startIndex = shipments.length === 0 ? 0 : (currentPage - 1) * Number(pageSize) + 1
-  const endIndex = Math.min(currentPage * Number(pageSize), shipments.length)
-  const paginatedShipments = shipments.slice(
-    (currentPage - 1) * Number(pageSize),
-    currentPage * Number(pageSize),
-  )
 
-  useEffect(() => {
-    setPage(1)
-  }, [search, statusFilter, filters, pageSize])
-
-  useEffect(() => {
-    if (page > totalPages) {
-      setPage(totalPages)
-    }
-  }, [page, totalPages])
+  type Shipment = (typeof shipments)[number]
+  const shipmentColumns: DataTableColumn<Shipment>[] = [
+    {
+      key: 'order',
+      header: 'No. Order',
+      cell: (s) => <span className="font-mono text-xs text-muted-foreground">{s.orderNumber}</span>,
+    },
+    {
+      key: 'commodity',
+      header: 'Komoditas',
+      cell: (s) => (
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-foreground">{s.commodityName}</p>
+          <p className="truncate text-xs text-muted-foreground">{s.buyerName}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'entity',
+      header: 'Entitas',
+      cell: (s) => (
+        <div className="min-w-0">
+          <p className="truncate text-sm text-foreground">{s.cooperativeName}</p>
+          <p className="truncate text-xs text-muted-foreground">{s.villageName}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'route',
+      header: 'Rute',
+      cell: (s) => (
+        <span className="text-xs text-muted-foreground">
+          {s.routeFrom} → {s.routeTo}
+        </span>
+      ),
+    },
+    {
+      key: 'driver',
+      header: 'Driver',
+      cell: (s) => (
+        <div>
+          <p className="text-sm text-foreground">{s.driver}</p>
+          <p className="text-xs text-muted-foreground">{s.driverPhone}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'volume',
+      header: 'Volume',
+      align: 'right',
+      cell: (s) => (
+        <div className="flex flex-col items-end">
+          <span className="tabular-nums font-medium">{s.volumeKg.toLocaleString('id-ID')} kg</span>
+          <span className="text-xs text-muted-foreground">{formatCurrency(s.cost)}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      cell: (s) => (
+        <div className="flex flex-col gap-1">
+          <Badge variant="outline" className={statusTone(s.status)}>
+            {s.status}
+          </Badge>
+          <span className="text-xs text-muted-foreground">{formatDate(s.departureDate)}</span>
+        </div>
+      ),
+    },
+  ]
 
   return (
     <div className="space-y-6">
@@ -252,108 +296,14 @@ export default function LogistikPage() {
           <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Manifest Pengiriman Nasional</CardTitle>
           <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Audit Logistik Multi-Entitas</CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-slate-100">
-              <TableRow className="border-none bg-slate-100 hover:bg-slate-100">
-                <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">No. Order</TableHead>
-                <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Komoditas</TableHead>
-                <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Entitas</TableHead>
-                <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Rute</TableHead>
-                <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Driver</TableHead>
-                <TableHead className="h-10 px-6 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Volume</TableHead>
-                <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedShipments.map((shipment) => (
-                <TableRow key={shipment.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                  <TableCell className="px-6 py-4 font-mono text-[10px] font-black text-slate-500">{shipment.orderNumber}</TableCell>
-                  <TableCell className="px-6 py-4">
-                    <div className="min-w-[120px]">
-                      <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{shipment.commodityName}</p>
-                      <p className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase">{shipment.buyerName}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <div className="min-w-[120px]">
-                      <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{shipment.cooperativeName}</p>
-                      <p className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase">{shipment.villageName}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                      {shipment.routeFrom} → {shipment.routeTo}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <div>
-                      <p className="text-xs font-black text-slate-900 uppercase">{shipment.driver}</p>
-                      <p className="text-[10px] font-bold text-slate-400 mt-0.5">{shipment.driverPhone}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-right">
-                    <p className="text-xs font-black text-slate-900">{shipment.volumeKg.toLocaleString('id-ID')} KG</p>
-                    <p className="text-[10px] font-bold text-slate-400 mt-0.5">{formatCurrency(shipment.cost)}</p>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <Badge variant="outline" className={`text-[10px] font-black border-none px-1.5 h-4 uppercase rounded-none ${statusTone(shipment.status)}`}>
-                      {shipment.status}
-                    </Badge>
-                    <p className="mt-1 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                      {formatDate(shipment.departureDate)}
-                    </p>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <DataTable
+            data={shipments}
+            columns={shipmentColumns}
+            rowKey={(s) => s.id}
+            empty="Tidak ada pengiriman yang cocok dengan filter."
+          />
         </CardContent>
-        <div className="flex flex-col gap-4 border-t border-slate-100 bg-slate-50/70 px-6 py-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-col gap-1 text-sm text-slate-500">
-            <span>
-              Menampilkan {startIndex}-{endIndex} dari {shipments.length} pengiriman.
-            </span>
-            <span>
-              Halaman {currentPage} dari {totalPages}
-            </span>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-slate-500">Tampilkan</span>
-              <Select value={pageSize} onValueChange={setPageSize}>
-                <SelectTrigger className="h-9 w-[110px] rounded-none border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest">
-                  <SelectValue placeholder="10 data" />
-                </SelectTrigger>
-                <SelectContent className="rounded-none">
-                  <SelectItem value="10" className="text-[10px] font-black uppercase">10 data</SelectItem>
-                  <SelectItem value="25" className="text-[10px] font-black uppercase">25 data</SelectItem>
-                  <SelectItem value="50" className="text-[10px] font-black uppercase">50 data</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="h-9 rounded-none border-slate-200 px-4 text-[10px] font-black uppercase tracking-widest text-slate-600 disabled:opacity-40"
-              >
-                Sebelumnya
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="h-9 rounded-none border-slate-200 px-4 text-[10px] font-black uppercase tracking-widest text-slate-600 disabled:opacity-40"
-              >
-                Berikutnya
-              </Button>
-            </div>
-          </div>
-        </div>
       </Card>
     </div>
   )

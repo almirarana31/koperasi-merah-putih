@@ -31,14 +31,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 import {
   Tabs,
   TabsContent,
@@ -85,6 +78,80 @@ export default function SimpanPinjamPage() {
       return matchesSearch
     })
   }, [search])
+
+  type Loan = (typeof loans)[number]
+  const loanColumns: DataTableColumn<Loan>[] = [
+    {
+      key: 'member',
+      header: 'Anggota / Wilayah',
+      cell: (loan) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-xs font-medium text-muted-foreground">
+            {loan.memberNama.split(' ')[1]?.[0] ?? loan.memberNama[0]}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-foreground">{loan.memberNama}</p>
+            <p className="truncate text-xs text-muted-foreground">#{loan.id}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'pokok',
+      header: 'Pokok',
+      align: 'right',
+      cell: (loan) => (
+        <div className="flex flex-col items-end">
+          <span className="tabular-nums font-medium">{formatCurrency(loan.jumlahPinjaman)}</span>
+          <span className="text-xs text-muted-foreground">
+            {loan.tenor}M @ {loan.bunga}%
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'pengembalian',
+      header: 'Pengembalian',
+      align: 'right',
+      cell: (loan) => {
+        const pct = ((loan.jumlahPinjaman - loan.sisaPinjaman) / loan.jumlahPinjaman) * 100
+        return (
+          <div className="flex flex-col items-end gap-1">
+            <div className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
+              <div className="h-full bg-[color:var(--success)]" style={{ width: `${pct}%` }} />
+            </div>
+            <span className="text-xs tabular-nums">{Math.round(pct)}% terkumpul</span>
+          </div>
+        )
+      },
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      cell: (loan) => (
+        <Badge className={getStatusColor(loan.status)} variant="outline">
+          {loan.status}
+        </Badge>
+      ),
+    },
+    {
+      key: 'audit',
+      header: '',
+      align: 'right',
+      cell: (loan) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation()
+            toast({ title: 'Audit Akun', description: `Memuat buku besar untuk ${loan.id}` })
+          }}
+        >
+          Detail
+        </Button>
+      ),
+    },
+  ]
 
   return (
     <div className="space-y-6">
@@ -184,60 +251,13 @@ export default function SimpanPinjamPage() {
                  </Button>
               </div>
             </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader className="bg-slate-900">
-                  <TableRow className="hover:bg-slate-900 border-none">
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">Anggota / Wilayah</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Pokok</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Pengembalian</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">Status</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Audit</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLoans.map((loan) => {
-                    const progressPercent = ((loan.jumlahPinjaman - loan.sisaPinjaman) / loan.jumlahPinjaman) * 100
-                    return (
-                      <TableRow key={loan.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
-                        <TableCell className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 bg-slate-100 flex items-center justify-center font-black text-[10px] text-slate-500 rounded-none">
-                               {loan.memberNama.split(' ')[1]?.[0] || loan.memberNama[0]}
-                            </div>
-                            <div>
-                               <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{loan.memberNama}</p>
-                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">#{loan.id}</p>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 text-right">
-                          <p className="text-xs font-black text-slate-900">{formatCurrency(loan.jumlahPinjaman)}</p>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase">{loan.tenor}M @ {loan.bunga}%</p>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 text-right">
-                          <div className="flex flex-col items-end gap-1.5">
-                             <div className="w-24 h-1.5 bg-slate-100 rounded-none overflow-hidden">
-                                <div className="h-full bg-emerald-500" style={{ width: `${progressPercent}%` }} />
-                             </div>
-                              <p className="text-[9px] font-black text-slate-900">{Math.round(progressPercent)}% TERKUMPUL</p>
-                           </div>
-                        </TableCell>
-                        <TableCell className="px-6 py-4">
-                          <Badge className={`text-[9px] font-black border-none px-2 h-5 uppercase rounded-none ${getStatusColor(loan.status)}`}>
-                            {loan.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 text-right">
-                          <Button variant="ghost" size="sm" className="h-8 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-white rounded-none group-hover:shadow-sm" onClick={() => toast({ title: "Audit Akun", description: "Memuat buku besar rinci untuk " + loan.id })}>
-                             Detail
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
+            <CardContent>
+              <DataTable
+                data={filteredLoans}
+                columns={loanColumns}
+                rowKey={(loan) => loan.id}
+                empty="Tidak ada pinjaman yang cocok dengan pencarian."
+              />
             </CardContent>
           </Card>
         </TabsContent>

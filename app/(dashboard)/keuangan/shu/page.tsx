@@ -22,14 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 import { useToast } from '@/components/ui/use-toast'
 import { useAuth } from '@/lib/auth/use-auth'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
@@ -98,6 +91,47 @@ export default function SHUPage() {
       return matchesProvince
     })
   }, [filters])
+
+  type SHURecord = (typeof pembagianSHU)[number]
+  const shuColumns: DataTableColumn<SHURecord>[] = [
+    {
+      key: 'penerima',
+      header: 'Penerima',
+      cell: (item) => <span className="text-sm font-semibold text-foreground">{item.nama}</span>,
+    },
+    {
+      key: 'wilayah',
+      header: 'Wilayah',
+      cell: (item) => <Badge variant="outline">{item.region}</Badge>,
+    },
+    {
+      key: 'shu',
+      header: 'Total SHU',
+      align: 'right',
+      cell: (item) => (
+        <span className="tabular-nums font-semibold text-[color:var(--success)]">{formatCurrency(item.totalSHU)}</span>
+      ),
+    },
+    {
+      key: 'audit',
+      header: '',
+      align: 'right',
+      cell: (item) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={(e) => {
+            e.stopPropagation()
+            toast({ title: 'Audit Alokasi', description: `Memuat perhitungan surplus rinci untuk ${item.nama}` })
+          }}
+          aria-label={`Audit ${item.nama}`}
+        >
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      ),
+    },
+  ]
 
   return (
     <div className="space-y-6">
@@ -212,37 +246,13 @@ export default function SHUPage() {
                  <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Log Distribusi Anggota</CardTitle>
                  <CardDescription className="text-[10px] font-bold text-slate-400 uppercase mt-1">Alokasi Surplus Individual Per Peserta Aktif</CardDescription>
               </CardHeader>
-              <CardContent className="p-0">
-                 <Table>
-                    <TableHeader className="bg-slate-900">
-                       <TableRow className="hover:bg-slate-900 border-none">
-                          <TableHead className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-400 px-6">Penerima</TableHead>
-                          <TableHead className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-400 px-6">Wilayah</TableHead>
-                          <TableHead className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-400 px-6 text-right">Total SHU</TableHead>
-                          <TableHead className="h-10 text-[10px] font-black uppercase tracking-widest text-slate-400 px-6 text-right">Audit</TableHead>
-                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                       {filteredSHU.map((item) => (
-                          <TableRow key={item.nama} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
-                             <TableCell className="px-6 py-4">
-                                <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{item.nama}</span>
-                             </TableCell>
-                             <TableCell className="px-6 py-4">
-                                <Badge className="text-[9px] font-black border-none px-1.5 h-4 uppercase rounded-none bg-slate-100 text-slate-500 tracking-tighter">{item.region}</Badge>
-                             </TableCell>
-                             <TableCell className="px-6 py-4 text-right">
-                                <span className="text-xs font-black text-emerald-600">{formatCurrency(item.totalSHU)}</span>
-                             </TableCell>
-                             <TableCell className="px-6 py-4 text-right">
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 group-hover:text-slate-900 rounded-none group-hover:bg-white group-hover:shadow-sm" onClick={() => toast({ title: "Audit Alokasi", description: "Memuat perhitungan surplus rinci untuk " + item.nama })}>
-                                   <ArrowRight className="h-4 w-4" />
-                                </Button>
-                             </TableCell>
-                          </TableRow>
-                       ))}
-                    </TableBody>
-                 </Table>
+              <CardContent>
+                 <DataTable
+                   data={filteredSHU}
+                   columns={shuColumns}
+                   rowKey={(item) => item.nama}
+                   empty="Tidak ada data SHU yang cocok dengan filter."
+                 />
               </CardContent>
             </Card>
         </div>

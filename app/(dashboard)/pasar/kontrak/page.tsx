@@ -14,14 +14,7 @@ import {
   resolveOperationalFilters,
 } from '@/lib/cross-entity-operations'
 import type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -110,6 +103,30 @@ export default function KontrakKementerianPage() {
     name: contract.regionName,
     pemenuhan: contract.fulfillment,
   }))
+
+  type Contract = (typeof contracts)[number]
+  const contractColumns: DataTableColumn<Contract>[] = [
+    {
+      key: 'number',
+      header: 'No. Kontrak',
+      cell: (c) => <span className="font-mono text-xs text-muted-foreground">{c.contractNumber}</span>,
+    },
+    { key: 'buyer', header: 'Pembeli', cell: (c) => <span className="text-sm font-semibold text-foreground">{c.buyerName}</span> },
+    { key: 'cooperative', header: 'Pemasok', cell: (c) => <span className="text-sm">{c.cooperativeName}</span> },
+    { key: 'commodity', header: 'Komoditas', cell: (c) => <span className="text-sm text-muted-foreground">{c.commodityMix.join(', ')}</span> },
+    { key: 'value', header: 'Nilai', align: 'right', cell: (c) => <span className="tabular-nums font-medium">{formatCurrency(c.value)}</span> },
+    { key: 'orders', header: 'PO', align: 'right', cell: (c) => <span className="tabular-nums">{c.orderCount}</span> },
+    { key: 'fulfillment', header: 'Fulfillment', align: 'right', cell: (c) => <span className="tabular-nums font-medium">{c.fulfillment}%</span> },
+    {
+      key: 'status',
+      header: 'Status',
+      cell: (c) => (
+        <Badge variant="outline" className={statusTone(c.status)}>
+          {statusLabel(c.status)}
+        </Badge>
+      ),
+    },
+  ]
 
   return (
     <div className="space-y-5">
@@ -219,39 +236,13 @@ export default function KontrakKementerianPage() {
           <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Matriks Pemantauan Kontrak Nasional</CardTitle>
           <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Sinkronisasi Data Kontrak Berdasarkan Transaksi Riil</CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">No. Kontrak</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Pembeli (Buyer)</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Pemasok (Koperasi)</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Komoditas</TableHead>
-                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Nilai</TableHead>
-                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">PO</TableHead>
-                <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">Fulfillment</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {contracts.slice(0, 15).map((contract) => (
-                <TableRow key={contract.id} className="hover:bg-slate-50/50 transition-colors">
-                  <TableCell className="font-mono text-[11px] font-bold">{contract.contractNumber}</TableCell>
-                  <TableCell className="text-[11px] font-black text-slate-900 uppercase">{contract.buyerName}</TableCell>
-                  <TableCell className="text-[11px] font-bold text-slate-500 uppercase">{contract.cooperativeName}</TableCell>
-                  <TableCell className="text-[11px] font-bold text-slate-500 uppercase">{contract.commodityMix.join(', ')}</TableCell>
-                  <TableCell className="text-right text-[11px] font-black">{formatCurrency(contract.value)}</TableCell>
-                  <TableCell className="text-right text-[11px] font-bold">{contract.orderCount}</TableCell>
-                  <TableCell className="text-right text-[11px] font-black">{contract.fulfillment}%</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={`rounded-none text-[9px] font-black uppercase tracking-widest ${statusTone(contract.status)}`}>
-                      {statusLabel(contract.status)}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <DataTable
+            data={contracts}
+            columns={contractColumns}
+            rowKey={(c) => c.id}
+            empty="Tidak ada kontrak yang cocok dengan filter."
+          />
         </CardContent>
       </Card>
 

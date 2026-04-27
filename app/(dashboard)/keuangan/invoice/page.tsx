@@ -17,14 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 import { useAuth } from '@/lib/auth/use-auth'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import { resolveOperationalFilters } from '@/lib/cross-entity-operations'
@@ -120,6 +113,107 @@ export default function InvoicePage() {
   const totalOverdue = (filteredInvoices.filter(i => i.status === 'overdue').reduce((acc, i) => acc + i.total, 0) * scaleFactor * 100)
   const totalLunas = (filteredInvoices.filter(i => i.status === 'lunas').reduce((acc, i) => acc + i.total, 0) * scaleFactor * 100)
 
+  type Invoice = (typeof invoiceData)[number]
+  const STATUS_BADGE: Record<string, string> = {
+    lunas: 'border-success/30 bg-success/10 text-[color:var(--success)]',
+    overdue: 'border-destructive/30 bg-destructive/10 text-destructive',
+    dikirim: 'border-tertiary/30 bg-[color:var(--dashboard-tertiary-soft)] text-[color:var(--dashboard-tertiary)]',
+    pending: 'border-warning/30 bg-warning/10 text-[color:var(--warning)]',
+    draft: 'border-border bg-muted text-muted-foreground',
+  }
+  const STATUS_LABEL: Record<string, string> = {
+    lunas: 'Lunas',
+    overdue: 'Jatuh tempo',
+    dikirim: 'Terkirim',
+    pending: 'Pending',
+    draft: 'Draft',
+  }
+  const invoiceColumns: DataTableColumn<Invoice>[] = [
+    {
+      key: 'nomor',
+      header: 'No. Invoice',
+      cell: (invoice) => <span className="font-mono text-xs text-muted-foreground">{invoice.nomorInvoice}</span>,
+    },
+    {
+      key: 'buyer',
+      header: 'Buyer / Order',
+      cell: (invoice) => (
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-foreground">{invoice.buyer}</p>
+          <p className="truncate text-xs text-muted-foreground">Ref: {invoice.orderRef}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'total',
+      header: 'Nominal',
+      align: 'right',
+      cell: (invoice) => <span className="tabular-nums font-medium">{formatCurrency(invoice.total)}</span>,
+    },
+    {
+      key: 'jatuhTempo',
+      header: 'Jatuh tempo',
+      cell: (invoice) => <span className="text-xs text-muted-foreground">{formatDate(invoice.jatuhTempo)}</span>,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      align: 'center',
+      cell: (invoice) => (
+        <Badge variant="outline" className={STATUS_BADGE[invoice.status]}>
+          {STATUS_LABEL[invoice.status]}
+        </Badge>
+      ),
+    },
+    {
+      key: 'actions',
+      header: '',
+      align: 'right',
+      cell: (invoice) => (
+        <div className="flex items-center justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={(e) => {
+              e.stopPropagation()
+              toast({ title: 'Detail Audit', description: `Membuka detail invoice ${invoice.nomorInvoice}` })
+            }}
+            aria-label={`Lihat ${invoice.nomorInvoice}`}
+          >
+            <Eye className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={(e) => {
+              e.stopPropagation()
+              toast({ title: 'Ekspor Dokumen', description: `Mengunduh PDF invoice ${invoice.nomorInvoice}` })
+            }}
+            aria-label={`Unduh ${invoice.nomorInvoice}`}
+          >
+            <Download className="h-3.5 w-3.5" />
+          </Button>
+          {invoice.status === 'draft' && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={(e) => {
+                e.stopPropagation()
+                toast({ title: 'Pusat Pengiriman', description: `Mengirim invoice ${invoice.nomorInvoice}…` })
+              }}
+              aria-label={`Kirim ${invoice.nomorInvoice}`}
+            >
+              <Send className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </div>
+      ),
+    },
+  ]
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -192,83 +286,13 @@ export default function InvoicePage() {
           <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Manifest Invoice Penjualan</CardTitle>
           <CardDescription className="text-[10px] font-bold text-slate-500 uppercase">Audit Transaksi Dan Status Pelunasan</CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-slate-900">
-              <TableRow className="hover:bg-slate-900 border-none">
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">No. Invoice</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">Buyer / Order</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Nominal</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6">Jatuh Tempo</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-center">Status</TableHead>
-                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 h-10 px-6 text-right">Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredInvoices.map((invoice) => (
-                <TableRow key={invoice.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors group">
-                  <TableCell className="px-6 py-4 font-mono text-[10px] font-black text-slate-500">{invoice.nomorInvoice}</TableCell>
-                  <TableCell className="px-6 py-4">
-                    <div>
-                      <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{invoice.buyer}</p>
-                      <p className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase">Ref: {invoice.orderRef}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-right">
-                    <p className="text-xs font-black text-slate-900">{formatCurrency(invoice.total)}</p>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase">{formatDate(invoice.jatuhTempo)}</p>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-center">
-                    <Badge className={`text-[9px] font-black border-none px-2 h-4 uppercase rounded-none tracking-widest ${
-                      invoice.status === 'lunas' ? 'bg-emerald-100 text-emerald-700' :
-                      invoice.status === 'overdue' ? 'bg-rose-100 text-rose-700' :
-                      invoice.status === 'dikirim' ? 'bg-blue-100 text-blue-700' :
-                      invoice.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                      'bg-slate-100 text-slate-600'
-                    }`}>
-                      {invoice.status === 'lunas' ? 'LUNAS' :
-                       invoice.status === 'overdue' ? 'JATUH TEMPO' :
-                       invoice.status === 'dikirim' ? 'TERKIRIM' :
-                       invoice.status === 'pending' ? 'PENDING' :
-                       'DRAFT'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-none group-hover:bg-white group-hover:shadow-sm"
-                        onClick={() => toast({ title: "Detail Audit", description: `Membuka detail invoice ${invoice.nomorInvoice}` })}
-                      >
-                        <Eye className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-none group-hover:bg-white group-hover:shadow-sm"
-                        onClick={() => toast({ title: "Ekspor Dokumen", description: `Mengunduh file PDF invoice ${invoice.nomorInvoice}` })}
-                      >
-                        <Download className="h-3.5 w-3.5" />
-                      </Button>
-                      {invoice.status === 'draft' && (
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8 rounded-none group-hover:bg-white group-hover:shadow-sm"
-                          onClick={() => toast({ title: "Pusat Pengiriman", description: `Mengirim invoice ${invoice.nomorInvoice} ke pembeli...` })}
-                        >
-                          <Send className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <DataTable
+            data={filteredInvoices}
+            columns={invoiceColumns}
+            rowKey={(invoice) => invoice.id}
+            empty="Tidak ada invoice yang cocok dengan filter."
+          />
         </CardContent>
       </Card>
     </div>

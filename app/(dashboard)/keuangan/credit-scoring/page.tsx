@@ -1,14 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
   Activity,
   ArrowLeft,
   BarChart3,
   CheckCircle,
-  ChevronLeft,
-  ChevronRight,
   CreditCard,
   Download,
   History,
@@ -19,8 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 import { useToast } from '@/components/ui/use-toast'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import { members, type Member } from '@/lib/mock-data'
@@ -41,8 +38,6 @@ type CreditMember = {
   kycVerified: boolean
   dukcapilVerified: boolean
 }
-
-const PAGE_SIZE_OPTIONS = ['10', '25', '50']
 
 const getScoreColor = (score: number) => {
   if (score >= 750) return 'text-emerald-500'
@@ -125,8 +120,6 @@ export default function CreditScoringPage() {
     commodityId: 'all',
   })
   const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState('10')
 
   const scoredMembers = useMemo(() => members.map((member, index) => buildCreditMember(member, index)), [])
 
@@ -150,21 +143,6 @@ export default function CreditScoringPage() {
     })
   }, [filters, scoredMembers, search])
 
-  useEffect(() => {
-    setPage(1)
-  }, [filters, pageSize, search])
-
-  const pageSizeNumber = Number(pageSize)
-  const totalPages = Math.max(1, Math.ceil(filteredMembers.length / pageSizeNumber))
-
-  useEffect(() => {
-    setPage((currentPage) => Math.min(currentPage, totalPages))
-  }, [totalPages])
-
-  const paginatedMembers = useMemo(() => {
-    return filteredMembers.slice((page - 1) * pageSizeNumber, page * pageSizeNumber)
-  }, [filteredMembers, page, pageSizeNumber])
-
   const stats = useMemo(() => {
     const totalMembers = filteredMembers.length
     const primeCount = filteredMembers.filter((member) => member.creditScore >= 750).length
@@ -175,8 +153,72 @@ export default function CreditScoringPage() {
     return { totalMembers, primeCount, eligibleCount, avgScore, defaultRisk }
   }, [filteredMembers])
 
-  const pageStart = filteredMembers.length === 0 ? 0 : (page - 1) * pageSizeNumber + 1
-  const pageEnd = Math.min(page * pageSizeNumber, filteredMembers.length)
+  const creditColumns: DataTableColumn<CreditMember>[] = [
+    {
+      key: 'member',
+      header: 'Anggota / Tipe',
+      cell: (member) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-xs font-medium text-muted-foreground">
+            {member.name.split(' ').map((s) => s[0]).join('').slice(0, 2).toUpperCase()}
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold text-foreground">{member.name}</p>
+            <p className="truncate text-xs text-muted-foreground">
+              {member.typeLabel} · {member.memberNumber}
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'score',
+      header: 'Skor',
+      align: 'center',
+      cell: (member) => (
+        <span className={`text-lg font-semibold tabular-nums ${getScoreColor(member.creditScore)}`}>
+          {member.creditScore}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      align: 'center',
+      cell: (member) => {
+        const badge = getScoreBadge(member.creditScore)
+        return <Badge className={badge.color}>{badge.label}</Badge>
+      },
+    },
+    {
+      key: 'verified',
+      header: 'Terverifikasi',
+      align: 'center',
+      cell: (member) => (
+        <div className="flex items-center justify-center gap-1.5">
+          {member.kycVerified && <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--success)]" />}
+          {member.dukcapilVerified && <CheckCircle className="h-3.5 w-3.5 text-[color:var(--dashboard-tertiary)]" />}
+        </div>
+      ),
+    },
+    {
+      key: 'audit',
+      header: '',
+      align: 'right',
+      cell: (member) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation()
+            toast({ title: 'Diagnostik Risiko', description: `Membuka analisis faktor untuk ${member.name}.` })
+          }}
+        >
+          Detail
+        </Button>
+      ),
+    },
+  ]
 
   return (
     <div className="space-y-6">
@@ -267,114 +309,15 @@ export default function CreditScoringPage() {
                 Seluruh anggota yang sudah terskor pada cakupan aktif
               </CardDescription>
             </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader className="bg-slate-100">
-                  <TableRow className="border-none bg-slate-100 hover:bg-slate-100">
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500 h-10 px-6">Anggota / Tipe</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500 h-10 px-6 text-center">Skor</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500 h-10 px-6 text-center">Status</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500 h-10 px-6 text-center">Terverifikasi</TableHead>
-                    <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-500 h-10 px-6 text-right">Audit</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedMembers.length === 0 ? (
-                    <TableRow className="border-b border-slate-50">
-                      <TableCell colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">
-                        Tidak ada anggota yang cocok dengan filter aktif.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    paginatedMembers.map((member) => (
-                      <TableRow key={member.id} className="border-b border-slate-50 hover:bg-slate-50/70 transition-colors">
-                        <TableCell className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 bg-slate-100 flex items-center justify-center font-black text-[10px] text-slate-500 rounded-none">
-                              {member.name.split(' ').map((segment) => segment[0]).join('').slice(0, 2).toUpperCase()}
-                            </div>
-                            <div className="space-y-0.5">
-                              <p className="text-xs font-black text-slate-900 uppercase tracking-tight">{member.name}</p>
-                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{member.typeLabel} | {member.memberNumber}</p>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 text-center">
-                          <span className={`text-lg font-black ${getScoreColor(member.creditScore)}`}>{member.creditScore}</span>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 text-center">
-                          <Badge className={`text-[9px] font-black border-none px-2 h-5 uppercase rounded-none ${getScoreBadge(member.creditScore).color}`}>
-                            {getScoreBadge(member.creditScore).label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 text-center">
-                          <div className="flex items-center justify-center gap-1.5">
-                            {member.kycVerified && <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />}
-                            {member.dukcapilVerified && <CheckCircle className="h-3.5 w-3.5 text-blue-500" />}
-                          </div>
-                        </TableCell>
-                        <TableCell className="px-6 py-4 text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-none"
-                            onClick={() => toast({ title: 'Diagnostik Risiko', description: `Membuka analisis faktor untuk ${member.name}.` })}
-                          >
-                            Detail
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+            <CardContent>
+              <DataTable
+                data={filteredMembers}
+                columns={creditColumns}
+                rowKey={(member) => member.id}
+                empty="Tidak ada anggota yang cocok dengan filter aktif."
+              />
             </CardContent>
           </Card>
-
-          <div className="flex flex-col gap-4 rounded-none border border-slate-100 bg-white px-4 py-4 shadow-sm md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap items-center gap-3">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                Menampilkan {pageStart}-{pageEnd} dari {filteredMembers.length} anggota | Halaman {page} dari {totalPages}
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tampilkan</span>
-                <Select value={pageSize} onValueChange={setPageSize}>
-                  <SelectTrigger className="h-9 w-[92px] rounded-none border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest shadow-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none">
-                    {PAGE_SIZE_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={option} className="text-[10px] font-black uppercase tracking-widest">
-                        {option} data
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page === 1}
-                onClick={() => setPage((currentPage) => currentPage - 1)}
-                className="h-9 rounded-none text-[10px] font-black uppercase tracking-widest border-slate-200 px-4 bg-white shadow-none"
-              >
-                <ChevronLeft className="h-3.5 w-3.5 mr-1.5" />
-                Sebelumnya
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page === totalPages}
-                onClick={() => setPage((currentPage) => currentPage + 1)}
-                className="h-9 rounded-none text-[10px] font-black uppercase tracking-widest border-slate-200 px-4 bg-white shadow-none"
-              >
-                Berikutnya
-                <ChevronRight className="h-3.5 w-3.5 ml-1.5" />
-              </Button>
-            </div>
-          </div>
         </div>
 
         <div className="space-y-6">

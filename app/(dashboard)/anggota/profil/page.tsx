@@ -36,14 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 
 const toTitleCase = (value: string) =>
   value
@@ -107,6 +100,47 @@ export default function MemberProfilPage() {
       utilization: 92,
     }
   }, [scaleFactor])
+
+  type Profile = (typeof directory)[number]
+  const directoryColumns: DataTableColumn<Profile>[] = [
+    {
+      key: 'name',
+      header: 'Nama Profil',
+      cell: (p) => <span className="text-sm font-semibold text-foreground">{p.name}</span>,
+    },
+    {
+      key: 'cooperative',
+      header: 'Koperasi',
+      cell: (p) => <span className="text-xs text-muted-foreground">{p.cooperativeName}</span>,
+    },
+    {
+      key: 'lastActivity',
+      header: 'Update',
+      cell: (p) => <span className="text-xs text-muted-foreground">{p.lastActivity}</span>,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      cell: (p) => <Badge className={statusTone(p.status)}>{statusLabel(p.status)}</Badge>,
+    },
+    {
+      key: 'audit',
+      header: '',
+      align: 'right',
+      cell: (p) => (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation()
+            setSelectedProfileId(p.id)
+          }}
+        >
+          Audit
+        </Button>
+      ),
+    },
+  ]
 
   const activeProfile = useMemo(
     () => directory.find((profile) => profile.id === selectedProfileId) ?? directory[0],
@@ -250,43 +284,13 @@ export default function MemberProfilPage() {
                     Akses Langsung Ke Profil Lain Dalam Jangkauan Monitoring Anda.
                   </p>
                 </div>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader className="bg-slate-50">
-                      <TableRow className="border-slate-100 hover:bg-transparent">
-                        <TableHead className="text-[9px] font-black uppercase tracking-widest h-10">Nama Profil</TableHead>
-                        <TableHead className="text-[9px] font-black uppercase tracking-widest h-10">Koperasi</TableHead>
-                        <TableHead className="text-[9px] font-black uppercase tracking-widest h-10">Update</TableHead>
-                        <TableHead className="text-[9px] font-black uppercase tracking-widest h-10">Status</TableHead>
-                        <TableHead className="text-right text-[9px] font-black uppercase tracking-widest h-10">Aksi</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody className="[&_tr]:border-slate-100">
-                      {directory.slice(0, 8).map((profile) => (
-                        <TableRow key={profile.id} className="hover:bg-slate-50/50 transition-colors">
-                          <TableCell className="font-black text-xs text-slate-900 uppercase tracking-tight">{profile.name}</TableCell>
-                          <TableCell className="text-[10px] font-bold text-slate-500 uppercase">{profile.cooperativeName}</TableCell>
-                          <TableCell className="text-[10px] font-bold text-slate-500 uppercase">{profile.lastActivity}</TableCell>
-                          <TableCell>
-                            <Badge className={`h-5 rounded-none border-none px-2 text-[8px] font-black uppercase tracking-widest ${statusTone(profile.status)} shadow-none`}>
-                              {statusLabel(profile.status)}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-7 rounded-none border-slate-200 text-[9px] font-black uppercase tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-none"
-                              onClick={() => setSelectedProfileId(profile.id)}
-                            >
-                              AUDIT
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                <DataTable
+                  data={directory}
+                  columns={directoryColumns}
+                  rowKey={(p) => p.id}
+                  empty="Tidak ada profil dalam jangkauan saat ini."
+                />
+
               </div>
             </CardContent>
           </Card>

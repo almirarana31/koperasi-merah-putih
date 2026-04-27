@@ -15,14 +15,7 @@ import {
   resolveOperationalFilters,
 } from '@/lib/cross-entity-operations'
 import type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -70,6 +63,58 @@ export default function HargaPasarPage() {
     ...row,
     avgPrice: Math.round((row.avgPrice) / 1000),
   }))
+
+  type PriceRow = (typeof filteredPrices)[number]
+  const priceColumns: DataTableColumn<PriceRow>[] = [
+    {
+      key: 'commodity',
+      header: 'Komoditas / Desa',
+      cell: (row) => (
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-foreground">{row.commodityName}</p>
+          <p className="truncate text-xs text-muted-foreground">{row.villageName}</p>
+        </div>
+      ),
+    },
+    { key: 'region', header: 'Wilayah', cell: (row) => <span className="text-sm">{row.regionName}</span> },
+    { key: 'cooperative', header: 'Koperasi', cell: (row) => <span className="text-sm">{row.cooperativeName}</span> },
+    {
+      key: 'price',
+      header: 'Harga Kini',
+      align: 'right',
+      cell: (row) => <span className="tabular-nums font-medium">{formatCurrency(row.currentPrice)}</span>,
+    },
+    {
+      key: 'change',
+      header: 'Perubahan',
+      align: 'right',
+      cell: (row) => {
+        const change = ((row.currentPrice - row.previousPrice) / row.previousPrice) * 100
+        return (
+          <span
+            className={`tabular-nums font-medium ${
+              change > 0 ? 'text-destructive' : change < 0 ? 'text-[color:var(--success)]' : 'text-muted-foreground'
+            }`}
+          >
+            {change > 0 ? '+' : ''}
+            {change.toFixed(1)}%
+          </span>
+        )
+      },
+    },
+    {
+      key: 'weekly',
+      header: 'Rata Minggu',
+      align: 'right',
+      cell: (row) => <span className="tabular-nums text-muted-foreground">{formatCurrency(row.weeklyAverage)}</span>,
+    },
+    {
+      key: 'monthly',
+      header: 'Rata Bulan',
+      align: 'right',
+      cell: (row) => <span className="tabular-nums text-muted-foreground">{formatCurrency(row.monthlyAverage)}</span>,
+    },
+  ]
 
   return (
     <div className="space-y-6">
@@ -204,42 +249,13 @@ export default function HargaPasarPage() {
           <CardTitle className="text-[10px] font-black uppercase tracking-widest text-white">Matriks Harga Pasar Terpadu Nasional</CardTitle>
           <CardDescription className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Data Agregasi Harga Berdasarkan Multi-entitas Koperasi</CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-slate-50">
-              <TableRow className="border-b border-slate-100">
-                <TableHead className="text-[9px] font-black uppercase tracking-widest h-10 px-4">Komoditas/Desa</TableHead>
-                <TableHead className="text-[9px] font-black uppercase tracking-widest h-10 px-4">Wilayah</TableHead>
-                <TableHead className="text-[9px] font-black uppercase tracking-widest h-10 px-4">Koperasi</TableHead>
-                <TableHead className="text-right text-[9px] font-black uppercase tracking-widest h-10 px-4">Harga Kini</TableHead>
-                <TableHead className="text-right text-[9px] font-black uppercase tracking-widest h-10 px-4">Perubahan</TableHead>
-                <TableHead className="text-right text-[9px] font-black uppercase tracking-widest h-10 px-4">Rata Minggu</TableHead>
-                <TableHead className="text-right text-[9px] font-black uppercase tracking-widest h-10 px-4">Rata Bulan</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredPrices.slice(0, 15).map((row) => {
-                const change = ((row.currentPrice - row.previousPrice) / row.previousPrice) * 100
-
-                return (
-                  <TableRow key={row.id} className="hover:bg-slate-50 transition-colors border-b border-slate-50">
-                    <TableCell className="px-4 py-3">
-                      <p className="text-[10px] font-black text-slate-900 uppercase">{row.commodityName}</p>
-                      <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{row.villageName}</p>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-[9px] font-black text-slate-500 uppercase">{row.regionName}</TableCell>
-                    <TableCell className="px-4 py-3 text-[9px] font-black text-slate-500 uppercase">{row.cooperativeName}</TableCell>
-                    <TableCell className="px-4 py-3 text-right text-[10px] font-black text-slate-900">{formatCurrency(row.currentPrice)}</TableCell>
-                    <TableCell className={`px-4 py-3 text-right text-[10px] font-black ${change > 0 ? 'text-rose-600' : change < 0 ? 'text-emerald-600' : 'text-slate-500'}`}>
-                      {change > 0 ? '+' : ''}{change.toFixed(1)}%
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-right text-[9px] font-black text-slate-400">{formatCurrency(row.weeklyAverage)}</TableCell>
-                    <TableCell className="px-4 py-3 text-right text-[9px] font-black text-slate-400">{formatCurrency(row.monthlyAverage)}</TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <DataTable
+            data={filteredPrices}
+            columns={priceColumns}
+            rowKey={(row) => row.id}
+            empty="Tidak ada data harga yang cocok dengan filter."
+          />
         </CardContent>
       </Card>
 

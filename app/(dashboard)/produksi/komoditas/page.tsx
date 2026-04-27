@@ -34,14 +34,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 import {
   Select,
   SelectContent,
@@ -157,6 +150,86 @@ export default function KomoditasPage() {
     () => filterListingsByScope(scopedOperationalFilters),
     [scopedOperationalFilters],
   )
+
+  type Commodity = (typeof filteredCommodities)[number]
+  const commodityColumns: DataTableColumn<Commodity>[] = [
+    {
+      key: 'id',
+      header: 'ID SKU',
+      cell: (c) => <span className="font-mono text-xs text-muted-foreground">{c.id}</span>,
+    },
+    {
+      key: 'name',
+      header: 'Nama Komoditas',
+      cell: (c) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-success/10 text-[color:var(--success)]">
+            <Sprout className="h-4 w-4" />
+          </div>
+          <span className="text-sm font-semibold text-foreground">{c.nama}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'category',
+      header: 'Kategori',
+      cell: (c) => <Badge className={categoryColors[c.kategori]}>{categoryLabels[c.kategori]}</Badge>,
+    },
+    {
+      key: 'unit',
+      header: 'Satuan',
+      cell: (c) => <span className="text-xs text-muted-foreground">{c.satuan}</span>,
+    },
+    {
+      key: 'price',
+      header: 'Harga Acuan',
+      align: 'right',
+      cell: (c) => <span className="tabular-nums font-medium">{formatCurrency(c.hargaAcuan)}</span>,
+    },
+    {
+      key: 'stock',
+      header: 'Stok Agregat',
+      align: 'right',
+      cell: (c) => {
+        const displayStock = Math.round(c.stokTotal * scaleFactor)
+        return (
+          <div className="flex flex-col items-end">
+            <span className="tabular-nums font-medium">{displayStock.toLocaleString('id-ID')}</span>
+            <span className="text-xs text-muted-foreground">{c.satuan}</span>
+          </div>
+        )
+      },
+    },
+    {
+      key: 'valuation',
+      header: 'Valuasi',
+      align: 'right',
+      cell: (c) => (
+        <span className="tabular-nums font-medium text-[color:var(--success)]">
+          {formatCurrency(Math.round(c.stokTotal * scaleFactor) * c.hargaAcuan)}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: '',
+      align: 'right',
+      cell: (c) => (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={(e) => {
+            e.stopPropagation()
+            handleAction(`Detail ${c.nama}`)
+          }}
+          aria-label={`Detail ${c.nama}`}
+        >
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      ),
+    },
+  ]
 
   const stats = useMemo(() => {
     const count = filteredCommodities.length
@@ -422,73 +495,13 @@ export default function KomoditasPage() {
             </Badge>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader className="bg-slate-100">
-                <TableRow className="border-none bg-slate-100 hover:bg-slate-100">
-                  <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">ID SKU</TableHead>
-                  <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Nama Komoditas</TableHead>
-                  <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Kategori</TableHead>
-                  <TableHead className="h-10 px-6 text-[10px] font-black uppercase tracking-widest text-slate-500">Satuan</TableHead>
-                  <TableHead className="h-10 px-6 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Harga Acuan</TableHead>
-                  <TableHead className="h-10 px-6 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Stok Agregat</TableHead>
-                  <TableHead className="h-10 px-6 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Valuasi</TableHead>
-                  <TableHead className="h-10 px-6" />
-                </TableRow>
-              </TableHeader>
-              <TableBody className="[&_tr]:border-slate-100">
-                {filteredCommodities.map((commodity) => {
-                  const displayStock = Math.round(commodity.stokTotal * scaleFactor)
-                  const displayValue = displayStock * commodity.hargaAcuan
-
-                  return (
-                    <TableRow key={commodity.id} className="group transition-colors hover:bg-slate-50">
-                      <TableCell className="px-6 py-4 font-mono text-[10px] font-black uppercase text-slate-400">
-                        {commodity.id}
-                      </TableCell>
-                      <TableCell className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-none border border-emerald-100 bg-emerald-50 shadow-inner">
-                            <Sprout className="h-4 w-4 text-emerald-600" />
-                          </div>
-                          <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{commodity.nama}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-6 py-4">
-                        <Badge className={`h-5 rounded-none border-none px-2 text-[8px] font-black uppercase tracking-widest ${categoryColors[commodity.kategori]}`}>
-                          {categoryLabels[commodity.kategori]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="px-6 py-4 text-[10px] font-black uppercase text-slate-400">{commodity.satuan}</TableCell>
-                      <TableCell className="px-6 py-4 text-right text-xs font-black text-slate-900">
-                        {formatCurrency(commodity.hargaAcuan)}
-                      </TableCell>
-                      <TableCell className="px-6 py-4 text-right">
-                        <div className="flex flex-col items-end">
-                          <span className="text-xs font-black text-slate-900 uppercase">{displayStock.toLocaleString()}</span>
-                          <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">{commodity.satuan}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="px-6 py-4 text-right text-xs font-black text-emerald-600">
-                        {formatCurrency(displayValue)}
-                      </TableCell>
-                      <TableCell className="px-6 py-4 text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleAction(`Detail ${commodity.nama}`)}
-                          className="h-8 w-8 rounded-none text-slate-300 transition-colors group-hover:text-slate-900"
-                        >
-                          <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </div>
+        <CardContent>
+          <DataTable
+            data={filteredCommodities}
+            columns={commodityColumns}
+            rowKey={(c) => c.id}
+            empty="Tidak ada komoditas yang cocok dengan filter."
+          />
         </CardContent>
         {filteredCommodities.length > 0 && (
           <div className="flex flex-col gap-4 bg-slate-900 p-4 md:flex-row md:items-center md:justify-between border-t border-white/5">
