@@ -22,7 +22,9 @@ export function KopdesLayout({ children }: KopdesLayoutProps) {
         <KopdesHeader onMenuClick={() => setSidebarOpen(true)} />
 
         <main className="px-3.5 pb-24 pt-4 sm:px-5 sm:pb-28 lg:px-6 lg:pb-6">
-          {children}
+          <div className="dashboard-page-template mx-auto w-full">
+            {children}
+          </div>
         </main>
       </div>
 

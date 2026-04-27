@@ -7,7 +7,7 @@ function Card({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card"
       className={cn(
-        'surface-card text-card-foreground flex flex-col gap-3.5',
+        'surface-card text-card-foreground flex flex-col gap-4 overflow-hidden',
         className,
       )}
       {...props}
@@ -20,7 +20,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-header"
       className={cn(
-        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-4 pt-4 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-3.5',
+        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-[var(--panel-padding)] pt-[var(--panel-padding)] has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-[calc(var(--panel-padding)-0.15rem)]',
         className,
       )}
       {...props}
@@ -32,7 +32,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-title"
-      className={cn('text-[1.16rem] leading-snug font-semibold', className)}
+      className={cn('text-[1.12rem] leading-[1.35] font-semibold', className)}
       {...props}
     />
   )
@@ -42,7 +42,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-description"
-      className={cn('text-muted-foreground text-sm', className)}
+      className={cn('text-muted-foreground text-sm leading-6', className)}
       {...props}
     />
   )
@@ -65,7 +65,10 @@ function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-content"
-      className={cn('px-4 pb-4', className)}
+      className={cn(
+        'px-[var(--panel-padding)] pb-[var(--panel-padding)]',
+        className,
+      )}
       {...props}
     />
   )
@@ -75,7 +78,10 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-footer"
-      className={cn('flex items-center px-4 pb-4 [.border-t]:pt-3.5', className)}
+      className={cn(
+        'flex items-center px-[var(--panel-padding)] pb-[var(--panel-padding)] [.border-t]:pt-[calc(var(--panel-padding)-0.15rem)]',
+        className,
+      )}
       {...props}
     />
   )

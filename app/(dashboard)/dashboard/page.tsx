@@ -1,7 +1,7 @@
 "use client"
 
 import Link from 'next/link'
-import { Brain } from 'lucide-react'
+import { Brain, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth'
@@ -19,6 +19,33 @@ export default function DashboardPage() {
   const { user, roleConfig } = useAuth()
 
   if (!user || !roleConfig) return null
+
+  const dailyInsight =
+    user.role === 'kementerian'
+      ? 'Analisis lintas 1.248 desa menunjukkan kenaikan risiko NPL di tiga wilayah prioritas. Audit verifikasi paling mendesak saat ini berada di Jawa Barat.'
+      : `Sistem mendeteksi efisiensi ${
+          user.role === 'petani' ? 'panen' : 'transaksi'
+        } meningkat 12% dibanding pekan lalu. Rekomendasi harga dan asisten AI siap dipakai untuk keputusan berikutnya.`
+
+  const focusItems = [
+    {
+      label: 'Prioritas operasional',
+      value:
+        user.role === 'kementerian'
+          ? 'Audit verifikasi koperasi regional Jawa Barat'
+          : user.role === 'petani'
+            ? 'Tindak lanjuti rekomendasi harga panen hari ini'
+            : 'Pantau tugas persetujuan dan arus operasional utama',
+    },
+    {
+      label: 'Status jaringan',
+      value: '1.248 desa aktif dan sinkron setiap 2 menit',
+    },
+    {
+      label: 'Workspace aktif',
+      value: roleConfig.label,
+    },
+  ]
 
   const renderDashboard = () => {
     switch (user.role) {
@@ -42,66 +69,88 @@ export default function DashboardPage() {
         return <KetuaDashboard />
       default:
         return (
-          <div className="flex min-h-[400px] items-center justify-center">
-            <p className="text-sm font-medium text-muted-foreground">Dashboard untuk peran ini sedang dikonfigurasi.</p>
-          </div>
+          <section className="dashboard-surface flex min-h-[320px] items-center justify-center p-6">
+            <p className="text-sm font-medium text-muted-foreground">
+              Dashboard untuk peran ini sedang dikonfigurasi.
+            </p>
+          </section>
         )
     }
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between px-1">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">DASHBOARD EKSEKUTIF NASIONAL</h1>
-          <p className="text-[10px] font-black text-slate-500 mt-1 uppercase tracking-widest leading-relaxed">
-            SELAMAT DATANG KEMBALI, {user.name.toUpperCase()} • NODES AKTIF: 1,248 DESA • STATUS: KOPDES ONLINE
-          </p>
+    <div className="page-shell">
+      <div className="page-header px-1">
+        <div className="section-heading">
+          <Badge variant="outline" className="w-fit bg-secondary/70 text-secondary-foreground">
+            Ringkasan sistem hari ini
+          </Badge>
+          <div className="space-y-2">
+            <h1 className="page-title">Dashboard Eksekutif Nasional</h1>
+            <p className="page-subtitle max-w-3xl">
+              Selamat datang kembali, {user.name}. Dashboard ini sekarang berjalan di atas
+              layout dan komponen bersama agar tampilannya lebih konsisten, lebih ringan, dan
+              lebih nyaman digunakan dari halaman ke halaman.
+            </p>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="h-9 text-[10px] font-black uppercase tracking-widest border-slate-200 text-slate-600 rounded-none shadow-sm" asChild>
-            <Link href="/command-center">
-              PUSAT KENDALI
-            </Link>
+
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/command-center">Pusat Kendali</Link>
           </Button>
-          <Button size="sm" className="h-9 bg-slate-900 text-white hover:bg-slate-800 text-[10px] font-black uppercase tracking-widest px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] transition-all" asChild>
+          <Button size="sm" asChild>
             <Link href="/assistant">
-              <Brain className="mr-2.5 h-3.5 w-3.5" />
-              TANYA AI
+              <Brain className="h-4 w-4" />
+              Tanya AI
             </Link>
           </Button>
         </div>
       </div>
 
-      <section className="relative overflow-hidden rounded-none border-t-4 border-slate-900 bg-white p-5 shadow-sm sm:p-6 transition-all hover:shadow-md">
-        <div className="absolute right-0 top-0 p-6 opacity-[0.05] transition-transform duration-700 hover:rotate-0 sm:rotate-6">
-          <Brain className="h-32 w-32 text-slate-900 sm:h-36 sm:w-36" />
-        </div>
+      <section className="dashboard-surface-strong relative overflow-hidden p-5 sm:p-6">
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-56 bg-[radial-gradient(circle_at_center,color-mix(in_oklab,var(--dashboard-tertiary-soft)_68%,white),transparent_70%)] md:block" />
 
-        <div className="relative flex flex-col items-start justify-between gap-5 lg:flex-row">
-          <div className="flex-1 space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-none bg-slate-900 px-3 py-1 text-[9px] font-black text-white tracking-widest">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-              </span>
-              AI INTELLIGENCE CORE | SINYAL AKTIF
+        <div className="relative flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-3xl space-y-4">
+            <Badge className="w-fit border-primary/15 bg-primary/10 text-primary shadow-none">
+              <Sparkles className="h-3.5 w-3.5" />
+              Insight AI prioritas
+            </Badge>
+
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-foreground">Rangkuman insight hari ini</h2>
+              <p className="text-sm leading-7 text-muted-foreground">{dailyInsight}</p>
             </div>
-            <div>
-              <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">RANGKUMAN INSIGHT AI HARI INI</h2>
-              <p className="mt-2 max-w-2xl text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed">
-                {user.role === 'kementerian'
-                  ? 'ANALISIS NASIONAL DARI 1,248 DESA MENDETEKSI TREN KENAIKAN NPL DI 3 WILAYAH KUNCI. REKOMENDASI: SEGERA LAKUKAN AUDIT VERIFIKASI PADA KOPERASI DI WILAYAH JAWA BARAT.'
-                  : `BERDASARKAN DATA OPERASIONAL TERBARU, SISTEM MENDETEKSI EFISIENSI ${user.role === 'petani' ? 'PANEN' : 'TRANSAKSI'} MENINGKAT 12%. GUNAKAN REKOMENDASI HARGA AI UNTUK HASIL MAKSIMAL.`}
+
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline" className="bg-card/80">
+                Akurasi forecast 98.2%
+              </Badge>
+              <Badge variant="outline" className="bg-card/80">
+                Sinkronisasi data 2 menit lalu
+              </Badge>
+              <Badge variant="outline" className="bg-card/80">
+                Workspace aktif {roleConfig.label}
+              </Badge>
+            </div>
+          </div>
+
+          <div className="dashboard-inner-surface grid min-w-[280px] gap-3 p-4 sm:min-w-[320px]">
+            <div className="section-heading">
+              <h3 className="section-title">Fokus yang disarankan</h3>
+              <p className="section-description">
+                Tiga konteks yang sebaiknya jadi perhatian pertama saat membuka dashboard.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Badge className="bg-slate-50 text-slate-600 border border-slate-100 rounded-none px-3 py-1 text-[9px] font-black tracking-widest">
-                AKURASI FORECAST: 98.2%
-              </Badge>
-              <Badge className="bg-slate-50 text-slate-600 border border-slate-100 rounded-none px-3 py-1 text-[9px] font-black tracking-widest">
-                DATA SINKRON: 2 MENIT LALU
-              </Badge>
+
+            <div className="grid gap-3">
+              {focusItems.map((item) => (
+                <div key={item.label} className="surface-card-muted p-3.5">
+                  <p className="metric-label">{item.label}</p>
+                  <p className="mt-1 text-sm font-semibold text-foreground">{item.value}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

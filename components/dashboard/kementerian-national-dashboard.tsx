@@ -52,6 +52,8 @@ import {
 } from '@/lib/kementerian-dashboard-data'
 import { AuditDetailDialog } from '@/components/dialogs/audit-detail-dialog'
 
+const LAST_UPDATED_MS = new Date(KEMENTERIAN_DASHBOARD_DATA.lastUpdated).getTime()
+
 const currencyFormatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
   currency: 'IDR',
@@ -101,7 +103,7 @@ export function KementerianNationalDashboard() {
     commodityId: 'all',
   })
   const [clock, setClock] = useState(() => Date.now())
-  const [selectedCooperative, setSelectedCooperative] = useState<any>(null)
+  const [selectedCooperative, setSelectedCooperative] = useState<GroupSummary | null>(null)
   const [isAuditDialogOpen, setIsAuditDialogOpen] = useState(false)
   const [isDownloadingAudit, setIsDownloadingAudit] = useState(false)
 
@@ -117,11 +119,25 @@ export function KementerianNationalDashboard() {
 
   const snapshot = getKementerianDashboardSnapshot(filters)
 
+  const healthCounts = snapshot.cooperativeComparisons.reduce(
+    (acc, row) => {
+      acc[row.overallHealth] += 1
+      return acc
+    },
+    { good: 0, warning: 0, critical: 0 },
+  )
   const portfolioHealthData = [
-    { label: 'Sangat Sehat', count: 450, color: PORTFOLIO_HEALTH_COLORS.healthy },
-    { label: 'Waspada / Audit', count: 620, color: PORTFOLIO_HEALTH_COLORS.warning },
-    { label: 'Intervensi Segera', count: 178, color: PORTFOLIO_HEALTH_COLORS.critical },
+    { label: 'Sangat Sehat', count: healthCounts.good, color: PORTFOLIO_HEALTH_COLORS.healthy },
+    { label: 'Waspada / Audit', count: healthCounts.warning, color: PORTFOLIO_HEALTH_COLORS.warning },
+    { label: 'Intervensi Segera', count: healthCounts.critical, color: PORTFOLIO_HEALTH_COLORS.critical },
   ]
+  const portfolioTotal = portfolioHealthData.reduce((sum, item) => sum + item.count, 0)
+  const minutesSinceSync = Math.max(0, Math.floor((clock - LAST_UPDATED_MS) / 60000))
+
+  const handleAuditRowClick = (row: GroupSummary) => {
+    setSelectedCooperative(row)
+    setIsAuditDialogOpen(true)
+  }
 
   const handleDownloadAuditPdf = async () => {
     setIsDownloadingAudit(true)
@@ -164,8 +180,8 @@ export function KementerianNationalDashboard() {
             <Badge variant="outline" className="border-emerald-500 bg-emerald-50 px-2 py-0 text-[10px] font-black uppercase tracking-widest text-emerald-700">Live</Badge>
           </div>
           <p className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">
-            <RefreshCw className="h-3 w-3 animate-spin-slow" /> 
-            DATA TERPUSAT: {snapshot.scopeLabel.toUpperCase()} | SINKRONISASI {Math.floor((Date.now() - clock)/60000)} MENIT LALU
+            <RefreshCw className="h-3 w-3 animate-spin-slow" />
+            DATA TERPUSAT: {snapshot.scopeLabel.toUpperCase()} | SINKRONISASI {minutesSinceSync} MENIT LALU
           </p>
         </div>
         
@@ -275,7 +291,7 @@ export function KementerianNationalDashboard() {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-xl font-black text-slate-900 leading-none">1,248</span>
+                  <span className="text-xl font-black text-slate-900 leading-none">{portfolioTotal.toLocaleString('id-ID')}</span>
                   <span className="text-[9px] font-black text-slate-400 uppercase mt-1">UNIT</span>
                 </div>
               </div>
@@ -323,7 +339,11 @@ export function KementerianNationalDashboard() {
               </TableHeader>
               <TableBody>
                 {snapshot.cooperativeComparisons.slice(0, 10).map((row) => (
-                  <TableRow key={row.id} className="hover:bg-slate-50 transition-colors border-b border-slate-50">
+                  <TableRow
+                    key={row.id}
+                    onClick={() => handleAuditRowClick(row)}
+                    className="cursor-pointer hover:bg-slate-50 transition-colors border-b border-slate-50"
+                  >
                     <TableCell className="px-6 py-4">
                       <p className="text-[11px] font-black text-slate-900 uppercase leading-none">{row.label}</p>
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1.5">{row.village}, {row.region}</p>
