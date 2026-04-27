@@ -1,41 +1,30 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { 
-  Clock, 
-  FileText, 
-  Search, 
-  ShoppingCart, 
-  Store, 
-  TrendingUp, 
-  Users,
-  Package,
-  Activity,
-  ShieldAlert,
+import {
+  ArrowRight,
+  Clock,
   Download,
-  ArrowRight
+  FileText,
+  Search,
+  ShieldAlert,
+  ShoppingCart,
+  Store,
+  TrendingUp,
+  Users,
 } from 'lucide-react'
-import { 
-  Bar, 
-  BarChart, 
-  CartesianGrid, 
-  ResponsiveContainer, 
-  XAxis, 
-  YAxis,
-  Tooltip
-} from 'recharts'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { useAuth } from '@/lib/auth/use-auth'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { KementerianFilterBar } from '@/components/dashboard/kementerian-filter-bar'
 import {
   filterOrdersByScope,
   getBuyersFromOrders,
   getMonthlyOrderSeries,
-  getScopeCaption,
   resolveOperationalFilters,
 } from '@/lib/cross-entity-operations'
 import type { ScopeFilters } from '@/lib/kementerian-dashboard-data'
@@ -46,15 +35,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { DataTable, type DataTableColumn } from '@/components/ui/data-table'
 import { toast } from 'sonner'
+
+type Order = ReturnType<typeof filterOrdersByScope>[number]
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -64,11 +48,11 @@ function formatCurrency(value: number) {
   }).format(value)
 }
 
-function formatDate(value: string) {
-  return new Date(value).toLocaleDateString('id-ID', {
-    day: '2-digit',
-    month: 'short',
-  })
+const STATUS_BADGE: Record<string, string> = {
+  pending: 'border-warning/30 bg-warning/10 text-[color:var(--warning)]',
+  diproses: 'border-tertiary/30 bg-[color:var(--dashboard-tertiary-soft)] text-[color:var(--dashboard-tertiary)]',
+  dikirim: 'border-tertiary/30 bg-[color:var(--dashboard-tertiary-soft)] text-[color:var(--dashboard-tertiary)]',
+  selesai: 'border-success/30 bg-success/10 text-[color:var(--success)]',
 }
 
 export default function PasarPage() {
@@ -92,7 +76,7 @@ export default function PasarPage() {
     if (filters.provinceId !== 'all') return 0.5
     return 1.0
   }, [filters])
-  
+
   const scopedOrders = filterOrdersByScope(scopedFilters)
   const filteredOrders = useMemo(() => {
     return scopedOrders.filter((order) => {
@@ -108,227 +92,271 @@ export default function PasarPage() {
 
   const monthlySeries = useMemo(() => {
     return getMonthlyOrderSeries(filteredOrders).map((item) => ({
-      name: item.month.replace(' 2026', '').toUpperCase(),
+      name: item.month.replace(' 2026', ''),
       revenue: Math.round((item.revenue * scaleFactor) / 1_000_000),
     }))
   }, [filteredOrders, scaleFactor])
 
   const regionalComparison = useMemo(() => {
-    return [...new Map(
-      filteredOrders.map((order) => [
-        order.regionId,
-        {
-          region: order.regionName,
-          revenue: filteredOrders
-            .filter((item) => item.regionId === order.regionId)
-            .reduce((total, item) => total + item.totalValue, 0) * scaleFactor,
-          orders: Math.round(filteredOrders.filter((item) => item.regionId === order.regionId).length * scaleFactor),
-        },
-      ]),
-    ).values()].sort((left, right) => right.revenue - left.revenue)
+    return [
+      ...new Map(
+        filteredOrders.map((order) => [
+          order.regionId,
+          {
+            region: order.regionName,
+            revenue:
+              filteredOrders
+                .filter((item) => item.regionId === order.regionId)
+                .reduce((total, item) => total + item.totalValue, 0) * scaleFactor,
+            orders: Math.round(
+              filteredOrders.filter((item) => item.regionId === order.regionId).length * scaleFactor,
+            ),
+          },
+        ]),
+      ).values(),
+    ].sort((left, right) => right.revenue - left.revenue)
   }, [filteredOrders, scaleFactor])
 
   const buyers = getBuyersFromOrders(filteredOrders)
-  const totalRevenue = useMemo(() => filteredOrders.reduce((total, order) => total + order.totalValue, 0) * scaleFactor, [filteredOrders, scaleFactor])
-  const activeOrders = Math.round(filteredOrders.filter((order) => order.status !== 'selesai').length * scaleFactor)
+  const totalRevenue = useMemo(
+    () => filteredOrders.reduce((total, order) => total + order.totalValue, 0) * scaleFactor,
+    [filteredOrders, scaleFactor],
+  )
+  const activeOrders = Math.round(
+    filteredOrders.filter((order) => order.status !== 'selesai').length * scaleFactor,
+  )
   const displayOrderCount = Math.round(filteredOrders.length * scaleFactor)
   const avgOrderValue = displayOrderCount === 0 ? 0 : totalRevenue / displayOrderCount
 
   const handleAction = (action: string) => {
-    toast.success(`Aksi ${action} berhasil diverifikasi secara nasional`)
+    toast.success(`Aksi ${action} berhasil diverifikasi secara nasional.`)
   }
 
+  const kpis = [
+    {
+      label: 'Nilai Transaksi',
+      value: `${(totalRevenue / 1_000_000).toFixed(1)} Jt`,
+      sub: 'IDR',
+      icon: ShoppingCart,
+      tone: 'secondary' as const,
+    },
+    {
+      label: 'Order Aktif',
+      value: activeOrders.toLocaleString('id-ID'),
+      sub: 'pesanan berjalan',
+      icon: Clock,
+      tone: 'success' as const,
+    },
+    {
+      label: 'Buyer Terhubung',
+      value: Math.round(buyers.length * scaleFactor).toLocaleString('id-ID'),
+      sub: 'mitra niaga',
+      icon: Users,
+      tone: 'tertiary' as const,
+    },
+    {
+      label: 'Rata-rata Order',
+      value: `${(avgOrderValue / 1_000_000).toFixed(1)} Jt`,
+      sub: 'per PO',
+      icon: FileText,
+      tone: 'primary' as const,
+    },
+  ]
+
+  const columns: DataTableColumn<Order>[] = [
+    {
+      key: 'orderNumber',
+      header: 'No PO',
+      cell: (order) => <span className="font-mono text-xs text-muted-foreground">{order.orderNumber}</span>,
+    },
+    {
+      key: 'buyer',
+      header: 'Buyer / Tujuan',
+      cell: (order) => (
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-foreground">{order.buyerName}</p>
+          <p className="truncate text-xs text-muted-foreground">{order.destinationRegion}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'cooperative',
+      header: 'Koperasi / Asal',
+      cell: (order) => (
+        <div className="min-w-0">
+          <p className="truncate text-sm text-foreground">{order.cooperativeName}</p>
+          <p className="truncate text-xs text-muted-foreground">{order.villageName}</p>
+        </div>
+      ),
+    },
+    {
+      key: 'commodity',
+      header: 'Komoditas',
+      cell: (order) => <span className="text-sm">{order.commodityName}</span>,
+    },
+    {
+      key: 'volume',
+      header: 'Volume',
+      align: 'right',
+      cell: (order) => (
+        <span className="tabular-nums">{(order.quantityKg * scaleFactor).toLocaleString('id-ID')} kg</span>
+      ),
+    },
+    {
+      key: 'value',
+      header: 'Nilai',
+      align: 'right',
+      cell: (order) => (
+        <span className="tabular-nums font-medium">{formatCurrency(order.totalValue * scaleFactor)}</span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      align: 'center',
+      cell: (order) => (
+        <Badge variant="outline" className={STATUS_BADGE[order.status] ?? ''}>
+          {order.status}
+        </Badge>
+      ),
+    },
+  ]
+
   return (
-    <div className="space-y-6">
-      {/* Header Section */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="page-shell">
+      {/* Header */}
+      <div className="page-header surface-card flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-none bg-slate-900 flex items-center justify-center shadow-xl">
-            <Store className="h-7 w-7 text-emerald-500" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-md bg-primary/10 text-primary">
+            <Store className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Analitik Pasar Nasional</h1>
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
-              Monitoring Arus Komoditas & Valuasi Niaga • {displayOrderCount} Purchase Order
+            <h1 className="page-title">Analitik Pasar Nasional</h1>
+            <p className="page-subtitle">
+              Monitoring arus komoditas & valuasi niaga · {displayOrderCount.toLocaleString('id-ID')} purchase order
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => handleAction('Audit Pasar')}
-            className="h-10 rounded-none text-[10px] font-black uppercase tracking-widest text-slate-600 border-slate-200 shadow-none"
-          >
-            <ShieldAlert className="h-4 w-4 mr-2 text-rose-600" />
-            Audit Pasar
+          <Button variant="outline" size="sm" onClick={() => handleAction('Audit Pasar')}>
+            <ShieldAlert className="mr-2 h-4 w-4 text-destructive" /> Audit pasar
           </Button>
-          <Button 
-            size="sm" 
-            onClick={() => handleAction('PDF')}
-            className="h-10 rounded-none bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest px-6 shadow-none"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Eksport PDF
+          <Button size="sm" onClick={() => handleAction('Ekspor PDF')}>
+            <Download className="mr-2 h-4 w-4" /> Ekspor PDF
           </Button>
         </div>
       </div>
 
-      <KementerianFilterBar filters={filters} setFilters={setFilters} />
+      {isKementerian && <KementerianFilterBar filters={filters} setFilters={setFilters} />}
 
-      {/* High-Density KPI Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Nilai Transaksi', value: (totalRevenue / 1000000).toFixed(1), sub: 'JUTA IDR', icon: ShoppingCart, color: 'text-slate-900' },
-          { label: 'Order Aktif', value: activeOrders.toLocaleString(), sub: 'PESANAN BERJALAN', icon: Clock, color: 'text-emerald-600' },
-          { label: 'Buyer Terhubung', value: Math.round(buyers.length * scaleFactor).toLocaleString(), sub: 'MITRA NIAGA', icon: Users, color: 'text-blue-600' },
-          { label: 'Rata-Rata Order', value: (avgOrderValue / 1000000).toFixed(1), sub: 'JUTA PER PO', icon: FileText, color: 'text-blue-400' },
-        ].map((s, i) => (
-          <Card key={i} className="rounded-none border-none shadow-sm bg-white overflow-hidden">
-            <div className={`h-1.5 w-full ${s.color.includes('emerald') ? 'bg-emerald-500' : s.color.includes('blue') ? 'bg-blue-500' : 'bg-slate-900'}`} />
-            <CardContent className="p-4 flex items-center gap-4">
-              <div className="h-10 w-10 rounded-none bg-slate-50 flex items-center justify-center border border-slate-100">
-                <s.icon className={`h-5 w-5 ${s.color}`} />
+      {/* KPIs */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {kpis.map((kpi) => (
+          <Card key={kpi.label} className={`card-accent card-accent-${kpi.tone}`}>
+            <CardContent className="flex items-center gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
+                <kpi.icon className="h-5 w-5 text-muted-foreground" />
               </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
-                <div className="flex items-baseline gap-1 mt-1">
-                  <span className={`text-xl font-black ${s.color}`}>{s.value}</span>
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">{s.sub}</span>
-                </div>
+              <div className="min-w-0">
+                <p className="metric-label">{kpi.label}</p>
+                <p className="metric-value mt-1 truncate">{kpi.value}</p>
+                <p className="text-xs text-muted-foreground">{kpi.sub}</p>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
+      {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="rounded-none border-none shadow-sm bg-white overflow-hidden">
-          <CardHeader className="p-5 border-b border-slate-50">
-            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Tren Omzet Bulanan</CardTitle>
+        <Card className="card-accent card-accent-success">
+          <CardHeader>
+            <CardTitle>Tren Omzet Bulanan</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 h-[300px]">
+          <CardContent className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlySeries}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" fontSize={9} fontWeight={900} axisLine={false} tickLine={false} />
-                <YAxis fontSize={9} fontWeight={900} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ borderRadius: '0px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '10px', fontWeight: 900 }}
-                  formatter={(val: number) => [`${val.toLocaleString()} JT`, 'REVENUE']}
-                />
-                <Bar dataKey="revenue" fill="#16a34a" radius={[0, 0, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip formatter={(val: number) => [`${val.toLocaleString('id-ID')} Jt`, 'Revenue']} />
+                <Bar dataKey="revenue" fill="var(--success)" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="rounded-none border-none shadow-sm bg-white overflow-hidden">
-          <CardHeader className="p-5 border-b border-slate-50">
-            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">Performa Wilayah Niaga</CardTitle>
+        <Card className="card-accent card-accent-tertiary">
+          <CardHeader>
+            <CardTitle>Performa Wilayah Niaga</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 space-y-3 max-h-[300px] overflow-y-auto">
+          <CardContent className="max-h-[300px] space-y-2 overflow-y-auto">
             {regionalComparison.map((region, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-none border border-slate-100">
-                <div>
-                  <p className="text-xs font-black text-slate-900 uppercase">{region.region}</p>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{region.orders} PO SELESAI</p>
+              <div
+                key={`${region.region}-${idx}`}
+                className="surface-card-muted flex items-center justify-between p-3"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">{region.region}</p>
+                  <p className="text-xs text-muted-foreground">{region.orders} PO selesai</p>
                 </div>
-                <p className="text-sm font-black text-slate-900">{(region.revenue / 1000000).toFixed(1)} JT</p>
+                <p className="text-sm font-semibold tabular-nums">{(region.revenue / 1_000_000).toFixed(1)} Jt</p>
               </div>
             ))}
           </CardContent>
         </Card>
       </div>
 
-      {/* Search & Action Bar */}
-      <Card className="rounded-none border-none shadow-sm bg-slate-50/50">
-        <CardContent className="p-4">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center">
+      {/* Filter bar */}
+      <Card>
+        <CardContent>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                placeholder="Cari nomor PO, buyer, atau koperasi..."
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Cari nomor PO, buyer, atau koperasi…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-none pl-9 bg-white border-slate-200 h-11 text-[10px] font-black uppercase tracking-widest focus:outline-none focus:ring-1 focus:ring-slate-900"
+                className="pl-9"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[180px] rounded-none h-11 bg-white border-slate-200 text-[10px] font-black uppercase tracking-widest">
-                  <SelectValue placeholder="STATUS" />
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent className="rounded-none border-slate-200">
-                  <SelectItem value="all">SEMUA STATUS</SelectItem>
-                  <SelectItem value="pending">TERTUNDA</SelectItem>
-                  <SelectItem value="diproses">DIPROSES</SelectItem>
-                  <SelectItem value="dikirim">DIKIRIM</SelectItem>
-                  <SelectItem value="selesai">SELESAI</SelectItem>
+                <SelectContent>
+                  <SelectItem value="all">Semua status</SelectItem>
+                  <SelectItem value="pending">Tertunda</SelectItem>
+                  <SelectItem value="diproses">Diproses</SelectItem>
+                  <SelectItem value="dikirim">Dikirim</SelectItem>
+                  <SelectItem value="selesai">Selesai</SelectItem>
                 </SelectContent>
               </Select>
-              <Button 
-                onClick={() => handleAction('Buat Order')}
-                className="rounded-none h-11 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest px-6 shadow-none"
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" /> Buat Pesanan
+              <Button onClick={() => handleAction('Buat Order')}>
+                <ShoppingCart className="mr-2 h-4 w-4" /> Buat pesanan
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Main Data Table */}
-      <Card className="rounded-none border-none shadow-sm overflow-hidden bg-white">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-slate-100">
-              <TableRow className="border-none bg-slate-100 hover:bg-slate-100">
-                <TableHead className="h-12 px-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">NO PO</TableHead>
-                <TableHead className="h-12 px-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">BUYER / TUJUAN</TableHead>
-                <TableHead className="h-12 px-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">KOPERASI / ASAL</TableHead>
-                <TableHead className="h-12 px-6 text-[10px] font-black text-slate-500 uppercase tracking-widest">KOMODITAS</TableHead>
-                <TableHead className="h-12 px-6 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">VOLUME</TableHead>
-                <TableHead className="h-12 px-6 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">NILAI</TableHead>
-                <TableHead className="h-12 px-6 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">STATUS</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredOrders.slice(0, 15).map((order) => (
-                <TableRow key={order.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <TableCell className="px-6 py-4 font-mono text-[10px] font-black text-slate-400">{order.orderNumber}</TableCell>
-                  <TableCell className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <span className="text-xs font-black text-slate-900 uppercase tracking-tight">{order.buyerName}</span>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{order.destinationRegion}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <span className="text-xs font-black text-slate-600 uppercase tracking-tight">{order.cooperativeName}</span>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{order.villageName}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-xs font-black text-slate-900 uppercase">{order.commodityName}</TableCell>
-                  <TableCell className="px-6 py-4 text-right">
-                    <span className="text-xs font-black text-slate-900">{(order.quantityKg * scaleFactor).toLocaleString()} KG</span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-right text-xs font-black text-slate-900">
-                    {formatCurrency(order.totalValue * scaleFactor)}
-                  </TableCell>
-                  <TableCell className="px-6 py-4 text-center">
-                    <Badge className="rounded-none border-none shadow-none text-[9px] font-black uppercase tracking-widest px-2 h-5 bg-slate-100 text-slate-700">
-                      {order.status.toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+      {/* Orders table */}
+      <Card className="card-accent card-accent-primary">
+        <CardHeader>
+          <CardTitle>Daftar Purchase Order</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable
+            data={filteredOrders}
+            columns={columns}
+            rowKey={(order) => order.id}
+            empty="Tidak ada order yang cocok dengan filter."
+          />
+        </CardContent>
       </Card>
 
-      {/* Navigation Footer */}
+      {/* Footer nav */}
       <div className="grid gap-4 md:grid-cols-3">
         {[
           { label: 'Direktori Buyer', icon: Users, path: '/pasar/buyer' },
@@ -336,15 +364,15 @@ export default function PasarPage() {
           { label: 'Indeks Harga', icon: TrendingUp, path: '/pasar/harga' },
         ].map((link) => (
           <Link key={link.path} href={link.path} className="group">
-            <Card className="rounded-none border-slate-200 hover:border-slate-900 transition-all bg-white overflow-hidden">
-              <CardContent className="p-4 flex items-center justify-between">
+            <Card className="transition-colors hover:border-primary/40">
+              <CardContent className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-slate-50 flex items-center justify-center border border-slate-100 text-slate-400 group-hover:text-slate-900 transition-colors">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted text-muted-foreground transition-colors group-hover:text-primary">
                     <link.icon className="h-5 w-5" />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 group-hover:text-slate-900">{link.label}</span>
+                  <span className="text-sm font-semibold text-foreground">{link.label}</span>
                 </div>
-                <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+                <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
               </CardContent>
             </Card>
           </Link>
